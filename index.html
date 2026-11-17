@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+    body {
+      font-family: 'Noto Sans TC', 'Inter', sans-serif;
+      background: radial-gradient(circle at top, #fff1e6 0%, #ffd8be 55%, #ffc49b 100%);
+      min-height: 100vh;
+      margin: 0;
+      color: #2d1e12;
+      overflow-x: hidden;
+    }
+    .tama-shell {
+      background: linear-gradient(165deg, #ff8533 0%, #ff6314 52%, #e64900 100%);
+      box-shadow: 0 24px 50px rgba(217, 72, 15, 0.35), inset 0 6px 14px rgba(255, 255, 255, 0.5), inset 0 -10px 20px rgba(124, 35, 0, 0.35);
+      border: 5px solid #fff7f0;
+    }
+    .hd-canvas { touch-action: none; }
+    .ui-card { border: 2.5px solid #2d1e12; box-shadow: 0 4px 0 rgba(45, 30, 18, 0.85); }
+    .dock-chip, .ctrl-pill { border: 2px solid #2d1e12; box-shadow: 0 3px 0 rgba(45, 30, 18, 0.85); touch-action: none; transition: transform 0.1s ease, opacity 0.15s ease; }
+    .dock-chip:active, .ctrl-pill:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(45, 30, 18, 0.85); }
+    .inscreen-dir {
+      border: 2px solid rgba(45, 30, 18, 0.85);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+      transition: transform 0.1s ease, opacity 0.15s ease;
+    }
+    .inscreen-dir:active:not(:disabled) { transform: scale(0.9); }
+    .inscreen-dir:disabled { opacity: 0.22; pointer-events: none; }
+    #drag-ghost { position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%) scale(1.25); font-size: 30px; }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center p-3 sm:p-5">
+
+  <div class="tama-shell w-full max-w-md rounded-[3rem] p-4 sm:p-5 relative">
+
+    <!-- Top Bezel -->
+    <div class="flex items-center justify-between mb-2 px-1.5 text-white">
+      <div class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-full bg-white/25 flex items-center justify-center text-base border-2 border-white/50">🏐</span>
+        <div>
+          <div class="flex items-center gap-1.5 flex-wrap"><h1 id="header-title" class="text-base sm:text-lg font-black tracking-wide leading-tight">日向翔陽</h1><span id="header-datetime" class="text-[10px] font-bold bg-white/25 px-2 py-0.5 rounded-full border border-white/40 whitespace-nowrap"></span></div>
+          <p id="header-sub" class="text-[11px] text-orange-100">烏野 #10 · 現實時間同步</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button id="btn-sound" type="button" title="開關互動音效" class="w-8 h-8 rounded-full bg-white/25 hover:bg-white/35 border-2 border-white/50 flex items-center justify-center text-sm transition">🔊</button>
+        <button id="btn-schedule" type="button" class="px-2.5 py-1 rounded-full bg-white text-orange-600 font-bold text-xs border-2 border-[#2d1e12] shadow-sm hover:bg-orange-50 transition">📅 生活作息</button>
+      </div>
+    </div>
+
+    <!-- Screen Frame -->
+    <div class="bg-[#2d1e12] p-2.5 rounded-[1.75rem] shadow-inner">
+      <!-- Top Mini HUD (現實時間已鎖定，不可手動調整) -->
+      <div class="bg-[#fef3c7] border-b-2 border-[#2d1e12] rounded-t-2xl px-2.5 py-1.5 space-y-1 text-[11px] font-bold text-[#2d1e12]">
+        <div class="flex items-center justify-between">
+          <span id="time-display" class="bg-white/90 border border-[#2d1e12] px-1.5 py-0.5 rounded">🔒 現實時間</span>
+          <span id="room-title-badge" class="bg-orange-500 text-white px-2 py-0.5 rounded text-[10px]">🏠 1F 客廳</span>
+          <span>💖Lv.<span id="bond-level">1</span> · 🪙<span id="coins-count">50</span></span>
+        </div>
+        <div class="flex items-center justify-between text-[10px] bg-white/80 rounded-lg px-2 py-0.5 border border-amber-300">
+          <span id="daily-cap-exp">📈 今日EXP 0/100</span>
+          <span id="daily-cap-coins">🪙 今日金幣 0/80</span>
+          <span id="daily-lock-badge" class="hidden text-rose-600 font-black">🔒 今日已鎖定上限</span>
+        </div>
+      </div>
+
+      <!-- 600x600 HD Anime Room Canvas -->
+      <div class="relative w-full aspect-square bg-sky-100 overflow-hidden">
+        <canvas id="game-canvas" width="600" height="600" class="hd-canvas w-full h-full block cursor-pointer"></canvas>
+
+        <!-- Speech Bubble -->
+        <div id="speech-bubble" class="pointer-events-none absolute top-9 left-1/2 -translate-x-1/2 w-[84%] bg-white/95 border-2 border-[#2d1e12] rounded-2xl px-3 py-1.5 text-center text-xs font-bold text-[#2d1e12] shadow-md leading-snug z-10">
+          「哥哥你返嚟啦！今日一齊練排球！」
+        </div>
+
+        <!-- In-Screen 4-Way Navigation Arrows -->
+        <button id="dir-up" type="button" class="inscreen-dir absolute top-1.5 left-1/2 -translate-x-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full px-3 py-0.5 text-xs font-black z-20 flex items-center gap-1" title="向上">
+          <span>▲</span><span id="lbl-up" class="text-[9px] hidden sm:inline"></span>
+        </button>
+        <button id="dir-down" type="button" class="inscreen-dir absolute bottom-1.5 left-1/2 -translate-x-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full px-3 py-0.5 text-xs font-black z-20 flex items-center gap-1" title="向下">
+          <span>▼</span><span id="lbl-down" class="text-[9px] hidden sm:inline"></span>
+        </button>
+        <button id="dir-left" type="button" class="inscreen-dir absolute left-1.5 top-1/2 -translate-y-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full w-8 h-8 text-xs font-black z-20 flex items-center justify-center" title="向左">◀</button>
+        <button id="dir-right" type="button" class="inscreen-dir absolute right-1.5 top-1/2 -translate-y-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full w-8 h-8 text-xs font-black z-20 flex items-center justify-center" title="向右">▶</button>
+
+        <!-- Interactive Overlay (RPS / Chat / Jump Training) -->
+        <div id="choice-overlay" class="hidden absolute bottom-11 left-1/2 -translate-x-1/2 w-[88%] bg-white/95 border-2 border-[#2d1e12] rounded-2xl p-2 shadow-xl z-30 flex flex-wrap items-center justify-center gap-1.5"></div>
+
+        <!-- Directional Tracker Arrow -->
+        <button id="tracker-arrow" type="button" class="hidden absolute bottom-10 right-3 bg-orange-500/95 hover:bg-orange-600 text-white border-2 border-[#2d1e12] rounded-2xl px-3 py-1.5 text-xs font-black shadow-lg flex items-center gap-1.5 animate-bounce z-20">
+          <span id="tracker-dir" class="text-base">⬅️</span>
+          <span id="tracker-text">日向喺客廳</span>
+        </button>
+
+        <!-- Rally Mini-game Overlay -->
+        <div id="mg-hud" class="hidden pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 bg-[#2d1e12]/90 text-white text-xs font-bold px-3.5 py-1 rounded-full shadow z-20">
+          🏐 雙人對打：<span id="mg-score">0</span> 回合 ｜ <span id="mg-turn">輪到你接波！</span>
+        </div>
+      </div>
+
+      <!-- Stat Bars -->
+      <div class="bg-[#fff7ed] border-t-2 border-[#2d1e12] rounded-b-2xl px-3 py-2 grid grid-cols-3 gap-2 text-[11px] font-bold">
+        <div>
+          <div class="flex justify-between mb-0.5"><span>🍙 飽食</span><span id="val-hunger">80%</span></div>
+          <div class="border border-[#2d1e12] bg-white h-2.5 rounded-full overflow-hidden"><div id="bar-hunger" class="h-full bg-amber-500 transition-all duration-300" style="width:80%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between mb-0.5"><span>😊 心情</span><span id="val-mood">85%</span></div>
+          <div class="border border-[#2d1e12] bg-white h-2.5 rounded-full overflow-hidden"><div id="bar-mood" class="h-full bg-rose-500 transition-all duration-300" style="width:85%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between mb-0.5"><span>⚡ 精力</span><span id="val-energy">90%</span></div>
+          <div class="border border-[#2d1e12] bg-white h-2.5 rounded-full overflow-hidden"><div id="bar-energy" class="h-full bg-emerald-500 transition-all duration-300" style="width:90%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Controls -->
+    <div class="mt-2.5 grid grid-cols-3 gap-1.5">
+      <button id="btn-zoom" type="button" class="ctrl-pill bg-white hover:bg-orange-50 rounded-xl py-1.5 px-2 text-xs font-black flex items-center justify-center gap-1">
+        <span id="zoom-icon">🔍</span><span id="zoom-label">放大特寫</span>
+      </button>
+      <button id="btn-outfit" type="button" class="ctrl-pill bg-white hover:bg-orange-50 rounded-xl py-1.5 px-2 text-xs font-black flex items-center justify-center gap-1">
+        <span>👕</span><span id="outfit-name">烏野隊服</span>
+      </button>
+      <button id="btn-find-pet" type="button" class="ctrl-pill bg-amber-100 hover:bg-amber-200 rounded-xl py-1.5 px-2 text-xs font-black flex items-center justify-center gap-1">
+        <span>🧭</span><span>搵日向</span>
+      </button>
+    </div>
+
+    <!-- Bottom Interactive Dock -->
+    <div class="mt-2.5 bg-[#fff7ed] ui-card rounded-2xl p-2">
+      <div class="flex items-center justify-between gap-1.5 mb-1.5">
+        <div class="flex gap-1">
+          <button id="tab-food" type="button" class="px-2.5 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] bg-orange-500 text-white">🍱 餵食</button>
+          <button id="tab-act" type="button" class="px-2.5 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] bg-white text-[#2d1e12]">✨ 互動 (8)</button>
+        </div>
+        <span class="text-[10px] font-bold text-orange-800">摸頭會笑開懷 😊 · 數值即時消耗</span>
+      </div>
+      <div id="dock-tray" class="grid grid-cols-4 gap-1.5"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
+      <span id="save-status">💾 已自動儲存</span>
+      
+    </div>
+
+  </div>
+
+  <div id="drag-ghost" class="hidden">🍙</div>
+
+  <!-- Modal: 每日生活作息表 -->
+  <div id="schedule-modal" class="hidden fixed inset-0 bg-black/55 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl border-2 border-[#2d1e12] max-h-[82vh] flex flex-col">
+      <div class="flex justify-between items-center mb-3 shrink-0">
+        <h3 class="text-lg font-black text-orange-600">📅 翔陽每日生活作息表</h3>
+        <button id="close-schedule" type="button" class="text-gray-400 hover:text-gray-700 font-bold text-lg px-2">✕</button>
+      </div>
+      <div id="schedule-list" class="space-y-2 overflow-y-auto pr-1 text-xs"></div>
+    </div>
+  </div>
+
+  <!-- Modal: 角色切換 & 新增自訂角色 -->
+  <div id="char-modal" class="hidden fixed inset-0 bg-black/55 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-[#fff7ed] ui-card rounded-3xl w-full max-w-md p-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-black text-[#2d1e12]">角色切換與新增</h2>
+        <button id="btn-close-modal" type="button" class="w-8 h-8 rounded-full bg-orange-200 hover:bg-orange-300 flex items-center justify-center font-bold">✕</button>
+      </div>
+      <div id="char-list" class="space-y-2 mb-4"></div>
+      <div class="border-t-2 border-orange-200 pt-3">
+        <h3 class="text-sm font-black text-[#2d1e12] mb-2">＋ 新增自訂動漫角色</h3>
+        <form id="add-char-form" class="space-y-2 text-xs">
+          <div class="grid grid-cols-2 gap-2">
+            <div><label class="block font-bold mb-1">角色名稱 *</label><input id="new-name" type="text" required placeholder="例如：孤爪研磨" class="w-full px-2.5 py-2 rounded-xl border-2 border-[#2d1e12] bg-white" /></div>
+            <div><label class="block font-bold mb-1">稱號 / 背號</label><input id="new-sub" type="text" placeholder="例如：音駒 #5" class="w-full px-2.5 py-2 rounded-xl border-2 border-[#2d1e12] bg-white" /></div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div><label class="block font-bold mb-1">髮色</label><input id="new-hair" type="color" value="#eab308" class="w-full h-8 rounded-lg border-2 border-[#2d1e12] cursor-pointer" /></div>
+            <div><label class="block font-bold mb-1">瞳色</label><input id="new-eye" type="color" value="#ca8a04" class="w-full h-8 rounded-lg border-2 border-[#2d1e12] cursor-pointer" /></div>
+            <div><label class="block font-bold mb-1">衫色</label><input id="new-shirt" type="color" value="#dc2626" class="w-full h-8 rounded-lg border-2 border-[#2d1e12] cursor-pointer" /></div>
+          </div>
+          <div><label class="block font-bold mb-1">見面台詞</label><input id="new-quote" type="text" placeholder="例如：哥哥，打機定練波好？" class="w-full px-2.5 py-2 rounded-xl border-2 border-[#2d1e12] bg-white" /></div>
+          <button type="submit" class="w-full py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-black text-sm border-2 border-[#2d1e12]">建立並切換角色</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 bg-[#2d1e12] text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg z-50"></div>
+
+  <script>
+    // =========================================================================
+    // 1. 全套去背立繪（含摸頭專用笑面立繪）＋ 10間手繪動畫房間
+    // =========================================================================
+    const ASSET_URLS = {
+      chibiJersey: "./assets/chibiJersey.png?v=13",
+      chibiSchool: "./assets/chibiSchool.png?v=13",
+      chibiPajama: "./assets/chibiPajama.png?v=13",
+      portraitJersey: "./assets/portraitJersey.png?v=13",
+      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=13",
+      portraitSchool: "./assets/portraitSchool.png?v=13",
+      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=13",
+      portraitPajama: "./assets/portraitPajama.png?v=13",
+      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=13",
+      portraitSleepy: "./assets/portraitSleepy.jpg?v=13",
+      bg_living: "./assets/bg_living.jpg?v=13",
+      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=13",
+      bg_kitchen: "./assets/bg_kitchen.jpg?v=13",
+      bg_bath: "./assets/bg_bath.jpg?v=13",
+      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=13",
+      bg_hallway: "./assets/bg_hallway.jpg?v=13",
+      bg_backyard: "./assets/bg_backyard.jpg?v=13",
+      bg_street: "./assets/bg_street.jpg?v=13",
+      bg_school_class: "./assets/bg_school_class.jpg?v=13",
+      bg_school_court: "./assets/bg_school_court.jpg?v=13",
+      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=13",
+      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=13",
+      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=13"
+    };
+    const sprites = {};
+
+    let assetLoadFailed = false;
+    function loadAssets() {
+      Object.keys(ASSET_URLS).forEach(k => {
+        const im = new Image();
+        im.onload = () => { sprites[k] = im; };
+        im.onerror = () => { assetLoadFailed = true; };
+        im.src = ASSET_URLS[k];
+      });
+    }
+
+    // =========================================================================
+    // 2. 每日上限 + 10 房間 + 精準家具座標
+    // =========================================================================
+    const DAILY_EXP_CAP = 100;
+    const DAILY_COINS_CAP = 80;
+
+    const MAP_ROOMS = {
+      room_hinata:  { id: 'room_hinata',  name: '2F 日向房',      short: '日向房',   icon: '🛏️', gx: 1, gy: 0, up: null, down: 'living', left: null, right: 'room_aniki' },
+      room_aniki:   { id: 'room_aniki',   name: '2F 哥哥房間',    short: '哥哥房',   icon: '🎮', gx: 2, gy: 0, up: null, down: 'hallway', left: 'room_hinata', right: null },
+      bath:         { id: 'bath',         name: '1F 廁所浴室',    short: '浴室',     icon: '🛁', gx: 0, gy: 1, up: null, down: null, left: null, right: 'living' },
+      living:       { id: 'living',       name: '1F 客廳',        short: '客廳',     icon: '🏠', gx: 1, gy: 1, up: 'room_hinata', down: 'kitchen', left: 'bath', right: 'hallway' },
+      hallway:      { id: 'hallway',      name: '1F 走廊玄關',    short: '走廊',     icon: '🚪', gx: 2, gy: 1, up: 'room_aniki', down: 'backyard', left: 'living', right: 'street' },
+      street:       { id: 'street',       name: '室外街道',       short: '街道',     icon: '🛣️', gx: 3, gy: 1, up: null, down: 'school_class', left: 'hallway', right: 'konbini' },
+      konbini:      { id: 'konbini',      name: '日式便利店',     short: '便利店',   icon: '🏪', gx: 4, gy: 1, up: null, down: null, left: 'street', right: null },
+      kitchen:      { id: 'kitchen',      name: '1F 廚房',        short: '廚房',     icon: '🍳', gx: 1, gy: 2, up: 'living', down: null, left: null, right: 'backyard' },
+      backyard:     { id: 'backyard',     name: '屋後院子',       short: '後院',     icon: '🏡', gx: 2, gy: 2, up: 'hallway', down: null, left: 'kitchen', right: null },
+      school_class: { id: 'school_class', name: '學校課室',       short: '課室',     icon: '🏫', gx: 3, gy: 2, up: 'street', down: null, left: null, right: 'school_court' },
+      school_court: { id: 'school_court', name: '室內學校排球場', short: '室內球場', icon: '🏐', gx: 4, gy: 2, up: null, down: null, left: 'school_class', right: null }
+    };
+
+    const ROOM_FURNITURE = {
+      living: [
+        { id: 'tea', label: '坐墊茶几', hx: 290, hy: 400, hr: 85, px: 280, py: 440, act: 'tea', line: '「同哥哥坐喺紅坐墊飲杯熱茶，暖笠笠好舒服！🍵」' },
+        { id: 'tv',  label: '客廳電視梳化', hx: 485, hy: 330, hr: 90, px: 430, py: 420, act: 'tv', line: '「開電視！播緊烏野對戰精華呀哥哥快睇！📺」' }
+      ],
+      kitchen: [
+        { id: 'fridge', label: '雪櫃', hx: 70, hy: 350, hr: 80, px: 145, py: 435, act: 'fridge', line: '「打開雪櫃睇下～有凍麥茶同雞蛋！🧊」' },
+        { id: 'stove',  label: '煮食爐', hx: 215, hy: 325, hr: 80, px: 255, py: 435, act: 'cook', line: '「滋滋滋～幫哥哥煎隻靚太陽蛋做早餐！🍳」' },
+        { id: 'table',  label: '飯枱', hx: 480, hy: 410, hr: 95, px: 455, py: 440, act: 'breakfast', line: '「坐喺飯枱食熱辣辣早餐，充滿力量！🍚」' }
+      ],
+      room_hinata: [
+        { id: 'desk', label: '書枱', hx: 115, hy: 350, hr: 90, px: 165, py: 430, act: 'homework', line: '「開着盞枱燈溫下英文單字先…哥哥記得教我！📖」' },
+        { id: 'bed',  label: '床鋪', hx: 465, hy: 375, hr: 110, px: 472, py: 355, act: 'sleep', line: '「鑽入被竇暖笠笠…哥哥晚安…Zzz 🛏️」' }
+      ],
+      room_aniki: [
+        { id: 'console', label: '哥哥電腦位', hx: 120, hy: 300, hr: 95, px: 190, py: 435, act: 'gaming', line: '「打開哥哥部遊戲機打兩局排球Game！🎮」' },
+        { id: 'aniki_bed', label: '哥哥張床', hx: 465, hy: 375, hr: 110, px: 390, py: 435, act: 'happy', line: '「哥哥張床特別軟熟～嘿嘿 😊」' }
+      ],
+      bath: [
+        { id: 'sink', label: '洗手盆刷牙', hx: 145, hy: 340, hr: 85, px: 200, py: 435, act: 'brush', line: '「刷刷刷～朝早起身刷牙洗臉醒神晒！🪥」' },
+        { id: 'tub',  label: '熱水浴缸', hx: 415, hy: 360, hr: 115, px: 405, py: 332, act: 'bath', line: '「浸落熱水浴缸好爽呀！成身暖笠笠！🫧」' }
+      ],
+      hallway: [
+        { id: 'shoes', label: '鞋櫃', hx: 380, hy: 340, hr: 85, px: 310, py: 440, act: 'hallway', line: '「着好對運動鞋準備出門啦哥哥！👟」' }
+      ],
+      backyard: [
+        { id: 'net', label: '後院排球網', hx: 420, hy: 340, hr: 100, px: 315, py: 435, act: 'backyard', line: '「放學返到屋企喺後院繼續練排球！🏐」' }
+      ],
+      street: [
+        { id: 'vend', label: '自動販賣機', hx: 480, hy: 350, hr: 95, px: 340, py: 440, act: 'street', line: '「着好衛衣校服行路返學/放學！🎒」' }
+      ],
+      school_class: [
+        { id: 'sdesk', label: '課室書枱', hx: 225, hy: 400, hr: 90, px: 235, py: 435, act: 'school_class', line: '「認真上堂抄筆記中…📚」' },
+        { id: 'lunch', label: '食午餐便當', hx: 425, hy: 400, hr: 90, px: 390, py: 435, act: 'lunch', line: '「午休時間食香噴噴便當！🍱」' }
+      ],
+      konbini: [
+        { id: 'nikuman', label: '熱辣辣肉包蒸籠', hx: 410, hy: 450, hr: 90, px: 350, py: 445, act: 'konbini', line: '「熱騰騰嘅肉包出爐喇！！哥哥食唔食？🥟✨」' },
+        { id: 'cooler',  label: '飲品雪櫃',       hx: 515, hy: 310, hr: 90, px: 470, py: 440, act: 'konbini', line: '「練完波飲支冰凍運動飲品最爽！🥤」' }
+      ],
+      school_court: [
+        { id: 'cnet', label: '球場排球網', hx: 360, hy: 320, hr: 120, px: 300, py: 435, act: 'school_court', line: '「放學社團練習！跳到最高點扣殺！！🏐🔥」' }
+      ]
+    };
+
+    const OUTFITS = [
+      { id: 'jersey', name: '烏野隊服', spriteKey: 'chibiJersey', portraitKey: 'portraitJersey', happyKey: 'portraitJerseyHappy' },
+      { id: 'school', name: '衛衣校服', spriteKey: 'chibiSchool', portraitKey: 'portraitSchool', happyKey: 'portraitSchoolHappy' },
+      { id: 'pajama', name: '家居睡衣', spriteKey: 'chibiPajama', portraitKey: 'portraitPajama', happyKey: 'portraitPajamaHappy' }
+    ];
+
+    const DEFAULT_CHARACTERS = {
+      hinata: {
+        id: 'hinata', name: '日向翔陽', subtitle: '烏野 #10 · 現實時間同步',
+        hairColor: '#ff7315', eyeColor: '#9a3412',
+        foods: [
+          { id: 'tamago', name: '玉子拌飯', emoji: '🍚', cost: 0, hunger: 26, mood: 10, bond: 8, line: '「哥哥！玉子拌飯最正！熱辣辣加蛋黃一流呀！！✨」' },
+          { id: 'nikuman', name: '熱肉包', emoji: '🥟', cost: 10, hunger: 34, mood: 18, bond: 12, line: '「係坂之下商店嘅熱肉包！哥哥買俾我特別好味！」' },
+          { id: 'onigiri', name: '梅子飯糰', emoji: '🍙', cost: 5, hunger: 20, mood: 8, bond: 6, line: '「多謝哥哥！食完飯糰又有力跳起扣殺喇！」' },
+          { id: 'drink', name: '運動飲', emoji: '🥤', cost: 8, hunger: 8, energy: 28, mood: 12, bond: 6, line: '「咕嚕咕嚕～多謝哥哥！精力瞬間返晒嚟！」' }
+        ],
+        dialogues: {
+          sleep: ['「呼…哥哥…我要打入全國…Zzz」'],
+          brush: ['「早安哥哥！刷牙洗臉醒神晒！🪥」'],
+          breakfast: ['「食完熱辣辣早餐準備返學喇哥哥！🍳🍚」'],
+          tea: ['「同哥哥喺客廳坐低飲杯熱茶好舒服呀 🍵」'],
+          tv: ['「哥哥快啲過嚟睇！電視播緊排球賽呀！📺」'],
+          fridge: ['「雪櫃入面凍冰冰好涼爽！搵到支麥茶！」'],
+          cook: ['「滋滋滋～幫哥哥煎隻靚太陽蛋！」'],
+          hallway: ['「出門口前記得着好鞋呀哥哥！👟」'],
+          gaming: ['「哥哥！呢關好難打，一齊破關啦！🎮」'],
+          homework: ['「唔…哥哥呢題英文功課好難呀，教下我！📖」'],
+          bath: ['「浸落熱水浴缸好爽呀～成身暖笠笠！🫧」'],
+          backyard: ['「放學返到屋企後院繼續練排球！🏐」'],
+          street: ['「着好黑學蘭配米白衛衣校服出門！🎒」'],
+          school_class: ['「認真上堂抄筆記中…唔可以訓覺！📚」'],
+          lunch: ['「午休時間！哥哥幫我整嘅便當好好味！🍱」'],
+          school_court: ['「放學喇哥哥！快啲睇我喺球場跳得幾高！🏐」'],
+          konbini: [
+            '「同哥哥行過嚟便利店買肉包食，好幸福呀！🥟✨」',
+            '「便利店雪櫃有好多運動飲品！哥哥揀邊支？🥤」'
+          ],
+          pet: [
+            '「嘿嘿…哥哥隻手好暖呀！好開心！😆」',
+            '「俾哥哥摸頭就會充滿力量！！💖」',
+            '「再摸多兩下！頭髮都俾你摸亂晒喇哈哈！🧡」',
+            '「好似啱啱攞完比賽MVP咁開心！🏆✨」',
+            '「唔…好舒服呀，感覺跳高可以再高5cm！🏐」',
+            '「哥哥今日對我好好呀～最鍾意哥哥！🥰」',
+            '「嘿嘿嘿，有哥哥喺度真係安心晒！☀️」',
+            '「比影山仲要溫柔一百倍嘅摸頭！！😤💖」',
+            '「摸完頭我又可以再練一百個扣殺喇！🔥」',
+            '「軟綿綿咁好似曬完太陽嘅被竇～😌」',
+            '「哥哥手掌大過我咁多嘅～✨」',
+            '「唔准停呀！再摸多十秒先！😆🙌」',
+            '「好似充飽電咁，能量100%回復！！⚡」',
+            '「呢個係烏野王牌專屬嘅幸運摸頭嗎？🍀」'
+          ],
+          waking: ['「唔…哥哥發生咩事呀？好眼瞓 😪」'],
+          backToSleep: ['「哥哥晚安…冇事我就瞓返先…Zzz」'],
+          leaving: ['「夠鐘做下一個行程喇哥哥～👋」'],
+          capped: ['「哥哥！今日好感同金幣已經儲滿上限喇 🔒」']
+        }
+      }
+    };
+
+    const STORAGE_KEY = 'chibi_tama_nohara_v6';
+    let state = { activeCharId: 'hinata', soundEnabled: true, dockTab: 'food', customCharacters: {}, pets: {} };
+
+    let viewRoomId = 'living';
+    let isZoomed = false;
+    let petX = 255, petY = 440, targetX = 255, targetY = 440;
+    let transitionState = null;
+    let lastInteractAt = Date.now();
+    let dreamIdx = 0;
+    let isPetting = false;
+    let handPos = { x: 300, y: 260 };
+    let petTickAcc = 0;
+    let particles = [];
+    let flyingFood = null;
+    let dragState = { active: false, food: null };
+    let tempOverrideMode = null;
+    let rally = { active: false, score: 0, turn: 'user', bx: 300, by: 180, bvx: 2, bvy: -6 };
+    let jumpGame = { active: false, taps: 0, timer: null };
+
+    function getTodayStr() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+    function getAllCharacters() { return { ...DEFAULT_CHARACTERS, ...state.customCharacters }; }
+    function getActiveChar() { return getAllCharacters()[state.activeCharId] || DEFAULT_CHARACTERS.hinata; }
+
+    function ensurePetState(id) {
+      const today = getTodayStr();
+      if (!state.pets[id]) {
+        state.pets[id] = {
+          hunger: 80, mood: 85, energy: 90, bondExp: 15, bondLevel: 1, coins: 50,
+          outfitIdx: 0, currentRoom: 'room_hinata', currentActivity: 'sleep', scheduleSlotKey: '',
+          dailyDate: today, dailyExpGained: 0, dailyCoinsGained: 0, lastUpdated: Date.now()
+        };
+      }
+      const p = state.pets[id];
+      if (p.dailyDate !== today) { p.dailyDate = today; p.dailyExpGained = 0; p.dailyCoinsGained = 0; }
+      return p;
+    }
+
+    // 加快並實時顯著反映精力／飽食／心情變化
+    function applyTimeStatsDelta(pet, elapsedMs) {
+      const mins = Math.max(0, Math.min(480, elapsedMs / 60000));
+      if (mins <= 0.005) return;
+      if (pet.currentActivity === 'sleep') {
+        pet.energy = Math.min(100, pet.energy + mins * 4.5);
+        pet.hunger = Math.max(10, pet.hunger - mins * 0.6);
+      } else if (pet.currentActivity === 'bath') {
+        pet.energy = Math.min(100, pet.energy + mins * 2.5);
+        pet.mood = Math.min(100, pet.mood + mins * 2.5);
+        pet.hunger = Math.max(5, pet.hunger - mins * 1.0);
+      } else {
+        pet.hunger = Math.max(5, pet.hunger - mins * 2.5);
+        pet.energy = Math.max(5, pet.energy - mins * 1.8);
+        pet.mood = Math.max(10, pet.mood - mins * 1.5);
+      }
+      pet.hunger = Math.round(pet.hunger * 10) / 10;
+      pet.mood = Math.round(pet.mood * 10) / 10;
+      pet.energy = Math.round(pet.energy * 10) / 10;
+      pet.lastUpdated = Date.now();
+    }
+
+    // 嚴格鎖定現實本地時間，不可手動調整
+    function getCurrentHourInfo() {
+      const now = new Date();
+      const day = now.getDay();
+      const isWeekend = (day === 0 || day === 6);
+      const hour = now.getHours();
+      const min = now.getMinutes();
+      const totalMin = hour * 60 + min;
+      const hh = String(hour).padStart(2, '0'), mm = String(min).padStart(2, '0');
+      const dayLabel = isWeekend ? '週末' : '平日';
+
+      let period = 'day';
+      if ((!isWeekend && hour < 8) || (isWeekend && (totalMin >= 90 && totalMin < 600))) period = 'night';
+      else if (hour >= 16 && hour < 19) period = 'dusk';
+      else if (hour >= 19 || hour < 6) period = 'evening';
+
+      return { isWeekend, hour, min, totalMin, period, label: `${dayLabel} ${hh}:${mm}`, isLateNight: period === 'night' };
+    }
+
+    function getScheduledState(info) {
+      const m = info.totalMin;
+      if (!info.isWeekend) {
+        if (m < 480)  return { key: 'wd_sleep',  room: 'room_hinata',  act: 'sleep',        outfit: 2, px: 472, py: 355, label: '熟睡中' };
+        if (m < 495)  return { key: 'wd_brush',  room: 'bath',         act: 'brush',        outfit: 2, px: 165, py: 440, label: '起身刷牙' };
+        if (m < 515)  return { key: 'wd_bfast',  room: 'kitchen',      act: 'breakfast',    outfit: 1, px: 455, py: 440, label: '食早餐' };
+        if (m < 530)  return { key: 'wd_go',     room: 'street',       act: 'street',       outfit: 1, px: 340, py: 440, label: '行路返學' };
+        if (m < 735)  return { key: 'wd_class1', room: 'school_class', act: 'school_class', outfit: 1, px: 235, py: 435, label: '上堂中' };
+        if (m < 795)  return { key: 'wd_lunch',  room: 'school_class', act: 'lunch',        outfit: 1, px: 390, py: 435, label: '食午餐' };
+        if (m < 945)  return { key: 'wd_class2', room: 'school_class', act: 'school_class', outfit: 1, px: 235, py: 435, label: '下午上堂' };
+        if (m < 1020) return { key: 'wd_club',   room: 'school_court', act: 'school_court', outfit: 0, px: 300, py: 435, label: '放學練波' };
+        if (m < 1050) return { key: 'wd_homew',  room: 'street',       act: 'street',       outfit: 1, px: 340, py: 440, label: '放學返屋企' };
+        if (m < 1110) return { key: 'wd_backy',  room: 'backyard',     act: 'backyard',     outfit: 0, px: 315, py: 435, label: '後院練排球' };
+        if (m < 1155) return { key: 'wd_bath',   room: 'bath',         act: 'bath',         outfit: 2, px: 435, py: 425, label: '沖涼浸浴' };
+        if (m < 1215) return { key: 'wd_aniki_play', room: 'room_aniki', act: 'gaming',     outfit: 2, px: 190, py: 435, label: '與哥哥玩樂時間' };
+        if (m < 1260) return { key: 'wd_hw',     room: 'room_hinata',  act: 'homework',     outfit: 2, px: 165, py: 430, label: '溫書做功課' };
+        if (m < 1350) return { key: 'wd_living', room: 'living',       act: 'tv',           outfit: 2, px: 365, py: 415, label: '客廳睇電視' };
+        return               { key: 'wd_sleep_pm', room: 'room_hinata', act: 'sleep',       outfit: 2, px: 472, py: 355, label: '熟睡中' };
+      } else {
+        if (m >= 90 && m < 600) return { key: 'we_sleep', room: 'room_hinata', act: 'sleep',     outfit: 2, px: 472, py: 355, label: '週末瞓懶覺' };
+        if (m < 630)            return { key: 'we_brush', room: 'bath',        act: 'brush',     outfit: 2, px: 165, py: 440, label: '10:00 起身刷牙' };
+        if (m < 660)            return { key: 'we_bfast', room: 'kitchen',     act: 'breakfast', outfit: 2, px: 455, py: 440, label: '週末早午餐' };
+        return                         { key: 'we_free',  room: 'living',      act: 'tea',       outfit: 2, px: 280, py: 440, label: '週末自由活動', freeRoam: true };
+      }
+    }
+
+    function startCharacterWalkTransition(pet, destRoom, destAct, px, py) {
+      if (pet.currentRoom === destRoom) { pet.currentActivity = destAct; targetX = px; targetY = py; saveState(); return; }
+      transitionState = { phase: 'out', targetRoom: destRoom, targetActivity: destAct, tx: px, ty: py, alpha: 1 };
+      if (viewRoomId === pet.currentRoom) speakAndShow(getActiveChar().dialogues.leaving[0]);
+    }
+
+    const FREE_ROAM_ROOMS = ['living', 'kitchen', 'hallway', 'backyard', 'room_hinata', 'room_aniki', 'bath', 'street', 'konbini'];
+    let lastFreeRoamAt = 0;
+
+    function syncScheduleActivity(pet, animateTransition = false) {
+      const info = getCurrentHourInfo();
+      const sched = getScheduledState(info);
+      if (pet.scheduleSlotKey === sched.key) {
+        // 週末自由時間：角色隨機喺非學校房間之間移動
+        if (sched.freeRoam && !state.gamingReturnAt && !transitionState && !rally.active && !jumpGame.active && Date.now() - lastFreeRoamAt > 45000) {
+          lastFreeRoamAt = Date.now();
+          const candidates = FREE_ROAM_ROOMS.filter(r => r !== pet.currentRoom);
+          const nextRoom = candidates[Math.floor(Math.random() * candidates.length)];
+          const furns = ROOM_FURNITURE[nextRoom] || [];
+          const pick = furns.length ? furns[Math.floor(Math.random() * furns.length)] : { px: 300, py: 435, act: 'idle' };
+          const nextAct = pick.act === 'sleep' ? 'idle' : pick.act;
+          if (animateTransition) {
+            startCharacterWalkTransition(pet, nextRoom, nextAct, pick.px, pick.py);
+          } else {
+            pet.currentRoom = nextRoom; pet.currentActivity = nextAct;
+            petX = pick.px; petY = pick.py; targetX = pick.px; targetY = pick.py;
+          }
+          
+          updateHUD(); saveState();
+        }
+        return;
+      }
+      // 進入下一個行程：如正在打機中，自動中斷並立即前往下一個行程！
+      if (state.gamingReturnAt) {
+        state.gamingReturnAt = null;
+        renderDock();
+        showToast('夠鐘下一個行程，已自動中斷打機！⏰');
+      }
+      pet.scheduleSlotKey = sched.key;
+      pet.outfitIdx = sched.outfit;
+      if (animateTransition && pet.currentRoom !== sched.room) {
+        startCharacterWalkTransition(pet, sched.room, sched.act, sched.px, sched.py);
+      } else {
+        pet.currentRoom = sched.room; pet.currentActivity = sched.act;
+        petX = sched.px; petY = sched.py; targetX = sched.px; targetY = sched.py;
+        const pool = getActiveChar().dialogues[sched.act] || getActiveChar().dialogues.tea;
+        if (viewRoomId === pet.currentRoom) speakAndShow(pickLine(pool));
+      }
+      saveState();
+    }
+
+    function loadState() {
+      try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) state = { ...state, ...JSON.parse(raw) }; } catch (e) {}
+      const pet = ensurePetState(state.activeCharId);
+      applyTimeStatsDelta(pet, Date.now() - (pet.lastUpdated || Date.now()));
+      syncScheduleActivity(pet, false);
+    }
+    function saveState() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存'; } catch (e) {}
+    }
+
+    // =========================================================================
+    // 3. 保留互動音效（已移除 TTS 語音合成）
+    // =========================================================================
+    function speakAndShow(txt) {
+      if (!txt) return;
+      document.getElementById('speech-bubble').textContent = txt;
+    }
+
+    let audioCtx = null;
+    function playTone(freq, dur = 0.07, wave = 'triangle', vol = 0.05) {
+      if (!state.soundEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+        osc.type = wave; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + dur);
+      } catch (e) {}
+    }
+    function playSFX(kind) {
+      if (kind === 'pat') playTone(660 + Math.random() * 140, 0.05, 'triangle', 0.06);
+      else if (kind === 'eat') { playTone(440, 0.06); setTimeout(() => playTone(587, 0.08), 90); }
+      else if (kind === 'bounce') { playTone(520, 0.05); setTimeout(() => playTone(780, 0.06), 45); }
+      else if (kind === 'wake') { playTone(330, 0.08, 'sine'); setTimeout(() => playTone(440, 0.1, 'sine'), 90); }
+      else if (kind === 'miss') playTone(220, 0.16, 'sawtooth', 0.06);
+      else if (kind === 'levelup') [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => playTone(f, 0.1), i * 85));
+    }
+
+    // =========================================================================
+    // 4. 手繪動畫場景 + 透明去背放大特寫（摸頭切換成笑面立繪！）
+    // =========================================================================
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function roundRect(x, y, w, h, r, fill, stroke = null, lw = 3) {
+      ctx.beginPath(); if (ctx.roundRect) { ctx.roundRect(x, y, w, h, r); } else { ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.lineWidth = lw; ctx.strokeStyle = stroke; ctx.stroke(); }
+    }
+
+    function drawAnimeRoomBackground(roomId, timeInfo) {
+      let bgKey = 'bg_' + roomId;
+      if (roomId === 'konbini') {
+        const h = new Date().getHours();
+        bgKey = (h >= 6 && h < 12) ? 'bg_konbini_morning' : (h >= 12 && h < 18 ? 'bg_konbini_afternoon' : 'bg_konbini_night');
+      }
+      const bg = sprites[bgKey];
+      if (bg) {
+        ctx.drawImage(bg, 0, 0, 600, 600);
+        if (timeInfo.isLateNight) { ctx.fillStyle = 'rgba(15, 23, 42, 0.38)'; ctx.fillRect(0, 0, 600, 600); }
+        else if (timeInfo.period === 'dusk') { ctx.fillStyle = 'rgba(251, 146, 60, 0.14)'; ctx.fillRect(0, 0, 600, 600); }
+        else if (timeInfo.period === 'evening') { ctx.fillStyle = 'rgba(30, 41, 59, 0.22)'; ctx.fillRect(0, 0, 600, 600); }
+      } else {
+        ctx.fillStyle = '#fef3c7'; ctx.fillRect(0, 0, 600, 600);
+        if (assetLoadFailed) {
+          ctx.fillStyle = '#2d1e12'; ctx.font = 'bold 20px sans-serif'; ctx.textAlign = 'center';
+          ctx.fillText('⚠️ 載入唔到 assets 資料夾嘅圖片', 300, 270);
+          ctx.font = '15px sans-serif';
+          ctx.fillText('請先「解壓縮」成個 ZIP，確保 index.html 同 assets 喺同一層！', 300, 305);
+        }
+      }
+    }
+
+    function drawAnimeRoomForeground(roomId, frame, pet) {
+      const act = tempOverrideMode || pet.currentActivity;
+      if (roomId === 'bath' && pet.currentRoom === 'bath' && act === 'bath') {
+        ctx.save();
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
+        ctx.beginPath(); ctx.ellipse(405, 355, 115, 22, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#f5efe6'; ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(275, 360); ctx.lineTo(525, 360); ctx.lineTo(525, 455); ctx.lineTo(275, 455); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.font = '24px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('🫧', 345, 345 + Math.sin(frame * 0.09) * 4);
+        ctx.fillText('♨️', 465, 340 + Math.cos(frame * 0.08) * 4);
+        ctx.restore();
+      } else if (roomId === 'room_hinata' && pet.currentRoom === 'room_hinata' && (act === 'sleep' || act === 'waking')) {
+        const sleepBreath = act === 'sleep' ? Math.sin(frame * 0.05) * 3.2 : 0;
+        ctx.save();
+        roundRect(382, 362 + sleepBreath, 188, 95 - sleepBreath * 0.3, 18, '#93c5fd', '#3b82f6', 2.5);
+        if (act === 'sleep') {
+          roundRect(475, 232, 84, 54, 20, '#ffffff', '#2d1e12', 2.5);
+          ctx.font = '28px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(['🏐', '🍚', '👑'][dreamIdx % 3], 517, 268);
+          ctx.font = 'bold 20px sans-serif'; ctx.fillStyle = '#e0e7ff';
+          ctx.fillText('Zzz', 395, 272 - Math.abs(Math.sin(frame * 0.04)) * 10);
+        } else {
+          ctx.font = '28px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('😪', 475, 265);
+        }
+        ctx.restore();
+      }
+    }
+
+    function drawFullChibiSprite(cx, cy, tilt, expr, outfit, frame, scale = 1, sx = 1, sy = 1) {
+      const img = sprites[outfit.spriteKey] || sprites.chibiJersey;
+      if (!img) return;
+      const drawW = 205, drawH = 205;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(tilt);
+      ctx.scale(scale * sx, scale * sy);
+      ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+
+      const isBlinking = (expr !== 'sleep' && expr !== 'waking' && expr !== 'happy' && !isPetting) && ((frame % 110) > 104);
+      const coverEyes = () => {
+        ctx.fillStyle = '#f8dcc2';
+        ctx.beginPath(); ctx.ellipse(-22, 2, 9.5, 11, 0, 0, Math.PI * 2); ctx.ellipse(22, 2, 9.5, 11, 0, 0, Math.PI * 2); ctx.fill();
+      };
+      if (expr === 'sleep') {
+        coverEyes();
+        ctx.strokeStyle = '#3b2313'; ctx.lineWidth = 3.6; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.arc(-22, 1, 7.5, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+        ctx.beginPath(); ctx.arc(22, 1, 7.5, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+      } else if (expr === 'waking') {
+        coverEyes();
+        ctx.strokeStyle = '#3b2313'; ctx.lineWidth = 3.4; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(-29, 3); ctx.lineTo(-15, 1); ctx.moveTo(15, 1); ctx.lineTo(29, 3); ctx.stroke();
+      } else if (isBlinking) {
+        coverEyes();
+        ctx.strokeStyle = '#3b2313'; ctx.lineWidth = 3.4; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(-29, 3); ctx.lineTo(-15, 3); ctx.moveTo(15, 3); ctx.lineTo(29, 3); ctx.stroke();
+      } else if (isPetting || expr === 'happy') {
+        coverEyes();
+        ctx.strokeStyle = '#3b2313'; ctx.lineWidth = 3.6; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.arc(-22, 5, 7.5, 1.15 * Math.PI, 1.85 * Math.PI); ctx.stroke();
+        ctx.beginPath(); ctx.arc(22, 5, 7.5, 1.15 * Math.PI, 1.85 * Math.PI); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    
+    const WEEKDAY_SCHEDULE_ITEMS = [
+      { start: 0,    end: 480,  time: '00:00 - 08:00', roomName: '2F 日向房',       label: '😴 熟睡中' },
+      { start: 480,  end: 495,  time: '08:00 - 08:15', roomName: '1F 廁所浴室',     label: '🪥 起身刷牙' },
+      { start: 495,  end: 515,  time: '08:15 - 08:35', roomName: '1F 廚房',         label: '🍚 食早餐' },
+      { start: 515,  end: 530,  time: '08:35 - 08:50', roomName: '室外街道',        label: '🎒 行路返學' },
+      { start: 530,  end: 735,  time: '08:50 - 12:15', roomName: '學校課室',        label: '📚 上堂學習' },
+      { start: 735,  end: 795,  time: '12:15 - 13:15', roomName: '學校課室',        label: '🍱 食午餐便當' },
+      { start: 795,  end: 945,  time: '13:15 - 15:45', roomName: '學校課室',        label: '📚 下午上堂' },
+      { start: 945,  end: 1020, time: '15:45 - 17:00', roomName: '室內學校排球場',  label: '🏐 放學社團練波' },
+      { start: 1020, end: 1050, time: '17:00 - 17:30', roomName: '室外街道',        label: '🎒 放學行返屋企' },
+      { start: 1050, end: 1110, time: '17:30 - 18:30', roomName: '屋後院子',        label: '🏐 後院練排球' },
+      { start: 1110, end: 1155, time: '18:30 - 19:15', roomName: '1F 廁所浴室',     label: '🫧 沖涼浸浴' },
+      { start: 1155, end: 1215, time: '19:15 - 20:15', roomName: '2F 哥哥房間',     label: '🎮 與哥哥玩樂時間' },
+      { start: 1215, end: 1260, time: '20:15 - 21:00', roomName: '2F 日向房',       label: '📖 溫書做功課' },
+      { start: 1260, end: 1350, time: '21:00 - 22:30', roomName: '1F 客廳',         label: '📺 客廳睇電視' },
+      { start: 1350, end: 1440, time: '22:30 - 24:00', roomName: '2F 日向房',       label: '😴 熟睡中' }
+    ];
+    const WEEKEND_SCHEDULE_ITEMS = [
+      { start: 0,    end: 90,   time: '00:00 - 01:30', roomName: '屋企／街道／便利店', label: '🌟 週末自由活動（隨機移動）' },
+      { start: 90,   end: 600,  time: '01:30 - 10:00', roomName: '2F 日向房',          label: '😴 週末瞓懶覺（10:00起身）' },
+      { start: 600,  end: 630,  time: '10:00 - 10:30', roomName: '1F 廁所浴室',        label: '🪥 起身刷牙洗臉' },
+      { start: 630,  end: 660,  time: '10:30 - 11:00', roomName: '1F 廚房',            label: '🍚 週末早午餐' },
+      { start: 660,  end: 1440, time: '11:00 - 01:30', roomName: '屋企／街道／便利店', label: '🌟 自由活動（學校除外隨機移動）' }
+    ];
+
+    const LOCKED_ACTIVITY_ROOMS = new Set(['bath', 'street', 'school_class', 'school_court']);
+    function isRoomBusyLocked(pet) {
+      return LOCKED_ACTIVITY_ROOMS.has(pet.currentRoom) && pet.currentActivity !== 'idle';
+    }
+    function showBusyLockedMsg(pet) {
+      playSFX('miss');
+      const rName = MAP_ROOMS[pet.currentRoom]?.name || '外頭';
+      const aLabel = ACTIVITY_LABELS[pet.currentActivity] || '忙緊';
+      speakAndShow(`「翔陽而家喺${rName}（${aLabel}），唔可以行開住呀！」`);
+      showToast(`${rName}進行中 🔒 唔可以插隊互動`);
+    }
+
+    function openScheduleModal() {
+      const now = new Date();
+      const day = now.getDay();
+      const isWeekend = (day === 0 || day === 6);
+      const items = isWeekend ? WEEKEND_SCHEDULE_ITEMS : WEEKDAY_SCHEDULE_ITEMS;
+      const mins = now.getHours() * 60 + now.getMinutes();
+      const list = document.getElementById('schedule-list');
+      list.innerHTML = `<div class="text-[11px] font-black text-orange-600 mb-1">${isWeekend ? '🏖️ 週末作息（星期六、日：10:00起身 / 01:30瞓）' : '📚 平日作息（星期一至五）'}</div>` + items.map(item => {
+        const isCurrent = mins >= item.start && mins < item.end;
+        return `
+          <div class="flex items-center justify-between px-3 py-2 rounded-xl transition ${isCurrent ? 'border-2 border-orange-500 bg-orange-50 shadow-sm' : 'border border-gray-100 bg-gray-50/70'}">
+            <div>
+              <div class="font-black ${isCurrent ? 'text-orange-700' : 'text-gray-700'}">${item.time}</div>
+              <div class="text-[11px] ${isCurrent ? 'text-orange-600 font-bold' : 'text-gray-500'}">${item.roomName} · ${item.label}</div>
+            </div>
+            ${isCurrent ? '<span class="px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-black shrink-0">▶ 進行中</span>' : ''}
+          </div>
+        `;
+      }).join('');
+      document.getElementById('schedule-modal').classList.remove('hidden');
+    }
+
+    const ACTIVITY_LABELS = {
+      tea: '🍵 飲熱茶中', tv: '📺 睇電視中', fridge: '🧊 睇雪櫃中', cook: '🍳 煎蛋煮食中',
+      breakfast: '🍚 食早餐中', konbini: '🏪 逛便利店中', homework: '📖 溫書做功課', gaming: '🎮 電腦打機中',
+      brush: '🪥 刷牙洗臉中', bath: '🫧 浸浴放鬆中', hallway: '👟 玄關換鞋中',
+      backyard: '🏐 後院練波中', street: '🎒 行路返放學', school_class: '📚 認真上堂中',
+      lunch: '🍱 食便當中', school_court: '🔥 室內球場練波', jump: '🤸 跳躍特訓中',
+      happy: '💖 好開心呀', waking: '😪 啱啱瞓醒'
+    };
+    const IDLE_THOUGHTS = ['💭 想食玉子拌飯…', '💭 聽日要跳高啲！', '💭 哥哥幾時同我打機？', '💭 烏野一定打入全國！'];
+
+    function drawOverheadBadge(cx, cy, act, frame) {
+      if (act === 'sleep') return;
+      const label = ACTIVITY_LABELS[act];
+      const text = label || IDLE_THOUGHTS[Math.floor(frame / 180) % IDLE_THOUGHTS.length];
+      ctx.save();
+      ctx.font = 'bold 14px "Noto Sans TC", sans-serif';
+      const tw = ctx.measureText(text).width + 22;
+      const bx = Math.max(10, Math.min(600 - tw - 10, cx - tw / 2));
+      const by = Math.max(48, cy - 124);
+      if (label) {
+        roundRect(bx, by, tw, 28, 14, 'rgba(45, 30, 18, 0.88)', '#fff7ed', 2);
+        ctx.fillStyle = '#ffffff';
+      } else {
+        roundRect(bx, by, tw, 28, 14, 'rgba(255, 255, 255, 0.94)', '#2d1e12', 2);
+        ctx.fillStyle = '#2d1e12';
+      }
+      ctx.textAlign = 'center';
+      ctx.fillText(text, bx + tw / 2, by + 19);
+      ctx.restore();
+    }
+
+    function drawArticulatedChibi(char, outfit, pet, frame) {
+      const act = tempOverrideMode || pet.currentActivity;
+      const room = pet.currentRoom;
+
+      if (room === 'bath' && act === 'bath') {
+        const cx = 405, cy = 332 + Math.sin(frame * 0.09) * 3;
+        drawFullChibiSprite(cx, cy, 0, 'happy', outfit, frame, 0.82, 1, 1);
+        roundRect(378, cy - 82, 54, 16, 8, '#ffffff', '#64748b', 2);
+        drawOverheadBadge(cx, cy - 10, act, frame);
+        return;
+      }
+
+      if (room === 'room_hinata' && (act === 'sleep' || act === 'waking')) {
+        const sleepBreath = act === 'sleep' ? Math.sin(frame * 0.05) * 3.0 : 0;
+        drawFullChibiSprite(472, 344 + sleepBreath * 0.5, act === 'sleep' ? -0.04 : 0.04, act, outfit, frame, 0.82, 1, 1);
+        return;
+      }
+
+      const cx = petX, cy = petY;
+      const isWalking = transitionState !== null || (Math.hypot(targetX - petX, targetY - petY) > 5);
+      const isJumping = (act === 'school_court' || act === 'backyard' || act === 'jump') && !isWalking && !rally.active;
+      const jumpY = isJumping ? -Math.abs(Math.sin(frame * 0.16)) * 55 : (act === 'happy' || isPetting ? -Math.abs(Math.sin(frame * 0.18)) * 16 : (isWalking ? -Math.abs(Math.sin(frame * 0.24)) * 9 : 0));
+      const breathSy = 1 + Math.sin(frame * 0.07) * 0.024;
+      const breathSx = 1 - Math.sin(frame * 0.07) * 0.014;
+      const tilt = isWalking ? Math.sin(frame * 0.24) * 0.08 : (isPetting ? Math.sin(frame * 0.15) * 0.07 : Math.sin(frame * 0.04) * 0.02);
+
+      ctx.save();
+      if (transitionState) ctx.globalAlpha = transitionState.alpha;
+      ctx.fillStyle = 'rgba(0,0,0,0.22)';
+      ctx.beginPath(); ctx.ellipse(cx, cy + 72, 46, 12, 0, 0, Math.PI * 2); ctx.fill();
+      drawFullChibiSprite(cx, cy + jumpY, tilt, act, outfit, frame, 1, breathSx, breathSy);
+      if (act === 'tea' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🍵', cx + 42, cy + 28); }
+      if (act === 'brush' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🪥', cx + 38, cy + 10); }
+      if (act === 'lunch' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🍱', cx + 40, cy + 25); }
+      if (act === 'gaming' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🎮', cx + 42, cy + 25); }
+      ctx.restore();
+      drawOverheadBadge(cx, cy + jumpY, isWalking ? 'idle' : act, frame);
+    }
+
+    // 放大特寫：使用當前房間動畫背景＋去背立繪，摸摸時直接切換成開心笑面立繪（唔再疊假紅暈）！
+    function drawLiveZoomedPortrait(pet, outfit, timeInfo, frame) {
+      drawAnimeRoomBackground(viewRoomId, timeInfo);
+      ctx.fillStyle = 'rgba(255, 250, 240, 0.20)';
+      ctx.fillRect(0, 0, 600, 600);
+
+      const act = tempOverrideMode || pet.currentActivity;
+      const isSleepingMode = (act === 'sleep' || act === 'waking');
+      const isBathingMode = (pet.currentRoom === 'bath' && act === 'bath');
+      let img;
+      if (isSleepingMode) {
+        img = sprites.portraitSleepy;
+      } else if (isBathingMode) {
+        img = (isPetting || act === 'happy') ? sprites.portraitBathHappy : sprites.portraitBath;
+      } else if (isPetting || act === 'happy') {
+        img = sprites[outfit.happyKey] || sprites[outfit.portraitKey];
+      } else {
+        img = sprites[outfit.portraitKey] || sprites.portraitJersey;
+      }
+      if (!img) return;
+
+      const sway = isPetting ? Math.sin(frame * 0.16) * 0.022 : Math.sin(frame * 0.04) * 0.008;
+      const breathScale = 1.0 + Math.sin(frame * 0.06) * 0.012 + (isPetting ? 0.02 : 0);
+      ctx.save();
+      ctx.translate(300, 315); ctx.rotate(sway); ctx.scale(breathScale, breathScale);
+      ctx.drawImage(img, -300, -300, 600, 600);
+      ctx.restore();
+
+      if (act === 'sleep') {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.35)'; ctx.fillRect(0, 0, 600, 600);
+        ctx.font = 'bold 42px sans-serif'; ctx.fillStyle = '#e0e7ff'; ctx.textAlign = 'center'; ctx.fillText('Zzz… 💭🏐', 470, 140);
+      }
+    }
+
+    // =========================================================================
+    // 5. 雙人接波對打 + 主迴圈
+    // =========================================================================
+    let frameCount = 0;
+    function endRally(msg, pet) {
+      rally.active = false;
+      document.getElementById('mg-hud').classList.add('hidden');
+      const capped = grantCappedRewards(pet, Math.min(20, rally.score * 3 + 3), Math.min(24, rally.score * 4 + 2));
+      pet.mood = Math.min(100, pet.mood + 10);
+      playSFX('miss');
+      speakAndShow(`${msg} 總共對打咗 ${rally.score} 回合！${capped ? '（今日上限已滿 🔒）' : ''}`);
+      updateHUD(); saveState();
+    }
+
+    function updateRally(pet) {
+      if (!rally.active) return;
+      rally.bx += rally.bvx; rally.by += rally.bvy; rally.bvy += 0.24;
+      if (rally.bx < 40 || rally.bx > 560) rally.bvx *= -1;
+      if (rally.by < 55) { rally.by = 55; rally.bvy = Math.abs(rally.bvy); }
+
+      if (rally.turn === 'hinata') {
+        targetX = Math.max(80, Math.min(520, rally.bx)); targetY = 435;
+        petX += (targetX - petX) * 0.14;
+        if (rally.bvy > 0 && Math.hypot(rally.bx - petX, rally.by - (petY - 20)) < 58) {
+          if (Math.random() < 0.15) { endRally('「嗚哇！翔陽飛撲都差少少接到個波！💦」', pet); return; }
+          rally.score++;
+          document.getElementById('mg-score').textContent = rally.score;
+          document.getElementById('mg-turn').textContent = '輪到你接波！(點擊排球)';
+          rally.turn = 'user'; rally.bvy = -10.5; rally.bvx = (Math.random() - 0.5) * 6;
+          playSFX('bounce'); particles.push({ x: petX, y: petY - 80, text: '接得好! 🏐', color: '#facc15', life: 24 });
+        } else if (rally.by > 530) {
+          endRally('「哎呀！翔陽趕唔切接到個波！😅」', pet);
+        }
+      } else if (rally.by > 535) {
+        endRally('「哥哥跌波啦！下次反應再快少少！😆」', pet);
+      }
+    }
+
+    function updateAI() {
+      const char = getActiveChar(), pet = ensurePetState(char.id);
+      const now = Date.now(), idleSec = (now - lastInteractAt) / 1000;
+      syncScheduleActivity(pet, true);
+
+      if (transitionState) {
+        if (transitionState.phase === 'out') {
+          petX += (540 - petX) * 0.08;
+          transitionState.alpha = Math.max(0, transitionState.alpha - 0.04);
+          if (transitionState.alpha <= 0.05) {
+            pet.currentRoom = transitionState.targetRoom; pet.currentActivity = transitionState.targetActivity;
+            petX = 70; targetX = transitionState.tx; targetY = transitionState.ty;
+            transitionState.phase = 'in'; updateHUD();
+          }
+        } else if (transitionState.phase === 'in') {
+          petX += (targetX - petX) * 0.08; petY += (targetY - petY) * 0.08;
+          transitionState.alpha = Math.min(1, transitionState.alpha + 0.05);
+          if (transitionState.alpha >= 0.98) {
+            transitionState = null;
+            const pool = char.dialogues[pet.currentActivity] || char.dialogues.tea;
+            if (viewRoomId === pet.currentRoom) speakAndShow(pickLine(pool));
+            saveState();
+          }
+        }
+        return;
+      }
+
+      if (pet.currentActivity === 'waking' && idleSec > 10) {
+        pet.currentActivity = 'sleep';
+        if (viewRoomId === pet.currentRoom) speakAndShow(char.dialogues.backToSleep[0]);
+        updateHUD();
+      }
+
+      if (!rally.active && pet.currentRoom !== 'bath' && pet.currentActivity !== 'sleep' && pet.currentActivity !== 'waking') {
+        const dx = targetX - petX, dy = targetY - petY;
+        if (Math.hypot(dx, dy) > 4) { petX += dx * 0.045; petY += dy * 0.045; }
+      }
+      if (frameCount % 240 === 0) dreamIdx++;
+    }
+
+    function gameLoop() {
+      frameCount++; updateAI();
+      const char = getActiveChar(), pet = ensurePetState(char.id);
+      const outfit = OUTFITS[pet.outfitIdx || 0] || OUTFITS[0];
+      const timeInfo = getCurrentHourInfo();
+      ctx.clearRect(0, 0, 600, 600);
+
+      if (isZoomed) {
+        drawLiveZoomedPortrait(pet, outfit, timeInfo, frameCount);
+      } else {
+        drawAnimeRoomBackground(viewRoomId, timeInfo);
+        if (pet.currentRoom === viewRoomId) drawArticulatedChibi(char, outfit, pet, frameCount);
+        drawAnimeRoomForeground(viewRoomId, frameCount, pet);
+
+        if (rally.active) {
+          updateRally(pet);
+          if (rally.turn === 'user') {
+            ctx.strokeStyle = 'rgba(250, 204, 21, 0.85)'; ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.arc(rally.bx, rally.by, 42, 0, Math.PI * 2); ctx.stroke();
+          }
+          ctx.font = '52px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('🏐', rally.bx, rally.by + 16);
+        } else if (pet.currentRoom === viewRoomId && (pet.currentRoom === 'school_court' || pet.currentRoom === 'backyard')) {
+          const by = 270 - Math.abs(Math.sin(frameCount * 0.14)) * 75;
+          ctx.font = '44px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('🏐', petX + 65, by);
+        }
+      }
+
+      if (flyingFood) {
+        flyingFood.x += (flyingFood.targetX - flyingFood.x) * 0.18;
+        flyingFood.y += (flyingFood.targetY - flyingFood.y) * 0.18;
+        ctx.font = '44px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(flyingFood.emoji, flyingFood.x, flyingFood.y);
+        if (Math.hypot(flyingFood.targetX - flyingFood.x, flyingFood.targetY - flyingFood.y) < 12) { completeFeed(flyingFood.food); flyingFood = null; }
+      }
+
+      if (isPetting) {
+        ctx.save(); ctx.translate(handPos.x, handPos.y + Math.sin(frameCount * 0.3) * 8);
+        ctx.font = '54px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('🫳', 0, 12); ctx.restore();
+      }
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const pt = particles[i]; pt.y -= 1.6; pt.life--;
+        ctx.fillStyle = pt.color; ctx.font = 'bold 26px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(pt.text, pt.x, pt.y);
+        if (pt.life <= 0) particles.splice(i, 1);
+      }
+      requestAnimationFrame(gameLoop);
+    }
+
+    function grantCappedRewards(pet, expAmt, coinAmt) {
+      let cappedNow = false;
+      if (expAmt > 0) {
+        const allowExp = Math.min(expAmt, Math.max(0, DAILY_EXP_CAP - pet.dailyExpGained));
+        if (allowExp > 0) {
+          pet.dailyExpGained += allowExp; pet.bondExp += allowExp;
+          while (pet.bondExp >= 100) { pet.bondExp -= 100; pet.bondLevel += 1; playSFX('levelup'); showToast(`好感度升到 Lv.${pet.bondLevel}！💖`); }
+        } else cappedNow = true;
+      }
+      if (coinAmt > 0) {
+        const allowCoins = Math.min(coinAmt, Math.max(0, DAILY_COINS_CAP - pet.dailyCoinsGained));
+        if (allowCoins > 0) { pet.dailyCoinsGained += allowCoins; pet.coins += allowCoins; }
+        else cappedNow = true;
+      }
+      return cappedNow;
+    }
+
+    // =========================================================================
+    // 6. 互動處理（8種豐富互動＋摸頭切笑面立繪）
+    // =========================================================================
+    function getCanvasCoords(clientX, clientY) {
+      const r = canvas.getBoundingClientRect();
+      return { x: ((clientX - r.left) / r.width) * 600, y: ((clientY - r.top) / r.height) * 600 };
+    }
+    function pickLine(a) { return a[Math.floor(Math.random() * a.length)]; }
+    function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.remove('hidden'); setTimeout(() => t.classList.add('hidden'), 2400); }
+
+    function isTouchingHinata(cx, cy) {
+      if (isZoomed) return Math.hypot(cx - 300, cy - 300) <= 230;
+      return Math.hypot(cx - petX, cy - (petY - 12)) <= 85;
+    }
+
+    function showSleepLockedMsg() {
+      playSFX('miss');
+      speakAndShow('「翔陽熟睡中…要手動撳房間傢俬（例如床鋪／書枱）先會叫醒佢互動 😴」');
+      showToast('熟睡中 🔒 請先撳房間傢俬叫醒');
+    }
+
+    function wakeUpCharacter() {
+      const char = getActiveChar(), pet = ensurePetState(char.id);
+      pet.currentActivity = 'waking'; lastInteractAt = Date.now();
+      playSFX('wake'); speakAndShow(pickLine(char.dialogues.waking)); updateHUD();
+    }
+
+    function triggerPetHead(cx, cy) {
+      const char = getActiveChar(), pet = ensurePetState(char.id);
+      if (!isZoomed && pet.currentRoom !== viewRoomId) return;
+      if (!isTouchingHinata(cx, cy)) { isPetting = false; return; }
+      lastInteractAt = Date.now();
+      if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
+      isPetting = true; handPos = { x: cx, y: cy }; petTickAcc++;
+      if (petTickAcc % 8 === 1) {
+        playSFX('pat'); pet.mood = Math.min(100, pet.mood + 3);
+        const isCapped = grantCappedRewards(pet, 3, 2);
+        particles.push({ x: cx + (Math.random() * 34 - 17), y: cy - 20, text: '💖', color: '#f43f5e', life: 36 });
+        if (petTickAcc % 24 === 1) speakAndShow(isCapped && Math.random() < 0.35 ? char.dialogues.capped[0] : pickLine(char.dialogues.pet));
+        updateHUD(); saveState();
+      }
+    }
+
+    canvas.addEventListener('pointerdown', (e) => {
+      lastInteractAt = Date.now();
+      const { x, y } = getCanvasCoords(e.clientX, e.clientY);
+      const char = getActiveChar(), pet = ensurePetState(char.id);
+
+      if (rally.active) {
+        if (rally.turn === 'user' && Math.hypot(x - rally.bx, y - rally.by) <= 78) {
+          rally.turn = 'hinata'; rally.bvy = -10.8; rally.bvx = (Math.random() - 0.5) * 7;
+          document.getElementById('mg-turn').textContent = '翔陽撲去接波中…';
+          playSFX('bounce');
+          particles.push({ x: rally.bx, y: rally.by - 20, text: '好波! ✨', color: '#38bdf8', life: 22 });
+        }
+        return;
+      }
+
+      if (!isZoomed && pet.currentRoom !== viewRoomId) {
+        showToast(`呢度冇人呀，日向喺【${MAP_ROOMS[pet.currentRoom].short}】！`); return;
+      }
+      if (!isZoomed) {
+        const furn = (ROOM_FURNITURE[viewRoomId] || []).find(f => Math.hypot(x - f.hx, y - f.hy) <= f.hr);
+        if (furn && pet.currentActivity === 'sleep') {
+          targetX = furn.px; targetY = furn.py; pet.currentActivity = furn.act;
+          playSFX('wake'); speakAndShow(furn.line);
+          particles.push({ x: furn.hx, y: furn.hy - 20, text: '叫醒! ✨', color: '#f59e0b', life: 30 });
+          updateHUD(); saveState(); return;
+        }
+      }
+      if (isTouchingHinata(x, y)) { triggerPetHead(x, y); return; }
+      if (!isZoomed) {
+        const furn = (ROOM_FURNITURE[viewRoomId] || []).find(f => Math.hypot(x - f.hx, y - f.hy) <= f.hr);
+        if (furn) {
+          targetX = furn.px; targetY = furn.py; pet.currentActivity = furn.act;
+          playSFX('pat'); speakAndShow(furn.line);
+          particles.push({ x: furn.hx, y: furn.hy - 20, text: '✨', color: '#f59e0b', life: 30 });
+          updateHUD(); saveState();
+        }
+      }
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if ((e.buttons === 0 && e.pointerType === 'mouse') || rally.active) return;
+      const { x, y } = getCanvasCoords(e.clientX, e.clientY); triggerPetHead(x, y);
+    });
+    window.addEventListener('pointerup', () => { isPetting = false; petTickAcc = 0; });
+
+    function completeFeed(food) {
+      const pet = ensurePetState(state.activeCharId);
+      if (pet.coins < food.cost) { showToast('金幣唔夠！玩「🏐 雙人對打」或「✊ 包剪揼」賺金幣'); return; }
+      pet.coins -= food.cost;
+      pet.hunger = Math.min(100, pet.hunger + (food.hunger || 0));
+      pet.mood = Math.min(100, pet.mood + (food.mood || 0));
+      pet.energy = Math.min(100, pet.energy + (food.energy || 0));
+      grantCappedRewards(pet, food.bond || 6, 0);
+      tempOverrideMode = 'happy'; setTimeout(() => { tempOverrideMode = null; }, 1600);
+      playSFX('eat'); speakAndShow(food.line);
+      particles.push({ x: 300, y: 240, text: '好味! ✨', color: '#f59e0b', life: 36 });
+      updateHUD(); saveState();
+    }
+
+    function startVolleyballRally() {
+      const pet = ensurePetState(state.activeCharId);
+      if (!isZoomed && pet.currentRoom !== viewRoomId) { viewRoomId = pet.currentRoom; updateHUD(); }
+      if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
+      if (rally.active) return;
+      document.getElementById('choice-overlay').classList.add('hidden');
+      rally = { active: true, score: 0, turn: 'user', bx: 300, by: 200, bvx: 2.5, bvy: -7.5 };
+      document.getElementById('mg-score').textContent = '0';
+      document.getElementById('mg-turn').textContent = '輪到你接波！(點擊排球)';
+      document.getElementById('mg-hud').classList.remove('hidden');
+      speakAndShow('「喺黃圈跌落地之前按一下個波接住！一齊打多幾個回合！🏐」');
+    }
+
+    function startJumpTraining() {
+      const pet = ensurePetState(state.activeCharId);
+      if (!isZoomed && pet.currentRoom !== viewRoomId) { viewRoomId = pet.currentRoom; updateHUD(); }
+      if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
+      if (jumpGame.active) return;
+      jumpGame = { active: true, taps: 0 };
+      tempOverrideMode = 'jump';
+      speakAndShow('「跳躍摸高訓練！5 秒內狂撳下面個掣幫我跳高啲！🤸」');
+      const box = document.getElementById('choice-overlay');
+      box.innerHTML = `<button id="btn-jump-tap" type="button" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white border-2 border-[#2d1e12] text-sm font-black">⬆️ 跳高啲！(0 次)</button>`;
+      box.classList.remove('hidden');
+      setTimeout(() => {
+        jumpGame.active = false;
+        tempOverrideMode = null;
+        box.classList.add('hidden');
+        const height = 280 + jumpGame.taps * 4;
+        pet.energy = Math.max(5, pet.energy - 5);
+        pet.mood = Math.min(100, pet.mood + 10);
+        grantCappedRewards(pet, Math.min(12, Math.floor(jumpGame.taps / 2) + 2), Math.min(10, Math.floor(jumpGame.taps / 2) + 2));
+        playSFX('levelup');
+        speakAndShow(`「最高到達點 ${height}cm！！多謝哥哥幫我特訓！🔥」`);
+        updateHUD(); saveState();
+      }, 5000);
+    }
+
+    function openRpsGame() {
+      const pet = ensurePetState(state.activeCharId);
+      if (!isZoomed && pet.currentRoom !== viewRoomId) { viewRoomId = pet.currentRoom; updateHUD(); }
+      if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
+      speakAndShow('「嚟猜包剪揼！邊個輸咗要請食肉包呀～✊✌️🖐️」');
+      const box = document.getElementById('choice-overlay');
+      box.innerHTML = [
+        { id: 'rock', label: '✊ 石頭' }, { id: 'scissors', label: '✌️ 剪刀' }, { id: 'paper', label: '🖐️ 布' }
+      ].map(c => `<button type="button" data-rps="${c.id}" class="px-3 py-1 rounded-xl bg-amber-100 hover:bg-orange-200 border-2 border-[#2d1e12] text-xs font-black">${c.label}</button>`).join('');
+      box.classList.remove('hidden');
+    }
+
+    function openInteractiveChat() {
+      const pet = ensurePetState(state.activeCharId);
+      if (!isZoomed && pet.currentRoom !== viewRoomId) { viewRoomId = pet.currentRoom; updateHUD(); }
+      if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
+      const topics = [
+        { q: '「哥哥！今日練波跳高咗少少，聽日想同你去邊度好？」', a1: '去排球場睇你扣殺 🏐', r1: '「好呀！！我一定跳到最高打俾哥哥睇！🔥」', a2: '喺屋企睇電視飲茶 🍵', r2: '「耶！同哥哥喺屋企hea住食肉包最舒服！😊」' },
+        { q: '「哥哥覺得我呢件衛衣校服定烏野隊服型啲？」', a1: '衛衣校服好青春 ✨', r1: '「嘿嘿！哥哥鍾意我就多啲着返學！🎒」', a2: '10號隊服最熱血 🔥', r2: '「烏野10號係我嘅驕傲！多謝哥哥！🏐」' },
+        { q: '「今日影山又話我接波唔夠穩，但係我會努力追上佢！」', a1: '影山都係為你好 💪', r1: '「嗯！總有一日我會做到最強嘅誘餌同王牌！⚡」', a2: '哥哥陪你一齊練 🏐', r2: '「真係？！有哥哥幫我托球我一定扣得中！😆」' },
+        { q: '「小夏啱啱問我係咪又喺屋企偷食肉包…哥哥千祈唔好講！」', a1: '幫你保守秘密 🤫', r1: '「多謝哥哥！下次買多兩個一齊分！🥟」', a2: '分返半個俾小夏啦 😄', r2: '「好啦…哥哥講得啱，我留半個俾佢！💛」' },
+        { q: '「哥哥你今日返工／返學辛唔辛苦呀？飲杯熱茶先！」', a1: '見到你就唔辛苦 😊', r1: '「嗚哇哥哥咁講我會唔好意思㗎…嘿嘿！💖」', a2: '有啲攰想睇你笑 😆', r2: '「咁我笑多兩下俾你睇！😁✨」' },
+        { q: '「聽日烏野有練習賽呀！哥哥會唔會嚟場邊幫我打氣？」', a1: '一定到場支持你 📣', r1: '「太好喇！聽到哥哥嗌加油我一定跳得更高！🔥」', a2: '記住影好精華返嚟 📹', r2: '「好！我會打一個超靚嘅快攻俾你睇！⚡」' },
+        { q: '「最近夜晚有啲涼，去便利店買熱辣辣關東煮定肉包好？」', a1: '梗係熱辣辣肉包 🥟', r1: '「同哥哥口味一樣！咬落去滿滿肉汁超正！😋」', a2: '關東煮加蘿蔔同蛋 🍢', r2: '「嘩！加埋熱湯飲落肚成個人暖晒！♨️」' },
+        { q: '「哥哥我英文測驗有幾個字唔識串…一陣可唔可以教我？」', a1: '沒問題！攞書嚟 📖', r1: '「哥哥最好喇！我拎部練習簿過嚟先！✏️」', a2: '背完十個字獎勵肉包 🥟', r2: '「為咗肉包我十分鐘背晒佢！！💪」' },
+        { q: '「如果我有一日長高到 180cm，哥哥會唔會認唔出我？」', a1: '點都認得出你嘅橘毛 🧡', r1: '「哈哈！我呢頭亂翹嘅橘色頭髮係標記嘛！😆」', a2: '高咗都係細佬仔 😄', r2: '「咩呀我已經係可靠嘅烏野10號喇！😤」' },
+        { q: '「好天氣！好想踩單車翻過山頭去買雪條食呀！」', a1: '一齊踩單車吹風 🚲', r1: '「出發！！睇下邊個踩得快啲！💨」', a2: '留返下午去便利店買 🏪', r2: '「好主意！行過去便利店揀雪條！🍦」' }
+      ];
+      const t = topics[Math.floor(Math.random() * topics.length)];
+      speakAndShow(t.q);
+      const box = document.getElementById('choice-overlay');
+      box.innerHTML = `
+        <button type="button" data-reply="${encodeURIComponent(t.r1)}" class="px-2.5 py-1 rounded-xl bg-sky-100 hover:bg-sky-200 border-2 border-[#2d1e12] text-[11px] font-black">${t.a1}</button>
+        <button type="button" data-reply="${encodeURIComponent(t.r2)}" class="px-2.5 py-1 rounded-xl bg-rose-100 hover:bg-rose-200 border-2 border-[#2d1e12] text-[11px] font-black">${t.a2}</button>
+      `;
+      box.classList.remove('hidden');
+    }
+
+    document.getElementById('choice-overlay').addEventListener('click', (e) => {
+      const pet = ensurePetState(state.activeCharId);
+      const jBtn = e.target.closest('#btn-jump-tap');
+      if (jBtn && jumpGame.active) {
+        jumpGame.taps++;
+        jBtn.textContent = `⬆️ 跳高啲！(${jumpGame.taps} 次)`;
+        playSFX('bounce');
+        particles.push({ x: 300 + (Math.random() * 60 - 30), y: 260, text: '跳! 💨', color: '#10b981', life: 20 });
+        return;
+      }
+      const rps = e.target.closest('[data-rps]');
+      if (rps) {
+        const user = rps.dataset.rps, opts = ['rock', 'scissors', 'paper'], icons = { rock: '✊', scissors: '✌️', paper: '🖐️' };
+        const cpu = opts[Math.floor(Math.random() * 3)];
+        document.getElementById('choice-overlay').classList.add('hidden');
+        if (user === cpu) { playSFX('pat'); speakAndShow(`「我出 ${icons[cpu]}！打和呀，再嚟過！」`); }
+        else if ((user === 'rock' && cpu === 'scissors') || (user === 'scissors' && cpu === 'paper') || (user === 'paper' && cpu === 'rock')) {
+          playSFX('eat'); grantCappedRewards(pet, 6, 8); pet.mood = Math.min(100, pet.mood + 8);
+          speakAndShow(`「嗚哇我出 ${icons[cpu]} 輸咗俾哥哥！賞你金幣！🪙」`);
+        } else {
+          tempOverrideMode = 'happy'; setTimeout(() => { tempOverrideMode = null; }, 1400);
+          playSFX('bounce'); grantCappedRewards(pet, 4, 3); pet.mood = Math.min(100, pet.mood + 10);
+          speakAndShow(`「耶！我出 ${icons[cpu]} 贏咗哥哥喇！！😆」`);
+        }
+        updateHUD(); saveState(); return;
+      }
+      const rep = e.target.closest('[data-reply]');
+      if (rep) {
+        document.getElementById('choice-overlay').classList.add('hidden');
+        tempOverrideMode = 'happy'; setTimeout(() => { tempOverrideMode = null; }, 1400);
+        playSFX('pat'); pet.mood = Math.min(100, pet.mood + 8); grantCappedRewards(pet, 5, 4);
+        speakAndShow(decodeURIComponent(rep.dataset.reply));
+        particles.push({ x: 300, y: 240, text: '💖', color: '#f43f5e', life: 36 });
+        updateHUD(); saveState();
+      }
+    });
+
+    function renderDock() {
+      const tabFood = document.getElementById('tab-food'), tabAct = document.getElementById('tab-act');
+      const isFood = state.dockTab === 'food';
+      tabFood.className = `px-2.5 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] ${isFood ? 'bg-orange-500 text-white' : 'bg-white text-[#2d1e12]'}`;
+      tabAct.className = `px-2.5 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] ${!isFood ? 'bg-orange-500 text-white' : 'bg-white text-[#2d1e12]'}`;
+      const tray = document.getElementById('dock-tray');
+      if (isFood) {
+        tray.innerHTML = getActiveChar().foods.map((f, idx) => `
+          <button type="button" data-food-idx="${idx}" class="dock-chip bg-white hover:bg-orange-50 rounded-xl p-1.5 flex flex-col items-center cursor-grab">
+            <span class="text-xl leading-none">${f.emoji}</span>
+            <span class="text-[10px] font-bold text-[#2d1e12] leading-tight mt-0.5">${f.name}</span>
+            <span class="text-[9px] font-bold ${f.cost > 0 ? 'text-amber-600' : 'text-emerald-600'}">${f.cost > 0 ? '🪙' + f.cost : '免費'}</span>
+          </button>
+        `).join('');
+      } else {
+        const actions = [
+          { id: 'play',  emoji: '🏐', name: '雙人對打', sub: '輪流接波' },
+          { id: 'jump',  emoji: '🤸', name: '跳躍摸高', sub: '特訓跳躍' },
+          { id: 'furn',  emoji: '🛋️', name: '房間傢俬', sub: '場景互動' },
+          { id: 'konbini_trip', emoji: '🏪', name: '去便利店', sub: '行街買肉包' },
+          { id: 'chat',  emoji: '💬', name: '問候傾計', sub: '互動選項' },
+          state.gamingReturnAt ? { id: 'stop_gaming', emoji: '⏹️', name: '中斷打機', sub: '返去原行程', highlight: true } : { id: 'gaming', emoji: '🎮', name: '一齊打機', sub: '去哥哥房電腦' },
+          { id: 'study', emoji: '📖', name: '一齊溫書', sub: '好感+6' },
+          { id: 'clean', emoji: '🧹', name: '執屋清潔', sub: '金幣+8' }
+        ];
+        tray.innerHTML = actions.map(a => `
+          <button type="button" data-act-id="${a.id}" class="dock-chip ${a.highlight ? 'bg-rose-100 border-rose-500' : 'bg-white hover:bg-orange-50'} rounded-xl p-1.5 flex flex-col items-center">
+            <span class="text-lg leading-none">${a.emoji}</span>
+            <span class="text-[10px] font-bold text-[#2d1e12] leading-tight mt-0.5">${a.name}</span>
+            <span class="text-[9px] font-bold text-orange-600">${a.sub}</span>
+          </button>
+        `).join('');
+      }
+    }
+
+    document.getElementById('tab-food').addEventListener('click', () => { state.dockTab = 'food'; renderDock(); });
+    document.getElementById('tab-act').addEventListener('click', () => { state.dockTab = 'act'; renderDock(); });
+
+    let dragStart = null;
+    document.getElementById('dock-tray').addEventListener('pointerdown', (e) => {
+      const actBtn = e.target.closest('[data-act-id]');
+      if (actBtn) {
+        const id = actBtn.dataset.actId, pet = ensurePetState(state.activeCharId);
+        lastInteractAt = Date.now();
+        if (id === 'play') startVolleyballRally();
+        else if (id === 'jump') { if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; } if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; } startJumpTraining(); }
+        else if (id === 'konbini_trip') {
+          if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
+          if (pet.currentRoom === 'bath' || pet.currentRoom === 'school_class' || pet.currentRoom === 'school_court') {
+            playSFX('miss');
+            speakAndShow('「翔陽而家沖緊涼／喺學校，唔可以同哥哥去便利店住呀！🏪」');
+            showToast('洗澡、睡覺或喺學校時唔可以去便利店 🔒');
+            return;
+          }
+          state.gamingReturnAt = null;
+          pet.currentRoom = 'street'; viewRoomId = 'konbini';
+          startCharacterWalkTransition(pet, 'konbini', 'konbini', 350, 445);
+          pet.mood = Math.min(100, pet.mood + 10); grantCappedRewards(pet, 6, 4);
+          playSFX('levelup');
+          speakAndShow('「同哥哥由街道行過去便利店買肉包同運動飲品！🏪🥟」');
+          particles.push({ x: 350, y: 360, text: '🏪 +10', color: '#f97316', life: 36 });
+          renderDock(); updateHUD(); saveState();
+        } else if (id === 'stop_gaming') {
+          state.gamingReturnAt = null;
+          pet.scheduleSlotKey = null;
+          syncScheduleActivity(pet, true);
+          viewRoomId = pet.currentRoom;
+          playSFX('pat');
+          speakAndShow('「好！暫時唔打住，返去跟今日嘅行程先～👋」');
+          renderDock(); updateHUD(); saveState();
+        } else if (id === 'chat') { if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; } if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; } openInteractiveChat(); }
+        else if (id === 'furn') {
+          if (!isZoomed && pet.currentRoom !== viewRoomId) { viewRoomId = pet.currentRoom; updateHUD(); } // furn wakes sleep
+          const furns = ROOM_FURNITURE[pet.currentRoom] || [];
+          if (furns.length > 0) {
+            const f = furns[Math.floor(Math.random() * furns.length)];
+            targetX = f.px; targetY = f.py; pet.currentActivity = f.act;
+            playSFX('pat'); speakAndShow(f.line); updateHUD(); saveState();
+          }
+        } else if (id === 'gaming') {
+          if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
+          if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
+          state.gamingReturnAt = Date.now() + 15 * 60 * 1000;
+          pet.currentRoom = 'room_aniki'; viewRoomId = 'room_aniki';
+          petX = 190; petY = 435; targetX = 190; targetY = 435;
+          pet.currentActivity = 'gaming';
+          pet.mood = Math.min(100, pet.mood + 12); grantCappedRewards(pet, 5, 3);
+          playSFX('levelup'); speakAndShow('「去哥哥房間電腦位打機 15 分鐘！之後會返去原本行程～🎮🔥」');
+          particles.push({ x: 190, y: 360, text: '🎮 15分鐘', color: '#8b5cf6', life: 36 });
+          renderDock(); updateHUD(); saveState();
+        } else if (id === 'study') {
+          if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
+          if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
+          pet.mood = Math.min(100, pet.mood + 5); pet.energy = Math.max(5, pet.energy - 4);
+          grantCappedRewards(pet, 6, 3);
+          playSFX('pat'); speakAndShow('「有哥哥教我溫書，今次測驗一定過關！📖✨」');
+          particles.push({ x: 300, y: 240, text: 'EXP+6 📖', color: '#3b82f6', life: 36 });
+          updateHUD(); saveState();
+        } else if (id === 'clean') {
+          if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
+          if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
+          pet.mood = Math.min(100, pet.mood + 6); pet.energy = Math.max(5, pet.energy - 4);
+          grantCappedRewards(pet, 4, 8);
+          playSFX('eat'); speakAndShow('「執乾淨間屋企好企理呀！仲搵到少少零用錢！🧹🪙」');
+          particles.push({ x: 300, y: 240, text: '🪙+8', color: '#f59e0b', life: 36 });
+          updateHUD(); saveState();
+        }
+        return;
+      }
+
+      const btn = e.target.closest('[data-food-idx]'); if (!btn) return;
+      const pet = ensurePetState(state.activeCharId);
+      if (!isZoomed && pet.currentRoom !== viewRoomId) { viewRoomId = pet.currentRoom; updateHUD(); }
+      if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
+      const food = getActiveChar().foods[Number(btn.dataset.foodIdx)];
+      dragState = { active: true, food }; dragStart = { x: e.clientX, y: e.clientY };
+      const g = document.getElementById('drag-ghost'); g.textContent = food.emoji; g.style.left = e.clientX + 'px'; g.style.top = e.clientY + 'px';
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!dragState.active) return;
+      if (Math.hypot(e.clientX - dragStart.x, e.clientY - dragStart.y) > 8) {
+        const g = document.getElementById('drag-ghost'); g.classList.remove('hidden'); g.style.left = e.clientX + 'px'; g.style.top = e.clientY + 'px';
+      }
+    });
+    window.addEventListener('pointerup', (e) => {
+      if (!dragState.active) return;
+      document.getElementById('drag-ghost').classList.add('hidden');
+      const dist = Math.hypot(e.clientX - dragStart.x, e.clientY - dragStart.y);
+      const food = dragState.food; dragState = { active: false, food: null };
+      if (dist <= 8) flyingFood = { emoji: food.emoji, x: 300, y: 560, targetX: isZoomed ? 300 : petX, targetY: isZoomed ? 360 : petY - 30, food };
+      else {
+        const r = canvas.getBoundingClientRect();
+        if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) completeFeed(food);
+      }
+    });
+
+    function updateHUD() {
+      const char = getActiveChar(), pet = ensurePetState(char.id), timeInfo = getCurrentHourInfo();
+      const sched = getScheduledState(timeInfo);
+      const outfit = OUTFITS[pet.outfitIdx || 0] || OUTFITS[0];
+      const viewRoom = MAP_ROOMS[viewRoomId] || MAP_ROOMS.living;
+      const petRoom = MAP_ROOMS[pet.currentRoom] || MAP_ROOMS.living;
+
+      document.getElementById('header-title').textContent = char.name;
+      document.getElementById('btn-sound').textContent = state.soundEnabled ? '🔊' : '🔇';
+      document.getElementById('time-display').textContent = `🔒 ${timeInfo.label} (${sched.label})`;
+      document.getElementById('room-title-badge').textContent = `${viewRoom.icon} ${viewRoom.name}`;
+      document.getElementById('outfit-name').textContent = outfit.name;
+      document.getElementById('zoom-icon').textContent = isZoomed ? '🔎' : '🔍';
+      document.getElementById('zoom-label').textContent = isZoomed ? '縮細全景' : '放大特寫';
+
+      document.getElementById('daily-cap-exp').textContent = `📈 今日EXP ${pet.dailyExpGained}/${DAILY_EXP_CAP}`;
+      document.getElementById('daily-cap-coins').textContent = `🪙 今日金幣 ${pet.dailyCoinsGained}/${DAILY_COINS_CAP}`;
+      document.getElementById('daily-lock-badge').classList.toggle('hidden', !(pet.dailyExpGained >= DAILY_EXP_CAP && pet.dailyCoinsGained >= DAILY_COINS_CAP));
+
+      ['up', 'down', 'left', 'right'].forEach(d => {
+        const btn = document.getElementById('dir-' + d);
+        btn.disabled = !viewRoom[d] || isZoomed;
+        btn.title = viewRoom[d] ? `前往 ${MAP_ROOMS[viewRoom[d]].name}` : '';
+        const lbl = document.getElementById('lbl-' + d);
+        if (lbl) lbl.textContent = viewRoom[d] ? MAP_ROOMS[viewRoom[d]].short : '';
+      });
+
+      const bubble = document.getElementById('speech-bubble');
+      const tracker = document.getElementById('tracker-arrow');
+      if (isZoomed || pet.currentRoom === viewRoomId) {
+        bubble.classList.remove('hidden'); tracker.classList.add('hidden');
+      } else {
+        bubble.classList.add('hidden'); tracker.classList.remove('hidden');
+        const dx = petRoom.gx - viewRoom.gx, dy = petRoom.gy - viewRoom.gy;
+        let arrow = '🧭';
+        if (Math.abs(dx) >= Math.abs(dy)) arrow = dx > 0 ? '➡️' : '⬅️';
+        else arrow = dy > 0 ? '⬇️' : '⬆️';
+        document.getElementById('tracker-dir').textContent = arrow;
+        document.getElementById('tracker-text').textContent = `${char.name}喺 ${petRoom.short}`;
+      }
+
+      document.getElementById('bond-level').textContent = pet.bondLevel;
+      document.getElementById('coins-count').textContent = pet.coins;
+      const h = Math.round(pet.hunger), m = Math.round(pet.mood), en = Math.round(pet.energy);
+      document.getElementById('val-hunger').textContent = `${h}%`; document.getElementById('bar-hunger').style.width = `${h}%`;
+      document.getElementById('val-mood').textContent = `${m}%`; document.getElementById('bar-mood').style.width = `${m}%`;
+      document.getElementById('val-energy').textContent = `${en}%`; document.getElementById('bar-energy').style.width = `${en}%`;
+    }
+
+    ['up', 'down', 'left', 'right'].forEach(dir => {
+      document.getElementById('dir-' + dir).addEventListener('click', () => {
+        const nextId = MAP_ROOMS[viewRoomId][dir]; if (!nextId) return;
+        viewRoomId = nextId; document.getElementById('choice-overlay').classList.add('hidden'); playSFX('pat'); updateHUD();
+      });
+    });
+
+    document.getElementById('tracker-arrow').addEventListener('click', () => {
+      const initPet = ensurePetState(state.activeCharId); if (!MAP_ROOMS[initPet.currentRoom]) initPet.currentRoom = "living"; viewRoomId = initPet.currentRoom; playSFX('pat'); updateHUD();
+    });
+    document.getElementById('btn-find-pet').addEventListener('click', () => {
+      viewRoomId = ensurePetState(state.activeCharId).currentRoom; playSFX('pat'); updateHUD();
+    });
+    document.getElementById('btn-zoom').addEventListener('click', () => { isZoomed = !isZoomed; playSFX('pat'); updateHUD(); });
+    document.getElementById('btn-outfit').addEventListener('click', () => {
+      const pet = ensurePetState(state.activeCharId);
+      pet.outfitIdx = ((pet.outfitIdx || 0) + 1) % OUTFITS.length;
+      const o = OUTFITS[pet.outfitIdx];
+      playSFX('eat');
+      if (o.id === 'school') speakAndShow('「換咗黑學蘭＋無拉鏈衛衣校服！連放大圖都會跟住轉！✨」');
+      else if (o.id === 'pajama') speakAndShow('「換咗白色短袖家居服，好爽好舒服！👕」');
+      else speakAndShow('「換返烏野10號隊服，熱血晒！🏐」');
+      updateHUD(); saveState();
+    });
+
+    document.getElementById('btn-sound').addEventListener('click', () => {
+      state.soundEnabled = !state.soundEnabled;
+      updateHUD(); saveState();
+      if (state.soundEnabled) playSFX('pat');
+    });
+
+    document.getElementById('btn-schedule').addEventListener('click', openScheduleModal);
+    document.getElementById('close-schedule').addEventListener('click', () => document.getElementById('schedule-modal').classList.add('hidden'));
+    if (false) document.getElementById('btn-schedule').addEventListener('x', () => {
+      document.getElementById('char-list').innerHTML = Object.values(getAllCharacters()).map(c => {
+        const pet = ensurePetState(c.id), active = c.id === state.activeCharId;
+        return `<div class="flex items-center justify-between p-2.5 rounded-2xl border-2 border-[#2d1e12] ${active ? 'bg-orange-100' : 'bg-white'}">
+          <div class="flex items-center gap-2.5"><div class="w-9 h-9 rounded-full border-2 border-[#2d1e12] flex items-center justify-center text-white font-black text-xs" style="background:${c.hairColor}">${c.name[0]}</div>
+          <div><div class="text-sm font-black">${c.name}</div><div class="text-[10px] text-slate-600">${c.subtitle} · Lv.${pet.bondLevel}</div></div></div>
+          <button type="button" data-pick-char="${c.id}" class="px-3 py-1 rounded-xl text-xs font-bold border-2 border-[#2d1e12] ${active ? 'bg-slate-200' : 'bg-orange-500 text-white'}">${active ? '養成中' : '切換'}</button></div>`;
+      }).join('');
+      document.getElementById('char-modal').classList.remove('hidden');
+    });
+    document.getElementById('btn-close-modal').addEventListener('click', () => document.getElementById('char-modal').classList.add('hidden'));
+    document.getElementById('char-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-pick-char]'); if (!btn) return;
+      state.activeCharId = btn.dataset.pickChar; syncScheduleActivity(ensurePetState(state.activeCharId), false);
+      renderDock(); updateHUD(); saveState(); document.getElementById('char-modal').classList.add('hidden');
+    });
+    document.getElementById('add-char-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('new-name').value.trim(); if (!name) return;
+      const id = 'custom_' + Date.now(), quote = document.getElementById('new-quote').value.trim() || `「哥哥你好！我係 ${name}！」`;
+      state.customCharacters[id] = {
+        id, name, subtitle: document.getElementById('new-sub').value.trim() || '自訂動漫角色',
+        hairColor: document.getElementById('new-hair').value, eyeColor: document.getElementById('new-eye').value,
+        foods: DEFAULT_CHARACTERS.hinata.foods,
+        dialogues: { sleep: ['「Zzz…」'], brush: [quote], breakfast: [quote], tea: [quote], tv: [quote], fridge: [quote], cook: [quote], hallway: [quote], gaming: [quote], homework: [quote], bath: [quote], backyard: [quote], street: [quote], school_class: [quote], lunch: [quote], school_court: [quote], pet: ['「哥哥摸頭好舒服呀！」'], waking: ['「唔…哥哥發生咩事？」'], backToSleep: ['「哥哥晚安…Zzz」'], leaving: ['「夠鐘做下一個行程喇～」'], capped: ['「今日上限已滿！」'] }
+      };
+      state.activeCharId = id; ensurePetState(id); speakAndShow(quote); renderDock(); updateHUD(); saveState();
+      document.getElementById('add-char-form').reset(); document.getElementById('char-modal').classList.add('hidden');
+    });
+    if (false) document.getElementById('btn-schedule').addEventListener('x2', () => {
+      const char = getActiveChar();
+      state.pets[char.id] = { hunger: 80, mood: 85, energy: 90, bondExp: 15, bondLevel: 1, coins: 50, outfitIdx: 0, currentRoom: 'room_hinata', currentActivity: 'sleep', scheduleSlotKey: '', dailyDate: getTodayStr(), dailyExpGained: 0, dailyCoinsGained: 0, lastUpdated: Date.now() };
+      syncScheduleActivity(state.pets[char.id], false);
+      viewRoomId = state.pets[char.id].currentRoom;
+      updateHUD(); saveState(); showToast(`已重置 ${char.name} 嘅進度`);
+    });
+
+    // 每 3 秒即時結算一次精力／飽食／心情變化
+    setInterval(() => {
+      const pet = ensurePetState(state.activeCharId);
+      applyTimeStatsDelta(pet, 3000);
+      updateHUD(); saveState();
+    }, 3000);
+
+    window.addEventListener('error', (ev) => {
+      try { showToast('JS Error: ' + (ev.message || ev.error)); } catch (_) {}
+    });
+    function updateHeaderDateTime() {
+      const el = document.getElementById('header-datetime');
+      if (!el) return;
+      const now = new Date();
+      const days = ['日', '一', '二', '三', '四', '五', '六'];
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mi = String(now.getMinutes()).padStart(2, '0');
+      el.textContent = `${mm}/${dd} (${days[now.getDay()]}) ${hh}:${mi}`;
+    }
+    updateHeaderDateTime();
+    setInterval(updateHeaderDateTime, 10000);
+    loadAssets();
+    loadState();
+    viewRoomId = ensurePetState(state.activeCharId).currentRoom;
+    renderDock();
+    updateHUD();
+    gameLoop();
+  </script>
+</body>
+</html>
