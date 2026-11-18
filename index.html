@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="icon" type="image/png" href="./icon.png?v=25">
-  <link rel="apple-touch-icon" href="./icon.png?v=25">
+  <link rel="icon" type="image/png" href="./icon.png?v=26">
+  <link rel="apple-touch-icon" href="./icon.png?v=26">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -65,7 +65,7 @@
         <div class="flex items-center justify-between">
           <span id="time-display" class="bg-white/90 border border-[#2d1e12] px-1.5 py-0.5 rounded">🔒 現實時間</span>
           <span id="room-title-badge" class="bg-orange-500 text-white px-2 py-0.5 rounded text-[10px]">🏠 1F 客廳</span>
-          <span>💖Lv.<span id="bond-level">1</span> · 🪙<span id="coins-count">50</span></span>
+          <span>💖Lv.<span id="bond-level">1</span> · 🪙<span id="coins-count">50</span> · 👛<span id="pocket-money">20</span></span>
         </div>
         <div class="flex items-center justify-between text-[10px] bg-white/80 rounded-lg px-2 py-0.5 border border-amber-300">
           <span id="daily-cap-exp">📈 今日EXP 0/100</span>
@@ -204,68 +204,70 @@
     // 1. 全套去背立繪（含摸頭專用笑面立繪）＋ 10間手繪動畫房間
     // =========================================================================
     const ASSET_URLS = {
-      chibiJersey: "./assets/chibiJersey.png?v=25",
-      chibiSchool: "./assets/chibiSchool.png?v=25",
-      chibiPajama: "./assets/chibiPajama.png?v=25",
-      portraitJersey: "./assets/portraitJersey.png?v=25",
-      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=25",
-      portraitSchool: "./assets/portraitSchool.png?v=25",
-      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=25",
-      portraitPajama: "./assets/portraitPajama.png?v=25",
-      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=25",
-      portraitSleepy: "./assets/portraitSleepy.jpg?v=25",
-      bg_living: "./assets/bg_living.jpg?v=25",
-      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=25",
-      bg_kitchen: "./assets/bg_kitchen.jpg?v=25",
-      bg_bath: "./assets/bg_bath.jpg?v=25",
-      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=25",
-      bg_hallway: "./assets/bg_hallway.jpg?v=25",
-      bg_backyard: "./assets/bg_backyard.jpg?v=25",
-      bg_street: "./assets/bg_street.jpg?v=25",
-      bg_school_class: "./assets/bg_school_class.jpg?v=25",
-      bg_school_court: "./assets/bg_school_court.jpg?v=25",
-      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=25",
-      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=25",
-      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=25",
-      chibiBrother: "./assets/chibiBrother.png?v=25",
-      bg_main_street: "./assets/bg_main_street.jpg?v=25",
-      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=25",
-      bg_canteen: "./assets/bg_canteen.jpg?v=25",
-      bg_mall: "./assets/bg_mall.jpg?v=25",
-      bg_park: "./assets/bg_park.jpg?v=25",
-      bg_restaurant: "./assets/bg_restaurant.jpg?v=25",
-      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=25",
-      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=25",
-      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=25",
-      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=25",
-      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=25",
-      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=25",
-      bg_hospital: "./assets/bg_hospital.jpg?v=25",
-      bg_street_night: "./assets/bg_street_night.jpg?v=25",
-      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=25",
-      bg_park_night: "./assets/bg_park_night.jpg?v=25",
-      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=25",
-      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=25",
-      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=25",
-      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=25",
-      bg_living_night: "./assets/bg_living_night.jpg?v=25",
-      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=25",
-      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=25",
-      bg_bath_night: "./assets/bg_bath_night.jpg?v=25",
-      bg_mall_night: "./assets/bg_mall_night.jpg?v=25",
-      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=25",
-      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=25",
-      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=25",
-      bg_living_morning: "./assets/bg_living_morning.jpg?v=25",
-      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=25",
-      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=25",
-      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=25",
-      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=25",
-      bg_street_morning: "./assets/bg_street_morning.jpg?v=25",
-      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=25",
-      bg_park_morning: "./assets/bg_park_morning.jpg?v=25",
-      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=25",
-      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=25"
+      chibiJersey: "./assets/chibiJersey.png?v=26",
+      chibiSchool: "./assets/chibiSchool.png?v=26",
+      chibiPajama: "./assets/chibiPajama.png?v=26",
+      portraitJersey: "./assets/portraitJersey.png?v=26",
+      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=26",
+      portraitSchool: "./assets/portraitSchool.png?v=26",
+      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=26",
+      portraitPajama: "./assets/portraitPajama.png?v=26",
+      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=26",
+      portraitSleepy: "./assets/portraitSleepy.jpg?v=26",
+      bg_living: "./assets/bg_living.jpg?v=26",
+      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=26",
+      bg_kitchen: "./assets/bg_kitchen.jpg?v=26",
+      bg_bath: "./assets/bg_bath.jpg?v=26",
+      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=26",
+      bg_hallway: "./assets/bg_hallway.jpg?v=26",
+      bg_backyard: "./assets/bg_backyard.jpg?v=26",
+      bg_street: "./assets/bg_street.jpg?v=26",
+      bg_school_class: "./assets/bg_school_class.jpg?v=26",
+      bg_school_court: "./assets/bg_school_court.jpg?v=26",
+      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=26",
+      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=26",
+      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=26",
+      chibiBrother: "./assets/chibiBrother.png?v=26",
+      bg_main_street: "./assets/bg_main_street.jpg?v=26",
+      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=26",
+      bg_canteen: "./assets/bg_canteen.jpg?v=26",
+      bg_mall: "./assets/bg_mall.jpg?v=26",
+      bg_park: "./assets/bg_park.jpg?v=26",
+      bg_restaurant: "./assets/bg_restaurant.jpg?v=26",
+      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=26",
+      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=26",
+      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=26",
+      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=26",
+      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=26",
+      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=26",
+      bg_hospital: "./assets/bg_hospital.jpg?v=26",
+      bg_street_night: "./assets/bg_street_night.jpg?v=26",
+      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=26",
+      bg_park_night: "./assets/bg_park_night.jpg?v=26",
+      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=26",
+      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=26",
+      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=26",
+      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=26",
+      bg_living_night: "./assets/bg_living_night.jpg?v=26",
+      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=26",
+      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=26",
+      bg_bath_night: "./assets/bg_bath_night.jpg?v=26",
+      bg_mall_night: "./assets/bg_mall_night.jpg?v=26",
+      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=26",
+      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=26",
+      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=26",
+      bg_living_morning: "./assets/bg_living_morning.jpg?v=26",
+      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=26",
+      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=26",
+      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=26",
+      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=26",
+      bg_street_morning: "./assets/bg_street_morning.jpg?v=26",
+      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=26",
+      bg_park_morning: "./assets/bg_park_morning.jpg?v=26",
+      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=26",
+      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=26",
+      chibiJerseySad: "./assets/chibiJerseySad.png?v=26",
+      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=26"
     };
     const sprites = {};
 
@@ -401,8 +403,8 @@
     };
 
     const OUTFITS = [
-      { id: 'jersey', name: '烏野隊服', spriteKey: 'chibiJersey', faintKey: 'chibiJerseyFaint', portraitKey: 'portraitJersey', happyKey: 'portraitJerseyHappy' },
-      { id: 'school', name: '衛衣校服', spriteKey: 'chibiSchool', faintKey: 'chibiSchoolFaint', portraitKey: 'portraitSchool', happyKey: 'portraitSchoolHappy' },
+      { id: 'jersey', name: '烏野隊服', spriteKey: 'chibiJersey', faintKey: 'chibiJerseyFaint', sadKey: 'chibiJerseySad', portraitKey: 'portraitJersey', happyKey: 'portraitJerseyHappy' },
+      { id: 'school', name: '衛衣校服', spriteKey: 'chibiSchool', faintKey: 'chibiSchoolFaint', sadKey: 'chibiSchoolSad', portraitKey: 'portraitSchool', happyKey: 'portraitSchoolHappy' },
       { id: 'pajama', name: '家居睡衣', spriteKey: 'chibiPajama', portraitKey: 'portraitPajama', happyKey: 'portraitPajamaHappy' }
     ];
 
@@ -411,10 +413,14 @@
         id: 'hinata', name: '日向翔陽', subtitle: '烏野 #10 · 現實時間同步',
         hairColor: '#ff7315', eyeColor: '#9a3412',
         foods: [
-          { id: 'tamago', name: '玉子拌飯', emoji: '🍚', cost: 0, hunger: 26, mood: 10, bond: 8, line: '「哥哥！玉子拌飯最正！熱辣辣加蛋黃一流呀！！✨」' },
-          { id: 'nikuman', name: '熱肉包', emoji: '🥟', cost: 10, hunger: 34, mood: 18, bond: 12, line: '「係坂之下商店嘅熱肉包！哥哥買俾我特別好味！」' },
-          { id: 'onigiri', name: '梅子飯糰', emoji: '🍙', cost: 5, hunger: 20, mood: 8, bond: 6, line: '「多謝哥哥！食完飯糰又有力跳起扣殺喇！」' },
-          { id: 'drink', name: '運動飲', emoji: '🥤', cost: 8, hunger: 8, energy: 28, mood: 12, bond: 6, line: '「咕嚕咕嚕～多謝哥哥！精力瞬間返晒嚟！」' }
+          { name: '糖果果汁', emoji: '🍬', cost: 5,  hunger: 5,  mood: 3, line: '「甜甜哋好開胃呀！🍬✨」' },
+          { name: '梅子飯糰', emoji: '🍙', cost: 8,  hunger: 8,  mood: 4, line: '「紫菜飯糰好脆好好味！🍙💛」' },
+          { name: '熱肉包',   emoji: '🥟', cost: 10, hunger: 10, mood: 5, line: '「熱騰騰嘅肉包！一啖咬落去超滿足！🥟」' },
+          { name: '麵包飲品', emoji: '🥐', cost: 12, hunger: 12, mood: 5, line: '「牛角包配運動飲品，補充體力！🥐🥤」' },
+          { name: '玉子拌飯', emoji: '🍚', cost: 15, hunger: 15, mood: 6, line: '「最鍾意嘅玉子拌飯！撈勻蛋汁好好食！🍚💛」' },
+          { name: '熱烏冬',   emoji: '🍜', cost: 20, hunger: 20, mood: 7, line: '「熱辣辣嘅烏冬麵，食完成身暖晒！🍜✨」' },
+          { name: '咖喱飯',   emoji: '🍛', cost: 25, hunger: 25, mood: 8, line: '「哥哥買嘅香濃咖喱飯！大啖食晒佢！🍛🔥」' },
+          { name: '豬扒便當', emoji: '🍱', cost: 30, hunger: 30, mood: 10, line: '「豪華炸豬扒便當！！多謝哥哥！！🍱❤️」' }
         ],
         dialogues: {
           sleep: ['「呼…哥哥…我要打入全國…Zzz」'],
@@ -502,11 +508,18 @@
         state.pets[id] = {
           id, hunger: 80, mood: 85, energy: 85, bond: 30, level: 1, coins: 50, outfitIdx: 0,
           currentRoom: 'living', currentActivity: 'tea', scheduleSlotKey: null,
-          lastUpdated: Date.now(), dailyDate: today, dailyExpGained: 0, dailyCoinsGained: 0
+          lastUpdated: Date.now(), dailyDate: today, dailyExpGained: 0, dailyCoinsGained: 0,
+          pocketMoney: 20, dailySalaryDate: null, dailyPocketDate: null,
+          dailySodaDate: null, dailySnackDate: null, dailyNikumanDate: null,
+          dailyRallyMoodDate: null, dailyPracticeMoodDate: null, dailyParkMoodDate: null,
+          feedTimestamps: [], petHourKey: null, petHourMoodGained: 0,
+          pendingCleanReward: false, lastCleanDate: null
         };
       }
       const p = state.pets[id];
       if (p.dailyDate !== today) { p.dailyDate = today; p.dailyExpGained = 0; p.dailyCoinsGained = 0; }
+      if (typeof p.pocketMoney !== 'number') p.pocketMoney = 20;
+      if (!Array.isArray(p.feedTimestamps)) p.feedTimestamps = [];
       if (!state.brother) state.brother = { currentRoom: 'living', currentActivity: 'tea', px: 380, py: 440, tx: 380, ty: 440, scheduleSlotKey: null };
       if (!state.outing) state.outing = { type: null, returnAt: null, fromMall: false };
       if (!state.msgLog || state.msgLog.date !== today) state.msgLog = { date: today, asked: {}, promises: {} };
@@ -527,7 +540,16 @@
         } else {
           pet.hunger = Math.max(0, pet.hunger - mins * 0.12);
           pet.energy = Math.max(0, pet.energy - mins * 0.10);
-          pet.mood = Math.max(15, pet.mood - mins * 0.04);
+        }
+        // Mood always decreases by 10 per hour (even offline)
+        pet.mood = Math.max(0, pet.mood - (mins / 60) * 10);
+        // Offline living-room autonomous cleaning roll
+        if (mins >= 30 && !pet.pendingCleanReward && pet.lastCleanDate !== getTodayStr()) {
+          const prob = Math.min(0.40, mins / 300);
+          if (Math.random() < prob) {
+            pet.pendingCleanReward = true;
+            pet.lastCleanDate = getTodayStr();
+          }
         }
       }
       pet.lastUpdated = Date.now();
@@ -685,6 +707,19 @@
       bro.tx = Math.min(480, furn.px + 55); bro.ty = furn.py;
       viewRoomId = roomId;
       playSFX('pat');
+      const tday = getTodayStr();
+      if ((roomId === 'street' || roomId === 'main_street') && pet.pocketMoney >= 5) {
+        if (pet.dailySodaDate !== tday && Math.random() < 0.25) {
+          pet.dailySodaDate = tday; pet.pocketMoney -= 5;
+          customSpeech = '「行過街頭販賣機買咗罐凍汽水飲！（零用錢 -5 元）🥤✨」';
+        } else if (pet.dailySnackDate !== tday && pet.pocketMoney >= 10 && Math.random() < 0.22) {
+          pet.dailySnackDate = tday; pet.pocketMoney -= 10;
+          customSpeech = '「忍唔住買咗包小食返屋企！（零用錢 -10 元）🍡」';
+        }
+      } else if (roomId === 'konbini' && pet.dailyNikumanDate !== tday && pet.pocketMoney >= 10 && Math.random() < 0.55) {
+        pet.dailyNikumanDate = tday; pet.pocketMoney -= 10;
+        customSpeech = '「喺便利店自己買咗個熱辣辣肉包食！（零用錢 -10 元）🥟💛」';
+      }
       if (customSpeech) speakAndShow(customSpeech);
       else speakAndShow(`「正一齊經過【${MAP_ROOMS[roomId]?.name || roomId}】前往目的地…🚶‍♂️」`);
       renderDock(); updateHUD();
@@ -731,6 +766,12 @@
       state.outing = { type: null, returnAt: null, fromMall: false };
       const info = getCurrentHourInfo();
       const sched = getScheduledState(info);
+      const today = getTodayStr();
+      if (info.hour >= 18 && pet.dailySalaryDate !== today) {
+        pet.dailySalaryDate = today;
+        pet.coins += 100;
+        showToast('18:00 到啦！哥哥獲得今日固定薪金 🪙+100');
+      }
       const destRoom = sched.room || 'living';
       startDuoJourney(destRoom, sched.act, customMsg || '「返到屋企啦！🏠✨」', null, () => {
         pet.scheduleSlotKey = null;
@@ -860,6 +901,12 @@
       }
       const info = getCurrentHourInfo();
       const sched = getScheduledState(info);
+      const today = getTodayStr();
+      if (info.hour >= 18 && pet.dailySalaryDate !== today) {
+        pet.dailySalaryDate = today;
+        pet.coins += 100;
+        showToast('18:00 到啦！哥哥獲得今日固定薪金 🪙+100');
+      }
       const bSched = getBrotherScheduledState(info);
       const bro = state.brother;
 
@@ -924,6 +971,9 @@
           startCharacterWalkTransition(pet, sched.room, sched.act, sched.px, sched.py);
         } else {
           pet.currentRoom = sched.room; pet.currentActivity = sched.act;
+          if (sched.act === 'breakfast') pet.hunger = Math.min(100, pet.hunger + 30);
+          else if (sched.act === 'lunch') pet.hunger = Math.min(100, pet.hunger + 40);
+          else if (sched.act === 'dinner') pet.hunger = Math.min(100, pet.hunger + 50);
           petX = sched.px; petY = sched.py; targetX = sched.px; targetY = sched.py;
           const pool = getActiveChar().dialogues[sched.act] || getActiveChar().dialogues.tea;
           if (viewRoomId === pet.currentRoom) speakAndShow(pickLine(pool));
@@ -1002,6 +1052,11 @@
         if (furns.length > 1) {
           const pick = furns[Math.floor(Math.random() * furns.length)];
           pet.currentActivity = pick.act;
+          const tday2 = getTodayStr();
+          if (pet.currentRoom === 'living' && !pet.pendingCleanReward && pet.lastCleanDate !== tday2 && Math.random() < 0.14) {
+            pet.pendingCleanReward = true; pet.lastCleanDate = tday2;
+            openCleanRewardModal();
+          }
           pet.hunger = Math.max(0, pet.hunger - 1.2);
           pet.energy = Math.max(0, pet.energy - 1.0);
           targetX = pick.px - (bro.currentRoom === pet.currentRoom ? 35 : 0);
@@ -1068,6 +1123,17 @@
       const pet = ensurePetState(state.activeCharId);
       applyTimeStatsDelta(pet, Date.now() - (pet.lastUpdated || Date.now()));
       syncScheduleActivity(pet, false);
+      if (pet.pendingCleanReward) setTimeout(() => openCleanRewardModal(), 600);
+    }
+    function openCleanRewardModal() {
+      const pet = ensurePetState(state.activeCharId);
+      if (!pet.pendingCleanReward) return;
+      const box = document.getElementById('choice-overlay');
+      speakAndShow('「哥哥！我啱啱自己執乾淨晒個客廳呀！好唔好叻？🧹✨」');
+      box.innerHTML = `<div class="w-full text-center text-[11px] font-black text-[#2d1e12]">🧹 翔陽自主執屋清潔完成！要點獎勵佢？</div>
+        <button type="button" data-clean-reward="money" class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-[#2d1e12] border-2 border-[#2d1e12] text-xs font-black">💵 給零用錢 10 元</button>
+        <button type="button" data-clean-reward="pat" class="px-3 py-1.5 rounded-xl bg-rose-400 hover:bg-rose-500 text-white border-2 border-[#2d1e12] text-xs font-black">🤚 摸摸頭 (+50心情)</button>`;
+      box.classList.remove('hidden');
     }
     function saveState() {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
@@ -1241,9 +1307,12 @@
     }
 
     function drawFullChibiSprite(cx, cy, tilt, expr, outfit, frame, scale = 1, sx = 1, sy = 1) {
+      const curPet = ensurePetState(state.activeCharId);
       let spriteKey = outfit.spriteKey;
       if (expr === 'faint') spriteKey = outfit.faintKey || 'chibiJerseyFaint';
-      else if (expr === 'sad_rest') spriteKey = 'chibiPajamaSad';
+      else if (expr === 'sad_rest' || (curPet.mood < 40 && expr !== 'sleep' && expr !== 'waking' && expr !== 'happy' && !isPetting)) {
+        spriteKey = outfit.sadKey || 'chibiPajamaSad';
+      }
       const img = sprites[spriteKey] || sprites.chibiJersey;
       if (!img) return;
       const drawW = 205, drawH = 205;
@@ -1253,7 +1322,7 @@
       ctx.scale(scale * sx, scale * sy);
       ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
 
-      const isBlinking = (expr !== 'sleep' && expr !== 'waking' && expr !== 'happy' && expr !== 'faint' && expr !== 'sad_rest' && !isPetting) && ((frame % 110) > 104);
+      const isBlinking = (curPet.mood >= 40 && expr !== 'sleep' && expr !== 'waking' && expr !== 'happy' && expr !== 'faint' && expr !== 'sad_rest' && !isPetting) && ((frame % 110) > 104);
       const coverEyes = () => {
         ctx.fillStyle = '#f8dcc2';
         ctx.beginPath(); ctx.ellipse(-22, 2, 9.5, 11, 0, 0, Math.PI * 2); ctx.ellipse(22, 2, 9.5, 11, 0, 0, Math.PI * 2); ctx.fill();
@@ -1683,7 +1752,7 @@
           while (pet.bondExp >= 100) { pet.bondExp -= 100; pet.bondLevel += 1; playSFX('levelup'); showToast(`好感度升到 Lv.${pet.bondLevel}！💖`); }
         } else cappedNow = true;
       }
-      if (coinAmt > 0) {
+      if (false && coinAmt > 0) {
         const allowCoins = Math.min(coinAmt, Math.max(0, DAILY_COINS_CAP - pet.dailyCoinsGained));
         if (allowCoins > 0) { pet.dailyCoinsGained += allowCoins; pet.coins += allowCoins; }
         else cappedNow = true;
@@ -1726,8 +1795,13 @@
       if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
       isPetting = true; handPos = { x: cx, y: cy }; petTickAcc++;
       if (petTickAcc % 8 === 1) {
-        playSFX('pat'); pet.mood = Math.min(100, pet.mood + 3);
-        const isCapped = grantCappedRewards(pet, 3, 2);
+        playSFX('pat');
+        const isCapped = grantCappedRewards(pet, 3, 0);
+        const hKey = getTodayStr() + '_' + new Date().getHours();
+        if (pet.petHourKey !== hKey) { pet.petHourKey = hKey; pet.petHourMoodGained = 0; }
+        const allowMood = Math.min(3, Math.max(0, 20 - (pet.petHourMoodGained || 0)));
+        pet.petHourMoodGained = (pet.petHourMoodGained || 0) + allowMood;
+        pet.mood = Math.min(100, pet.mood + allowMood);
         particles.push({ x: cx + (Math.random() * 34 - 17), y: cy - 20, text: '💖', color: '#f43f5e', life: 36 });
         if (petTickAcc % 24 === 1) speakAndShow(isCapped && Math.random() < 0.35 ? char.dialogues.capped[0] : pickLine(char.dialogues.pet));
         updateHUD(); saveState();
@@ -1790,6 +1864,14 @@
         showToast('醫護室休養緊，等回復 10% 先返屋企食白粥！🩺');
         return;
       }
+      const nowMs = Date.now();
+      pet.feedTimestamps = (pet.feedTimestamps || []).filter(ts => nowMs - ts < 8 * 3600 * 1000);
+      if (!pet.fainted && (pet.hunger >= 100 || pet.feedTimestamps.length >= 3)) {
+        playSFX('miss');
+        speakAndShow('「已經飽飽❤️」');
+        showToast(pet.hunger >= 100 ? '翔陽已經飽飽❤️' : '8 小時內已經餵咗 3 次，已經飽飽❤️');
+        return;
+      }
       if (pet.fainted) {
         pet.fainted = false;
         pet.currentActivity = 'happy';
@@ -1797,6 +1879,7 @@
         pet.energy = Math.max(15, pet.energy);
         showToast('餵食成功！翔陽醒返啦！✨');
       }
+      pet.feedTimestamps.push(nowMs);
       if (pet.coins < food.cost) { showToast('金幣唔夠！玩「🏐 雙人對打」或「✊ 包剪揼」賺金幣'); return; }
       pet.coins -= food.cost;
       pet.hunger = Math.min(100, pet.hunger + (food.hunger || 0));
@@ -1831,7 +1914,7 @@
       viewRoomId = 'backyard';
       petX = 315; petY = 435; targetX = 315; targetY = 435;
       pet.energy = Math.max(0, pet.energy - 5); pet.hunger = Math.max(0, pet.hunger - 3);
-      pet.mood = Math.min(100, pet.mood + 10);
+      if (pet.dailyPracticeMoodDate !== getTodayStr()) { pet.dailyPracticeMoodDate = getTodayStr(); pet.mood = Math.min(100, pet.mood + 10); }
       grantCappedRewards(pet, 6, 4);
       playSFX('levelup');
       speakAndShow('「好！我去後院練排球啦哥哥！今日一定要跳得更高扣殺！🏐🔥」');
@@ -2062,6 +2145,30 @@
         openMessageHinata(); updateHUD(); saveState();
         return;
       }
+      const cr = e.target.closest('[data-clean-reward]');
+      if (cr) {
+        const mode = cr.dataset.cleanReward;
+        if (mode === 'money') {
+          if (pet.coins < 10) { showToast('哥哥唔夠 10 元呀！🪙'); return; }
+          pet.coins -= 10; pet.pocketMoney += 10;
+          pet.pendingCleanReward = false;
+          document.getElementById('choice-overlay').classList.add('hidden');
+          playSFX('levelup');
+          speakAndShow('「多謝哥哥給 10 元零用錢！我會好好儲起佢！👛💛」');
+          particles.push({ x: 300, y: 240, text: '👛+10', color: '#f59e0b', life: 36 });
+        } else {
+          pet.pendingCleanReward = false;
+          document.getElementById('choice-overlay').classList.add('hidden');
+          pet.mood = Math.min(100, pet.mood + 50);
+          isZoomed = true; isPetting = true; tempOverrideMode = 'happy';
+          playSFX('levelup');
+          speakAndShow('「被哥哥讚乖摸摸頭最開心！！（心情 +50）🥰❤️」');
+          particles.push({ x: 300, y: 240, text: '❤️ +50心情', color: '#f43f5e', life: 45 });
+          setTimeout(() => { isPetting = false; tempOverrideMode = null; }, 2500);
+        }
+        updateHUD(); saveState();
+        return;
+      }
       const rep = e.target.closest('[data-reply]');
       if (rep) {
         document.getElementById('choice-overlay').classList.add('hidden');
@@ -2140,7 +2247,7 @@
         { id: 'chat',  emoji: '💬', name: '問候傾計', sub: '雙人對話' },
         state.gamingReturnAt ? { id: 'stop_gaming', emoji: '⏹️', name: '中斷打機', sub: '返去原行程', highlight: true } : { id: 'gaming', emoji: '🎮', name: '一齊打機', sub: '去哥哥房電腦' },
         { id: 'study', emoji: '📖', name: '一齊溫書', sub: '好感+6' },
-        { id: 'clean', emoji: '🧹', name: '執屋清潔', sub: '金幣+8' }
+        { id: 'give_pocket', emoji: '💵', name: '給零用錢', sub: '每日30元' }
       );
 
       const totalPages = Math.max(1, Math.ceil(actions.length / 8));
@@ -2222,7 +2329,7 @@
           const bothHome = !['pharmacy', 'canteen', 'school_class', 'school_court'].includes(bro.currentRoom);
           if (!bothHome) { playSFX('miss'); showToast('哥哥返緊工未返屋企呀！🏥'); return; }
           startDuoOuting('park', 30, 'park_walk', '二人一齊去公園（停留 30 分鐘）🌳', '「一齊去海濱公園慢跑、散步同睇海風！🌳🌊」');
-          pet.mood = Math.min(100, pet.mood + 8); grantCappedRewards(pet, 5, 3);
+          if (pet.dailyParkMoodDate !== getTodayStr()) { pet.dailyParkMoodDate = getTodayStr(); pet.mood = Math.min(100, pet.mood + 10); } grantCappedRewards(pet, 5, 3);
         } else if (id === 'rest_trip') {
           if (nowH >= 21) { playSFX('miss'); showToast('餐廳 21:00 已經關門啦！🔒'); speakAndShow('「餐廳九點關門咗啦，我哋喺屋企食啦哥哥～🍽️」'); return; }
           if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
@@ -2267,12 +2374,21 @@
           playSFX('pat'); speakAndShow('「有哥哥教我溫書，今次測驗一定過關！📖✨」');
           particles.push({ x: 300, y: 240, text: 'EXP+6 📖', color: '#3b82f6', life: 36 });
           updateHUD(); saveState();
-        } else if (id === 'clean') {
-          if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
-          pet.mood = Math.min(100, pet.mood + 6); pet.energy = Math.max(0, pet.energy - 5); pet.hunger = Math.max(0, pet.hunger - 3);
-          grantCappedRewards(pet, 4, 8);
-          playSFX('eat'); speakAndShow('「執乾淨間屋企好企理呀！仲搵到少少零用錢！🧹🪙」');
-          particles.push({ x: 300, y: 240, text: '🪙+8', color: '#f59e0b', life: 36 });
+        } else if (id === 'give_pocket') {
+          const td = getTodayStr();
+          if (pet.dailyPocketDate === td) {
+            playSFX('miss'); showToast('今日已經畀過零用錢啦，聽日再畀！💵'); return;
+          }
+          if (pet.coins < 30) {
+            playSFX('miss'); showToast('哥哥唔夠 30 元金幣呀！🪙'); return;
+          }
+          pet.coins -= 30;
+          pet.pocketMoney = (pet.pocketMoney || 0) + 30;
+          pet.dailyPocketDate = td;
+          pet.mood = Math.min(100, pet.mood + 8);
+          playSFX('levelup');
+          speakAndShow('「嘩！！哥哥畀 30 元零用錢我呀！多謝哥哥！！👛💛」');
+          particles.push({ x: 300, y: 240, text: '👛+30', color: '#10b981', life: 38 });
           updateHUD(); saveState();
         }
         return;
@@ -2431,6 +2547,7 @@
 
       document.getElementById('bond-level').textContent = pet.bondLevel;
       document.getElementById('coins-count').textContent = pet.coins;
+      const pmEl = document.getElementById('pocket-money'); if (pmEl) pmEl.textContent = pet.pocketMoney || 0;
       const h = Math.round(pet.hunger), m = Math.round(pet.mood), en = Math.round(pet.energy);
       document.getElementById('val-hunger').textContent = `${h}%`; document.getElementById('bar-hunger').style.width = `${h}%`;
       document.getElementById('val-mood').textContent = `${m}%`; document.getElementById('bar-mood').style.width = `${m}%`;
