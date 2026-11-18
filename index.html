@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="icon" type="image/png" href="./icon.png?v=19">
-  <link rel="apple-touch-icon" href="./icon.png?v=19">
+  <link rel="icon" type="image/png" href="./icon.png?v=25">
+  <link rel="apple-touch-icon" href="./icon.png?v=25">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -134,14 +134,19 @@
 
     <!-- Bottom Interactive Dock -->
     <div class="mt-2.5 bg-[#fff7ed] ui-card rounded-2xl p-2">
-      <div class="flex items-center justify-between gap-1.5 mb-1.5">
-        <div class="flex gap-1">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex gap-1.5 items-center">
           <button id="tab-food" type="button" class="px-2.5 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] bg-orange-500 text-white">🍱 餵食</button>
-          <button id="tab-act" type="button" class="px-2.5 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] bg-white text-[#2d1e12]">✨ 互動 (8)</button>
+          <button id="tab-act" type="button" class="px-2.5 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] bg-white text-[#2d1e12]">✨ 互動</button>
+          <div id="act-pager" class="hidden flex items-center gap-1 ml-1">
+            <button id="btn-act-prev" type="button" class="px-1.5 py-0.5 rounded bg-amber-100 hover:bg-amber-200 border border-[#2d1e12] text-[10px] font-black">◀</button>
+            <span id="act-page-lbl" class="text-[10px] font-black text-[#2d1e12]">1/2</span>
+            <button id="btn-act-next" type="button" class="px-1.5 py-0.5 rounded bg-amber-100 hover:bg-amber-200 border border-[#2d1e12] text-[10px] font-black">▶</button>
+          </div>
         </div>
-        <span class="text-[10px] font-bold text-orange-800">摸頭會笑開懷 😊 · 數值即時消耗</span>
+        <span class="text-[10px] font-bold text-amber-800">摸頭會笑開懷 😊</span>
       </div>
-      <div id="dock-tray" class="grid grid-cols-4 gap-1.5"></div>
+      <div id="dock-tray" class="grid grid-cols-4 grid-rows-2 gap-1.5 h-[132px]"></div>
     </div>
 
     <!-- Footer -->
@@ -199,47 +204,68 @@
     // 1. 全套去背立繪（含摸頭專用笑面立繪）＋ 10間手繪動畫房間
     // =========================================================================
     const ASSET_URLS = {
-      chibiJersey: "./assets/chibiJersey.png?v=19",
-      chibiSchool: "./assets/chibiSchool.png?v=19",
-      chibiPajama: "./assets/chibiPajama.png?v=19",
-      portraitJersey: "./assets/portraitJersey.png?v=19",
-      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=19",
-      portraitSchool: "./assets/portraitSchool.png?v=19",
-      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=19",
-      portraitPajama: "./assets/portraitPajama.png?v=19",
-      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=19",
-      portraitSleepy: "./assets/portraitSleepy.jpg?v=19",
-      bg_living: "./assets/bg_living.jpg?v=19",
-      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=19",
-      bg_kitchen: "./assets/bg_kitchen.jpg?v=19",
-      bg_bath: "./assets/bg_bath.jpg?v=19",
-      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=19",
-      bg_hallway: "./assets/bg_hallway.jpg?v=19",
-      bg_backyard: "./assets/bg_backyard.jpg?v=19",
-      bg_street: "./assets/bg_street.jpg?v=19",
-      bg_school_class: "./assets/bg_school_class.jpg?v=19",
-      bg_school_court: "./assets/bg_school_court.jpg?v=19",
-      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=19",
-      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=19",
-      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=19",
-      chibiBrother: "./assets/chibiBrother.png?v=19",
-      bg_main_street: "./assets/bg_main_street.jpg?v=19",
-      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=19",
-      bg_canteen: "./assets/bg_canteen.jpg?v=19",
-      bg_mall: "./assets/bg_mall.jpg?v=19",
-      bg_park: "./assets/bg_park.jpg?v=19",
-      bg_restaurant: "./assets/bg_restaurant.jpg?v=19",
-      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=19",
-      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=19",
-      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=19",
-      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=19",
-      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=19",
-      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=19",
-      bg_hospital: "./assets/bg_hospital.jpg?v=19",
-      bg_street_night: "./assets/bg_street_night.jpg?v=19",
-      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=19",
-      bg_park_night: "./assets/bg_park_night.jpg?v=19",
-      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=19"
+      chibiJersey: "./assets/chibiJersey.png?v=25",
+      chibiSchool: "./assets/chibiSchool.png?v=25",
+      chibiPajama: "./assets/chibiPajama.png?v=25",
+      portraitJersey: "./assets/portraitJersey.png?v=25",
+      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=25",
+      portraitSchool: "./assets/portraitSchool.png?v=25",
+      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=25",
+      portraitPajama: "./assets/portraitPajama.png?v=25",
+      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=25",
+      portraitSleepy: "./assets/portraitSleepy.jpg?v=25",
+      bg_living: "./assets/bg_living.jpg?v=25",
+      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=25",
+      bg_kitchen: "./assets/bg_kitchen.jpg?v=25",
+      bg_bath: "./assets/bg_bath.jpg?v=25",
+      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=25",
+      bg_hallway: "./assets/bg_hallway.jpg?v=25",
+      bg_backyard: "./assets/bg_backyard.jpg?v=25",
+      bg_street: "./assets/bg_street.jpg?v=25",
+      bg_school_class: "./assets/bg_school_class.jpg?v=25",
+      bg_school_court: "./assets/bg_school_court.jpg?v=25",
+      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=25",
+      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=25",
+      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=25",
+      chibiBrother: "./assets/chibiBrother.png?v=25",
+      bg_main_street: "./assets/bg_main_street.jpg?v=25",
+      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=25",
+      bg_canteen: "./assets/bg_canteen.jpg?v=25",
+      bg_mall: "./assets/bg_mall.jpg?v=25",
+      bg_park: "./assets/bg_park.jpg?v=25",
+      bg_restaurant: "./assets/bg_restaurant.jpg?v=25",
+      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=25",
+      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=25",
+      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=25",
+      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=25",
+      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=25",
+      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=25",
+      bg_hospital: "./assets/bg_hospital.jpg?v=25",
+      bg_street_night: "./assets/bg_street_night.jpg?v=25",
+      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=25",
+      bg_park_night: "./assets/bg_park_night.jpg?v=25",
+      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=25",
+      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=25",
+      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=25",
+      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=25",
+      bg_living_night: "./assets/bg_living_night.jpg?v=25",
+      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=25",
+      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=25",
+      bg_bath_night: "./assets/bg_bath_night.jpg?v=25",
+      bg_mall_night: "./assets/bg_mall_night.jpg?v=25",
+      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=25",
+      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=25",
+      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=25",
+      bg_living_morning: "./assets/bg_living_morning.jpg?v=25",
+      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=25",
+      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=25",
+      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=25",
+      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=25",
+      bg_street_morning: "./assets/bg_street_morning.jpg?v=25",
+      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=25",
+      bg_park_morning: "./assets/bg_park_morning.jpg?v=25",
+      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=25",
+      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=25"
     };
     const sprites = {};
 
@@ -437,7 +463,7 @@
 
     const STORAGE_KEY = 'chibi_tama_nohara_v6';
     let state = {
-      activeCharId: 'hinata', soundEnabled: true, dockTab: 'food', customCharacters: {}, pets: {},
+      activeCharId: 'hinata', soundEnabled: true, dockTab: 'food', actPage: 0, customCharacters: {}, pets: {},
       holidayDate: null, skipDinnerDate: null, msgLog: { date: null, asked: {}, promises: {} },
       outing: { type: null, returnAt: null, fromMall: false },
       brother: { currentRoom: 'living', currentActivity: 'tea', px: 380, py: 440, tx: 380, ty: 440, scheduleSlotKey: null }
@@ -980,7 +1006,14 @@
           pet.energy = Math.max(0, pet.energy - 1.0);
           targetX = pick.px - (bro.currentRoom === pet.currentRoom ? 35 : 0);
           targetY = pick.py;
-          if (viewRoomId === pet.currentRoom) speakAndShow(pick.line);
+          if (viewRoomId === pet.currentRoom) {
+            if (bro.currentRoom === pet.currentRoom && Math.random() < 0.55) {
+              const dPool = DUO_SAME_ROOM_DIALOGUES[pet.currentRoom] || DUO_SAME_ROOM_DIALOGUES.default;
+              speakAndShow(pickLine(dPool));
+            } else {
+              speakAndShow(pick.line);
+            }
+          }
         }
       }
 
@@ -1083,15 +1116,18 @@
       if (stroke) { ctx.lineWidth = lw; ctx.strokeStyle = stroke; ctx.stroke(); }
     }
 
-    const NIGHT_BG_ROOMS = new Set(['street', 'main_street', 'park', 'backyard']);
+    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'bath', 'backyard', 'street', 'main_street', 'park', 'mall', 'restaurant']);
     function drawAnimeRoomBackground(roomId, timeInfo) {
       const h = new Date().getHours();
       const isNight = (h >= 18 || h < 6);
+      const isMorning = (h >= 6 && h < 10);
       let bgKey = 'bg_' + roomId;
       if (roomId === 'konbini') {
         bgKey = (h >= 6 && h < 12) ? 'bg_konbini_morning' : (h >= 12 && h < 18 ? 'bg_konbini_afternoon' : 'bg_konbini_night');
       } else if (isNight && NIGHT_BG_ROOMS.has(roomId)) {
         bgKey = 'bg_' + roomId + '_night';
+      } else if (isMorning && NIGHT_BG_ROOMS.has(roomId)) {
+        bgKey = 'bg_' + roomId + '_morning';
       }
       const bg = sprites[bgKey] || sprites['bg_' + roomId];
       if (bg) {
@@ -1100,8 +1136,8 @@
         if (timeInfo.isLateNight) {
           ctx.fillStyle = hasDedicatedNight ? 'rgba(15, 23, 42, 0.14)' : 'rgba(15, 23, 42, 0.38)';
           ctx.fillRect(0, 0, 600, 600);
-        } else if (timeInfo.period === 'evening' && !hasDedicatedNight) {
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.18)';
+        } else if (isNight && !hasDedicatedNight) {
+          ctx.fillStyle = 'rgba(10, 18, 38, 0.42)';
           ctx.fillRect(0, 0, 600, 600);
         } else if (timeInfo.period === 'dusk' && !isNight) {
           ctx.fillStyle = 'rgba(251, 146, 60, 0.14)';
@@ -1119,30 +1155,87 @@
       }
     }
 
+    function drawRealisticBlanket(bx, by, bw, bh, mainCol, shadeCol, cuffCol) {
+      ctx.save();
+      // Drop shadow under blanket
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
+      ctx.beginPath();
+      ctx.roundRect(bx + 4, by + 6, bw, bh, 18);
+      ctx.fill();
+
+      // Main puffy duvet body with curved top edge
+      ctx.beginPath();
+      ctx.moveTo(bx + 12, by + 10);
+      ctx.quadraticCurveTo(bx + bw * 0.5, by + 2, bx + bw - 12, by + 10);
+      ctx.quadraticCurveTo(bx + bw + 4, by + bh * 0.45, bx + bw - 6, by + bh - 8);
+      ctx.quadraticCurveTo(bx + bw * 0.5, by + bh + 4, bx + 6, by + bh - 8);
+      ctx.quadraticCurveTo(bx - 4, by + bh * 0.45, bx + 12, by + 10);
+      ctx.closePath();
+      const grad = ctx.createLinearGradient(bx, by, bx, by + bh);
+      grad.addColorStop(0, mainCol);
+      grad.addColorStop(1, shadeCol);
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = '#1e293b';
+      ctx.stroke();
+
+      // Turned-down top duvet collar cuff
+      ctx.beginPath();
+      ctx.moveTo(bx + 10, by + 11);
+      ctx.quadraticCurveTo(bx + bw * 0.5, by + 3, bx + bw - 10, by + 11);
+      ctx.lineTo(bx + bw - 8, by + 25);
+      ctx.quadraticCurveTo(bx + bw * 0.5, by + 18, bx + 8, by + 25);
+      ctx.closePath();
+      ctx.fillStyle = cuffCol;
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#334155';
+      ctx.stroke();
+
+      // Soft fabric crease lines
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.32)';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(bx + 26, by + 36); ctx.quadraticCurveTo(bx + 44, by + 48, bx + 32, by + bh - 16);
+      ctx.moveTo(bx + bw - 28, by + 38); ctx.quadraticCurveTo(bx + bw - 42, by + 54, bx + bw - 24, by + bh - 18);
+      ctx.stroke();
+      ctx.restore();
+    }
+
     function drawAnimeRoomForeground(roomId, frame, pet) {
       const act = tempOverrideMode || pet.currentActivity;
       if (roomId === 'bath' && pet.currentRoom === 'bath' && act === 'bath') {
-        ctx.save();
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
-        ctx.beginPath(); ctx.ellipse(405, 355, 115, 22, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#f5efe6'; ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.moveTo(275, 360); ctx.lineTo(525, 360); ctx.lineTo(525, 455); ctx.lineTo(275, 455); ctx.closePath(); ctx.fill(); ctx.stroke();
-        ctx.font = '24px sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText('🫧', 345, 345 + Math.sin(frame * 0.09) * 4);
-        ctx.fillText('♨️', 465, 340 + Math.cos(frame * 0.08) * 4);
-        ctx.restore();
-      } else if (roomId === 'room_hinata' && pet.currentRoom === 'room_hinata' && (act === 'sleep' || act === 'waking')) {
-        const sleepBreath = act === 'sleep' ? Math.sin(frame * 0.05) * 3.2 : 0;
-        ctx.save();
-        roundRect(382, 362 + sleepBreath, 188, 95 - sleepBreath * 0.3, 18, '#93c5fd', '#3b82f6', 2.5);
-        if (act === 'sleep') {
-          roundRect(475, 232, 84, 54, 20, '#ffffff', '#2d1e12', 2.5);
-          ctx.font = '28px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(['🏐', '🍚', '👑'][dreamIdx % 3], 517, 268);
-          ctx.font = 'bold 20px sans-serif'; ctx.fillStyle = '#e0e7ff';
-          ctx.fillText('Zzz', 395, 272 - Math.abs(Math.sin(frame * 0.04)) * 10);
-        } else {
-          ctx.font = '28px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('😪', 475, 265);
+        const grad = ctx.createLinearGradient(0, 355, 0, 445);
+        grad.addColorStop(0, 'rgba(186, 230, 253, 0.72)');
+        grad.addColorStop(1, 'rgba(56, 189, 248, 0.90)');
+        roundRect(338, 355, 195, 80, 14, grad, '#0369a1', 3);
+        ctx.fillStyle = 'rgba(255,255,255,0.88)';
+        for (let i = 0; i < 6; i++) {
+          const bx = 358 + i * 30 + Math.sin(frame * 0.05 + i) * 5;
+          const by = 358 - (frame * 0.6 + i * 11) % 34;
+          ctx.beginPath(); ctx.arc(bx, by, 6 - (i % 3), 0, Math.PI * 2); ctx.fill();
         }
+      }
+      if (roomId === 'room_hinata' && pet.currentRoom === 'room_hinata' && (act === 'sleep' || act === 'waking' || act === 'sad_rest')) {
+        const sleepBreath = act === 'sleep' ? Math.sin(frame * 0.05) * 3.0 : 0;
+        drawRealisticBlanket(382, 366 + sleepBreath, 174, 86, '#7dd3fc', '#38bdf8', '#f8fafc');
+        if (act === 'sleep') {
+          ctx.save(); ctx.font = 'bold 20px "Noto Sans TC", sans-serif'; ctx.fillStyle = '#e0f2fe';
+          const floatZ = (frame * 0.6) % 28;
+          ctx.globalAlpha = 1 - floatZ / 28;
+          ctx.fillText('Zzz', 392 + Math.sin(frame * 0.05) * 6, 300 - floatZ);
+          ctx.restore();
+        }
+      }
+      if (roomId === 'room_aniki' && state.brother && state.brother.currentRoom === 'room_aniki' && state.brother.currentActivity === 'sleep') {
+        const sb = Math.sin(frame * 0.05 + 1) * 2.8;
+        drawRealisticBlanket(376, 368 + sb, 172, 84, '#64748b', '#334155', '#e2e8f0');
+        ctx.save(); ctx.font = 'bold 20px "Noto Sans TC", sans-serif'; ctx.fillStyle = '#e2e8f0';
+        const floatZ = ((frame + 14) * 0.6) % 28;
+        ctx.globalAlpha = 1 - floatZ / 28;
+        ctx.fillText('Zzz', 388 + Math.sin(frame * 0.05) * 6, 302 - floatZ);
         ctx.restore();
       }
     }
@@ -1326,13 +1419,13 @@
         return;
       }
       if (viewRoomId === 'room_aniki' && act === 'sleep') {
-        const sb = Math.sin(frame * 0.05) * 2.5;
+        const sb = Math.sin(frame * 0.05 + 1) * 2.5;
+        const sImg = isWorried ? (sprites.chibiBrotherSad || img) : (sprites.chibiBrotherSleep || img);
         ctx.save();
-        ctx.translate(455, 345 + sb);
+        ctx.translate(462, 344 + sb);
         ctx.rotate(-0.04);
-        ctx.drawImage(img, -70, -100, 140, 200);
+        ctx.drawImage(sImg, -68, -98, 136, 198);
         ctx.restore();
-        drawBrotherBadge(455, 250, 'sleep');
         return;
       }
 
@@ -1746,6 +1839,61 @@
       renderDock(); updateHUD(); saveState();
     }
 
+    const DUO_SAME_ROOM_DIALOGUES = {
+      kitchen: [
+        '「哥哥：快啲坐低食啦，凍咗就唔好味㗎～｜翔陽：好香呀哥哥！我開動啦！！🍚✨」',
+        '「翔陽：哥哥煎嘅太陽蛋永遠都係半熟最靚！｜哥哥：鍾意就食多碗飯啦～🍳💛」'
+      ],
+      living: [
+        '「翔陽：哥哥！電視播緊烏野場比賽重播呀快啲過嚟睇！｜哥哥：嚟緊嚟緊，幫你斟埋杯熱茶～📺🍵」',
+        '「哥哥：今日喺學校有冇咩趣事呀？｜翔陽：有呀！我今日個快攻又快咗少少！💬✨」'
+      ],
+      bath: [
+        '「翔陽：呼～浸熱水好舒服呀哥哥！｜哥哥：唔好浸太耐頭暈呀，一陣幫你抹乾個頭～🫧💛」',
+        '「哥哥：今日練波辛苦晒喇｜翔陽：有哥哥一齊浸浴成身疲勞無晒！♨️」'
+      ],
+      room_aniki: [
+        '「翔陽：哥哥呢隻排球 Game 我今次一定贏到你！｜哥哥：好呀，放馬過嚟啦細佬～🎮🔥」',
+        '「哥哥：唔好挨咁近部螢幕呀｜翔陽：知道！今局入波我請你飲麥茶！😆」'
+      ],
+      room_hinata: [
+        '「哥哥：呢條英文題唔明的話再問我，唔好估估下｜翔陽：有哥哥教我即刻明晒！！📖✨」',
+        '「翔陽：哥哥睇下我呢件 #10 隊服疊得整唔整齊？｜哥哥：好乖，聽日繼續加油～🏐💛」'
+      ],
+      backyard: [
+        '「翔陽：哥哥托高啲呀！我要跳起扣殺！！｜哥哥：好！接實呢球托球啦！🏐🔥」',
+        '「哥哥：落地記住屈膝卸力唔好傷到膝頭｜翔陽：收到！！再嚟多五球！💪」'
+      ],
+      street: [
+        '「翔陽：哥哥！今日放學條路好似特別快行完～｜哥哥：因為兩兄弟邊行邊傾計囉 😊🚶‍♂️」',
+        '「哥哥：睇路呀唔好掛住望天邊｜翔陽：嘿嘿！有哥哥拖住行好安心！🌇」'
+      ],
+      main_street: [
+        '「翔陽：嘩～麵包店出爐好香呀哥哥！｜哥哥：買兩個返去聽朝做早餐好唔好？🥐✨」',
+        '「哥哥：大街夜晚啲燈好靚呢｜翔陽：同哥哥一齊行街最開心！🏙️💛」'
+      ],
+      konbini: [
+        '「翔陽：哥哥我要熱辣辣肉包同牛奶！｜哥哥：好好好，今日你表現咁乖哥哥請！🏪🥟」',
+        '「哥哥：慢慢揀唔使急｜翔陽：呢款運動飲品最解渴！🥤✨」'
+      ],
+      mall: [
+        '「翔陽：哥哥你睇呢對排球鞋好輕身呀！｜哥哥：試啱碼數就買畀你做禮物啦～🛍️👟」',
+        '「哥哥：行到攰唔攰？去坐低食杯雪糕？｜翔陽：要士多啤梨味！！🍦❤️」'
+      ],
+      park: [
+        '「翔陽：海風吹過嚟好涼爽呀哥哥！｜哥哥：係呀，兩兄弟坐喺度吹下風真係好寫意～🌳🌊」',
+        '「哥哥：跑慢少少唔好仆親｜翔陽：哥哥追上嚟吖！一二一二！🏃‍♂️💨」'
+      ],
+      restaurant: [
+        '「翔陽：哥哥！漢堡扒加蛋包飯嚟啦！！｜哥哥：慢慢食唔好哽親呀～🍽️😋」',
+        '「哥哥：今日食大餐慶祝下｜翔陽：多謝哥哥！！同哥哥食飯最好味！💛✨」'
+      ],
+      default: [
+        '「翔陽：只要同哥哥喺同一間房就覺得好安心！😊｜哥哥：傻瓜，我一直都會陪住你～💛」',
+        '「哥哥：飲啖水休息下先啦｜翔陽：嗯！最鍾意哥哥！🥤✨」'
+      ]
+    };
+
     const BROTHER_MISS_THOUGHTS = [
       '「（哥哥心聲：唔知翔陽而家喺度做緊咩呢…好掛住佢呀💛）」',
       '「（哥哥心聲：陣間收工買啲翔陽最鍾意食嘅肉包返去畀佢先～🥟❤️）」',
@@ -1946,12 +2094,13 @@
           return;
         }
         tray.innerHTML = getActiveChar().foods.map((f, idx) => `
-          <button type="button" data-food-idx="${idx}" class="dock-chip bg-white hover:bg-orange-50 rounded-xl p-1.5 flex flex-col items-center cursor-grab">
+          <button type="button" data-food-idx="${idx}" class="dock-chip bg-white hover:bg-orange-50 rounded-xl p-1.5 flex flex-col items-center justify-center cursor-grab h-[62px]">
             <span class="text-xl leading-none">${f.emoji}</span>
             <span class="text-[10px] font-bold text-[#2d1e12] leading-tight mt-0.5">${f.name}</span>
             <span class="text-[9px] font-bold ${f.cost > 0 ? 'text-amber-600' : 'text-emerald-600'}">${f.cost > 0 ? '🪙' + f.cost : '免費'}</span>
           </button>
         `).join('');
+        document.getElementById('act-pager')?.classList.add('hidden');
         return;
       }
 
@@ -1994,8 +2143,17 @@
         { id: 'clean', emoji: '🧹', name: '執屋清潔', sub: '金幣+8' }
       );
 
-      tray.innerHTML = actions.map(a => `
-        <button type="button" data-act-id="${a.id}" class="dock-chip ${a.highlight ? 'bg-rose-100 border-rose-500' : 'bg-white hover:bg-orange-50'} rounded-xl p-1.5 flex flex-col items-center">
+      const totalPages = Math.max(1, Math.ceil(actions.length / 8));
+      state.actPage = Math.max(0, Math.min(totalPages - 1, state.actPage || 0));
+      const pager = document.getElementById('act-pager');
+      const pLbl = document.getElementById('act-page-lbl');
+      if (pager) {
+        if (totalPages > 1) { pager.classList.remove('hidden'); if (pLbl) pLbl.textContent = `${state.actPage + 1}/${totalPages}`; }
+        else pager.classList.add('hidden');
+      }
+      const pageActions = actions.slice(state.actPage * 8, state.actPage * 8 + 8);
+      tray.innerHTML = pageActions.map(a => `
+        <button type="button" data-act-id="${a.id}" class="dock-chip ${a.highlight ? 'bg-rose-100 border-rose-500' : 'bg-white hover:bg-orange-50'} rounded-xl p-1 flex flex-col items-center justify-center h-[62px]">
           <span class="text-lg leading-none">${a.emoji}</span>
           <span class="text-[10px] font-bold text-[#2d1e12] leading-tight mt-0.5">${a.name}</span>
           <span class="text-[9px] font-bold text-orange-600">${a.sub}</span>
@@ -2005,6 +2163,8 @@
 
     document.getElementById('tab-food').addEventListener('click', () => { state.dockTab = 'food'; renderDock(); });
     document.getElementById('tab-act').addEventListener('click', () => { state.dockTab = 'act'; renderDock(); });
+    document.getElementById('btn-act-prev').addEventListener('click', () => { state.actPage = Math.max(0, (state.actPage || 0) - 1); renderDock(); });
+    document.getElementById('btn-act-next').addEventListener('click', () => { state.actPage = (state.actPage || 0) + 1; renderDock(); });
 
     let dragStart = null;
     document.getElementById('dock-tray').addEventListener('pointerdown', (e) => {
