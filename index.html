@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="icon" type="image/png" href="./icon.png?v=14">
-  <link rel="apple-touch-icon" href="./icon.png?v=14">
+  <link rel="icon" type="image/png" href="./icon.png?v=15">
+  <link rel="apple-touch-icon" href="./icon.png?v=15">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -53,8 +53,8 @@
       </div>
       <div class="flex items-center gap-1.5">
         <button id="btn-sound" type="button" title="開關互動音效" class="w-8 h-8 rounded-full bg-white/25 hover:bg-white/35 border-2 border-white/50 flex items-center justify-center text-sm transition">🔊</button>
-        <button id="btn-holiday" type="button" class="px-2 py-1 rounded-full bg-white text-emerald-700 font-bold text-[11px] border-2 border-[#2d1e12] shadow-sm hover:bg-emerald-50 transition">🏖️ 設明日假期</button>
-        <button id="btn-schedule" type="button" class="px-2.5 py-1 rounded-full bg-white text-orange-600 font-bold text-xs border-2 border-[#2d1e12] shadow-sm hover:bg-orange-50 transition">📅 生活作息</button>
+        <button id="btn-holiday" type="button" class="whitespace-nowrap px-2 py-1 rounded-full bg-white text-emerald-700 font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-emerald-50 transition">🏖️ 設明日假期</button>
+        <button id="btn-schedule" type="button" class="whitespace-nowrap px-2 py-1 rounded-full bg-white text-orange-600 font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-orange-50 transition">📅 生活作息</button>
       </div>
     </div>
 
@@ -95,12 +95,6 @@
 
         <!-- Interactive Overlay (RPS / Chat / Jump Training) -->
         <div id="choice-overlay" class="hidden absolute bottom-11 left-1/2 -translate-x-1/2 w-[88%] bg-white/95 border-2 border-[#2d1e12] rounded-2xl p-2 shadow-xl z-30 flex flex-wrap items-center justify-center gap-1.5"></div>
-
-        <!-- Directional Tracker Arrow -->
-        <button id="tracker-arrow" type="button" class="hidden absolute bottom-10 right-3 bg-orange-500/95 hover:bg-orange-600 text-white border-2 border-[#2d1e12] rounded-2xl px-3 py-1.5 text-xs font-black shadow-lg flex items-center gap-1.5 animate-bounce z-20">
-          <span id="tracker-dir" class="text-base">⬅️</span>
-          <span id="tracker-text">日向喺客廳</span>
-        </button>
 
         <!-- Rally Mini-game Overlay -->
         <div id="mg-hud" class="hidden pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 bg-[#2d1e12]/90 text-white text-xs font-bold px-3.5 py-1 rounded-full shadow z-20">
@@ -205,36 +199,36 @@
     // 1. 全套去背立繪（含摸頭專用笑面立繪）＋ 10間手繪動畫房間
     // =========================================================================
     const ASSET_URLS = {
-      chibiJersey: "./assets/chibiJersey.png?v=14",
-      chibiSchool: "./assets/chibiSchool.png?v=14",
-      chibiPajama: "./assets/chibiPajama.png?v=14",
-      portraitJersey: "./assets/portraitJersey.png?v=14",
-      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=14",
-      portraitSchool: "./assets/portraitSchool.png?v=14",
-      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=14",
-      portraitPajama: "./assets/portraitPajama.png?v=14",
-      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=14",
-      portraitSleepy: "./assets/portraitSleepy.jpg?v=14",
-      bg_living: "./assets/bg_living.jpg?v=14",
-      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=14",
-      bg_kitchen: "./assets/bg_kitchen.jpg?v=14",
-      bg_bath: "./assets/bg_bath.jpg?v=14",
-      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=14",
-      bg_hallway: "./assets/bg_hallway.jpg?v=14",
-      bg_backyard: "./assets/bg_backyard.jpg?v=14",
-      bg_street: "./assets/bg_street.jpg?v=14",
-      bg_school_class: "./assets/bg_school_class.jpg?v=14",
-      bg_school_court: "./assets/bg_school_court.jpg?v=14",
-      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=14",
-      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=14",
-      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=14",
-      chibiBrother: "./assets/chibiBrother.png?v=14",
-      bg_main_street: "./assets/bg_main_street.jpg?v=14",
-      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=14",
-      bg_canteen: "./assets/bg_canteen.jpg?v=14",
-      bg_mall: "./assets/bg_mall.jpg?v=14",
-      bg_park: "./assets/bg_park.jpg?v=14",
-      bg_restaurant: "./assets/bg_restaurant.jpg?v=14"
+      chibiJersey: "./assets/chibiJersey.png?v=15",
+      chibiSchool: "./assets/chibiSchool.png?v=15",
+      chibiPajama: "./assets/chibiPajama.png?v=15",
+      portraitJersey: "./assets/portraitJersey.png?v=15",
+      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=15",
+      portraitSchool: "./assets/portraitSchool.png?v=15",
+      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=15",
+      portraitPajama: "./assets/portraitPajama.png?v=15",
+      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=15",
+      portraitSleepy: "./assets/portraitSleepy.jpg?v=15",
+      bg_living: "./assets/bg_living.jpg?v=15",
+      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=15",
+      bg_kitchen: "./assets/bg_kitchen.jpg?v=15",
+      bg_bath: "./assets/bg_bath.jpg?v=15",
+      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=15",
+      bg_hallway: "./assets/bg_hallway.jpg?v=15",
+      bg_backyard: "./assets/bg_backyard.jpg?v=15",
+      bg_street: "./assets/bg_street.jpg?v=15",
+      bg_school_class: "./assets/bg_school_class.jpg?v=15",
+      bg_school_court: "./assets/bg_school_court.jpg?v=15",
+      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=15",
+      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=15",
+      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=15",
+      chibiBrother: "./assets/chibiBrother.png?v=15",
+      bg_main_street: "./assets/bg_main_street.jpg?v=15",
+      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=15",
+      bg_canteen: "./assets/bg_canteen.jpg?v=15",
+      bg_mall: "./assets/bg_mall.jpg?v=15",
+      bg_park: "./assets/bg_park.jpg?v=15",
+      bg_restaurant: "./assets/bg_restaurant.jpg?v=15"
     };
     const sprites = {};
 
@@ -277,7 +271,8 @@
     const ROOM_FURNITURE = {
       living: [
         { id: 'tea', label: '坐墊茶几', hx: 290, hy: 400, hr: 85, px: 280, py: 440, act: 'tea', line: '「同哥哥坐喺紅坐墊飲杯熱茶，暖笠笠好舒服！🍵」' },
-        { id: 'tv',  label: '客廳電視梳化', hx: 485, hy: 330, hr: 90, px: 430, py: 420, act: 'tv', line: '「開電視！播緊烏野對戰精華呀哥哥快睇！📺」' }
+        { id: 'tv',  label: '客廳電視梳化', hx: 485, hy: 330, hr: 90, px: 430, py: 420, act: 'tv', line: '「開電視！播緊烏野對戰精華呀哥哥快睇！📺」' },
+        { id: 'stretch_lv', label: '客廳伸懶腰', hx: 160, hy: 420, hr: 85, px: 165, py: 440, act: 'stretch', line: '「喺客廳伸個大懶腰，成個人輕鬆晒～🙆‍♂️✨」' }
       ],
       kitchen: [
         { id: 'fridge', label: '雪櫃', hx: 70, hy: 350, hr: 80, px: 145, py: 435, act: 'fridge', line: '「打開雪櫃睇下～有凍麥茶同雞蛋！🧊」' },
@@ -286,55 +281,77 @@
       ],
       room_hinata: [
         { id: 'desk', label: '書枱', hx: 115, hy: 350, hr: 90, px: 165, py: 430, act: 'homework', line: '「開着盞枱燈溫下英文單字先…哥哥記得教我！📖」' },
-        { id: 'bed',  label: '床鋪', hx: 465, hy: 375, hr: 110, px: 472, py: 355, act: 'sleep', line: '「鑽入被竇暖笠笠…哥哥晚安…Zzz 🛏️」' }
+        { id: 'bed',  label: '床鋪', hx: 465, hy: 375, hr: 110, px: 472, py: 355, act: 'sleep', line: '「鑽入被竇暖笠笠…哥哥晚安…Zzz 🛏️」' },
+        { id: 'gear', label: '排球護膝角', hx: 290, hy: 410, hr: 90, px: 285, py: 440, act: 'gear_prep', line: '「執好對排球護膝同毛巾，聽日繼續衝！🏐🎒」' },
+        { id: 'win',  label: '窗邊睇風景', hx: 360, hy: 290, hr: 85, px: 355, py: 425, act: 'window_gaze', line: '「望住窗外嘅天空，諗起下次比賽就熱血沸騰！🌤️」' }
       ],
       room_aniki: [
         { id: 'console', label: '哥哥電腦位', hx: 120, hy: 300, hr: 95, px: 190, py: 435, act: 'gaming', line: '「打開哥哥部遊戲機打兩局排球Game！🎮」' },
-        { id: 'aniki_bed', label: '哥哥張床', hx: 465, hy: 375, hr: 110, px: 390, py: 435, act: 'happy', line: '「哥哥張床特別軟熟～嘿嘿 😊」' }
+        { id: 'aniki_bed', label: '哥哥張床', hx: 465, hy: 375, hr: 110, px: 390, py: 435, act: 'happy', line: '「哥哥張床特別軟熟～聽住歌休息下 😊🎵」' },
+        { id: 'aniki_shelf', label: '書架睇漫畫', hx: 290, hy: 330, hr: 85, px: 290, py: 435, act: 'read_manga', line: '「喺哥哥書架搵到最新一期排球漫畫呀！📚✨」' }
       ],
       bath: [
         { id: 'sink', label: '洗手盆刷牙', hx: 145, hy: 340, hr: 85, px: 200, py: 435, act: 'brush', line: '「刷刷刷～朝早起身刷牙洗臉醒神晒！🪥」' },
         { id: 'tub',  label: '熱水浴缸', hx: 415, hy: 360, hr: 115, px: 405, py: 332, act: 'bath', line: '「浸落熱水浴缸好爽呀！成身暖笠笠！🫧」' }
       ],
       hallway: [
-        { id: 'shoes', label: '鞋櫃', hx: 380, hy: 340, hr: 85, px: 310, py: 440, act: 'hallway', line: '「着好對運動鞋準備出門啦哥哥！👟」' }
+        { id: 'shoes', label: '鞋櫃', hx: 380, hy: 340, hr: 85, px: 310, py: 440, act: 'hallway', line: '「着好對運動鞋準備出門啦哥哥！👟」' },
+        { id: 'mirror', label: '玄關照鏡', hx: 220, hy: 310, hr: 85, px: 215, py: 440, act: 'mirror_prep', line: '「照下鏡整理好件衫同書包，精神爽利！🪞✨」' },
+        { id: 'umbrella', label: '傘架執嘢', hx: 470, hy: 380, hr: 80, px: 430, py: 440, act: 'tidy_bag', line: '「檢查清楚有冇帶齊鎖匙同水樽先～🔑💧」' }
       ],
       backyard: [
-        { id: 'net', label: '後院排球網', hx: 420, hy: 340, hr: 100, px: 315, py: 435, act: 'backyard', line: '「放學返到屋企喺後院繼續練排球！🏐」' }
+        { id: 'net', label: '後院排球網', hx: 420, hy: 340, hr: 100, px: 315, py: 435, act: 'backyard', line: '「喺後院練排球！跳起扣殺！！🏐🔥」' },
+        { id: 'by_jump', label: '助跑摸高', hx: 200, hy: 340, hr: 95, px: 210, py: 435, act: 'jump', line: '「助跑三步起跳摸高！要比尋日高多 1cm！⬆️💨」' },
+        { id: 'by_stretch', label: '草地拉筋', hx: 340, hy: 430, hr: 90, px: 350, py: 445, act: 'stretch', line: '「練完波記住拉下筋放鬆小腿肌肉～🧘‍♂️」' }
       ],
       street: [
-        { id: 'vend', label: '自動販賣機', hx: 480, hy: 350, hr: 95, px: 340, py: 440, act: 'street', line: '「着好衛衣校服行路返學/放學！🎒」' }
+        { id: 'vend', label: '自動販賣機', hx: 480, hy: 350, hr: 95, px: 380, py: 440, act: 'vend_drink', line: '「喺自動販賣機叮一罐熱粟米湯／運動飲品！🥤」' },
+        { id: 'walk_st', label: '街頭步行', hx: 260, hy: 410, hr: 95, px: 260, py: 440, act: 'street', line: '「行街返屋企路上吹下微風好寫意！🚶‍♂️」' },
+        { id: 'shop_stop', label: '街邊小店買嘢', hx: 150, hy: 360, hr: 90, px: 165, py: 440, act: 'shop_snack', line: '「行過街邊小店買少少零食仔返屋企先！🛍️🍡」' }
       ],
       school_class: [
         { id: 'sdesk', label: '課室書枱', hx: 225, hy: 400, hr: 90, px: 235, py: 435, act: 'school_class', line: '「認真上堂抄筆記中…📚」' },
-        { id: 'lunch', label: '食午餐便當', hx: 425, hy: 400, hr: 90, px: 390, py: 435, act: 'lunch', line: '「午休時間食香噴噴便當！🍱」' }
+        { id: 'lunch', label: '食午餐便當', hx: 425, hy: 400, hr: 90, px: 390, py: 435, act: 'lunch', line: '「午休時間食香噴噴便當！🍱」' },
+        { id: 'class_chat', label: '小息傾排球', hx: 330, hy: 340, hr: 90, px: 325, py: 435, act: 'class_break', line: '「小息同隔離位同學講起今朝個快攻！💬🏐」' },
+        { id: 'blackboard', label: '望黑板舉手', hx: 150, hy: 300, hr: 90, px: 165, py: 430, act: 'school_class', line: '「老師呢題我識答！舉手！🙋‍♂️📝」' }
       ],
       konbini: [
         { id: 'nikuman', label: '熱辣辣肉包蒸籠', hx: 410, hy: 450, hr: 90, px: 350, py: 445, act: 'konbini', line: '「熱騰騰嘅肉包出爐喇！！哥哥食唔食？🥟✨」' },
-        { id: 'cooler',  label: '飲品雪櫃',       hx: 515, hy: 310, hr: 90, px: 470, py: 440, act: 'konbini', line: '「練完波飲支冰凍運動飲品最爽！🥤」' }
+        { id: 'cooler',  label: '飲品雪櫃',       hx: 515, hy: 310, hr: 90, px: 470, py: 440, act: 'vend_drink', line: '「揀支冰凍運動飲品定熱牛奶好呢？🥤🥛」' },
+        { id: 'cashier', label: '收銀台排隊',     hx: 180, hy: 360, hr: 90, px: 200, py: 445, act: 'shop_snack', line: '「攞好晒零食排隊畀錢囉～💳🛍️」' }
       ],
       school_court: [
-        { id: 'cnet', label: '球場排球網', hx: 360, hy: 320, hr: 120, px: 300, py: 435, act: 'school_court', line: '「放學社團練習！跳到最高點扣殺！！🏐🔥」' }
+        { id: 'cnet', label: '球場排球網', hx: 360, hy: 320, hr: 120, px: 300, py: 435, act: 'school_court', line: '「放學社團練習！跳到最高點扣殺！！🏐🔥」' },
+        { id: 'c_run', label: '繞場跑步熱身', hx: 160, hy: 410, hr: 100, px: 165, py: 440, act: 'court_run', line: '「一二、一二！繞住排球場跑步熱身十個圈！🏃‍♂️💨」' },
+        { id: 'c_jump', label: '網前跳高特訓', hx: 460, hy: 390, hr: 100, px: 435, py: 435, act: 'jump', line: '「助跑起跳摸高！！每次都要跳得比尋日更高！⬆️🔥」' }
       ],
       main_street: [
-        { id: 'walk_main', label: '大街步道', hx: 300, hy: 380, hr: 110, px: 280, py: 445, act: 'street', line: '「呢條大街好熱鬧！上面係哥哥醫院，左右有公園同商場～🏙️」' }
+        { id: 'walk_main', label: '大街步道', hx: 300, hy: 380, hr: 110, px: 280, py: 445, act: 'street', line: '「呢條大街好熱鬧！上面係哥哥醫院，左右有公園同商場～🏙️」' },
+        { id: 'bakery', label: '麵包店買嘢', hx: 140, hy: 360, hr: 95, px: 160, py: 445, act: 'shop_snack', line: '「經過麵包店聞到好香，順手買個菠蘿包一陣食！🥐🛍️」' },
+        { id: 'greet_nb', label: '街角打招呼', hx: 440, hy: 380, hr: 95, px: 420, py: 445, act: 'happy', line: '「同街口位婆婆揮手打招呼，今日天氣真係好！👋☀️」' }
       ],
       pharmacy: [
-        { id: 'dispense', label: '配藥櫃檯', hx: 220, hy: 360, hr: 95, px: 230, py: 440, act: 'pharmacy_dispense', line: '「哥哥喺度仔細核對緊處方配藥，好專業呀！💊」' },
-        { id: 'pc_enter', label: '藥房電腦位', hx: 410, hy: 330, hr: 95, px: 390, py: 440, act: 'pharmacy_pc', line: '「哥哥坐喺電腦前打板入文件，辛苦晒！💻」' }
+        { id: 'dispense', label: '配藥櫃檯', hx: 220, hy: 360, hr: 95, px: 225, py: 440, act: 'pharmacy_dispense', line: '「哥哥喺度仔細核對緊處方配藥，好專業呀！💊」' },
+        { id: 'pc_enter', label: '藥房電腦位', hx: 395, hy: 330, hr: 95, px: 390, py: 440, act: 'pharmacy_pc', line: '「哥哥坐喺電腦前打板入文件，辛苦晒！💻」' },
+        { id: 'give_med', label: '取藥窗口', hx: 480, hy: 380, hr: 90, px: 465, py: 440, act: 'pharmacy_give', line: '「哥哥溫柔咁向病人講解點樣食藥～🩺💛」' }
       ],
       canteen: [
         { id: 'canteen_tbl', label: '醫院飯堂餐桌', hx: 300, hy: 390, hr: 110, px: 295, py: 440, act: 'canteen_lunch', line: '「醫院 Canteen 今日有豬扒飯定烏冬食呢？🍱」' }
       ],
       mall: [
-        { id: 'mall_atrium', label: '商場中庭', hx: 300, hy: 380, hr: 110, px: 290, py: 445, act: 'mall', line: '「同哥哥一齊行商場睇運動用品同買雪糕！🛍️🍦」' }
+        { id: 'mall_atrium', label: '商場中庭', hx: 300, hy: 380, hr: 110, px: 290, py: 445, act: 'mall', line: '「同哥哥一齊行商場睇運動用品同買雪糕！🛍️🍦」' },
+        { id: 'mall_sport', label: '運動用品店', hx: 140, hy: 360, hr: 95, px: 160, py: 445, act: 'shop_snack', line: '「睇中對新排球鞋呀！好型好輕身！👟✨」' },
+        { id: 'mall_gacha', label: '精品扭蛋區', hx: 460, hy: 360, hr: 95, px: 440, py: 445, act: 'happy', line: '「嘩！呢排扭蛋機有排球吊飾呀哥哥！🎁」' }
       ],
       park: [
         { id: 'park_bench', label: '海邊長椅', hx: 440, hy: 380, hr: 100, px: 360, py: 445, act: 'park_breeze', line: '「坐喺海邊長椅吹下海風，好舒服呀哥哥！🌊」' },
-        { id: 'park_path',  label: '緩跑徑', hx: 220, hy: 410, hr: 100, px: 230, py: 445, act: 'park_jog', line: '「同哥哥喺公園慢跑熱身，跑多兩個圈！🏃‍♂️」' }
+        { id: 'park_path',  label: '緩跑徑', hx: 220, hy: 410, hr: 100, px: 210, py: 445, act: 'park_jog', line: '「同哥哥喺公園慢跑熱身，跑多兩個圈！🏃‍♂️」' },
+        { id: 'park_walk',  label: '林蔭散步', hx: 320, hy: 390, hr: 95, px: 290, py: 445, act: 'park_walk', line: '「喺公園樹蔭下慢慢散步傾下計好寫意～🌳😊」' }
       ],
       restaurant: [
-        { id: 'rest_booth', label: '餐廳卡位', hx: 300, hy: 390, hr: 110, px: 290, py: 440, act: 'restaurant', line: '「同哥哥坐卡位食大餐！漢堡扒加蛋包飯！🍽️✨」' }
+        { id: 'rest_booth', label: '餐廳卡位', hx: 300, hy: 390, hr: 110, px: 290, py: 440, act: 'restaurant', line: '「同哥哥坐卡位食大餐！漢堡扒加蛋包飯！🍽️✨」' },
+        { id: 'rest_menu',  label: '睇餐牌揀嘢食', hx: 170, hy: 390, hr: 90, px: 185, py: 440, act: 'rest_menu', line: '「餐牌每樣都好想食！哥哥你幫我揀吖～📖😋」' },
+        { id: 'rest_water', label: '飲凍水傾計', hx: 430, hy: 390, hr: 90, px: 410, py: 440, act: 'tea', line: '「一邊飲住凍檸檬水一邊等上菜，好香呀！🥤✨」' }
       ]
     };
 
@@ -402,7 +419,7 @@
     const STORAGE_KEY = 'chibi_tama_nohara_v6';
     let state = {
       activeCharId: 'hinata', soundEnabled: true, dockTab: 'food', customCharacters: {}, pets: {},
-      holidayDate: null, skipDinnerDate: null,
+      holidayDate: null, skipDinnerDate: null, msgLog: { date: null, asked: {}, promises: {} },
       outing: { type: null, returnAt: null, fromMall: false },
       brother: { currentRoom: 'living', currentActivity: 'tea', px: 380, py: 440, tx: 380, ty: 440, scheduleSlotKey: null }
     };
@@ -447,6 +464,7 @@
       if (p.dailyDate !== today) { p.dailyDate = today; p.dailyExpGained = 0; p.dailyCoinsGained = 0; }
       if (!state.brother) state.brother = { currentRoom: 'living', currentActivity: 'tea', px: 380, py: 440, tx: 380, ty: 440, scheduleSlotKey: null };
       if (!state.outing) state.outing = { type: null, returnAt: null, fromMall: false };
+      if (!state.msgLog || state.msgLog.date !== today) state.msgLog = { date: today, asked: {}, promises: {} };
       return p;
     }
 
@@ -484,7 +502,8 @@
     function getScheduledState(info) {
       const m = info.totalMin;
       const today = getTodayStr();
-      const skipDinner = !info.isWeekend && state.skipDinnerDate === today;
+      const promises = (state.msgLog && state.msgLog.date === today && state.msgLog.promises) ? state.msgLog.promises : {};
+      const skipDinner = !info.isWeekend && (state.skipDinnerDate === today || promises.dinner === 'restaurant');
       if (!info.isWeekend) {
         if (m < 480)  return { key: 'wd_sleep',  room: 'room_hinata',  act: 'sleep',        outfit: 2, px: 472, py: 355, label: '熟睡中' };
         if (m < 495)  return { key: 'wd_brush',  room: 'bath',         act: 'brush',        outfit: 2, px: 165, py: 440, label: '起身刷牙' };
@@ -523,7 +542,8 @@
     function getBrotherScheduledState(info) {
       const m = info.totalMin;
       const today = getTodayStr();
-      const skipDinner = !info.isWeekend && state.skipDinnerDate === today;
+      const promises = (state.msgLog && state.msgLog.date === today && state.msgLog.promises) ? state.msgLog.promises : {};
+      const skipDinner = !info.isWeekend && (state.skipDinnerDate === today || promises.dinner === 'restaurant');
       if (!info.isWeekend) {
         if (m < 450)  return { key: 'br_sleep',      room: 'room_aniki', act: 'sleep',         px: 440, py: 365 };
         if (m < 470)  return { key: 'br_cook_bf',    room: 'kitchen',    act: 'cook_bfast',    px: 255, py: 435 };
@@ -571,6 +591,8 @@
     let lastFreeRoamAt = 0;
     let lastBrotherRoamAt = 0;
     let lastDuoEventAt = 0;
+    let lastPetAutoActAt = 0;
+    let lastBroAutoActAt = 0;
 
     function startDuoOuting(type, durationMin, actName, toastMsg, speechMsg, fromMall = false) {
       const pet = ensurePetState(state.activeCharId);
@@ -741,6 +763,64 @@
               viewRoomId = 'backyard';
               speakAndShow('「翔陽：哥哥同我去後院托兩球排球練下先！🏐✨」');
             }
+          }
+        }
+      }
+
+      // 7. Autonomous In-Room Interactions (every ~18s, excluding eating/cooking/bath/sleep)
+      const nowMs = Date.now();
+      const petFixed = ['sleep', 'waking', 'breakfast', 'lunch', 'dinner', 'cook', 'bath', 'brush'];
+      if (!transitionState && !rally.active && !petFixed.includes(pet.currentActivity) && !['bath', 'canteen'].includes(pet.currentRoom) && nowMs - lastPetAutoActAt > 18000) {
+        lastPetAutoActAt = nowMs;
+        const furns = (ROOM_FURNITURE[pet.currentRoom] || []).filter(f => f.act !== 'sleep');
+        if (furns.length > 1) {
+          const pick = furns[Math.floor(Math.random() * furns.length)];
+          pet.currentActivity = pick.act;
+          targetX = pick.px - (bro.currentRoom === pet.currentRoom ? 35 : 0);
+          targetY = pick.py;
+          if (viewRoomId === pet.currentRoom) speakAndShow(pick.line);
+        }
+      }
+
+      const broFixed = ['sleep', 'brush', 'cook_bfast', 'prep_bfast', 'cook_lunch', 'cook_dinner', 'breakfast', 'lunch', 'dinner', 'canteen_lunch', 'bath'];
+      if (!broFixed.includes(bro.currentActivity) && !['bath', 'canteen', 'school_class', 'school_court'].includes(bro.currentRoom) && nowMs - lastBroAutoActAt > 18000) {
+        lastBroAutoActAt = nowMs;
+        const bFurns = (ROOM_FURNITURE[bro.currentRoom] || []).filter(f => f.act !== 'sleep');
+        if (bFurns.length > 0) {
+          const pick = bFurns[Math.floor(Math.random() * bFurns.length)];
+          bro.currentActivity = pick.act;
+          bro.tx = Math.min(500, pick.px + (bro.currentRoom === pet.currentRoom ? 45 : 0));
+          bro.ty = pick.py;
+        }
+      }
+
+      // 8. Execute Daily SMS Promises at their scheduled times
+      const promises = (state.msgLog && state.msgLog.date === getTodayStr() && state.msgLog.promises) ? state.msgLog.promises : {};
+      if (!state.outing.type && !state.gamingReturnAt && !transitionState) {
+        if (!info.isWeekend && info.totalMin >= 1095 && info.totalMin < 1125 && promises.dinner === 'restaurant') {
+          promises.dinner = 'done';
+          startDuoOuting('restaurant', 60, 'restaurant', '照今朝訊息約定，一齊去餐廳食晚餐！🍽️', '「哥哥！我記得我哋今日約咗去餐廳食大餐㗎！好期待呀～🍽️❤️」');
+        } else if (info.totalMin >= 1160 && info.totalMin < 1215 && promises.play_mode === 'study') {
+          promises.play_mode = 'done';
+          pet.currentRoom = 'room_hinata'; pet.currentActivity = 'homework'; targetX = 165; targetY = 430;
+          bro.currentRoom = 'room_hinata'; bro.currentActivity = 'tutoring'; bro.tx = 255; bro.ty = 430;
+          if (viewRoomId === 'room_aniki' || viewRoomId === 'room_hinata') {
+            viewRoomId = 'room_hinata';
+            speakAndShow('「哥哥！照今朝訊息講好咗一齊溫英文小測呀！📖❤️❤️」');
+          }
+        } else if (info.totalMin >= 1260 && info.totalMin < 1350) {
+          if (promises.practice === true) {
+            promises.practice = 'done';
+            pet.currentRoom = 'backyard'; pet.currentActivity = 'backyard'; targetX = 245; targetY = 435;
+            bro.currentRoom = 'backyard'; bro.currentActivity = 'backyard'; bro.tx = 370; bro.ty = 435;
+            viewRoomId = 'backyard';
+            speakAndShow('「哥哥！照約定一齊嚟後院加練排球啦！🏐🔥」');
+          } else if (promises.konbini === true) {
+            promises.konbini = 'done';
+            startDuoOuting('konbini', 10, 'konbini', '照今朝訊息約定，一齊去便利店買宵夜（10分鐘）🏪', '「哥哥！我哋照約定落便利店買熱辣辣肉包啦！🏪🥟」');
+          } else if (promises.park === true) {
+            promises.park = 'done';
+            startDuoOuting('park', 30, 'park_breeze', '照今朝訊息約定，一齊去公園散步吹海風（30分鐘）🌳', '「哥哥！我哋照約定去海濱公園吹海風啦！🌳🌊」');
           }
         }
       }
@@ -964,7 +1044,10 @@
       tv: '📺 睇電視中', tea: '🍵 飲茶休息', fridge: '🧊 睇雪櫃', cook: '🍳 幫手煮飯',
       happy: '✨ 好開心', jump: '🏐 練球特訓', konbini: '🏪 行便利店',
       mall: '🛍️ 行商場中', restaurant: '🍽️ 餐廳食飯中',
-      park_jog: '🏃 公園慢跑', park_walk: '🚶 公園散步', park_breeze: '🌊 睇海風中'
+      park_jog: '🏃 公園慢跑', park_walk: '🚶 公園散步', park_breeze: '🌊 睇海風中', court_run: '🏃 跑步熱身中', stretch: '🧘‍♂️ 拉筋放鬆中',
+      gear_prep: '🏐 整理裝備中', window_gaze: '🌤️ 望窗外發呆', read_manga: '📚 睇排球漫畫',
+      mirror_prep: '🪞 整理儀容中', tidy_bag: '🔑 檢查隨身物', vend_drink: '🥤 買嘢飲中',
+      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中'
     };
     const BROTHER_ACTIVITY_LABELS = {
       sleep: '😴 哥哥熟睡中', brush: '🪥 哥哥刷牙中', cook_bfast: '🍳 煮緊早餐', prep_bfast: '🥞 準備早餐中',
@@ -975,7 +1058,10 @@
       canteen_lunch: '🍱 Canteen 食飯', konbini: '🏪 陪買肉包',
       mall: '🛍️ 陪行商場', restaurant: '🍽️ 餐廳食飯中',
       park_jog: '🏃 一齊慢跑', park_walk: '🚶 一齊散步', park_breeze: '🌊 陪睇海風',
-      backyard: '🏐 陪練排球', idle: '✨ 休息中'
+      backyard: '🏐 陪練排球', idle: '✨ 休息中', stretch: '🧘‍♂️ 拉筋中',
+      gear_prep: '🏐 幫手執裝備', window_gaze: '🌤️ 望窗外思考', read_manga: '📚 睇漫畫中',
+      mirror_prep: '🪞 整理儀容', tidy_bag: '🔑 檢查鎖匙', vend_drink: '🥤 買嘢飲中',
+      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中'
     };
     const IDLE_THOUGHTS = ['💭 想食玉子拌飯…', '💭 聽日要跳高啲！', '💭 哥哥幾時同我打機？', '💭 烏野一定打入全國！'];
 
@@ -1082,7 +1168,7 @@
       const cx = petX, cy = petY;
       const isWalking = transitionState !== null || (Math.hypot(targetX - petX, targetY - petY) > 5);
       const isJumping = (act === 'school_court' || act === 'backyard' || act === 'jump') && !isWalking && !rally.active;
-      const jumpY = isJumping ? -Math.abs(Math.sin(frame * 0.16)) * 55 : (act === 'happy' || isPetting ? -Math.abs(Math.sin(frame * 0.18)) * 16 : ((isWalking || act === 'park_jog') ? -Math.abs(Math.sin(frame * 0.24)) * 11 : 0));
+      const jumpY = isJumping ? -Math.abs(Math.sin(frame * 0.16)) * 55 : (act === 'happy' || isPetting ? -Math.abs(Math.sin(frame * 0.18)) * 16 : ((isWalking || act === 'park_jog' || act === 'court_run') ? -Math.abs(Math.sin(frame * 0.24)) * 11 : 0));
       const breathSy = 1 + Math.sin(frame * 0.07) * 0.024;
       const breathSx = 1 - Math.sin(frame * 0.07) * 0.014;
       const tilt = isWalking ? Math.sin(frame * 0.24) * 0.08 : (isPetting ? Math.sin(frame * 0.15) * 0.07 : Math.sin(frame * 0.04) * 0.02);
@@ -1343,7 +1429,7 @@
       if (!isZoomed && pet.currentRoom !== viewRoomId) {
         if (state.brother && state.brother.currentRoom === viewRoomId && Math.hypot(x - state.brother.px, y - state.brother.py) <= 95) {
           playSFX('pat');
-          speakAndShow(pickLine(DUO_DIALOGUES));
+          speakAndShow(pickLine(BROTHER_MISS_THOUGHTS));
           particles.push({ x: state.brother.px, y: state.brother.py - 80, text: '💛 哥哥', color: '#f59e0b', life: 36 });
           return;
         }
@@ -1419,16 +1505,122 @@
       renderDock(); updateHUD(); saveState();
     }
 
-    const DUO_DIALOGUES = [
-      '「翔陽：哥哥你喺醫院藥房成日企住配藥累唔累呀？今晚我幫你揼骨！💪」',
-      '「哥哥：今日做完功課未？唔識做記得拎過嚟問我，唔好臨急抱佛腳呀～📖」',
-      '「翔陽：哥哥煮嘅玉子拌飯同漢堡扒係全日本最好食㗎！🍳✨」',
-      '「哥哥：聽日放假你想去商場睇波鞋，定係去海邊公園慢跑？👟🌳」',
-      '「翔陽：啱啱喺後院練球好似又跳高咗 2cm！下次比賽一定要靠呢招得分！🏐🔥」',
-      '「哥哥：記住飲多啲水呀，練完波唔好即刻飲太凍嘅嘢～💧」',
-      '「翔陽：哥哥你放工返嚟一齊行返屋企嗰陣，我覺得成條街都特別開心！😊」',
-      '「哥哥：夜少少睇完電視，一齊落便利店買熱辣辣肉包食好唔好？🏪🥟」'
+    const BROTHER_MISS_THOUGHTS = [
+      '「（哥哥心聲：唔知翔陽而家喺度做緊咩呢…好掛住佢呀💛）」',
+      '「（哥哥心聲：陣間收工買啲翔陽最鍾意食嘅肉包返去畀佢先～🥟❤️）」',
+      '「（哥哥心聲：翔陽每日咁努力練波，一定要好好照顧佢唔好畀佢累親！🏐💛）」'
     ];
+
+    const SMS_QUESTIONS = [
+      {
+        id: 'q_dinner',
+        title: '🍽️ 今晚想喺屋企食，定係去餐廳食大餐？',
+        resolve: (pet) => {
+          if (Math.random() < 0.65) {
+            return {
+              promised: { dinner: 'restaurant' },
+              reply: '「我想同哥哥去家庭餐廳食漢堡扒蛋包飯！！今晚約定你啦！🍽️✨」',
+              badge: '今晚約定去餐廳食晚餐'
+            };
+          }
+          return {
+            promised: { dinner: 'home' },
+            reply: '「今晚想食哥哥親手煮嘅晚餐多啲，返屋企食啦❤️」',
+            badge: '今晚喺屋企食哥哥煮飯'
+          };
+        }
+      },
+      {
+        id: 'q_practice',
+        title: '🏐 今晚睇電視前，一唔一齊去後院加練排球？',
+        resolve: (pet) => {
+          if (pet.energy >= 55 && Math.random() < 0.6) {
+            return {
+              promised: { practice: true },
+              reply: '「好呀！！哥哥幫我托球，我今晚要練多十球扣殺！🏐🔥」',
+              badge: '今晚會一齊去後院加練'
+            };
+          }
+          return {
+            promised: { practice: false },
+            reply: '「今日練習好攰，想休息陪哥哥❤️」',
+            badge: '今晚唔加練，留喺屋企陪哥哥'
+          };
+        }
+      },
+      {
+        id: 'q_konbini',
+        title: '🏪 陣間夜晚想唔想去便利店買熱肉包／宵夜？',
+        resolve: (pet) => {
+          if (Math.random() < 0.6) {
+            return {
+              promised: { konbini: true },
+              reply: '「想呀！我要熱辣辣肉包同朱古力奶！今晚一齊行過去！🏪🥟」',
+              badge: '今晚會一齊去便利店'
+            };
+          }
+          return {
+            promised: { konbini: false },
+            reply: '「晚餐好飽食唔落啦哥哥❤️」',
+            badge: '今晚唔去便利店'
+          };
+        }
+      },
+      {
+        id: 'q_park',
+        title: '🌳 今晚想唔想落海濱公園散步吹下海風？',
+        resolve: (pet) => {
+          if (Math.random() < 0.6) {
+            return {
+              promised: { park: true },
+              reply: '「好呀哥哥！一齊去海濱公園散步吹下海風傾下計！🌳🌊」',
+              badge: '今晚會一齊去公園'
+            };
+          }
+          return {
+            promised: { park: false },
+            reply: '「今晚大風驚哥哥病親，留在家中陪哥哥❤️」',
+            badge: '今晚留喺屋企陪哥哥'
+          };
+        }
+      },
+      {
+        id: 'q_play_or_hw',
+        title: '📖 今晚玩樂時間打機定一齊溫書？',
+        resolve: (pet) => {
+          if (Math.random() < 0.5) {
+            return {
+              promised: { play_mode: 'study' },
+              reply: '「聽日有英文小測，今晚早少少溫書好啲，哥哥你入嚟教我呀！📖❤️❤️」',
+              badge: '今晚玩樂時間改為一齊溫書'
+            };
+          }
+          return {
+            promised: { play_mode: 'gaming' },
+            reply: '「今晚想同哥哥喺你間房打排球 Game 對戰！🎮🔥」',
+            badge: '今晚玩樂時間一齊打機'
+          };
+        }
+      }
+    ];
+
+    function openMessageHinata() {
+      const pet = ensurePetState(state.activeCharId);
+      const today = getTodayStr();
+      if (!state.msgLog || state.msgLog.date !== today) state.msgLog = { date: today, asked: {}, promises: {} };
+      const box = document.getElementById('choice-overlay');
+      box.innerHTML = `<div class="w-full text-center text-[11px] font-black text-[#2d1e12] mb-1">📱 傳訊息畀翔陽（每題每日限問一次，答應咗今日必做）</div>` +
+        SMS_QUESTIONS.map(q => {
+          const askedText = state.msgLog.asked[q.id];
+          if (askedText) {
+            return `<button type="button" disabled class="w-full text-left px-2.5 py-1.5 rounded-xl bg-slate-200 text-slate-500 border-2 border-slate-300 text-[11px] font-bold opacity-80">🔒 ${q.title}<div class="text-[10px] text-emerald-700">✓ 今日已覆：${askedText}</div></button>`;
+          }
+          return `<button type="button" data-sms-id="${q.id}" class="w-full text-left px-2.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-[#2d1e12] border-2 border-[#2d1e12] text-[11px] font-black">${q.title}</button>`;
+        }).join('') +
+        `<button type="button" data-sms-close="1" class="mt-1 px-3 py-1 rounded-xl bg-white text-[#2d1e12] border-2 border-[#2d1e12] text-[10px] font-black">收起訊息</button>`;
+      box.classList.remove('hidden');
+      speakAndShow('「（哥哥拎起手機準備傳訊息畀翔陽…📱）」');
+    }
 
     function openInteractiveChat() {
       const pet = ensurePetState(state.activeCharId);
@@ -1461,6 +1653,26 @@
 
     document.getElementById('choice-overlay').addEventListener('click', (e) => {
       const pet = ensurePetState(state.activeCharId);
+      const smsClose = e.target.closest('[data-sms-close]');
+      if (smsClose) { document.getElementById('choice-overlay').classList.add('hidden'); return; }
+      const smsBtn = e.target.closest('[data-sms-id]');
+      if (smsBtn) {
+        const q = SMS_QUESTIONS.find(x => x.id === smsBtn.dataset.smsId);
+        if (!q) return;
+        const today = getTodayStr();
+        if (!state.msgLog || state.msgLog.date !== today) state.msgLog = { date: today, asked: {}, promises: {} };
+        if (state.msgLog.asked[q.id]) return;
+        const res = q.resolve(pet);
+        state.msgLog.asked[q.id] = res.badge;
+        Object.assign(state.msgLog.promises, res.promised);
+        pet.mood = Math.min(100, pet.mood + 5);
+        grantCappedRewards(pet, 4, 2);
+        playSFX('levelup');
+        speakAndShow(`翔陽回覆：${res.reply}`);
+        particles.push({ x: 300, y: 240, text: '📱 已回覆', color: '#0ea5e9', life: 36 });
+        openMessageHinata(); updateHUD(); saveState();
+        return;
+      }
       const rep = e.target.closest('[data-reply]');
       if (rep) {
         document.getElementById('choice-overlay').classList.add('hidden');
@@ -1522,6 +1734,7 @@
         { id: 'mall_trip', emoji: '🛍️', name: '去商場', sub: '21:00關門' },
         { id: 'park_trip', emoji: '🌳', name: '去公園', sub: '散步吹海風' },
         { id: 'rest_trip', emoji: '🍽️', name: '去餐廳', sub: '21:00關門' },
+        { id: 'msg_hinata', emoji: '📱', name: '訊息翔陽', sub: '每日5題約定' },
         { id: 'chat',  emoji: '💬', name: '問候傾計', sub: '雙人對話' },
         state.gamingReturnAt ? { id: 'stop_gaming', emoji: '⏹️', name: '中斷打機', sub: '返去原行程', highlight: true } : { id: 'gaming', emoji: '🎮', name: '一齊打機', sub: '去哥哥房電腦' },
         { id: 'study', emoji: '📖', name: '一齊溫書', sub: '好感+6' },
@@ -1612,7 +1825,8 @@
           playSFX('pat');
           speakAndShow('「好！暫時唔打住，返去跟今日嘅行程先～👋」');
           renderDock(); updateHUD(); saveState();
-        } else if (id === 'chat') { openInteractiveChat(); }
+        } else if (id === 'msg_hinata') { openMessageHinata(); }
+        else if (id === 'chat') { openInteractiveChat(); }
         else if (id === 'furn') {
           if (!isZoomed && pet.currentRoom !== viewRoomId) { viewRoomId = pet.currentRoom; updateHUD(); }
           const furns = ROOM_FURNITURE[pet.currentRoom] || [];
@@ -1784,17 +1998,11 @@
       });
 
       const bubble = document.getElementById('speech-bubble');
-      const tracker = document.getElementById('tracker-arrow');
-      if (isZoomed || pet.currentRoom === viewRoomId) {
-        bubble.classList.remove('hidden'); tracker.classList.add('hidden');
+      const broHere = state.brother && state.brother.currentRoom === viewRoomId;
+      if (isZoomed || pet.currentRoom === viewRoomId || broHere) {
+        bubble.classList.remove('hidden');
       } else {
-        bubble.classList.add('hidden'); tracker.classList.remove('hidden');
-        const dx = petRoom.gx - viewRoom.gx, dy = petRoom.gy - viewRoom.gy;
-        let arrow = '🧭';
-        if (Math.abs(dx) >= Math.abs(dy)) arrow = dx > 0 ? '➡️' : '⬅️';
-        else arrow = dy > 0 ? '⬇️' : '⬆️';
-        document.getElementById('tracker-dir').textContent = arrow;
-        document.getElementById('tracker-text').textContent = `${char.name}喺 ${petRoom.short}`;
+        bubble.classList.add('hidden');
       }
 
       document.getElementById('bond-level').textContent = pet.bondLevel;
@@ -1812,11 +2020,8 @@
       });
     });
 
-    document.getElementById('tracker-arrow').addEventListener('click', () => {
-      const initPet = ensurePetState(state.activeCharId); if (!MAP_ROOMS[initPet.currentRoom]) initPet.currentRoom = "living"; viewRoomId = initPet.currentRoom; playSFX('pat'); updateHUD();
-    });
     document.getElementById('btn-find-pet').addEventListener('click', () => {
-      viewRoomId = ensurePetState(state.activeCharId).currentRoom; playSFX('pat'); updateHUD();
+      viewRoomId = ensurePetState(state.activeCharId).currentRoom; renderDock(); playSFX('pat'); updateHUD();
     });
     document.getElementById('btn-zoom').addEventListener('click', () => { isZoomed = !isZoomed; playSFX('pat'); updateHUD(); });
     document.getElementById('btn-outfit').addEventListener('click', () => {
