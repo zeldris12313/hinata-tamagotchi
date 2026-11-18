@@ -1469,5 +1469,74 @@
     updateHUD();
     gameLoop();
   </script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script>
+    (function initFirebaseCloudSync() {
+      try {
+        const firebaseConfig = {
+          apiKey: "AIzaSyCqASayonPmiJSoku8s0oTrS12hv-0_P10",
+          authDomain: "hinata-tamagotchi.firebaseapp.com",
+          projectId: "hinata-tamagotchi",
+          storageBucket: "hinata-tamagotchi.firebasestorage.app",
+          messagingSenderId: "197709491427",
+          appId: "1:197709491427:web:9af960329df8d5c327e9d6",
+          measurementId: "G-FHFZJV1M8T"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const saveRef = db.collection('hinata_saves').doc('main');
+        const TS_KEY = 'hinata_cloud_ts_v1';
+        let syncTimer = null;
+        let lastSyncedAt = Number(localStorage.getItem(TS_KEY) || 0);
+        let applyingRemote = false;
+
+        const origSaveState = saveState;
+        window.saveState = saveState = function () {
+          origSaveState();
+          if (applyingRemote) return;
+          const nowTs = Date.now();
+          lastSyncedAt = nowTs;
+          try { localStorage.setItem(TS_KEY, String(nowTs)); } catch (e) {}
+          clearTimeout(syncTimer);
+          syncTimer = setTimeout(() => {
+            saveRef.set({ state: JSON.parse(JSON.stringify(state)), updatedAt: lastSyncedAt })
+              .then(() => {
+                const el = document.getElementById('save-status');
+                if (el) el.textContent = '☁️ 雲端已同步';
+              })
+              .catch(() => {});
+          }, 1200);
+        };
+
+        saveRef.onSnapshot((snap) => {
+          if (!snap.exists) {
+            saveRef.set({ state: JSON.parse(JSON.stringify(state)), updatedAt: Date.now() }).catch(() => {});
+            return;
+          }
+          const data = snap.data();
+          if (!data || !data.state) return;
+          const remoteTs = Number(data.updatedAt || 0);
+          if (remoteTs > lastSyncedAt) {
+            applyingRemote = true;
+            state = { ...state, ...data.state };
+            lastSyncedAt = remoteTs;
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+              localStorage.setItem(TS_KEY, String(remoteTs));
+            } catch (e) {}
+            const p = ensurePetState(state.activeCharId);
+            syncScheduleActivity(p, false);
+            viewRoomId = MAP_ROOMS[p.currentRoom] ? p.currentRoom : 'living';
+            renderDock();
+            updateHUD();
+            const el = document.getElementById('save-status');
+            if (el) el.textContent = '☁️ 雲端已同步';
+            applyingRemote = false;
+          }
+        }, () => {});
+      } catch (e) {}
+    })();
+  </script>
 </body>
 </html>
