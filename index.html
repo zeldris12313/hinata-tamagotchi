@@ -1125,7 +1125,7 @@
 
       ctx.save();
       ctx.fillStyle = 'rgba(0,0,0,0.20)';
-      ctx.beginPath(); ctx.ellipse(bx, by + 72, 42, 11, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(bx, by + 96, 50, 13, 0, 0, Math.PI * 2); ctx.fill();
       ctx.translate(bx, by + bounce);
       ctx.scale(breathSx, breathSy);
       ctx.drawImage(img, -drawW / 2, -drawH / 2 - 14, drawW, drawH);
@@ -1176,14 +1176,14 @@
       ctx.save();
       if (transitionState) ctx.globalAlpha = transitionState.alpha;
       ctx.fillStyle = 'rgba(0,0,0,0.22)';
-      ctx.beginPath(); ctx.ellipse(cx, cy + 72, 46, 12, 0, 0, Math.PI * 2); ctx.fill();
-      drawFullChibiSprite(cx, cy + jumpY, tilt, act, outfit, frame, 1, breathSx, breathSy);
+      ctx.beginPath(); ctx.ellipse(cx, cy + 96, 52, 13, 0, 0, Math.PI * 2); ctx.fill();
+      drawFullChibiSprite(cx, cy - 14 + jumpY, tilt, act, outfit, frame, 1.55, breathSx, breathSy);
       if (act === 'tea' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🍵', cx + 42, cy + 28); }
       if (act === 'brush' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🪥', cx + 38, cy + 10); }
       if ((act === 'lunch' || act === 'dinner') && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🍱', cx + 40, cy + 25); }
       if (act === 'gaming' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🎮', cx + 42, cy + 25); }
       ctx.restore();
-      drawOverheadBadge(cx, cy + jumpY, isWalking ? 'idle' : act, frame);
+      drawOverheadBadge(cx, cy - 28 + jumpY, isWalking ? 'idle' : act, frame);
     }
 
     // 放大特寫：使用當前房間動畫背景＋去背立繪，摸摸時直接切換成開心笑面立繪（唔再疊假紅暈）！
