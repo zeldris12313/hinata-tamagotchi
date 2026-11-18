@@ -3,14 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="icon" type="image/png" href="./icon.png?v=26">
-  <link rel="apple-touch-icon" href="./icon.png?v=26">
+  <link rel="icon" type="image/png" href="./icon.png?v=27">
+  <link rel="apple-touch-icon" href="./icon.png?v=27">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+html, body {
+      overscroll-behavior: none;
+      overflow: hidden;
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100dvh;
+      touch-action: manipulation;
+      -webkit-overflow-scrolling: auto;
+    }
     body {
       font-family: 'Noto Sans TC', 'Inter', sans-serif;
       background: radial-gradient(circle at top, #fff1e6 0%, #ffd8be 55%, #ffc49b 100%);
@@ -62,15 +72,15 @@
     <div class="bg-[#2d1e12] p-2.5 rounded-[1.75rem] shadow-inner">
       <!-- Top Mini HUD (現實時間已鎖定，不可手動調整) -->
       <div class="bg-[#fef3c7] border-b-2 border-[#2d1e12] rounded-t-2xl px-2.5 py-1.5 space-y-1 text-[11px] font-bold text-[#2d1e12]">
-        <div class="flex items-center justify-between">
-          <span id="time-display" class="bg-white/90 border border-[#2d1e12] px-1.5 py-0.5 rounded">🔒 現實時間</span>
-          <span id="room-title-badge" class="bg-orange-500 text-white px-2 py-0.5 rounded text-[10px]">🏠 1F 客廳</span>
-          <span>💖Lv.<span id="bond-level">1</span> · 🪙<span id="coins-count">50</span> · 👛<span id="pocket-money">20</span></span>
+        <div class="flex items-center justify-between gap-1 whitespace-nowrap">
+          <span id="time-display" class="bg-white/90 border border-[#2d1e12] px-1.5 py-0.5 rounded text-[10px] truncate max-w-[138px]">🔒 現實時間</span>
+          <span id="room-title-badge" class="bg-orange-500 text-white px-2 py-0.5 rounded text-[10px] truncate max-w-[105px]">🏠 1F 客廳</span>
+          <span class="text-[10px] shrink-0">💖Lv.<span id="bond-level">1</span> · 🪙<span id="coins-count">50</span></span>
         </div>
-        <div class="flex items-center justify-between text-[10px] bg-white/80 rounded-lg px-2 py-0.5 border border-amber-300">
+        <div class="flex items-center justify-between text-[10px] bg-white/80 rounded-lg px-2 py-0.5 border border-amber-300 whitespace-nowrap">
           <span id="daily-cap-exp">📈 今日EXP 0/100</span>
-          <span id="daily-cap-coins">🪙 今日金幣 0/80</span>
-          <span id="daily-lock-badge" class="hidden text-rose-600 font-black">🔒 今日已鎖定上限</span>
+          <span id="daily-lock-badge" class="hidden text-rose-600 font-black">🔒 EXP已達上限</span>
+          <span class="font-black text-emerald-700">👛 翔陽零錢 <span id="pocket-money">20</span> 元</span>
         </div>
       </div>
 
@@ -166,7 +176,7 @@
         <h3 class="text-lg font-black text-orange-600">📅 翔陽每日生活作息表</h3>
         <button id="close-schedule" type="button" class="text-gray-400 hover:text-gray-700 font-bold text-lg px-2">✕</button>
       </div>
-      <div id="schedule-list" class="space-y-2 overflow-y-auto pr-1 text-xs"></div>
+      <div id="schedule-list" style="touch-action: pan-y;" class="space-y-2 overflow-y-auto pr-1 text-xs"></div>
     </div>
   </div>
 
@@ -204,70 +214,70 @@
     // 1. 全套去背立繪（含摸頭專用笑面立繪）＋ 10間手繪動畫房間
     // =========================================================================
     const ASSET_URLS = {
-      chibiJersey: "./assets/chibiJersey.png?v=26",
-      chibiSchool: "./assets/chibiSchool.png?v=26",
-      chibiPajama: "./assets/chibiPajama.png?v=26",
-      portraitJersey: "./assets/portraitJersey.png?v=26",
-      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=26",
-      portraitSchool: "./assets/portraitSchool.png?v=26",
-      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=26",
-      portraitPajama: "./assets/portraitPajama.png?v=26",
-      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=26",
-      portraitSleepy: "./assets/portraitSleepy.jpg?v=26",
-      bg_living: "./assets/bg_living.jpg?v=26",
-      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=26",
-      bg_kitchen: "./assets/bg_kitchen.jpg?v=26",
-      bg_bath: "./assets/bg_bath.jpg?v=26",
-      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=26",
-      bg_hallway: "./assets/bg_hallway.jpg?v=26",
-      bg_backyard: "./assets/bg_backyard.jpg?v=26",
-      bg_street: "./assets/bg_street.jpg?v=26",
-      bg_school_class: "./assets/bg_school_class.jpg?v=26",
-      bg_school_court: "./assets/bg_school_court.jpg?v=26",
-      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=26",
-      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=26",
-      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=26",
-      chibiBrother: "./assets/chibiBrother.png?v=26",
-      bg_main_street: "./assets/bg_main_street.jpg?v=26",
-      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=26",
-      bg_canteen: "./assets/bg_canteen.jpg?v=26",
-      bg_mall: "./assets/bg_mall.jpg?v=26",
-      bg_park: "./assets/bg_park.jpg?v=26",
-      bg_restaurant: "./assets/bg_restaurant.jpg?v=26",
-      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=26",
-      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=26",
-      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=26",
-      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=26",
-      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=26",
-      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=26",
-      bg_hospital: "./assets/bg_hospital.jpg?v=26",
-      bg_street_night: "./assets/bg_street_night.jpg?v=26",
-      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=26",
-      bg_park_night: "./assets/bg_park_night.jpg?v=26",
-      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=26",
-      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=26",
-      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=26",
-      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=26",
-      bg_living_night: "./assets/bg_living_night.jpg?v=26",
-      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=26",
-      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=26",
-      bg_bath_night: "./assets/bg_bath_night.jpg?v=26",
-      bg_mall_night: "./assets/bg_mall_night.jpg?v=26",
-      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=26",
-      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=26",
-      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=26",
-      bg_living_morning: "./assets/bg_living_morning.jpg?v=26",
-      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=26",
-      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=26",
-      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=26",
-      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=26",
-      bg_street_morning: "./assets/bg_street_morning.jpg?v=26",
-      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=26",
-      bg_park_morning: "./assets/bg_park_morning.jpg?v=26",
-      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=26",
-      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=26",
-      chibiJerseySad: "./assets/chibiJerseySad.png?v=26",
-      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=26"
+      chibiJersey: "./assets/chibiJersey.png?v=27",
+      chibiSchool: "./assets/chibiSchool.png?v=27",
+      chibiPajama: "./assets/chibiPajama.png?v=27",
+      portraitJersey: "./assets/portraitJersey.png?v=27",
+      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=27",
+      portraitSchool: "./assets/portraitSchool.png?v=27",
+      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=27",
+      portraitPajama: "./assets/portraitPajama.png?v=27",
+      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=27",
+      portraitSleepy: "./assets/portraitSleepy.jpg?v=27",
+      bg_living: "./assets/bg_living.jpg?v=27",
+      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=27",
+      bg_kitchen: "./assets/bg_kitchen.jpg?v=27",
+      bg_bath: "./assets/bg_bath.jpg?v=27",
+      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=27",
+      bg_hallway: "./assets/bg_hallway.jpg?v=27",
+      bg_backyard: "./assets/bg_backyard.jpg?v=27",
+      bg_street: "./assets/bg_street.jpg?v=27",
+      bg_school_class: "./assets/bg_school_class.jpg?v=27",
+      bg_school_court: "./assets/bg_school_court.jpg?v=27",
+      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=27",
+      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=27",
+      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=27",
+      chibiBrother: "./assets/chibiBrother.png?v=27",
+      bg_main_street: "./assets/bg_main_street.jpg?v=27",
+      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=27",
+      bg_canteen: "./assets/bg_canteen.jpg?v=27",
+      bg_mall: "./assets/bg_mall.jpg?v=27",
+      bg_park: "./assets/bg_park.jpg?v=27",
+      bg_restaurant: "./assets/bg_restaurant.jpg?v=27",
+      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=27",
+      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=27",
+      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=27",
+      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=27",
+      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=27",
+      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=27",
+      bg_hospital: "./assets/bg_hospital.jpg?v=27",
+      bg_street_night: "./assets/bg_street_night.jpg?v=27",
+      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=27",
+      bg_park_night: "./assets/bg_park_night.jpg?v=27",
+      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=27",
+      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=27",
+      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=27",
+      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=27",
+      bg_living_night: "./assets/bg_living_night.jpg?v=27",
+      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=27",
+      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=27",
+      bg_bath_night: "./assets/bg_bath_night.jpg?v=27",
+      bg_mall_night: "./assets/bg_mall_night.jpg?v=27",
+      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=27",
+      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=27",
+      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=27",
+      bg_living_morning: "./assets/bg_living_morning.jpg?v=27",
+      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=27",
+      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=27",
+      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=27",
+      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=27",
+      bg_street_morning: "./assets/bg_street_morning.jpg?v=27",
+      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=27",
+      bg_park_morning: "./assets/bg_park_morning.jpg?v=27",
+      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=27",
+      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=27",
+      chibiJerseySad: "./assets/chibiJerseySad.png?v=27",
+      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=27"
     };
     const sprites = {};
 
@@ -2526,7 +2536,7 @@
       document.getElementById('zoom-label').textContent = isZoomed ? '縮細全景' : '放大特寫';
 
       document.getElementById('daily-cap-exp').textContent = `📈 今日EXP ${pet.dailyExpGained}/${DAILY_EXP_CAP}`;
-      document.getElementById('daily-cap-coins').textContent = `🪙 今日金幣 ${pet.dailyCoinsGained}/${DAILY_COINS_CAP}`;
+      if (document.getElementById('daily-cap-coins')) document.getElementById('daily-cap-coins').textContent = `🪙 今日金幣 ${pet.dailyCoinsGained}/${DAILY_COINS_CAP}`;
       document.getElementById('daily-lock-badge').classList.toggle('hidden', !(pet.dailyExpGained >= DAILY_EXP_CAP && pet.dailyCoinsGained >= DAILY_COINS_CAP));
 
       ['up', 'down', 'left', 'right'].forEach(d => {
