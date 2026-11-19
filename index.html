@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="icon" type="image/png" href="./icon.png?v=31">
-  <link rel="apple-touch-icon" href="./icon.png?v=31">
+  <link rel="icon" type="image/png" href="./icon.png?v=32">
+  <link rel="apple-touch-icon" href="./icon.png?v=32">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -105,7 +105,7 @@ html, body {
         <button id="dir-right" type="button" class="inscreen-dir absolute right-1.5 top-1/2 -translate-y-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full w-8 h-8 text-xs font-black z-20 flex items-center justify-center" title="向右">▶</button>
 
         <!-- Interactive Overlay (RPS / Chat / Jump Training) -->
-        <div id="choice-overlay" class="hidden absolute bottom-11 left-1/2 -translate-x-1/2 w-[88%] bg-white/95 border-2 border-[#2d1e12] rounded-2xl p-2 shadow-xl z-30 flex flex-wrap items-center justify-center gap-1.5"></div>
+        <div id="choice-overlay" style="touch-action: pan-y;" class="hidden absolute top-9 bottom-10 left-1/2 -translate-x-1/2 w-[90%] overflow-y-auto bg-white/95 border-2 border-[#2d1e12] rounded-2xl p-2.5 shadow-xl z-30 flex flex-col items-stretch justify-start gap-1.5"></div>
 
         <!-- Rally Mini-game Overlay -->
         <div id="mg-hud" class="hidden pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 bg-[#2d1e12]/90 text-white text-xs font-bold px-3.5 py-1 rounded-full shadow z-20">
@@ -215,76 +215,76 @@ html, body {
     // 1. 全套去背立繪（含摸頭專用笑面立繪）＋ 10間手繪動畫房間
     // =========================================================================
     const ASSET_URLS = {
-      chibiJersey: "./assets/chibiJersey.png?v=31",
-      chibiSchool: "./assets/chibiSchool.png?v=31",
-      chibiPajama: "./assets/chibiPajama.png?v=31",
-      portraitJersey: "./assets/portraitJersey.png?v=31",
-      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=31",
-      portraitSchool: "./assets/portraitSchool.png?v=31",
-      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=31",
-      portraitPajama: "./assets/portraitPajama.png?v=31",
-      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=31",
-      portraitSleepy: "./assets/portraitSleepy.jpg?v=31",
-      bg_living: "./assets/bg_living.jpg?v=31",
-      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=31",
-      bg_kitchen: "./assets/bg_kitchen.jpg?v=31",
-      bg_bath: "./assets/bg_bath.jpg?v=31",
-      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=31",
-      bg_hallway: "./assets/bg_hallway.jpg?v=31",
-      bg_backyard: "./assets/bg_backyard.jpg?v=31",
-      bg_street: "./assets/bg_street.jpg?v=31",
-      bg_school_class: "./assets/bg_school_class.jpg?v=31",
-      bg_school_court: "./assets/bg_school_court.jpg?v=31",
-      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=31",
-      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=31",
-      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=31",
-      chibiBrother: "./assets/chibiBrother.png?v=31",
-      bg_main_street: "./assets/bg_main_street.jpg?v=31",
-      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=31",
-      bg_canteen: "./assets/bg_canteen.jpg?v=31",
-      bg_mall: "./assets/bg_mall.jpg?v=31",
-      bg_park: "./assets/bg_park.jpg?v=31",
-      bg_restaurant: "./assets/bg_restaurant.jpg?v=31",
-      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=31",
-      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=31",
-      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=31",
-      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=31",
-      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=31",
-      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=31",
-      bg_hospital: "./assets/bg_hospital.jpg?v=31",
-      bg_street_night: "./assets/bg_street_night.jpg?v=31",
-      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=31",
-      bg_park_night: "./assets/bg_park_night.jpg?v=31",
-      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=31",
-      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=31",
-      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=31",
-      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=31",
-      bg_living_night: "./assets/bg_living_night.jpg?v=31",
-      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=31",
-      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=31",
-      bg_bath_night: "./assets/bg_bath_night.jpg?v=31",
-      bg_mall_night: "./assets/bg_mall_night.jpg?v=31",
-      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=31",
-      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=31",
-      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=31",
-      bg_living_morning: "./assets/bg_living_morning.jpg?v=31",
-      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=31",
-      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=31",
-      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=31",
-      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=31",
-      bg_street_morning: "./assets/bg_street_morning.jpg?v=31",
-      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=31",
-      bg_park_morning: "./assets/bg_park_morning.jpg?v=31",
-      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=31",
-      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=31",
-      chibiJerseySad: "./assets/chibiJerseySad.png?v=31",
-      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=31",
-      bg_school_hall: "./assets/bg_school_hall.jpg?v=31",
-      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=31",
-      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=31",
-      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=31",
-      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=31",
-      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=31"
+      chibiJersey: "./assets/chibiJersey.png?v=32",
+      chibiSchool: "./assets/chibiSchool.png?v=32",
+      chibiPajama: "./assets/chibiPajama.png?v=32",
+      portraitJersey: "./assets/portraitJersey.png?v=32",
+      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=32",
+      portraitSchool: "./assets/portraitSchool.png?v=32",
+      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=32",
+      portraitPajama: "./assets/portraitPajama.png?v=32",
+      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=32",
+      portraitSleepy: "./assets/portraitSleepy.jpg?v=32",
+      bg_living: "./assets/bg_living.jpg?v=32",
+      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=32",
+      bg_kitchen: "./assets/bg_kitchen.jpg?v=32",
+      bg_bath: "./assets/bg_bath.jpg?v=32",
+      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=32",
+      bg_hallway: "./assets/bg_hallway.jpg?v=32",
+      bg_backyard: "./assets/bg_backyard.jpg?v=32",
+      bg_street: "./assets/bg_street.jpg?v=32",
+      bg_school_class: "./assets/bg_school_class.jpg?v=32",
+      bg_school_court: "./assets/bg_school_court.jpg?v=32",
+      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=32",
+      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=32",
+      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=32",
+      chibiBrother: "./assets/chibiBrother.png?v=32",
+      bg_main_street: "./assets/bg_main_street.jpg?v=32",
+      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=32",
+      bg_canteen: "./assets/bg_canteen.jpg?v=32",
+      bg_mall: "./assets/bg_mall.jpg?v=32",
+      bg_park: "./assets/bg_park.jpg?v=32",
+      bg_restaurant: "./assets/bg_restaurant.jpg?v=32",
+      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=32",
+      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=32",
+      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=32",
+      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=32",
+      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=32",
+      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=32",
+      bg_hospital: "./assets/bg_hospital.jpg?v=32",
+      bg_street_night: "./assets/bg_street_night.jpg?v=32",
+      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=32",
+      bg_park_night: "./assets/bg_park_night.jpg?v=32",
+      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=32",
+      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=32",
+      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=32",
+      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=32",
+      bg_living_night: "./assets/bg_living_night.jpg?v=32",
+      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=32",
+      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=32",
+      bg_bath_night: "./assets/bg_bath_night.jpg?v=32",
+      bg_mall_night: "./assets/bg_mall_night.jpg?v=32",
+      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=32",
+      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=32",
+      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=32",
+      bg_living_morning: "./assets/bg_living_morning.jpg?v=32",
+      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=32",
+      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=32",
+      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=32",
+      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=32",
+      bg_street_morning: "./assets/bg_street_morning.jpg?v=32",
+      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=32",
+      bg_park_morning: "./assets/bg_park_morning.jpg?v=32",
+      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=32",
+      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=32",
+      chibiJerseySad: "./assets/chibiJerseySad.png?v=32",
+      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=32",
+      bg_school_hall: "./assets/bg_school_hall.jpg?v=32",
+      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=32",
+      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=32",
+      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=32",
+      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=32",
+      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=32"
     };
     const sprites = {};
 
@@ -442,14 +442,14 @@ html, body {
         id: 'hinata', name: '日向翔陽', subtitle: '烏野 #10 · 現實時間同步',
         hairColor: '#ff7315', eyeColor: '#9a3412',
         foods: [
-          { name: '糖果果汁', emoji: '🍬', cost: 5,  hunger: 5,  mood: 3, line: '「甜甜哋好開胃呀！🍬✨」' },
-          { name: '梅子飯糰', emoji: '🍙', cost: 8,  hunger: 8,  mood: 4, line: '「紫菜飯糰好脆好好味！🍙💛」' },
-          { name: '熱肉包',   emoji: '🥟', cost: 10, hunger: 10, mood: 5, line: '「熱騰騰嘅肉包！一啖咬落去超滿足！🥟」' },
-          { name: '麵包飲品', emoji: '🥐', cost: 12, hunger: 12, mood: 5, line: '「牛角包配運動飲品，補充體力！🥐🥤」' },
-          { name: '玉子拌飯', emoji: '🍚', cost: 15, hunger: 15, mood: 6, line: '「最鍾意嘅玉子拌飯！撈勻蛋汁好好食！🍚💛」' },
-          { name: '熱烏冬',   emoji: '🍜', cost: 20, hunger: 20, mood: 7, line: '「熱辣辣嘅烏冬麵，食完成身暖晒！🍜✨」' },
-          { name: '咖喱飯',   emoji: '🍛', cost: 25, hunger: 25, mood: 8, line: '「哥哥買嘅香濃咖喱飯！大啖食晒佢！🍛🔥」' },
-          { name: '豬扒便當', emoji: '🍱', cost: 30, hunger: 30, mood: 10, line: '「豪華炸豬扒便當！！多謝哥哥！！🍱❤️」' }
+          { name: '糖果果汁', emoji: '🍬', cost: 5,  hunger: 10, mood: 3, line: '「甜甜哋好開胃呀！(+10% 飽食) 🍬✨」' },
+          { name: '梅子飯糰', emoji: '🍙', cost: 8,  hunger: 16, mood: 4, line: '「紫菜飯糰好脆好好味！(+16% 飽食) 🍙💛」' },
+          { name: '熱肉包',   emoji: '🥟', cost: 10, hunger: 20, mood: 5, line: '「熱騰騰嘅肉包！(+20% 飽食) 🥟」' },
+          { name: '麵包飲品', emoji: '🥐', cost: 12, hunger: 24, mood: 5, line: '「牛角包配運動飲品！(+24% 飽食) 🥐🥤」' },
+          { name: '玉子拌飯', emoji: '🍚', cost: 15, hunger: 30, mood: 6, line: '「最鍾意嘅玉子拌飯！(+30% 飽食) 🍚💛」' },
+          { name: '熱烏冬',   emoji: '🍜', cost: 20, hunger: 40, mood: 7, line: '「熱辣辣嘅烏冬麵！(+40% 飽食) 🍜✨」' },
+          { name: '咖喱飯',   emoji: '🍛', cost: 25, hunger: 50, mood: 8, line: '「哥哥買嘅香濃咖喱飯！(+50% 飽食) 🍛🔥」' },
+          { name: '豬扒便當', emoji: '🍱', cost: 30, hunger: 60, mood: 10, line: '「豪華炸豬扒便當！！(+60% 飽食) 🍱❤️」' }
         ],
         dialogues: {
           sleep: ['「呼…哥哥…我要打入全國…Zzz」'],
@@ -639,9 +639,11 @@ html, body {
         if (m < 870)  return { key: 'wd_class2a', room: 'school_class', act: 'school_class', outfit: 1, px: 235, py: 435, label: '下午上堂' };
         if (m < 890)  return { key: 'wd_rec2',   room: 'school_hall',  act: 'recess_walk',  outfit: 1, px: 260, py: 440, label: '午堂小息', isRecess: true };
         if (m < 945)  return { key: 'wd_class2b', room: 'school_class', act: 'school_class', outfit: 1, px: 235, py: 435, label: '下午上堂' };
-        if (m < 1020) return { key: 'wd_club',   room: 'school_court', act: 'school_court', outfit: 0, px: 300, py: 435, label: '放學練波' };
+        if (m < 975)  return { key: 'wd_club1',  room: 'school_court', act: 'school_court', outfit: 0, px: 300, py: 435, label: '放學練波' };
+        if (m < 990)  return { key: 'wd_water',  room: 'school_court', act: 'water_break',  outfit: 0, px: 420, py: 440, label: '練波飲水休息' };
+        if (m < 1020) return { key: 'wd_club2',  room: 'school_court', act: 'school_court', outfit: 0, px: 300, py: 435, label: '放學練波' };
         if (m < 1050) return { key: 'wd_homew',  room: 'street',       act: 'street',       outfit: 1, px: 285, py: 440, label: '同哥哥一齊返屋企' };
-        if (m < 1095) return { key: 'wd_backy',  room: 'backyard',     act: 'backyard',     outfit: 0, px: 315, py: 435, label: '後院練排球' };
+        if (m < 1095) return { key: 'wd_home_seq', room: 'hallway',   act: 'hallway',      outfit: 1, px: 300, py: 440, label: '返屋企放書包休息', isHomeSeq: true };
         if (m < 1125) {
           if (skipDinner) return { key: 'wd_bath_early', room: 'bath', act: 'bath', outfit: 2, px: 405, py: 332, label: '提前一齊浸浴' };
           return { key: 'wd_dinner', room: 'kitchen', act: 'dinner', outfit: 0, px: 430, py: 440, label: '一齊食晚餐' };
@@ -682,6 +684,7 @@ html, body {
         if (m < 795)  return { key: 'br_canteen',    room: 'canteen',    act: 'canteen_lunch', px: 300, py: 440 };
         if (m < 1020) return { key: 'br_work2',      room: 'pharmacy',   act: 'pharmacy_work', px: 360, py: 440 };
         if (m < 1050) return { key: 'br_homew',      room: 'street',     act: 'street',        px: 385, py: 440 };
+        if (m < 1055) return { key: 'br_hall_tidy',  room: 'hallway',    act: 'aniki_hall_tidy', px: 310, py: 440 };
         if (m < 1095) return { key: 'br_cook_din',   room: 'kitchen',    act: 'cook_dinner',   px: 255, py: 435 };
         if (m < 1125) {
           if (skipDinner) return { key: 'br_bath_early', room: 'bath', act: 'bath', px: 475, py: 332 };
@@ -817,10 +820,10 @@ html, body {
       const info = getCurrentHourInfo();
       const sched = getScheduledState(info);
       const today = getTodayStr();
-      if (info.hour >= 18 && pet.dailySalaryDate !== today) {
+      if (info.hour >= 17 && pet.dailySalaryDate !== today) {
         pet.dailySalaryDate = today;
-        pet.coins += 100;
-        showToast('18:00 到啦！哥哥獲得今日固定薪金 🪙+100');
+        pet.coins += 200;
+        showToast('17:00 收工啦！哥哥獲得今日薪金 🪙+200');
       }
       const destRoom = sched.room || 'living';
       startDuoJourney(destRoom, sched.act, customMsg || '「返到屋企啦！🏠✨」', null, () => {
@@ -1032,10 +1035,10 @@ html, body {
       const info = getCurrentHourInfo();
       const sched = getScheduledState(info);
       const today = getTodayStr();
-      if (info.hour >= 18 && pet.dailySalaryDate !== today) {
+      if (info.hour >= 17 && pet.dailySalaryDate !== today) {
         pet.dailySalaryDate = today;
-        pet.coins += 100;
-        showToast('18:00 到啦！哥哥獲得今日固定薪金 🪙+100');
+        pet.coins += 200;
+        showToast('17:00 收工啦！哥哥獲得今日薪金 🪙+200');
       }
       const bSched = getBrotherScheduledState(info);
       const bro = state.brother;
@@ -1104,6 +1107,14 @@ html, body {
           if (sched.act === 'breakfast') pet.hunger = Math.min(100, pet.hunger + 30);
           else if (sched.act === 'lunch') pet.hunger = Math.min(100, pet.hunger + 40);
           else if (sched.act === 'dinner') pet.hunger = Math.min(100, pet.hunger + 50);
+          else if (sched.act === 'water_break') {
+            pet.energy = Math.min(100, pet.energy + 30);
+            pet.hunger = Math.min(100, pet.hunger + 10);
+            if (viewRoomId === 'school_court') speakAndShow('「練波中場休息 15 分鐘！咕嚕咕嚕飲大啖水！（精力 +30、飽食 +10）💧✨」');
+          } else if (sched.isHomeSeq) {
+            pet.homeSeqStage = 'hall5s';
+            pet.homeSeqUntil = Date.now() + 5000;
+          }
           petX = sched.px; petY = sched.py; targetX = sched.px; targetY = sched.py;
           const pool = getActiveChar().dialogues[sched.act] || getActiveChar().dialogues.tea;
           if (viewRoomId === pet.currentRoom) speakAndShow(pickLine(pool));
@@ -1170,6 +1181,28 @@ html, body {
               speakAndShow('「翔陽：哥哥同我去後院托兩球排球練下先！🏐✨」');
             }
           }
+        }
+      }
+
+      // 6a. 17:30-18:15 Home Arrival Sequence (5s hallway -> 30s room unpack -> 15m living rest +30 energy -> backyard)
+      if (!info.isWeekend && sched.isHomeSeq && pet.homeSeqStage) {
+        const nowHms = Date.now();
+        if (pet.homeSeqStage === 'hall5s' && nowHms >= (pet.homeSeqUntil || 0)) {
+          pet.homeSeqStage = 'room30s'; pet.homeSeqUntil = nowHms + 30000;
+          pet.currentRoom = 'room_hinata'; pet.currentActivity = 'unpack_bag'; targetX = 200; targetY = 435;
+          if (viewRoomId === 'hallway' || viewRoomId === 'room_hinata') { viewRoomId = 'room_hinata'; speakAndShow('「返入房放低書包同整理好裝備先～🎒」'); }
+          updateHUD();
+        } else if (pet.homeSeqStage === 'room30s' && nowHms >= (pet.homeSeqUntil || 0)) {
+          pet.homeSeqStage = 'living15m'; pet.homeSeqUntil = nowHms + 15 * 60 * 1000;
+          pet.currentRoom = 'living'; pet.currentActivity = 'tea'; targetX = 280; targetY = 440;
+          pet.energy = Math.min(100, pet.energy + 30);
+          if (viewRoomId === 'room_hinata' || viewRoomId === 'living') { viewRoomId = 'living'; speakAndShow('「喺客廳飲杯茶休息 15 分鐘先再練球！（體力 +30）🍵💛」'); }
+          updateHUD();
+        } else if (pet.homeSeqStage === 'living15m' && nowHms >= (pet.homeSeqUntil || 0)) {
+          pet.homeSeqStage = 'backyard'; pet.outfitIdx = 0;
+          pet.currentRoom = 'backyard'; pet.currentActivity = 'backyard'; targetX = 315; targetY = 435;
+          if (viewRoomId === 'living' || viewRoomId === 'backyard') { viewRoomId = 'backyard'; speakAndShow('「休息夠啦！換好隊服去後院練排球直至食晚飯！🏐🔥」'); }
+          updateHUD();
         }
       }
 
@@ -1591,11 +1624,18 @@ html, body {
       { start: 480,  end: 495,  time: '08:00 - 08:15', roomName: '浴室 / 廚房',     label: '🪥 翔陽刷牙・哥哥準備早餐' },
       { start: 495,  end: 515,  time: '08:15 - 08:35', roomName: '1F 廚房',         label: '🍚 二人一齊食早餐' },
       { start: 515,  end: 530,  time: '08:35 - 08:50', roomName: '室外街道',        label: '🎒 二人一齊出門' },
-      { start: 530,  end: 750,  time: '08:50 - 12:30', roomName: '課室 / 醫院藥房', label: '📚 翔陽上堂・哥哥藥房返工' },
+      { start: 530,  end: 660,  time: '08:50 - 11:00', roomName: '課室 / 醫院藥房', label: '📚 上午上堂・哥哥藥房工作' },
+      { start: 660,  end: 680,  time: '11:00 - 11:20', roomName: '走廊 / 小食部',   label: '🔔 早堂小息（可買小食）' },
+      { start: 680,  end: 750,  time: '11:20 - 12:30', roomName: '課室 / 醫院藥房', label: '📚 午間上堂・哥哥藥房工作' },
       { start: 750,  end: 795,  time: '12:30 - 13:15', roomName: '課室 / Canteen',  label: '🍱 翔陽午飯・哥哥 Canteen 食飯' },
-      { start: 795,  end: 1020, time: '13:15 - 17:00', roomName: '課室球場 / 藥房', label: '🏐 翔陽練波・哥哥藥房工作' },
-      { start: 1020, end: 1050, time: '17:00 - 17:30', roomName: '室外街道',        label: '🏠 放學收工剛好一齊返屋企' },
-      { start: 1050, end: 1095, time: '17:30 - 18:15', roomName: '後院 / 廚房',     label: '🏐 翔陽練球・哥哥煮晚餐' },
+      { start: 795,  end: 870,  time: '13:15 - 14:30', roomName: '課室 / 醫院藥房', label: '📚 下午上堂・哥哥藥房工作' },
+      { start: 870,  end: 890,  time: '14:30 - 14:50', roomName: '走廊 / 小食部',   label: '🔔 午堂小息（可買小食）' },
+      { start: 890,  end: 945,  time: '14:50 - 15:45', roomName: '課室 / 醫院藥房', label: '📚 放學前最後一堂' },
+      { start: 945,  end: 975,  time: '15:45 - 16:15', roomName: '室內排球場',      label: '🏐 放學社團練波（上半節）' },
+      { start: 975,  end: 990,  time: '16:15 - 16:30', roomName: '室內排球場',      label: '💧 練波飲水休息（精力+30）' },
+      { start: 990,  end: 1020, time: '16:30 - 17:00', roomName: '室內排球場',      label: '🏐 放學社團練波（下半節）' },
+      { start: 1020, end: 1050, time: '17:00 - 17:30', roomName: '室外街道',        label: '🏠 放學・哥哥收工(+200)一齊返屋企' },
+      { start: 1050, end: 1095, time: '17:30 - 18:15', roomName: '玄關→房→客廳→後院', label: '🎒 放書包・客廳休15分・後院練球' },
       { start: 1095, end: 1125, time: '18:15 - 18:45', roomName: '1F 廚房',         label: '🍽️ 二人一齊食晚餐' },
       { start: 1125, end: 1160, time: '18:45 - 19:20', roomName: '1F 廁所浴室',     label: '🫧 二人一齊浸浴' },
       { start: 1160, end: 1215, time: '19:20 - 20:15', roomName: '2F 哥哥房間',     label: '🎮 與哥哥玩樂時間' },
@@ -1662,7 +1702,7 @@ html, body {
       park_jog: '🏃 公園慢跑', park_walk: '🚶 公園散步', park_breeze: '🌊 睇海風中', court_run: '🏃 跑步熱身中', stretch: '🧘‍♂️ 拉筋放鬆中',
       gear_prep: '🏐 整理裝備中', window_gaze: '🌤️ 望窗外發呆', read_manga: '📚 睇排球漫畫',
       mirror_prep: '🪞 整理儀容中', tidy_bag: '🔑 檢查隨身物', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中'
+      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理'
     };
     const BROTHER_ACTIVITY_LABELS = {
       sleep: '😴 哥哥熟睡中', brush: '🪥 哥哥刷牙中', cook_bfast: '🍳 煮緊早餐', prep_bfast: '🥞 準備早餐中',
@@ -1676,7 +1716,7 @@ html, body {
       backyard: '🏐 陪練排球', idle: '✨ 休息中', stretch: '🧘‍♂️ 拉筋中',
       gear_prep: '🏐 幫手執裝備', window_gaze: '🌤️ 望窗外思考', read_manga: '📚 睇漫畫中',
       mirror_prep: '🪞 整理儀容', tidy_bag: '🔑 檢查鎖匙', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中'
+      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋'
     };
     const IDLE_THOUGHTS = ['💭 想食玉子拌飯…', '💭 聽日要跳高啲！', '💭 哥哥幾時同我打機？', '💭 烏野一定打入全國！'];
 
@@ -1807,6 +1847,7 @@ html, body {
       ctx.beginPath(); ctx.ellipse(cx, cy + 96, 52, 13, 0, 0, Math.PI * 2); ctx.fill();
       drawFullChibiSprite(cx, cy - 14 + jumpY, tilt, act, outfit, frame, 1.55, breathSx, breathSy);
       if (act === 'tea' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🍵', cx + 42, cy + 28); }
+      if (act === 'water_break' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('💧', cx + 40, cy + 16); }
       if (act === 'brush' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🪥', cx + 38, cy + 10); }
       if ((act === 'lunch' || act === 'dinner') && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🍱', cx + 40, cy + 25); }
       if (act === 'gaming' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🎮', cx + 42, cy + 25); }
@@ -2350,8 +2391,8 @@ html, body {
             }
             return `<button type="button" data-care-id="${c.id}" class="w-full text-left px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-[#2d1e12] border-2 border-[#2d1e12] text-[11px] font-black">${c.text}</button>`;
           }).join('');
-      box.innerHTML = tabBar + itemsHtml + `<button type="button" data-sms-close="1" class="mt-1 px-3 py-1 rounded-xl bg-white text-[#2d1e12] border-2 border-[#2d1e12] text-[10px] font-black">收起訊息</button>`;
-      box.classList.remove('hidden');
+      box.innerHTML = tabBar + itemsHtml + `<button type="button" data-sms-close="1" class="mt-1 self-center px-3 py-1 rounded-xl bg-white text-[#2d1e12] border-2 border-[#2d1e12] text-[10px] font-black">收起訊息</button>`;
+      box.classList.remove('hidden'); box.scrollTop = 0;
     }
 
     function openInteractiveChat() {
