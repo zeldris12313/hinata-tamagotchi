@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="icon" type="image/png" href="./icon.png?v=32">
-  <link rel="apple-touch-icon" href="./icon.png?v=32">
+  <link rel="icon" type="image/png" href="./icon.png?v=34">
+  <link rel="apple-touch-icon" href="./icon.png?v=34">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -146,16 +146,16 @@ html, body {
     <!-- Bottom Interactive Dock -->
     <div class="mt-2.5 bg-[#fff7ed] ui-card rounded-2xl p-2">
       <div class="flex items-center justify-between mb-1.5">
-        <div class="flex gap-1.5 items-center">
-          <button id="tab-food" type="button" class="px-2.5 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] bg-orange-500 text-white">🍱 餵食</button>
-          <button id="tab-act" type="button" class="px-2.5 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] bg-white text-[#2d1e12]">✨ 互動</button>
-          <div id="act-pager" class="hidden flex items-center gap-1 ml-1">
-            <button id="btn-act-prev" type="button" class="px-1.5 py-0.5 rounded bg-amber-100 hover:bg-amber-200 border border-[#2d1e12] text-[10px] font-black">◀</button>
-            <span id="act-page-lbl" class="text-[10px] font-black text-[#2d1e12]">1/2</span>
-            <button id="btn-act-next" type="button" class="px-1.5 py-0.5 rounded bg-amber-100 hover:bg-amber-200 border border-[#2d1e12] text-[10px] font-black">▶</button>
-          </div>
+        <div class="flex gap-1 items-center">
+          <button id="tab-food" type="button" class="px-2 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] bg-orange-500 text-white">🍱 餵食</button>
+          <button id="tab-act" type="button" class="px-2 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] bg-white text-[#2d1e12]">✨ 互動</button>
+          <button id="tab-shop" type="button" class="px-2 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] bg-white text-[#2d1e12]">🛒 購物</button>
         </div>
-        <span class="text-[10px] font-bold text-amber-800">摸頭會笑開懷 😊</span>
+        <div id="act-pager" class="hidden flex items-center gap-1">
+          <button id="btn-act-prev" type="button" class="px-1.5 py-0.5 rounded bg-amber-100 hover:bg-amber-200 border border-[#2d1e12] text-[10px] font-black">◀</button>
+          <span id="act-page-lbl" class="text-[10px] font-black text-[#2d1e12]">1/2</span>
+          <button id="btn-act-next" type="button" class="px-1.5 py-0.5 rounded bg-amber-100 hover:bg-amber-200 border border-[#2d1e12] text-[10px] font-black">▶</button>
+        </div>
       </div>
       <div id="dock-tray" class="grid grid-cols-4 grid-rows-2 gap-1.5 h-[132px]"></div>
     </div>
@@ -215,76 +215,76 @@ html, body {
     // 1. 全套去背立繪（含摸頭專用笑面立繪）＋ 10間手繪動畫房間
     // =========================================================================
     const ASSET_URLS = {
-      chibiJersey: "./assets/chibiJersey.png?v=32",
-      chibiSchool: "./assets/chibiSchool.png?v=32",
-      chibiPajama: "./assets/chibiPajama.png?v=32",
-      portraitJersey: "./assets/portraitJersey.png?v=32",
-      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=32",
-      portraitSchool: "./assets/portraitSchool.png?v=32",
-      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=32",
-      portraitPajama: "./assets/portraitPajama.png?v=32",
-      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=32",
-      portraitSleepy: "./assets/portraitSleepy.jpg?v=32",
-      bg_living: "./assets/bg_living.jpg?v=32",
-      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=32",
-      bg_kitchen: "./assets/bg_kitchen.jpg?v=32",
-      bg_bath: "./assets/bg_bath.jpg?v=32",
-      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=32",
-      bg_hallway: "./assets/bg_hallway.jpg?v=32",
-      bg_backyard: "./assets/bg_backyard.jpg?v=32",
-      bg_street: "./assets/bg_street.jpg?v=32",
-      bg_school_class: "./assets/bg_school_class.jpg?v=32",
-      bg_school_court: "./assets/bg_school_court.jpg?v=32",
-      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=32",
-      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=32",
-      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=32",
-      chibiBrother: "./assets/chibiBrother.png?v=32",
-      bg_main_street: "./assets/bg_main_street.jpg?v=32",
-      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=32",
-      bg_canteen: "./assets/bg_canteen.jpg?v=32",
-      bg_mall: "./assets/bg_mall.jpg?v=32",
-      bg_park: "./assets/bg_park.jpg?v=32",
-      bg_restaurant: "./assets/bg_restaurant.jpg?v=32",
-      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=32",
-      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=32",
-      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=32",
-      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=32",
-      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=32",
-      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=32",
-      bg_hospital: "./assets/bg_hospital.jpg?v=32",
-      bg_street_night: "./assets/bg_street_night.jpg?v=32",
-      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=32",
-      bg_park_night: "./assets/bg_park_night.jpg?v=32",
-      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=32",
-      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=32",
-      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=32",
-      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=32",
-      bg_living_night: "./assets/bg_living_night.jpg?v=32",
-      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=32",
-      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=32",
-      bg_bath_night: "./assets/bg_bath_night.jpg?v=32",
-      bg_mall_night: "./assets/bg_mall_night.jpg?v=32",
-      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=32",
-      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=32",
-      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=32",
-      bg_living_morning: "./assets/bg_living_morning.jpg?v=32",
-      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=32",
-      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=32",
-      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=32",
-      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=32",
-      bg_street_morning: "./assets/bg_street_morning.jpg?v=32",
-      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=32",
-      bg_park_morning: "./assets/bg_park_morning.jpg?v=32",
-      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=32",
-      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=32",
-      chibiJerseySad: "./assets/chibiJerseySad.png?v=32",
-      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=32",
-      bg_school_hall: "./assets/bg_school_hall.jpg?v=32",
-      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=32",
-      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=32",
-      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=32",
-      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=32",
-      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=32"
+      chibiJersey: "./assets/chibiJersey.png?v=34",
+      chibiSchool: "./assets/chibiSchool.png?v=34",
+      chibiPajama: "./assets/chibiPajama.png?v=34",
+      portraitJersey: "./assets/portraitJersey.png?v=34",
+      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=34",
+      portraitSchool: "./assets/portraitSchool.png?v=34",
+      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=34",
+      portraitPajama: "./assets/portraitPajama.png?v=34",
+      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=34",
+      portraitSleepy: "./assets/portraitSleepy.jpg?v=34",
+      bg_living: "./assets/bg_living.jpg?v=34",
+      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=34",
+      bg_kitchen: "./assets/bg_kitchen.jpg?v=34",
+      bg_bath: "./assets/bg_bath.jpg?v=34",
+      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=34",
+      bg_hallway: "./assets/bg_hallway.jpg?v=34",
+      bg_backyard: "./assets/bg_backyard.jpg?v=34",
+      bg_street: "./assets/bg_street.jpg?v=34",
+      bg_school_class: "./assets/bg_school_class.jpg?v=34",
+      bg_school_court: "./assets/bg_school_court.jpg?v=34",
+      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=34",
+      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=34",
+      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=34",
+      chibiBrother: "./assets/chibiBrother.png?v=34",
+      bg_main_street: "./assets/bg_main_street.jpg?v=34",
+      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=34",
+      bg_canteen: "./assets/bg_canteen.jpg?v=34",
+      bg_mall: "./assets/bg_mall.jpg?v=34",
+      bg_park: "./assets/bg_park.jpg?v=34",
+      bg_restaurant: "./assets/bg_restaurant.jpg?v=34",
+      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=34",
+      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=34",
+      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=34",
+      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=34",
+      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=34",
+      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=34",
+      bg_hospital: "./assets/bg_hospital.jpg?v=34",
+      bg_street_night: "./assets/bg_street_night.jpg?v=34",
+      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=34",
+      bg_park_night: "./assets/bg_park_night.jpg?v=34",
+      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=34",
+      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=34",
+      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=34",
+      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=34",
+      bg_living_night: "./assets/bg_living_night.jpg?v=34",
+      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=34",
+      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=34",
+      bg_bath_night: "./assets/bg_bath_night.jpg?v=34",
+      bg_mall_night: "./assets/bg_mall_night.jpg?v=34",
+      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=34",
+      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=34",
+      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=34",
+      bg_living_morning: "./assets/bg_living_morning.jpg?v=34",
+      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=34",
+      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=34",
+      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=34",
+      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=34",
+      bg_street_morning: "./assets/bg_street_morning.jpg?v=34",
+      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=34",
+      bg_park_morning: "./assets/bg_park_morning.jpg?v=34",
+      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=34",
+      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=34",
+      chibiJerseySad: "./assets/chibiJerseySad.png?v=34",
+      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=34",
+      bg_school_hall: "./assets/bg_school_hall.jpg?v=34",
+      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=34",
+      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=34",
+      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=34",
+      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=34",
+      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=34"
     };
     const sprites = {};
 
@@ -335,9 +335,9 @@ html, body {
         { id: 'stretch_lv', label: '客廳伸懶腰', hx: 160, hy: 420, hr: 85, px: 165, py: 440, act: 'stretch', line: '「喺客廳伸個大懶腰，成個人輕鬆晒～🙆‍♂️✨」' }
       ],
       kitchen: [
-        { id: 'fridge', label: '雪櫃', hx: 70, hy: 350, hr: 80, px: 145, py: 435, act: 'fridge', line: '「打開雪櫃睇下～有凍麥茶同雞蛋！🧊」' },
-        { id: 'stove',  label: '煮食爐', hx: 215, hy: 325, hr: 80, px: 255, py: 435, act: 'cook', line: '「滋滋滋～幫哥哥煎隻靚太陽蛋做早餐！🍳」' },
-        { id: 'table',  label: '飯枱', hx: 480, hy: 410, hr: 95, px: 455, py: 440, act: 'breakfast', line: '「坐喺飯枱食熱辣辣早餐，充滿力量！🍚」' }
+        { id: 'fridge', label: '雪櫃存量', hx: 95, hy: 375, hr: 95, px: 145, py: 440, act: 'fridge', line: '「打開雪櫃睇下哥哥買咗咩好嘢食！🧊」' },
+        { id: 'stove',  label: '煮食／洗碗位', hx: 265, hy: 365, hr: 95, px: 265, py: 400, act: 'cook', line: '「哥哥喺度煮飯同洗碗辛苦晒！🍳🫧」' },
+        { id: 'table',  label: '餐桌', hx: 475, hy: 455, hr: 95, px: 435, py: 455, act: 'breakfast', line: '「坐喺餐桌一齊食熱辣辣飯菜，充滿力量！🍚」' }
       ],
       room_hinata: [
         { id: 'desk', label: '書枱', hx: 115, hy: 350, hr: 90, px: 165, py: 430, act: 'homework', line: '「開着盞枱燈溫下英文單字先…哥哥記得教我！📖」' },
@@ -510,6 +510,7 @@ html, body {
     let state = {
       activeCharId: 'hinata', soundEnabled: true, dockTab: 'food', actPage: 0, customCharacters: {}, pets: {},
       holidayDate: null, skipDinnerDate: null, msgLog: { date: null, asked: {}, promises: {} },
+      fridge: { bread: 0, noodles: 0, siumai: 0, cheungfun: 0, sandwich: 0, fishball: 0, juice: 0, tea_soda: 0 },
       outing: { type: null, returnAt: null, fromMall: false },
       brother: { currentRoom: 'living', currentActivity: 'tea', px: 380, py: 440, tx: 380, ty: 440, scheduleSlotKey: null }
     };
@@ -560,6 +561,7 @@ html, body {
       if (typeof p.pocketMoney !== 'number') p.pocketMoney = 20;
       if (!Array.isArray(p.feedTimestamps)) p.feedTimestamps = [];
       if (!p.snacks) p.snacks = { bread: 0, drink: 0, candy: 0 };
+      if (!state.fridge) state.fridge = { bread: 0, noodles: 0, siumai: 0, cheungfun: 0, sandwich: 0, fishball: 0, juice: 0, tea_soda: 0 };
       if (!state.brother) state.brother = { currentRoom: 'living', currentActivity: 'tea', px: 380, py: 440, tx: 380, ty: 440, scheduleSlotKey: null };
       if (!state.outing) state.outing = { type: null, returnAt: null, fromMall: false };
       if (!state.msgLog || state.msgLog.date !== today) state.msgLog = { date: today, asked: {}, promises: {} };
@@ -577,7 +579,8 @@ html, body {
           pet.energy = Math.min(100, pet.energy + mins * 0.35);
           pet.hunger = Math.max(0, pet.hunger - (mins / 60) * 4);
         } else if (['breakfast', 'lunch', 'dinner'].includes(pet.currentActivity)) {
-          pet.hunger = Math.min(100, pet.hunger + mins * 0.6);
+          pet.hunger = Math.min(100, pet.hunger + mins * 2.35);
+          pet.energy = Math.min(100, pet.energy + mins * 2.35);
         } else if (isVolleyPractice) {
           pet.hunger = Math.max(0, pet.hunger - (mins / 60) * 15);
           pet.energy = Math.max(0, pet.energy - (mins / 60) * 15);
@@ -630,7 +633,7 @@ html, body {
       if (!info.isWeekend) {
         if (m < 480)  return { key: 'wd_sleep',  room: 'room_hinata',  act: 'sleep',        outfit: 2, px: 472, py: 355, label: '熟睡中' };
         if (m < 495)  return { key: 'wd_brush',  room: 'bath',         act: 'brush',        outfit: 2, px: 165, py: 440, label: '起身刷牙' };
-        if (m < 515)  return { key: 'wd_bfast',  room: 'kitchen',      act: 'breakfast',    outfit: 1, px: 430, py: 440, label: '一齊食早餐' };
+        if (m < 515)  return { key: 'wd_bfast',  room: 'kitchen',      act: 'breakfast',    outfit: 1, px: 435, py: 455, label: '一齊食早餐' };
         if (m < 530)  return { key: 'wd_go',     room: 'street',       act: 'street',       outfit: 1, px: 285, py: 440, label: '一齊出門返學' };
         if (m < 660)  return { key: 'wd_class1a', room: 'school_class', act: 'school_class', outfit: 1, px: 235, py: 435, label: '上堂中' };
         if (m < 680)  return { key: 'wd_rec1',   room: 'school_hall',  act: 'recess_walk',  outfit: 1, px: 260, py: 440, label: '早堂小息', isRecess: true };
@@ -646,7 +649,7 @@ html, body {
         if (m < 1095) return { key: 'wd_home_seq', room: 'hallway',   act: 'hallway',      outfit: 1, px: 300, py: 440, label: '返屋企放書包休息', isHomeSeq: true };
         if (m < 1125) {
           if (skipDinner) return { key: 'wd_bath_early', room: 'bath', act: 'bath', outfit: 2, px: 405, py: 332, label: '提前一齊浸浴' };
-          return { key: 'wd_dinner', room: 'kitchen', act: 'dinner', outfit: 0, px: 430, py: 440, label: '一齊食晚餐' };
+          return { key: 'wd_dinner', room: 'kitchen', act: 'dinner', outfit: 0, px: 435, py: 455, label: '一齊食晚餐' };
         }
         if (m < 1160) return { key: 'wd_bath',   room: 'bath',         act: 'bath',         outfit: 2, px: 405, py: 332, label: '一齊沖涼浸浴' };
         if (m < 1215) return { key: 'wd_aniki_play', room: 'room_aniki', act: 'gaming',     outfit: 2, px: 190, py: 435, label: '與哥哥玩樂時間' };
@@ -657,13 +660,13 @@ html, body {
         if (m >= 90 && m < 600) return { key: 'we_sleep', room: 'room_hinata', act: 'sleep',     outfit: 2, px: 472, py: 355, label: '放假瞓懶覺' };
         if (m < 620)            return { key: 'we_brush', room: 'bath',        act: 'brush',     outfit: 2, px: 165, py: 440, label: '10:00 起身刷牙' };
         if (m < 640)            return { key: 'we_wait_bfast', room: 'living', act: 'tea',       outfit: 2, px: 270, py: 440, label: '等哥哥煮早餐' };
-        if (m < 670)            return { key: 'we_bfast', room: 'kitchen',     act: 'breakfast', outfit: 2, px: 430, py: 440, label: '一齊食假日早餐' };
+        if (m < 670)            return { key: 'we_bfast', room: 'kitchen',     act: 'breakfast', outfit: 2, px: 435, py: 455, label: '一齊食假日早餐' };
         if (m < 750)            return { key: 'we_free1', room: 'living',      act: 'tea',       outfit: 2, px: 270, py: 440, label: '假日自由活動', freeRoam: true };
         if (m < 780)            return { key: 'we_wait_lunch', room: 'living', act: 'tv',        outfit: 2, px: 330, py: 420, label: '等哥哥煮午餐' };
-        if (m < 815)            return { key: 'we_lunch', room: 'kitchen',     act: 'lunch',     outfit: 2, px: 430, py: 440, label: '一齊食假日午餐' };
+        if (m < 815)            return { key: 'we_lunch', room: 'kitchen',     act: 'lunch',     outfit: 2, px: 435, py: 455, label: '一齊食假日午餐' };
         if (m < 1110)           return { key: 'we_free2', room: 'living',      act: 'tea',       outfit: 2, px: 270, py: 440, label: '假日自由活動', freeRoam: true };
         if (m < 1140)           return { key: 'we_wait_din', room: 'living',   act: 'tv',        outfit: 2, px: 330, py: 420, label: '等哥哥煮晚餐' };
-        if (m < 1180)           return { key: 'we_dinner', room: 'kitchen',    act: 'dinner',    outfit: 2, px: 430, py: 440, label: '一齊食假日晚餐' };
+        if (m < 1180)           return { key: 'we_dinner', room: 'kitchen',    act: 'dinner',    outfit: 2, px: 435, py: 455, label: '一齊食假日晚餐' };
         return                         { key: 'we_free3', room: 'living',      act: 'tv',        outfit: 2, px: 330, py: 420, label: '假日自由活動', freeRoam: true };
       }
     }
@@ -690,6 +693,7 @@ html, body {
           if (skipDinner) return { key: 'br_bath_early', room: 'bath', act: 'bath', px: 475, py: 332 };
           return { key: 'br_dinner', room: 'kitchen', act: 'dinner', px: 505, py: 440 };
         }
+        if (m < 1135) return { key: 'br_wash_din',   room: 'kitchen',    act: 'washing_dishes',px: 280, py: 400 };
         if (m < 1160) return { key: 'br_bath',       room: 'bath',       act: 'bath',          px: 475, py: 332 };
         if (m < 1215) return { key: 'br_play',       room: 'room_aniki', act: 'gaming',        px: 295, py: 435 };
         if (m < 1260) return { key: 'br_free_home',  room: 'living',     act: 'tea',           px: 360, py: 440, homeRoam: true };
@@ -700,12 +704,15 @@ html, body {
         if (m < 620)            return { key: 'br_we_brush', room: 'bath',       act: 'brush',       px: 235, py: 440 };
         if (m < 640)            return { key: 'br_we_cook_b',room: 'kitchen',    act: 'cook_bfast',  px: 255, py: 435 };
         if (m < 670)            return { key: 'br_we_bfast', room: 'kitchen',    act: 'breakfast',   px: 505, py: 440 };
+        if (m < 680)            return { key: 'br_we_wash1', room: 'kitchen',    act: 'washing_dishes', px: 280, py: 400 };
         if (m < 750)            return { key: 'br_we_f1',    room: 'living',     act: 'tea',         px: 360, py: 440, followHinata: true };
         if (m < 780)            return { key: 'br_we_cook_l',room: 'kitchen',    act: 'cook_lunch',  px: 255, py: 435 };
         if (m < 815)            return { key: 'br_we_lunch', room: 'kitchen',    act: 'lunch',       px: 505, py: 440 };
+        if (m < 825)            return { key: 'br_we_wash2', room: 'kitchen',    act: 'washing_dishes', px: 280, py: 400 };
         if (m < 1110)           return { key: 'br_we_f2',    room: 'living',     act: 'tea',         px: 360, py: 440, followHinata: true };
         if (m < 1140)           return { key: 'br_we_cook_d',room: 'kitchen',    act: 'cook_dinner', px: 255, py: 435 };
         if (m < 1180)           return { key: 'br_we_din',   room: 'kitchen',    act: 'dinner',      px: 505, py: 440 };
+        if (m < 1190)           return { key: 'br_we_wash3', room: 'kitchen',    act: 'washing_dishes', px: 280, py: 400 };
         return                         { key: 'br_we_f3',    room: 'living',     act: 'tv',          px: 420, py: 420, followHinata: true };
       }
     }
@@ -1104,10 +1111,8 @@ html, body {
           startCharacterWalkTransition(pet, sched.room, sched.act, sched.px, sched.py);
         } else {
           pet.currentRoom = sched.room; pet.currentActivity = sched.act;
-          if (sched.act === 'breakfast') pet.hunger = Math.min(100, pet.hunger + 30);
-          else if (sched.act === 'lunch') pet.hunger = Math.min(100, pet.hunger + 40);
-          else if (sched.act === 'dinner') pet.hunger = Math.min(100, pet.hunger + 50);
-          else if (sched.act === 'water_break') {
+          // Meals restore +70% hunger & +70% energy gradually during the meal
+          if (sched.act === 'water_break') {
             pet.energy = Math.min(100, pet.energy + 30);
             pet.hunger = Math.min(100, pet.hunger + 10);
             if (viewRoomId === 'school_court') speakAndShow('「練波中場休息 15 分鐘！咕嚕咕嚕飲大啖水！（精力 +30、飽食 +10）💧✨」');
@@ -1203,6 +1208,67 @@ html, body {
           pet.currentRoom = 'backyard'; pet.currentActivity = 'backyard'; targetX = 315; targetY = 435;
           if (viewRoomId === 'living' || viewRoomId === 'backyard') { viewRoomId = 'backyard'; speakAndShow('「休息夠啦！換好隊服去後院練排球直至食晚飯！🏐🔥」'); }
           updateHUD();
+        }
+      }
+
+      // 6a-2. Hinata Fridge Self-Service (hunger <= 50 in 17:30 living15m / 21:00 TV / Weekend 12:00-01:30)
+      const frMap = state.fridge || {};
+      const frKeys = SHOP_ITEMS.filter(it => (frMap[it.id] || 0) > 0);
+      if (pet.fridgeStage === 'choosing') {
+        if (Date.now() >= (pet.fridgeUntil || 0)) {
+          pet.fridgeStage = null;
+          if (frKeys.length > 0) {
+            const pickIt = frKeys[Math.floor(Math.random() * frKeys.length)];
+            frMap[pickIt.id] -= 1;
+            pet.hunger = Math.min(100, pet.hunger + pickIt.val);
+            pet.energy = Math.min(100, pet.energy + pickIt.val);
+            pet.fridgeWaitingEmpty = false;
+            pet.currentRoom = 'living'; pet.currentActivity = 'tea'; targetX = 280; targetY = 440;
+            if (viewRoomId === 'kitchen' || viewRoomId === 'living') {
+              viewRoomId = 'living';
+              speakAndShow(`「喺雪櫃揀咗 ${pickIt.emoji}${pickIt.name} 返客廳食！好味！（飽食/精力 +${pickIt.val}%）😋」`);
+            }
+          } else {
+            pet.fridgeWaitingEmpty = true;
+            pet.currentRoom = 'living'; pet.currentActivity = 'tea'; targetX = 280; targetY = 440;
+            if (viewRoomId === 'kitchen' || viewRoomId === 'living') {
+              viewRoomId = 'living';
+              speakAndShow('「雪櫃入面全部都係 0 冇嘢食喇…😢」');
+            }
+          }
+          updateHUD(); saveState();
+        }
+        return;
+      }
+
+      const tdF = getTodayStr();
+      const canFridge17 = (!info.isWeekend && pet.homeSeqStage === 'living15m' && pet.fridge17Date !== tdF);
+      const canFridge21 = (!info.isWeekend && info.totalMin >= 1260 && info.totalMin < 1350 && pet.fridge21Date !== tdF);
+      const canFridgeWe = (info.isWeekend && (info.totalMin >= 720 || info.totalMin < 90) && ((pet.fridgeWeDate !== tdF ? 0 : (pet.fridgeWeCount || 0)) < 2));
+      if (!pet.fridgeWaitingEmpty && pet.hunger <= 50 && (canFridge17 || canFridge21 || canFridgeWe) && ['living', 'kitchen', 'room_hinata', 'room_aniki'].includes(pet.currentRoom)) {
+        if (canFridge17) pet.fridge17Date = tdF;
+        else if (canFridge21) pet.fridge21Date = tdF;
+        else { if (pet.fridgeWeDate !== tdF) { pet.fridgeWeDate = tdF; pet.fridgeWeCount = 0; } pet.fridgeWeCount += 1; }
+        pet.fridgeStage = 'choosing';
+        pet.fridgeUntil = Date.now() + 30000;
+        pet.currentRoom = 'kitchen'; pet.currentActivity = 'fridge'; targetX = 145; targetY = 440;
+        if (viewRoomId === 'living' || viewRoomId === 'kitchen') { viewRoomId = 'kitchen'; speakAndShow('「有啲肚餓…去雪櫃睇下有咩食先！（揀緊食物 30 秒）🧊」'); }
+      }
+
+      // 6a-3. Street 17:00-17:30 walk home vending machine interaction
+      if (!info.isWeekend && sched.key === 'wd_homew' && pet.currentRoom === 'street' && pet.dailyStreetDrinkDate !== tdF && (pet.pocketMoney || 0) >= 5) {
+        if (Math.random() < 0.35) {
+          pet.dailyStreetDrinkDate = tdF;
+          pet.pocketMoney -= 5;
+          targetX = 485; targetY = 440;
+          if (pet.hunger < 30 || pet.energy < 30) {
+            pet.hunger = Math.min(100, pet.hunger + 10); pet.energy = Math.min(100, pet.energy + 10);
+            if (viewRoomId === 'street') speakAndShow('「行去紅色販賣機買咗罐汽水即刻飲！（零用錢 -5、+10%）🥤✨」');
+          } else {
+            pet.snacks.drink = (pet.snacks.drink || 0) + 1;
+            if (viewRoomId === 'street') speakAndShow('「行去紅色販賣機買咗罐飲品袋好！（零用錢 -5）🥤🎒」');
+          }
+          updateHUD(); saveState();
         }
       }
 
@@ -1716,7 +1782,7 @@ html, body {
       backyard: '🏐 陪練排球', idle: '✨ 休息中', stretch: '🧘‍♂️ 拉筋中',
       gear_prep: '🏐 幫手執裝備', window_gaze: '🌤️ 望窗外思考', read_manga: '📚 睇漫畫中',
       mirror_prep: '🪞 整理儀容', tidy_bag: '🔑 檢查鎖匙', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋'
+      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋', washing_dishes: '🫧 洗碗碟中'
     };
     const IDLE_THOUGHTS = ['💭 想食玉子拌飯…', '💭 聽日要跳高啲！', '💭 哥哥幾時同我打機？', '💭 烏野一定打入全國！'];
 
@@ -2111,6 +2177,7 @@ html, body {
       }
       if (!isZoomed) {
         const furn = (ROOM_FURNITURE[viewRoomId] || []).find(f => Math.hypot(x - f.hx, y - f.hy) <= f.hr);
+        if (furn && viewRoomId === 'kitchen' && furn.id === 'fridge') { openFridgeModal(); return; }
         if (furn && pet.currentActivity === 'sleep') {
           targetX = furn.px; targetY = furn.py; pet.currentActivity = furn.act;
           playSFX('wake'); speakAndShow(furn.line);
@@ -2517,12 +2584,47 @@ html, body {
       }
     });
 
+    const SHOP_ITEMS = [
+      { id: 'bread',     name: '麵包',     emoji: '🥐', cost: 4,  val: 12 },
+      { id: 'noodles',   name: '炒麵',     emoji: '🍜', cost: 6,  val: 18 },
+      { id: 'siumai',    name: '燒賣',     emoji: '🥟', cost: 8,  val: 24 },
+      { id: 'cheungfun', name: '腸粉',     emoji: '🥢', cost: 10, val: 30 },
+      { id: 'sandwich',  name: '三文治',   emoji: '🥪', cost: 5,  val: 15 },
+      { id: 'fishball',  name: '魚蛋',     emoji: '🍢', cost: 6,  val: 18 },
+      { id: 'juice',     name: '紙包飲品', emoji: '🧃', cost: 8,  val: 24 },
+      { id: 'tea_soda',  name: '汽水/茶',  emoji: '🥤', cost: 8,  val: 24 }
+    ];
+    function openFridgeModal() {
+      const fr = state.fridge || {};
+      const box = document.getElementById('choice-overlay');
+      const rows = SHOP_ITEMS.map(it => {
+        const cnt = fr[it.id] || 0;
+        return `<div class="flex items-center justify-between px-2.5 py-1 rounded-lg border border-amber-300 bg-amber-50/70 text-[11px] font-bold"><span>${it.emoji} ${it.name} (+${it.val}%)</span><span class="${cnt > 0 ? 'text-emerald-700 font-black' : 'text-slate-400'}">x${cnt}</span></div>`;
+      }).join('');
+      box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12] mb-1">🧊 雪櫃食物存量（翔陽休息肚餓時會自己嚟攞）</div><div class="grid grid-cols-2 gap-1">${rows}</div><button type="button" data-sms-close="1" class="mt-1 self-center px-3 py-1 rounded-xl bg-white text-[#2d1e12] border-2 border-[#2d1e12] text-[10px] font-black">關上雪櫃</button>`;
+      box.classList.remove('hidden'); box.scrollTop = 0;
+      speakAndShow('「打開雪櫃睇下仲有幾多存糧～🧊」');
+    }
+
     function renderDock() {
-      const tabFood = document.getElementById('tab-food'), tabAct = document.getElementById('tab-act');
-      const isFood = state.dockTab === 'food';
-      tabFood.className = `px-2.5 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] ${isFood ? 'bg-orange-500 text-white' : 'bg-white text-[#2d1e12]'}`;
-      tabAct.className = `px-2.5 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] ${!isFood ? 'bg-orange-500 text-white' : 'bg-white text-[#2d1e12]'}`;
+      const tabFood = document.getElementById('tab-food'), tabAct = document.getElementById('tab-act'), tabShop = document.getElementById('tab-shop');
+      const isFood = state.dockTab === 'food', isShop = state.dockTab === 'shop';
+      tabFood.className = `px-2 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] ${isFood ? 'bg-orange-500 text-white' : 'bg-white text-[#2d1e12]'}`;
+      tabAct.className = `px-2 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] ${(!isFood && !isShop) ? 'bg-orange-500 text-white' : 'bg-white text-[#2d1e12]'}`;
+      if (tabShop) tabShop.className = `px-2 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] ${isShop ? 'bg-emerald-600 text-white' : 'bg-white text-[#2d1e12]'}`;
       const tray = document.getElementById('dock-tray');
+      if (isShop) {
+        const fr = state.fridge || {};
+        tray.innerHTML = SHOP_ITEMS.map(it => `
+          <button type="button" data-shop-id="${it.id}" class="dock-chip bg-white hover:bg-emerald-50 rounded-xl p-1 flex flex-col items-center justify-center h-[62px]">
+            <span class="text-lg leading-none">${it.emoji}</span>
+            <span class="text-[10px] font-bold text-[#2d1e12] leading-tight mt-0.5">${it.name} <span class="text-emerald-700">x${fr[it.id]||0}</span></span>
+            <span class="text-[9px] font-bold text-amber-700">🪙${it.cost} (+${it.val}%)</span>
+          </button>
+        `).join('');
+        document.getElementById('act-pager')?.classList.add('hidden');
+        return;
+      }
       if (isFood) {
         const pet = ensurePetState(state.activeCharId);
         if (pet.recoverStage === 'bed') {
@@ -2606,11 +2708,33 @@ html, body {
 
     document.getElementById('tab-food').addEventListener('click', () => { state.dockTab = 'food'; renderDock(); });
     document.getElementById('tab-act').addEventListener('click', () => { state.dockTab = 'act'; renderDock(); });
+    document.getElementById('tab-shop')?.addEventListener('click', () => { state.dockTab = 'shop'; renderDock(); });
     document.getElementById('btn-act-prev').addEventListener('click', () => { state.actPage = Math.max(0, (state.actPage || 0) - 1); renderDock(); });
     document.getElementById('btn-act-next').addEventListener('click', () => { state.actPage = (state.actPage || 0) + 1; renderDock(); });
 
     let dragStart = null;
     document.getElementById('dock-tray').addEventListener('pointerdown', (e) => {
+      const shopBtn = e.target.closest('[data-shop-id]');
+      if (shopBtn) {
+        const it = SHOP_ITEMS.find(x => x.id === shopBtn.dataset.shopId);
+        const pet = ensurePetState(state.activeCharId);
+        if (!it) return;
+        if (pet.coins < it.cost) { playSFX('miss'); showToast(`金幣唔夠 🪙${it.cost} 呀！`); return; }
+        pet.coins -= it.cost;
+        if (!state.fridge) state.fridge = {};
+        state.fridge[it.id] = (state.fridge[it.id] || 0) + 1;
+        playSFX('eat');
+        showToast(`買咗 ${it.emoji}${it.name} 放入雪櫃！（雪櫃現有 ${state.fridge[it.id]} 份）🧊`);
+        if (pet.fridgeWaitingEmpty) {
+          pet.fridgeWaitingEmpty = false;
+          pet.fridgeStage = 'choosing'; pet.fridgeUntil = Date.now() + 30000;
+          pet.currentRoom = 'kitchen'; pet.currentActivity = 'fridge'; targetX = 145; targetY = 440;
+          if (viewRoomId === 'living') viewRoomId = 'kitchen';
+          speakAndShow('「咦！哥哥放咗嘢食入雪櫃呀！！我即刻過嚟睇下食邊樣！🧊✨」');
+        }
+        renderDock(); updateHUD(); saveState();
+        return;
+      }
       const actBtn = e.target.closest('[data-act-id]');
       if (actBtn) {
         const id = actBtn.dataset.actId, pet = ensurePetState(state.activeCharId), bro = state.brother;
@@ -2732,6 +2856,27 @@ html, body {
     });
 
     document.getElementById('dock-tray').addEventListener('pointerdown', (e) => {
+      const shopBtn = e.target.closest('[data-shop-id]');
+      if (shopBtn) {
+        const it = SHOP_ITEMS.find(x => x.id === shopBtn.dataset.shopId);
+        const pet = ensurePetState(state.activeCharId);
+        if (!it) return;
+        if (pet.coins < it.cost) { playSFX('miss'); showToast(`金幣唔夠 🪙${it.cost} 呀！`); return; }
+        pet.coins -= it.cost;
+        if (!state.fridge) state.fridge = {};
+        state.fridge[it.id] = (state.fridge[it.id] || 0) + 1;
+        playSFX('eat');
+        showToast(`買咗 ${it.emoji}${it.name} 放入雪櫃！（雪櫃現有 ${state.fridge[it.id]} 份）🧊`);
+        if (pet.fridgeWaitingEmpty) {
+          pet.fridgeWaitingEmpty = false;
+          pet.fridgeStage = 'choosing'; pet.fridgeUntil = Date.now() + 30000;
+          pet.currentRoom = 'kitchen'; pet.currentActivity = 'fridge'; targetX = 145; targetY = 440;
+          if (viewRoomId === 'living') viewRoomId = 'kitchen';
+          speakAndShow('「咦！哥哥放咗嘢食入雪櫃呀！！我即刻過嚟睇下食邊樣！🧊✨」');
+        }
+        renderDock(); updateHUD(); saveState();
+        return;
+      }
       const actBtn = e.target.closest('[data-act-id]');
       if (actBtn) {
         const id = actBtn.dataset.actId, pet = ensurePetState(state.activeCharId);
