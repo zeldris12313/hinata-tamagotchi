@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="icon" type="image/png" href="./icon.png?v=35">
-  <link rel="apple-touch-icon" href="./icon.png?v=35">
+  <link rel="icon" type="image/png" href="./icon.png?v=36">
+  <link rel="apple-touch-icon" href="./icon.png?v=36">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -63,6 +63,7 @@ html, body {
       </div>
       <div class="flex items-center gap-1.5">
         <button id="btn-sound" type="button" title="開關互動音效" class="w-8 h-8 rounded-full bg-white/25 hover:bg-white/35 border-2 border-white/50 flex items-center justify-center text-sm transition">🔊</button>
+        <button id="btn-settings" type="button" class="whitespace-nowrap px-2 py-1 rounded-full bg-white text-[#2d1e12] font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-amber-50 transition">⚙️ 數值</button>
         <button id="btn-holiday" type="button" class="whitespace-nowrap px-2 py-1 rounded-full bg-white text-emerald-700 font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-emerald-50 transition">🏖️ 設明日假期</button>
         <button id="btn-schedule" type="button" class="whitespace-nowrap px-2 py-1 rounded-full bg-white text-orange-600 font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-orange-50 transition">📅 生活作息</button>
       </div>
@@ -88,6 +89,12 @@ html, body {
       <!-- 600x600 HD Anime Room Canvas -->
       <div class="relative w-full aspect-square bg-sky-100 overflow-hidden">
         <canvas id="game-canvas" width="600" height="600" class="hd-canvas w-full h-full block cursor-pointer"></canvas>
+
+        <!-- Top-Left Mailbox Button -->
+        <button id="btn-mailbox" type="button" class="absolute top-2.5 left-2.5 bg-white/95 hover:bg-amber-50 border-2 border-[#2d1e12] rounded-xl px-2 py-1 text-base shadow-md z-30 flex items-center justify-center" title="信箱">
+          <span>✉️</span>
+          <span id="mailbox-badge" class="hidden -mt-3 -ml-1 bg-rose-600 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white">!</span>
+        </button>
 
         <!-- Speech Bubble -->
         <div id="speech-bubble" class="pointer-events-none absolute top-9 left-1/2 -translate-x-1/2 w-[84%] bg-white/95 border-2 border-[#2d1e12] rounded-2xl px-3 py-1.5 text-center text-xs font-bold text-[#2d1e12] shadow-md leading-snug z-10">
@@ -215,76 +222,76 @@ html, body {
     // 1. 全套去背立繪（含摸頭專用笑面立繪）＋ 10間手繪動畫房間
     // =========================================================================
     const ASSET_URLS = {
-      chibiJersey: "./assets/chibiJersey.png?v=35",
-      chibiSchool: "./assets/chibiSchool.png?v=35",
-      chibiPajama: "./assets/chibiPajama.png?v=35",
-      portraitJersey: "./assets/portraitJersey.png?v=35",
-      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=35",
-      portraitSchool: "./assets/portraitSchool.png?v=35",
-      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=35",
-      portraitPajama: "./assets/portraitPajama.png?v=35",
-      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=35",
-      portraitSleepy: "./assets/portraitSleepy.jpg?v=35",
-      bg_living: "./assets/bg_living.jpg?v=35",
-      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=35",
-      bg_kitchen: "./assets/bg_kitchen.jpg?v=35",
-      bg_bath: "./assets/bg_bath.jpg?v=35",
-      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=35",
-      bg_hallway: "./assets/bg_hallway.jpg?v=35",
-      bg_backyard: "./assets/bg_backyard.jpg?v=35",
-      bg_street: "./assets/bg_street.jpg?v=35",
-      bg_school_class: "./assets/bg_school_class.jpg?v=35",
-      bg_school_court: "./assets/bg_school_court.jpg?v=35",
-      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=35",
-      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=35",
-      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=35",
-      chibiBrother: "./assets/chibiBrother.png?v=35",
-      bg_main_street: "./assets/bg_main_street.jpg?v=35",
-      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=35",
-      bg_canteen: "./assets/bg_canteen.jpg?v=35",
-      bg_mall: "./assets/bg_mall.jpg?v=35",
-      bg_park: "./assets/bg_park.jpg?v=35",
-      bg_restaurant: "./assets/bg_restaurant.jpg?v=35",
-      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=35",
-      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=35",
-      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=35",
-      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=35",
-      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=35",
-      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=35",
-      bg_hospital: "./assets/bg_hospital.jpg?v=35",
-      bg_street_night: "./assets/bg_street_night.jpg?v=35",
-      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=35",
-      bg_park_night: "./assets/bg_park_night.jpg?v=35",
-      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=35",
-      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=35",
-      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=35",
-      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=35",
-      bg_living_night: "./assets/bg_living_night.jpg?v=35",
-      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=35",
-      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=35",
-      bg_bath_night: "./assets/bg_bath_night.jpg?v=35",
-      bg_mall_night: "./assets/bg_mall_night.jpg?v=35",
-      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=35",
-      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=35",
-      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=35",
-      bg_living_morning: "./assets/bg_living_morning.jpg?v=35",
-      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=35",
-      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=35",
-      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=35",
-      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=35",
-      bg_street_morning: "./assets/bg_street_morning.jpg?v=35",
-      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=35",
-      bg_park_morning: "./assets/bg_park_morning.jpg?v=35",
-      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=35",
-      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=35",
-      chibiJerseySad: "./assets/chibiJerseySad.png?v=35",
-      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=35",
-      bg_school_hall: "./assets/bg_school_hall.jpg?v=35",
-      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=35",
-      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=35",
-      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=35",
-      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=35",
-      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=35"
+      chibiJersey: "./assets/chibiJersey.png?v=36",
+      chibiSchool: "./assets/chibiSchool.png?v=36",
+      chibiPajama: "./assets/chibiPajama.png?v=36",
+      portraitJersey: "./assets/portraitJersey.png?v=36",
+      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=36",
+      portraitSchool: "./assets/portraitSchool.png?v=36",
+      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=36",
+      portraitPajama: "./assets/portraitPajama.png?v=36",
+      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=36",
+      portraitSleepy: "./assets/portraitSleepy.jpg?v=36",
+      bg_living: "./assets/bg_living.jpg?v=36",
+      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=36",
+      bg_kitchen: "./assets/bg_kitchen.jpg?v=36",
+      bg_bath: "./assets/bg_bath.jpg?v=36",
+      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=36",
+      bg_hallway: "./assets/bg_hallway.jpg?v=36",
+      bg_backyard: "./assets/bg_backyard.jpg?v=36",
+      bg_street: "./assets/bg_street.jpg?v=36",
+      bg_school_class: "./assets/bg_school_class.jpg?v=36",
+      bg_school_court: "./assets/bg_school_court.jpg?v=36",
+      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=36",
+      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=36",
+      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=36",
+      chibiBrother: "./assets/chibiBrother.png?v=36",
+      bg_main_street: "./assets/bg_main_street.jpg?v=36",
+      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=36",
+      bg_canteen: "./assets/bg_canteen.jpg?v=36",
+      bg_mall: "./assets/bg_mall.jpg?v=36",
+      bg_park: "./assets/bg_park.jpg?v=36",
+      bg_restaurant: "./assets/bg_restaurant.jpg?v=36",
+      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=36",
+      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=36",
+      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=36",
+      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=36",
+      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=36",
+      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=36",
+      bg_hospital: "./assets/bg_hospital.jpg?v=36",
+      bg_street_night: "./assets/bg_street_night.jpg?v=36",
+      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=36",
+      bg_park_night: "./assets/bg_park_night.jpg?v=36",
+      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=36",
+      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=36",
+      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=36",
+      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=36",
+      bg_living_night: "./assets/bg_living_night.jpg?v=36",
+      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=36",
+      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=36",
+      bg_bath_night: "./assets/bg_bath_night.jpg?v=36",
+      bg_mall_night: "./assets/bg_mall_night.jpg?v=36",
+      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=36",
+      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=36",
+      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=36",
+      bg_living_morning: "./assets/bg_living_morning.jpg?v=36",
+      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=36",
+      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=36",
+      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=36",
+      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=36",
+      bg_street_morning: "./assets/bg_street_morning.jpg?v=36",
+      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=36",
+      bg_park_morning: "./assets/bg_park_morning.jpg?v=36",
+      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=36",
+      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=36",
+      chibiJerseySad: "./assets/chibiJerseySad.png?v=36",
+      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=36",
+      bg_school_hall: "./assets/bg_school_hall.jpg?v=36",
+      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=36",
+      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=36",
+      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=36",
+      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=36",
+      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=36"
     };
     const sprites = {};
 
@@ -511,6 +518,17 @@ html, body {
       activeCharId: 'hinata', soundEnabled: true, dockTab: 'food', actPage: 0, customCharacters: {}, pets: {},
       holidayDate: null, skipDinnerDate: null, msgLog: { date: null, asked: {}, promises: {} },
       fridge: { bread: 0, noodles: 0, siumai: 0, cheungfun: 0, sandwich: 0, fishball: 0, juice: 0, tea_soda: 0 },
+      balance: {
+        normal:   { hunger: -10, energy: -10, mood: -10 },
+        practice: { hunger: -15, energy: -15, mood: 0 },
+        rest:     { hunger: -4,  energy: 25,  mood: 0 },
+        meal:     { hunger: 70,  energy: 70,  mood: 0 },
+        shopRate: { hunger: 3,   energy: 3,   mood: 0 },
+        feedRate: { hunger: 2,   energy: 0,   mood: 1 }
+      },
+      outingMins: { mall: 120, park: 30, restaurant: 60, konbini: 15 },
+      dates: {},
+      mailbox: { items: [], lastMailDate: null, lastInviteDate: null },
       outing: { type: null, returnAt: null, fromMall: false },
       brother: { currentRoom: 'living', currentActivity: 'tea', px: 380, py: 440, tx: 380, ty: 440, scheduleSlotKey: null }
     };
@@ -562,6 +580,10 @@ html, body {
       if (!Array.isArray(p.feedTimestamps)) p.feedTimestamps = [];
       if (!p.snacks) p.snacks = { bread: 0, drink: 0, candy: 0 };
       if (!state.fridge) state.fridge = { bread: 0, noodles: 0, siumai: 0, cheungfun: 0, sandwich: 0, fishball: 0, juice: 0, tea_soda: 0 };
+      if (!state.balance) state.balance = { normal: { hunger: -10, energy: -10, mood: -10 }, practice: { hunger: -15, energy: -15, mood: 0 }, rest: { hunger: -4, energy: 25, mood: 0 }, meal: { hunger: 70, energy: 70, mood: 0 }, shopRate: { hunger: 3, energy: 3, mood: 0 }, feedRate: { hunger: 2, energy: 0, mood: 1 } };
+      if (!state.outingMins) state.outingMins = { mall: 120, park: 30, restaurant: 60, konbini: 15 };
+      if (!state.dates) state.dates = {};
+      if (!state.mailbox) state.mailbox = { items: [], lastMailDate: null, lastInviteDate: null };
       if (!state.brother) state.brother = { currentRoom: 'living', currentActivity: 'tea', px: 380, py: 440, tx: 380, ty: 440, scheduleSlotKey: null };
       if (!state.outing) state.outing = { type: null, returnAt: null, fromMall: false };
       if (!state.msgLog || state.msgLog.date !== today) state.msgLog = { date: today, asked: {}, promises: {} };
@@ -571,25 +593,27 @@ html, body {
     function applyTimeStatsDelta(pet, elapsedMs) {
       const mins = Math.max(0, Math.min(480, elapsedMs / 60000));
       if (mins > 0.1 && !pet.fainted && !pet.recoverStage) {
+        const bal = state.balance || { normal: { hunger: -10, energy: -10, mood: -10 }, practice: { hunger: -15, energy: -15, mood: 0 }, rest: { hunger: -4, energy: 25, mood: 0 }, meal: { hunger: 70, energy: 70, mood: 0 } };
+        const hrs = mins / 60;
         const isVolleyPractice = (pet.currentActivity === 'backyard' || pet.currentActivity === 'school_court' || pet.currentRoom === 'school_court');
-        if (pet.currentActivity === 'sleep' || pet.recoverStage === 'rest30') {
-          pet.energy = Math.min(100, pet.energy + mins * 0.45);
-          pet.hunger = Math.max(0, pet.hunger - (mins / 60) * 5);
-        } else if (pet.currentActivity === 'bath') {
-          pet.energy = Math.min(100, pet.energy + mins * 0.35);
-          pet.hunger = Math.max(0, pet.hunger - (mins / 60) * 4);
-        } else if (['breakfast', 'lunch', 'dinner'].includes(pet.currentActivity)) {
-          pet.hunger = Math.min(100, pet.hunger + mins * 2.35);
-          pet.energy = Math.min(100, pet.energy + mins * 2.35);
+        const isRestAct = (pet.currentActivity === 'sleep' || pet.recoverStage === 'rest30' || pet.currentActivity === 'bath' || pet.currentActivity === 'tea' || pet.currentActivity === 'tv' || pet.currentActivity === 'park_breeze' || pet.currentActivity === 'water_break' || pet.homeSeqStage === 'living15m');
+        if (['breakfast', 'lunch', 'dinner'].includes(pet.currentActivity)) {
+          pet.hunger = Math.max(0, Math.min(100, pet.hunger + (mins / 30) * (bal.meal.hunger || 0)));
+          pet.energy = Math.max(0, Math.min(100, pet.energy + (mins / 30) * (bal.meal.energy || 0)));
+          pet.mood   = Math.max(0, Math.min(100, pet.mood   + (mins / 30) * (bal.meal.mood || 0)));
+        } else if (isRestAct) {
+          pet.hunger = Math.max(0, Math.min(100, pet.hunger + hrs * (bal.rest.hunger || 0)));
+          pet.energy = Math.max(0, Math.min(100, pet.energy + hrs * (bal.rest.energy || 0)));
+          pet.mood   = Math.max(0, Math.min(100, pet.mood   + hrs * ((bal.rest.mood || 0) + (bal.normal.mood || 0))));
         } else if (isVolleyPractice) {
-          pet.hunger = Math.max(0, pet.hunger - (mins / 60) * 15);
-          pet.energy = Math.max(0, pet.energy - (mins / 60) * 15);
+          pet.hunger = Math.max(0, Math.min(100, pet.hunger + hrs * (bal.practice.hunger || 0)));
+          pet.energy = Math.max(0, Math.min(100, pet.energy + hrs * (bal.practice.energy || 0)));
+          pet.mood   = Math.max(0, Math.min(100, pet.mood   + hrs * ((bal.practice.mood || 0) + (bal.normal.mood || 0))));
         } else {
-          pet.hunger = Math.max(0, pet.hunger - (mins / 60) * 10);
-          pet.energy = Math.max(0, pet.energy - (mins / 60) * 10);
+          pet.hunger = Math.max(0, Math.min(100, pet.hunger + hrs * (bal.normal.hunger || 0)));
+          pet.energy = Math.max(0, Math.min(100, pet.energy + hrs * (bal.normal.energy || 0)));
+          pet.mood   = Math.max(0, Math.min(100, pet.mood   + hrs * (bal.normal.mood || 0)));
         }
-        // Mood always decreases by 10 per hour (even offline)
-        pet.mood = Math.max(0, pet.mood - (mins / 60) * 10);
         // Offline living-room autonomous cleaning roll (only after school >= 17:30 or weekend free time)
         const curInfo = getCurrentHourInfo();
         const canCleanNow = (curInfo.isWeekend && curInfo.totalMin >= 670) || (!curInfo.isWeekend && curInfo.totalMin >= 1050);
@@ -664,9 +688,9 @@ html, body {
         if (m < 750)            return { key: 'we_free1', room: 'living',      act: 'tea',       outfit: 2, px: 270, py: 440, label: '假日自由活動', freeRoam: true };
         if (m < 780)            return { key: 'we_wait_lunch', room: 'living', act: 'tv',        outfit: 2, px: 330, py: 420, label: '等哥哥煮午餐' };
         if (m < 815)            return { key: 'we_lunch', room: 'kitchen',     act: 'lunch',     outfit: 2, px: 435, py: 455, label: '一齊食假日午餐' };
-        if (m < 1110)           return { key: 'we_free2', room: 'living',      act: 'tea',       outfit: 2, px: 270, py: 440, label: '假日自由活動', freeRoam: true };
-        if (m < 1140)           return { key: 'we_wait_din', room: 'living',   act: 'tv',        outfit: 2, px: 330, py: 420, label: '等哥哥煮晚餐' };
-        if (m < 1180)           return { key: 'we_dinner', room: 'kitchen',    act: 'dinner',    outfit: 2, px: 435, py: 455, label: '一齊食假日晚餐' };
+        if (m < 1115)           return { key: 'we_free2', room: 'living',      act: 'tea',       outfit: 2, px: 270, py: 440, label: '假日自由活動', freeRoam: true };
+        if (m < 1145)           return { key: 'we_wait_din', room: 'living',   act: 'tv',        outfit: 2, px: 330, py: 420, label: '等哥哥煮晚餐' };
+        if (m < 1185)           return { key: 'we_dinner', room: 'kitchen',    act: 'dinner',    outfit: 2, px: 435, py: 455, label: '一齊食假日晚餐' };
         return                         { key: 'we_free3', room: 'living',      act: 'tv',        outfit: 2, px: 330, py: 420, label: '假日自由活動', freeRoam: true };
       }
     }
@@ -709,10 +733,10 @@ html, body {
         if (m < 780)            return { key: 'br_we_cook_l',room: 'kitchen',    act: 'cook_lunch',  px: 255, py: 435 };
         if (m < 815)            return { key: 'br_we_lunch', room: 'kitchen',    act: 'lunch',       px: 505, py: 440 };
         if (m < 825)            return { key: 'br_we_wash2', room: 'kitchen',    act: 'washing_dishes', px: 280, py: 400 };
-        if (m < 1110)           return { key: 'br_we_f2',    room: 'living',     act: 'tea',         px: 360, py: 440, followHinata: true };
-        if (m < 1140)           return { key: 'br_we_cook_d',room: 'kitchen',    act: 'cook_dinner', px: 255, py: 435 };
-        if (m < 1180)           return { key: 'br_we_din',   room: 'kitchen',    act: 'dinner',      px: 505, py: 440 };
-        if (m < 1190)           return { key: 'br_we_wash3', room: 'kitchen',    act: 'washing_dishes', px: 280, py: 400 };
+        if (m < 1115)           return { key: 'br_we_f2',    room: 'living',     act: 'tea',         px: 360, py: 440, followHinata: true };
+        if (m < 1145)           return { key: 'br_we_cook_d',room: 'kitchen',    act: 'cook_dinner', px: 255, py: 435 };
+        if (m < 1185)           return { key: 'br_we_din',   room: 'kitchen',    act: 'dinner',      px: 505, py: 440 };
+        if (m < 1195)           return { key: 'br_we_wash3', room: 'kitchen',    act: 'washing_dishes', px: 280, py: 400 };
         return                         { key: 'br_we_f3',    room: 'living',     act: 'tv',          px: 420, py: 420, followHinata: true };
       }
     }
@@ -810,7 +834,7 @@ html, body {
       let retAt = Date.now() + durationMin * 60 * 1000;
       if (type === 'mall') {
         const closeAt = new Date(); closeAt.setHours(21, 0, 0, 0);
-        if (retAt > closeAt.getTime()) retAt = closeAt.getTime();
+        closeAt.setHours(22, 0, 0, 0); if (retAt > closeAt.getTime()) retAt = closeAt.getTime();
       }
       state.gamingReturnAt = null;
       state.outing = { type, returnAt: retAt, fromMall };
@@ -827,6 +851,54 @@ html, body {
       const info = getCurrentHourInfo();
       const sched = getScheduledState(info);
       const today = getTodayStr();
+      // Daily 12:00 20% Hinata invite for upcoming weekend/holiday + random daily letter
+      if (!state.mailbox) state.mailbox = { items: [], lastMailDate: null, lastInviteDate: null };
+      if (info.hour >= 12 && state.mailbox.lastInviteDate !== today) {
+        state.mailbox.lastInviteDate = today;
+        if (Math.random() < 0.20) {
+          // Find next upcoming weekend/holiday date
+          let targetDate = null, targetTag = '';
+          for (let off = 1; off <= 30; off++) {
+            const dt = new Date(Date.now() + off * 86400000);
+            const ds = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+            const chk = isDateSelectableHolidayOrWeekend(ds);
+            if (chk.ok) { targetDate = ds; targetTag = chk.tag; break; }
+          }
+          if (targetDate) {
+            const locs = ['mall', 'park', 'restaurant'];
+            const pickLoc = locs[Math.floor(Math.random() * locs.length)];
+            const pickSlot = pickLoc === 'restaurant' ? '18:35-19:35' : DATE_SLOTS[Math.floor(Math.random() * 5)];
+            const locName = MAP_ROOMS[pickLoc]?.name || pickLoc;
+            state.mailbox.items.push({
+              type: 'invite', date: targetDate, slot: pickSlot, loc: pickLoc, answered: false, read: false,
+              text: `「哥哥！${targetDate} (${targetTag}) ${pickSlot} 我哋一齊去【${locName}】約會好唔好？期待你覆我！❤️」`
+            });
+            updateMailboxBadge();
+          }
+        }
+      }
+      if (state.mailbox.lastMailDate !== today && Math.random() < 0.05) {
+        state.mailbox.lastMailDate = today;
+        state.mailbox.items.push({ type: 'letter', read: false, timeStr: info.label, text: pickLine(HINATA_LETTERS) });
+        updateMailboxBadge();
+      }
+      // Execute confirmed date slot if today is a scheduled date (13:35-21:35)
+      if (state.dates && state.dates[today] && state.dates[today].confirmed && !state.outing.type && !duoWalk) {
+        const slots = state.dates[today].slots || {};
+        for (let i = 0; i < DATE_SLOTS.length; i++) {
+          const sStart = 13 * 60 + 35 + i * 60;
+          const sEnd = sStart + 60;
+          if (info.totalMin >= sStart && info.totalMin < sEnd) {
+            const loc = slots[DATE_SLOTS[i]];
+            if (loc && loc !== 'home_eat' && pet.lastDateSlotRun !== today + '_' + i) {
+              pet.lastDateSlotRun = today + '_' + i;
+              const remMin = Math.max(10, sEnd - info.totalMin);
+              startDuoOuting(loc, remMin, loc, `約會時間到！一齊去【${MAP_ROOMS[loc]?.name}】❤️`, `「哥哥！約好咗今日呢個鐘數去【${MAP_ROOMS[loc]?.name}】，出發啦！！❤️✨」`);
+            }
+            break;
+          }
+        }
+      }
       if (info.hour >= 17 && pet.dailySalaryDate !== today) {
         pet.dailySalaryDate = today;
         pet.coins += 200;
@@ -1042,6 +1114,54 @@ html, body {
       const info = getCurrentHourInfo();
       const sched = getScheduledState(info);
       const today = getTodayStr();
+      // Daily 12:00 20% Hinata invite for upcoming weekend/holiday + random daily letter
+      if (!state.mailbox) state.mailbox = { items: [], lastMailDate: null, lastInviteDate: null };
+      if (info.hour >= 12 && state.mailbox.lastInviteDate !== today) {
+        state.mailbox.lastInviteDate = today;
+        if (Math.random() < 0.20) {
+          // Find next upcoming weekend/holiday date
+          let targetDate = null, targetTag = '';
+          for (let off = 1; off <= 30; off++) {
+            const dt = new Date(Date.now() + off * 86400000);
+            const ds = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+            const chk = isDateSelectableHolidayOrWeekend(ds);
+            if (chk.ok) { targetDate = ds; targetTag = chk.tag; break; }
+          }
+          if (targetDate) {
+            const locs = ['mall', 'park', 'restaurant'];
+            const pickLoc = locs[Math.floor(Math.random() * locs.length)];
+            const pickSlot = pickLoc === 'restaurant' ? '18:35-19:35' : DATE_SLOTS[Math.floor(Math.random() * 5)];
+            const locName = MAP_ROOMS[pickLoc]?.name || pickLoc;
+            state.mailbox.items.push({
+              type: 'invite', date: targetDate, slot: pickSlot, loc: pickLoc, answered: false, read: false,
+              text: `「哥哥！${targetDate} (${targetTag}) ${pickSlot} 我哋一齊去【${locName}】約會好唔好？期待你覆我！❤️」`
+            });
+            updateMailboxBadge();
+          }
+        }
+      }
+      if (state.mailbox.lastMailDate !== today && Math.random() < 0.05) {
+        state.mailbox.lastMailDate = today;
+        state.mailbox.items.push({ type: 'letter', read: false, timeStr: info.label, text: pickLine(HINATA_LETTERS) });
+        updateMailboxBadge();
+      }
+      // Execute confirmed date slot if today is a scheduled date (13:35-21:35)
+      if (state.dates && state.dates[today] && state.dates[today].confirmed && !state.outing.type && !duoWalk) {
+        const slots = state.dates[today].slots || {};
+        for (let i = 0; i < DATE_SLOTS.length; i++) {
+          const sStart = 13 * 60 + 35 + i * 60;
+          const sEnd = sStart + 60;
+          if (info.totalMin >= sStart && info.totalMin < sEnd) {
+            const loc = slots[DATE_SLOTS[i]];
+            if (loc && loc !== 'home_eat' && pet.lastDateSlotRun !== today + '_' + i) {
+              pet.lastDateSlotRun = today + '_' + i;
+              const remMin = Math.max(10, sEnd - info.totalMin);
+              startDuoOuting(loc, remMin, loc, `約會時間到！一齊去【${MAP_ROOMS[loc]?.name}】❤️`, `「哥哥！約好咗今日呢個鐘數去【${MAP_ROOMS[loc]?.name}】，出發啦！！❤️✨」`);
+            }
+            break;
+          }
+        }
+      }
       if (info.hour >= 17 && pet.dailySalaryDate !== today) {
         pet.dailySalaryDate = today;
         pet.coins += 200;
@@ -1172,7 +1292,19 @@ html, body {
         if (isEvTV || isWkFree) {
           lastDuoEventAt = Date.now();
           const roll = Math.random();
-          if (roll < 0.14 && isEvTV) {
+          if (isEvTV && pet.dailyKonbiniAskDate !== getTodayStr()) {
+            pet.dailyKonbiniAskDate = getTodayStr();
+            if (Math.random() < 0.20 && document.getElementById('choice-overlay').classList.contains('hidden')) {
+              const box = document.getElementById('choice-overlay');
+              speakAndShow('「哥哥～夜晚不如一齊落便利店行 15 分鐘買熱肉包好唔好？🏪🥟」');
+              box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12]">🏪 翔陽問哥哥去唔去便利店（停留 ${(state.outingMins && state.outingMins.konbini) || 15} 分鐘）：</div>
+                <div class="flex justify-center gap-2 mt-1">
+                  <button type="button" data-konbini-ask="yes" class="px-3 py-1 rounded-xl bg-emerald-500 text-white border-2 border-[#2d1e12] text-xs font-black">🏪 好呀一齊去</button>
+                  <button type="button" data-konbini-ask="no" class="px-3 py-1 rounded-xl bg-slate-200 text-[#2d1e12] border-2 border-[#2d1e12] text-xs font-black">🏠 唔去住</button>
+                </div>`;
+              box.classList.remove('hidden');
+            }
+          } else if (false && roll < 0.14 && isEvTV) {
             startDuoOuting('konbini', 10, 'konbini', '哥哥帶翔陽去便利店買宵夜（10分鐘）🏪', '「哥哥：翔陽，落去便利店買個熱肉包同牛奶？留10分鐘就返嚟！🏪🥟」');
           } else if (roll >= 0.14 && roll < 0.27) {
             startDuoOuting('park', 30, 'park_breeze', '翔陽約哥哥去公園吹海風（30分鐘）🌳', '「翔陽：哥哥我哋落公園散步吹下海風吖！留半個鐘就返～🌳🌊」');
@@ -1226,8 +1358,10 @@ html, body {
           if (frKeys.length > 0) {
             const pickIt = frKeys[Math.floor(Math.random() * frKeys.length)];
             frMap[pickIt.id] -= 1;
-            pet.hunger = Math.min(100, pet.hunger + pickIt.val);
-            pet.energy = Math.min(100, pet.energy + pickIt.val);
+            const sr = (state.balance && state.balance.shopRate) || { hunger: 3, energy: 3, mood: 0 };
+            pet.hunger = Math.min(100, pet.hunger + pickIt.cost * (sr.hunger ?? 3));
+            pet.energy = Math.min(100, pet.energy + pickIt.cost * (sr.energy ?? 3));
+            pet.mood   = Math.min(100, pet.mood   + pickIt.cost * (sr.mood ?? 0));
             pet.fridgeWaitingEmpty = false;
             pet.currentRoom = 'living'; pet.currentActivity = 'tea'; targetX = 280; targetY = 440;
             if (viewRoomId === 'kitchen' || viewRoomId === 'living') {
@@ -1403,6 +1537,12 @@ html, body {
       }
 
       const broFixed = ['sleep', 'brush', 'cook_bfast', 'prep_bfast', 'cook_lunch', 'cook_dinner', 'breakfast', 'lunch', 'dinner', 'canteen_lunch', 'bath'];
+      const isCooking = ['cook_bfast', 'cook_lunch', 'cook_dinner'].includes(bro.currentActivity);
+      if (isCooking && bro.currentRoom === 'kitchen' && nowMs - lastBroAutoActAt > 6500) {
+        lastBroAutoActAt = nowMs;
+        bro.tx = (bro.tx < 200) ? 265 : 145;
+        bro.ty = (bro.tx < 200) ? 440 : 400;
+      }
       const broInterval = (bro.currentRoom === 'pharmacy') ? 9000 : 18000;
       if (!broFixed.includes(bro.currentActivity) && !['bath', 'canteen', 'school_class', 'school_court'].includes(bro.currentRoom) && nowMs - lastBroAutoActAt > broInterval) {
         lastBroAutoActAt = nowMs;
@@ -1454,6 +1594,7 @@ html, body {
       const pet = ensurePetState(state.activeCharId);
       applyTimeStatsDelta(pet, Date.now() - (pet.lastUpdated || Date.now()));
       syncScheduleActivity(pet, false);
+      updateMailboxBadge();
       if (pet.pendingCleanReward) setTimeout(() => openCleanRewardModal(), 600);
     }
     function openCleanRewardModal() {
@@ -2444,8 +2585,9 @@ html, body {
       const replyBanner = lastSmsReplyText ? `<div class="w-full bg-amber-100 border-2 border-amber-500 rounded-xl px-2.5 py-1.5 text-[11px] font-black text-[#2d1e12] mb-1">${lastSmsReplyText}</div>` : '';
       const tabBar = replyBanner + `<div class="w-full flex items-center justify-between gap-1.5 mb-1">
         <div class="flex gap-1">
-          <button type="button" data-sms-tab="promise" class="px-2.5 py-1 rounded-lg text-[10px] font-black border-2 border-[#2d1e12] ${smsTab === 'promise' ? 'bg-sky-500 text-white' : 'bg-white text-[#2d1e12]'}">📅 約定問題</button>
-          <button type="button" data-sms-tab="care" class="px-2.5 py-1 rounded-lg text-[10px] font-black border-2 border-[#2d1e12] ${smsTab === 'care' ? 'bg-rose-500 text-white' : 'bg-white text-[#2d1e12]'}">💛 關心訊息</button>
+          <button type="button" data-sms-tab="promise" class="px-2 py-1 rounded-lg text-[10px] font-black border-2 border-[#2d1e12] ${smsTab === 'promise' ? 'bg-sky-500 text-white' : 'bg-white text-[#2d1e12]'}">📅 約定問題</button>
+          <button type="button" data-sms-tab="care" class="px-2 py-1 rounded-lg text-[10px] font-black border-2 border-[#2d1e12] ${smsTab === 'care' ? 'bg-rose-500 text-white' : 'bg-white text-[#2d1e12]'}">💛 關心訊息</button>
+          <button type="button" data-sms-tab="date" class="px-2 py-1 rounded-lg text-[10px] font-black border-2 border-[#2d1e12] bg-emerald-500 text-white">🗓️ 約會預約</button>
         </div>
         <span class="text-[10px] font-bold text-rose-600">每次+10心情</span>
       </div>`;
@@ -2500,7 +2642,7 @@ html, body {
     document.getElementById('choice-overlay').addEventListener('click', (e) => {
       const pet = ensurePetState(state.activeCharId);
       const sTab = e.target.closest('[data-sms-tab]');
-      if (sTab) { smsTab = sTab.dataset.smsTab; openMessageHinata(); return; }
+      if (sTab) { if (sTab.dataset.smsTab === 'date') { openDateCalendar(false); return; } smsTab = sTab.dataset.smsTab; openMessageHinata(); return; }
       const cBtn = e.target.closest('[data-care-id]');
       if (cBtn) {
         const c = CARE_MESSAGES.find(x => x.id === cBtn.dataset.careId);
@@ -2515,6 +2657,93 @@ html, body {
         lastSmsReplyText = `翔陽回覆：${c.reply}`; speakAndShow(lastSmsReplyText);
         particles.push({ x: 300, y: 240, text: '❤️ +10心情', color: '#f43f5e', life: 36 });
         openMessageHinata(); updateHUD(); saveState();
+        return;
+      }
+      const calNav = e.target.closest('[data-cal-nav]');
+      if (calNav) { calMonthOffset = Number(calNav.dataset.calNav); openDateCalendar(false); return; }
+      const calDt = e.target.closest('[data-cal-date]');
+      if (calDt) { openDateSlotEditor(calDt.dataset.calDate, calDt.dataset.calView === '1'); return; }
+      const calBk = e.target.closest('[data-cal-back]');
+      if (calBk) { openDateCalendar(calBk.dataset.calBack === '1'); return; }
+      const slBtn = e.target.closest('[data-slot-idx]');
+      if (slBtn) {
+        const slot = DATE_SLOTS[Number(slBtn.dataset.slotIdx)];
+        const loc = slBtn.dataset.slotLoc;
+        if (draftDatePlan[slot] === loc) delete draftDatePlan[slot];
+        else draftDatePlan[slot] = loc;
+        // re-render editor preserving draftDatePlan
+        const savedTemp = state.dates[calSelectedDate];
+        state.dates[calSelectedDate] = { ...(savedTemp || {}), slots: { ...draftDatePlan } };
+        openDateSlotEditor(calSelectedDate, false);
+        if (savedTemp) state.dates[calSelectedDate] = savedTemp; else delete state.dates[calSelectedDate];
+        return;
+      }
+      const dSend = e.target.closest('[data-date-send]');
+      if (dSend && calSelectedDate) {
+        if (Math.random() < 0.90) {
+          const prev = state.dates[calSelectedDate] || {};
+          state.dates[calSelectedDate] = { slots: { ...draftDatePlan }, lockedSlots: prev.lockedSlots || {}, confirmed: true };
+          playSFX('levelup');
+          speakAndShow(`「Yeah!! 翔陽答應咗 ${calSelectedDate} 同哥哥去約會啦！！🗓️❤️」`);
+          showToast(`約會確認：${calSelectedDate} ❤️`);
+          saveState();
+          openDateCalendar(true);
+        } else {
+          playSFX('pat');
+          speakAndShow(`「哥哥…${calSelectedDate} 我想留喺屋企休息陪住你多啲，今次唔出街好唔好？😊💛」`);
+          showToast('翔陽想喺屋企休息陪哥哥，改為自由時間 🏠');
+          document.getElementById('choice-overlay').classList.add('hidden');
+        }
+        return;
+      }
+      const invBtn = e.target.closest('[data-inv-idx]');
+      if (invBtn) {
+        const idx = Number(invBtn.dataset.invIdx);
+        const ans = invBtn.dataset.invAns;
+        const item = state.mailbox.items[idx];
+        if (!item || item.answered) return;
+        item.answered = true; item.read = true;
+        if (ans === 'yes') {
+          pet.mood = Math.min(100, pet.mood + 70);
+          pet.energy = Math.min(100, pet.energy + 70);
+          if (!state.dates[item.date]) state.dates[item.date] = { slots: {}, lockedSlots: {}, confirmed: true };
+          state.dates[item.date].slots[item.slot] = item.loc;
+          state.dates[item.date].lockedSlots[item.slot] = true;
+          state.dates[item.date].confirmed = true;
+          playSFX('levelup');
+          showToast('答應翔陽約會！心情 +70%、精力 +70% 💖');
+        } else {
+          pet.mood = Math.max(0, pet.mood - 20);
+          playSFX('miss');
+          showToast('拒絕咗翔陽約會…心情 -20% 😢');
+        }
+        updateMailboxBadge(); updateHUD(); saveState();
+        openMailboxModal();
+        return;
+      }
+      const balBtn = e.target.closest('[data-bal-cat]');
+      if (balBtn) {
+        const { balCat, balStat, balDelta } = balBtn.dataset;
+        state.balance[balCat][balStat] = (state.balance[balCat][balStat] ?? 0) + Number(balDelta);
+        saveState(); openSettingsModal();
+        return;
+      }
+      const durBtn = e.target.closest('[data-dur-key]');
+      if (durBtn) {
+        const { durKey, durDelta } = durBtn.dataset;
+        state.outingMins[durKey] = Math.max(5, (state.outingMins[durKey] || 30) + Number(durDelta));
+        saveState(); openSettingsModal();
+        return;
+      }
+      const konBtn = e.target.closest('[data-konbini-ask]');
+      if (konBtn) {
+        document.getElementById('choice-overlay').classList.add('hidden');
+        if (konBtn.dataset.konbiniAsk === 'yes') {
+          const mins = (state.outingMins && state.outingMins.konbini) || 15;
+          startDuoOuting('konbini', mins, 'konbini', `一齊去便利店（停留 ${mins} 分鐘）🏪`, '「好呀哥哥！！我哋一齊落便利店買熱辣辣肉包！🏪🥟」');
+        } else {
+          speakAndShow('「好！留喺屋企陪哥哥睇電視先～📺😊」');
+        }
         return;
       }
       const smsClose = e.target.closest('[data-sms-close]');
@@ -2591,14 +2820,14 @@ html, body {
     });
 
     const SHOP_ITEMS = [
-      { id: 'bread',     name: '麵包',     emoji: '🥐', cost: 4,  val: 8 },
-      { id: 'noodles',   name: '炒麵',     emoji: '🍜', cost: 6,  val: 12 },
-      { id: 'siumai',    name: '燒賣',     emoji: '🥟', cost: 8,  val: 16 },
-      { id: 'cheungfun', name: '腸粉',     emoji: '🥢', cost: 10, val: 20 },
-      { id: 'sandwich',  name: '三文治',   emoji: '🥪', cost: 5,  val: 10 },
-      { id: 'fishball',  name: '魚蛋',     emoji: '🍢', cost: 6,  val: 12 },
-      { id: 'juice',     name: '紙包飲品', emoji: '🧃', cost: 8,  val: 16 },
-      { id: 'tea_soda',  name: '汽水/茶',  emoji: '🥤', cost: 8,  val: 16 }
+      { id: 'bread',     name: '麵包',     emoji: '🥐', cost: 4,  val: 12 },
+      { id: 'noodles',   name: '炒麵',     emoji: '🍜', cost: 6,  val: 18 },
+      { id: 'siumai',    name: '燒賣',     emoji: '🥟', cost: 8,  val: 24 },
+      { id: 'cheungfun', name: '腸粉',     emoji: '🥢', cost: 10, val: 30 },
+      { id: 'sandwich',  name: '三文治',   emoji: '🥪', cost: 5,  val: 15 },
+      { id: 'fishball',  name: '魚蛋',     emoji: '🍢', cost: 6,  val: 18 },
+      { id: 'juice',     name: '紙包飲品', emoji: '🧃', cost: 8,  val: 24 },
+      { id: 'tea_soda',  name: '汽水/茶',  emoji: '🥤', cost: 8,  val: 24 }
     ];
     let lastShopBuyAt = 0;
     function openFridgeModal() {
@@ -2611,6 +2840,280 @@ html, body {
       box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12] mb-1">🧊 雪櫃食物存量（翔陽休息肚餓時會自己嚟攞）</div><div class="grid grid-cols-2 gap-1">${rows}</div><button type="button" data-sms-close="1" class="mt-1 self-center px-3 py-1 rounded-xl bg-white text-[#2d1e12] border-2 border-[#2d1e12] text-[10px] font-black">關上雪櫃</button>`;
       box.classList.remove('hidden'); box.scrollTop = 0;
       speakAndShow('「打開雪櫃睇下仲有幾多存糧～🧊」');
+    }
+
+
+    // =========================================================================
+    // 香港永久公眾假期（紅假）自動推算引擎（支援 2026 年 11 月起及後續任何年份）
+    // =========================================================================
+    function getEasterSunday(year) {
+      const a = year % 19, b = Math.floor(year / 100), c = year % 100;
+      const d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+      const g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+      const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7;
+      const m = Math.floor((a + 11 * h + 22 * l) / 451);
+      const month = Math.floor((h + l - 7 * m + 114) / 31);
+      const day = ((h + l - 7 * m + 114) % 31) + 1;
+      return new Date(year, month - 1, day);
+    }
+    function getLunarInfo(dateObj) {
+      try {
+        const parts = new Intl.DateTimeFormat('en-u-ca-chinese', { month: 'numeric', day: 'numeric' }).formatToParts(dateObj);
+        let m = 0, d = 0;
+        for (const p of parts) {
+          if (p.type === 'month') m = parseInt(p.value, 10);
+          if (p.type === 'day') d = parseInt(p.value, 10);
+        }
+        return { m, d };
+      } catch (e) { return { m: 0, d: 0 }; }
+    }
+    const _hkHolidayCache = {};
+    function getHKHolidaysForYear(year) {
+      if (_hkHolidayCache[year]) return _hkHolidayCache[year];
+      const map = {};
+      const fmt = (dt) => `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+      const addH = (dt, name) => { map[fmt(dt)] = name; };
+      const addSolarSubst = (month, day, name) => {
+        const dt = new Date(year, month - 1, day);
+        if (dt.getDay() === 0) dt.setDate(dt.getDate() + 1);
+        addH(dt, name);
+      };
+      addSolarSubst(1, 1, '元旦');
+      addSolarSubst(5, 1, '勞動節');
+      addSolarSubst(7, 1, '香港特區成立紀念日');
+      addSolarSubst(10, 1, '國慶日');
+      // Ching Ming (Apr 4 or Apr 5)
+      const qmDay = (year % 4 === 0 && year >= 2008) ? 4 : 5;
+      addSolarSubst(4, qmDay, '清明節');
+      // Easter (Good Friday, Sat, Easter Monday)
+      const eas = getEasterSunday(year);
+      const gf = new Date(eas); gf.setDate(eas.getDate() - 2); addH(gf, '耶穌受難節');
+      const gs = new Date(eas); gs.setDate(eas.getDate() - 1); addH(gs, '耶穌受難節翌日');
+      const em = new Date(eas); em.setDate(eas.getDate() + 1); addH(em, '復活節星期一');
+      // Christmas & Boxing Day
+      const xmas = new Date(year, 11, 25);
+      if (xmas.getDay() === 0) { addH(new Date(year, 11, 26), '聖誕節後第一個週日'); addH(new Date(year, 11, 27), '聖誕節補假'); }
+      else if (xmas.getDay() === 6) { addH(xmas, '聖誕節'); addH(new Date(year, 11, 28), '聖誕節後第一個週日補假'); }
+      else if (xmas.getDay() === 5) { addH(xmas, '聖誕節'); addH(new Date(year, 11, 26), '聖誕節後第一個週日'); }
+      else { addH(xmas, '聖誕節'); addH(new Date(year, 11, 26), '聖誕節後第一個週日'); }
+
+      // Scan entire year for Lunar holidays (CNY 1/1-1/3, Buddha 4/8, Tuen Ng 5/5, Mid-Autumn 8/16, Chung Yeung 9/9)
+      for (let m = 0; m < 12; m++) {
+        const daysInM = new Date(year, m + 1, 0).getDate();
+        for (let d = 1; d <= daysInM; d++) {
+          const dt = new Date(year, m, d);
+          const lu = getLunarInfo(dt);
+          if (lu.m === 1 && lu.d === 1) {
+            for (let k = 0; k < 3; k++) {
+              const cdt = new Date(year, m, d + k);
+              if (cdt.getDay() === 0) { const nx = new Date(year, m, d + 3); addH(nx, '農曆新年補假'); }
+              else addH(cdt, `農曆年初${['一','二','三'][k]}`);
+            }
+          } else if (lu.m === 4 && lu.d === 8) addSolarSubst(m + 1, d, '佛誕');
+          else if (lu.m === 5 && lu.d === 5) addSolarSubst(m + 1, d, '端午節');
+          else if (lu.m === 8 && lu.d === 16) addSolarSubst(m + 1, d, '中秋節翌日');
+          else if (lu.m === 9 && lu.d === 9) addSolarSubst(m + 1, d, '重陽節');
+        }
+      }
+      _hkHolidayCache[year] = map;
+      return map;
+    }
+    function isDateSelectableHolidayOrWeekend(dateStr) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      const day = dt.getDay();
+      const hols = getHKHolidaysForYear(y);
+      if (day === 0 || day === 6) return { ok: true, tag: day === 6 ? '星期六' : '星期日', isRed: day === 0 };
+      if (hols[dateStr]) return { ok: true, tag: hols[dateStr], isRed: true };
+      if (state.holidayDate === dateStr) return { ok: true, tag: '二人假期', isRed: true };
+      return { ok: false, tag: '', isRed: false };
+    }
+
+    // =========================================================================
+    // ⚙️ 數值與假日外出時間設定面板
+    // =========================================================================
+    function openSettingsModal() {
+      const bal = state.balance;
+      const om = state.outingMins || { mall: 120, park: 30, restaurant: 60, konbini: 15 };
+      const cats = [
+        { key: 'normal',   title: '一般活動／離線（每小時）' },
+        { key: 'practice', title: '練排球（每小時）' },
+        { key: 'rest',     title: '休息／瞓覺／浸浴（每小時）' },
+        { key: 'meal',     title: '早午晚三餐（每餐共加）' },
+        { key: 'shopRate', title: '🛒 購物雪櫃食物（每1元）' },
+        { key: 'feedRate', title: '🍱 餵食食物（每1元）' }
+      ];
+      const box = document.getElementById('choice-overlay');
+      const catHtml = cats.map(c => {
+        const obj = bal[c.key];
+        return `<div class="bg-amber-50/80 border border-amber-300 rounded-xl p-1.5">
+          <div class="text-[11px] font-black text-[#2d1e12] mb-1">${c.title}</div>
+          <div class="grid grid-cols-3 gap-1 text-[10px] font-bold">
+            ${['hunger','energy','mood'].map(stat => {
+              const sLabel = stat === 'hunger' ? '飽食' : (stat === 'energy' ? '精力' : '心情');
+              const val = obj[stat] ?? 0;
+              return `<div class="flex items-center justify-between bg-white border border-amber-300 rounded px-1 py-0.5">
+                <span>${sLabel}</span>
+                <div class="flex items-center gap-0.5">
+                  <button type="button" data-bal-cat="${c.key}" data-bal-stat="${stat}" data-bal-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span class="min-w-[22px] text-center">${val > 0 ? '+'+val : val}</span>
+                  <button type="button" data-bal-cat="${c.key}" data-bal-stat="${stat}" data-bal-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+      }).join('');
+      const durHtml = `<div class="bg-sky-50 border border-sky-300 rounded-xl p-1.5">
+        <div class="text-[11px] font-black text-[#2d1e12] mb-1">🏖️ 外出停留時間（分鐘）</div>
+        <div class="grid grid-cols-2 gap-1 text-[10px] font-bold">
+          ${[['mall','🛍️ 商場'],['park','🌳 公園'],['restaurant','🍽️ 餐廳'],['konbini','🏪 便利店']].map(([k, lbl]) => `
+            <div class="flex items-center justify-between bg-white border border-sky-300 rounded px-1.5 py-0.5">
+              <span>${lbl}</span>
+              <div class="flex items-center gap-1">
+                <button type="button" data-dur-key="${k}" data-dur-delta="-5" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                <span>${om[k]}分</span>
+                <button type="button" data-dur-key="${k}" data-dur-delta="5" class="w-4 h-4 rounded bg-sky-300 font-black">+</button>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+      box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12]">⚙️ 數值與假日外出設定（即時儲存）</div>${catHtml}${durHtml}<button type="button" data-sms-close="1" class="mt-1 self-center px-4 py-1 rounded-xl bg-orange-500 text-white border-2 border-[#2d1e12] text-xs font-black">完成儲存</button>`;
+      box.classList.remove('hidden'); box.scrollTop = 0;
+    }
+
+    // =========================================================================
+    // 📅 雙月迷你約會月曆 ＋ 13:35-21:35 逐小時約會表格
+    // =========================================================================
+    const DATE_SLOTS = ['13:35-14:35','14:35-15:35','15:35-16:35','16:35-17:35','17:35-18:35','18:35-19:35','19:35-20:35','20:35-21:35'];
+    let calMonthOffset = 0; // 0 = this month, 1 = next month
+    let calSelectedDate = null;
+    let draftDatePlan = {};
+
+    function openDateCalendar(viewOnly = false) {
+      const box = document.getElementById('choice-overlay');
+      const now = new Date();
+      const target = new Date(now.getFullYear(), now.getMonth() + calMonthOffset, 1);
+      const y = target.getFullYear(), m = target.getMonth();
+      const firstDow = target.getDay();
+      const daysInM = new Date(y, m + 1, 0).getDate();
+      const todayStr = getTodayStr();
+
+      let cells = '';
+      for (let i = 0; i < firstDow; i++) cells += '<div></div>';
+      for (let d = 1; d <= daysInM; d++) {
+        const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const info = isDateSelectableHolidayOrWeekend(ds);
+        const hasPlan = state.dates && state.dates[ds] && Object.keys(state.dates[ds].slots || {}).length > 0;
+        const isPast = ds < todayStr;
+        const canPick = info.ok && !isPast;
+        const ringCls = hasPlan ? 'ring-2 ring-rose-500 bg-rose-100 font-black' : (canPick ? 'bg-amber-50 hover:bg-amber-200 font-black' : 'bg-slate-100 text-slate-400 opacity-50');
+        const txtCol = info.isRed && canPick ? 'text-rose-600' : 'text-[#2d1e12]';
+        cells += `<button type="button" ${canPick ? `data-cal-date="${ds}" data-cal-view="${viewOnly ? '1' : '0'}"` : 'disabled'} class="rounded-lg py-1 text-[11px] border ${hasPlan ? 'border-rose-500' : 'border-amber-300'} ${ringCls} ${txtCol}">${d}${hasPlan ? '❤️' : ''}</button>`;
+      }
+
+      box.innerHTML = `
+        <div class="flex items-center justify-between bg-amber-100 rounded-xl px-2 py-1 border border-amber-400">
+          <button type="button" data-cal-nav="0" class="px-2 py-0.5 rounded bg-white border border-[#2d1e12] text-[10px] font-black ${calMonthOffset === 0 ? 'opacity-40' : ''}">◀ 今月</button>
+          <span class="text-xs font-black text-[#2d1e12]">📅 ${y}年${m+1}月（紅字/假日/週末可選）</span>
+          <button type="button" data-cal-nav="1" class="px-2 py-0.5 rounded bg-white border border-[#2d1e12] text-[10px] font-black ${calMonthOffset === 1 ? 'opacity-40' : ''}">下月 ▶</button>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-black text-amber-900">
+          <div class="text-rose-600">日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div class="text-sky-700">六</div>
+        </div>
+        <div class="grid grid-cols-7 gap-1">${cells}</div>
+        <div class="text-[10px] text-center text-amber-800 font-bold">❤️ 紅框代表已約好行程 · 點擊日子查看或設定時段</div>
+        <button type="button" data-sms-close="1" class="mt-1 self-center px-3 py-1 rounded-xl bg-white text-[#2d1e12] border-2 border-[#2d1e12] text-[10px] font-black">關閉</button>
+      `;
+      box.classList.remove('hidden'); box.scrollTop = 0;
+    }
+
+    function openDateSlotEditor(ds, viewOnly = false) {
+      calSelectedDate = ds;
+      const existing = (state.dates && state.dates[ds]) || { slots: {}, lockedByHinata: false, lockedSlots: {} };
+      draftDatePlan = { ...(existing.slots || {}) };
+      const lockedSlots = existing.lockedSlots || {};
+      const holInfo = isDateSelectableHolidayOrWeekend(ds);
+      const box = document.getElementById('choice-overlay');
+
+      const rows = DATE_SLOTS.map((slot, idx) => {
+        const isDinner = (idx === 5); // 18:35-19:35
+        const isHinataLocked = !!lockedSlots[slot];
+        const chosen = draftDatePlan[slot] || null;
+        const opts = isDinner ? [['restaurant','🍽️ 餐廳'],['home_eat','🏠 回家食']] : [['mall','🛍️ 商場'],['park','🌳 公園'],['restaurant','🍽️ 餐廳']];
+        const btns = opts.map(([k, lbl]) => {
+          const active = (chosen === k);
+          const disabled = isHinataLocked || (chosen && !active);
+          return `<button type="button" ${isHinataLocked ? 'disabled' : `data-slot-idx="${idx}" data-slot-loc="${k}"`} class="px-2 py-1 rounded-lg border text-[10px] font-black ${active ? 'bg-orange-500 text-white border-[#2d1e12]' : (disabled ? 'bg-slate-200 text-slate-400 border-slate-300' : 'bg-white text-[#2d1e12] border-[#2d1e12] hover:bg-amber-100')}">${lbl}${isHinataLocked && active ? '🔒' : ''}</button>`;
+        }).join('');
+        return `<div class="flex items-center justify-between gap-1 bg-amber-50/80 border border-amber-300 rounded-xl px-2 py-1">
+          <span class="text-[10px] font-black text-[#2d1e12]">${slot}</span>
+          <div class="flex gap-1">${btns}</div>
+        </div>`;
+      }).join('');
+
+      box.innerHTML = `
+        <div class="flex items-center justify-between">
+          <button type="button" data-cal-back="${viewOnly ? '1' : '0'}" class="px-2 py-0.5 rounded bg-white border border-[#2d1e12] text-[10px] font-black">◀ 返回月曆</button>
+          <span class="text-xs font-black text-[#2d1e12]">${ds} (${holInfo.tag})</span>
+        </div>
+        ${rows}
+        <div class="flex justify-center gap-2 mt-1">
+          <button type="button" data-date-send="1" class="px-3 py-1 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white border-2 border-[#2d1e12] text-xs font-black">💌 傳送約會畀翔陽</button>
+          <button type="button" data-sms-close="1" class="px-3 py-1 rounded-xl bg-white text-[#2d1e12] border-2 border-[#2d1e12] text-xs font-black">關閉</button>
+        </div>
+      `;
+      box.classList.remove('hidden'); box.scrollTop = 0;
+    }
+
+    // =========================================================================
+    // ✉️ 左上角信箱（10 條關心短訊 ＋ 每日 12:00 20% 主動邀約）
+    // =========================================================================
+    const HINATA_LETTERS = [
+      '「哥哥！今日返工企咗好耐腳仔累唔累呀？返到嚟我幫你揼骨！💛」',
+      '「頭先練球見到天空好靚，即刻諗起同哥哥一齊散步嗰陣～🌤️」',
+      '「哥哥你喺醫院要記得準時食飯呀，唔好顧住照顧病人自己餓親！🍱」',
+      '「我今日有乖乖溫書同抄筆記！夜晚等哥哥檢查～📖✨」',
+      '「好掛住哥哥煮嘅晚餐呀，諗起都流口水…🤤🍳」',
+      '「今朝哥哥幫我整理好個書包特別順手！多謝哥哥！🎒💛」',
+      '「無論比賽贏定輸，只要返到屋企見到哥哥我就充滿電！⚡」',
+      '「哥哥你著住藥師袍／外套嘅背影真係好型呀！✨」',
+      '「放假嗰陣我哋再去海邊公園吹海風同慢跑好唔好？🌊」',
+      '「多謝哥哥每日咁忙都咁錫我…最鍾意哥哥！！❤️」'
+    ];
+    function updateMailboxBadge() {
+      const badge = document.getElementById('mailbox-badge');
+      if (!badge) return;
+      const items = (state.mailbox && state.mailbox.items) || [];
+      const hasUnread = items.some(x => !x.read);
+      if (hasUnread) badge.classList.remove('hidden');
+      else badge.classList.add('hidden');
+    }
+    function openMailboxModal() {
+      if (!state.mailbox) state.mailbox = { items: [], lastMailDate: null, lastInviteDate: null };
+      const items = state.mailbox.items;
+      items.forEach(it => { if (it.type !== 'invite') it.read = true; });
+      updateMailboxBadge(); saveState();
+      const box = document.getElementById('choice-overlay');
+      const listHtml = items.length ? items.slice().reverse().map((it, revIdx) => {
+        const realIdx = items.length - 1 - revIdx;
+        if (it.type === 'invite' && !it.answered) {
+          return `<div class="bg-rose-50 border-2 border-rose-400 rounded-xl p-2 text-[11px] font-bold">
+            <div class="text-rose-700 font-black mb-1">💌 翔陽主動約會邀請（${it.date} ${it.slot}）</div>
+            <div class="mb-1.5 text-[#2d1e12]">${it.text}</div>
+            <div class="flex gap-2">
+              <button type="button" data-inv-idx="${realIdx}" data-inv-ans="yes" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-white border border-[#2d1e12] text-[10px] font-black">💖 答應 (+70心情/精力)</button>
+              <button type="button" data-inv-idx="${realIdx}" data-inv-ans="no" class="px-2.5 py-1 rounded-lg bg-slate-200 text-[#2d1e12] border border-[#2d1e12] text-[10px] font-black">😢 拒絕 (-20心情)</button>
+            </div>
+          </div>`;
+        }
+        return `<div class="bg-amber-50 border border-amber-300 rounded-xl p-2 text-[11px] font-bold text-[#2d1e12]">
+          <div class="text-[9px] text-amber-700">${it.timeStr || ''}</div>
+          <div>${it.text}</div>
+        </div>`;
+      }).join('') : '<div class="text-center text-xs text-slate-400 py-4">信箱暫時未有新訊息～✉️</div>';
+      box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12]">✉️ 翔陽寄畀哥哥嘅信箱</div>${listHtml}<button type="button" data-sms-close="1" class="mt-1 self-center px-3 py-1 rounded-xl bg-white text-[#2d1e12] border-2 border-[#2d1e12] text-[10px] font-black">關閉信箱</button>`;
+      box.classList.remove('hidden'); box.scrollTop = 0;
     }
 
     function renderDock() {
@@ -2685,10 +3188,11 @@ html, body {
         { id: 'practice', emoji: '🔥', name: '練球', sub: '去後院練習' },
         { id: 'furn',  emoji: '🛋️', name: '房間傢俬', sub: '場景互動' },
         { id: 'konbini_trip', emoji: '🏪', name: '去便利店', sub: '一齊留10分鐘' },
-        { id: 'mall_trip', emoji: '🛍️', name: '去商場', sub: '21:00關門' },
+        { id: 'mall_trip', emoji: '🛍️', name: '去商場', sub: '22:00關門' },
         { id: 'park_trip', emoji: '🌳', name: '去公園', sub: '散步吹海風' },
-        { id: 'rest_trip', emoji: '🍽️', name: '去餐廳', sub: '21:00關門' },
-        { id: 'msg_hinata', emoji: '📱', name: '訊息翔陽', sub: '每日5題約定' },
+        { id: 'rest_trip', emoji: '🍽️', name: '去餐廳', sub: '22:00關門' },
+        { id: 'msg_hinata', emoji: '📱', name: '訊息翔陽', sub: '約定/關心/約會' },
+        { id: 'view_dates', emoji: '🗓️', name: '約會行程', sub: '查看/修改預約' },
         { id: 'chat',  emoji: '💬', name: '問候傾計', sub: '雙人對話' },
         state.gamingReturnAt ? { id: 'stop_gaming', emoji: '⏹️', name: '中斷打機', sub: '返去原行程', highlight: true } : { id: 'gaming', emoji: '🎮', name: '一齊打機', sub: '去哥哥房電腦' },
         { id: 'study', emoji: '📖', name: '一齊溫書', sub: '好感+6' },
@@ -2787,7 +3291,7 @@ html, body {
           startDuoOuting('konbini', 10, 'konbini', '二人一齊去便利店（停留 10 分鐘）🏪', '「同哥哥一齊行過去便利店買熱辣辣肉包！10 分鐘後返屋企～🏪🥟」');
           pet.mood = Math.min(100, pet.mood + 10); grantCappedRewards(pet, 6, 4);
         } else if (id === 'mall_trip') {
-          if (nowH >= 21) { playSFX('miss'); showToast('商場 21:00 已經關門啦！🔒'); speakAndShow('「商場九點關門咗啦哥哥，聽日早啲去！🛍️」'); return; }
+          if (nowH >= 22) { playSFX('miss'); showToast('商場 22:00 已經關門啦！🔒'); speakAndShow('「商場九點關門咗啦哥哥，聽日早啲去！🛍️」'); return; }
           if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
           const bothHome = !['pharmacy', 'canteen', 'school_class', 'school_court'].includes(bro.currentRoom);
           if (!bothHome) { playSFX('miss'); showToast('哥哥返緊工未返屋企呀！🏥'); return; }
@@ -2800,7 +3304,7 @@ html, body {
           startDuoOuting('park', 30, 'park_walk', '二人一齊去公園（停留 30 分鐘）🌳', '「一齊去海濱公園慢跑、散步同睇海風！🌳🌊」');
           if (pet.dailyParkMoodDate !== getTodayStr()) { pet.dailyParkMoodDate = getTodayStr(); pet.mood = Math.min(100, pet.mood + 10); } grantCappedRewards(pet, 5, 3);
         } else if (id === 'rest_trip') {
-          if (nowH >= 21) { playSFX('miss'); showToast('餐廳 21:00 已經關門啦！🔒'); speakAndShow('「餐廳九點關門咗啦，我哋喺屋企食啦哥哥～🍽️」'); return; }
+          if (nowH >= 22) { playSFX('miss'); showToast('餐廳 22:00 已經關門啦！🔒'); speakAndShow('「餐廳九點關門咗啦，我哋喺屋企食啦哥哥～🍽️」'); return; }
           if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
           const bothHome = !['pharmacy', 'canteen', 'school_class', 'school_court'].includes(bro.currentRoom);
           if (!bothHome) { playSFX('miss'); showToast('哥哥返緊工未返屋企呀！🏥'); return; }
@@ -2815,6 +3319,7 @@ html, body {
           speakAndShow('「好！暫時唔打住，返去跟今日嘅行程先～👋」');
           renderDock(); updateHUD(); saveState();
         } else if (id === 'msg_hinata') { openMessageHinata(); }
+        else if (id === 'view_dates') { openDateCalendar(true); }
         else if (id === 'chat') { openInteractiveChat(); }
         else if (id === 'furn') {
           if (!isZoomed && pet.currentRoom !== viewRoomId) { viewRoomId = pet.currentRoom; updateHUD(); }
@@ -3076,6 +3581,8 @@ html, body {
     });
 
     document.getElementById('btn-schedule').addEventListener('click', openScheduleModal);
+    document.getElementById('btn-settings').addEventListener('click', openSettingsModal);
+    document.getElementById('btn-mailbox').addEventListener('click', openMailboxModal);
     document.getElementById('btn-holiday').addEventListener('click', () => {
       const tom = getTomorrowStr();
       if (state.holidayDate === tom) {
