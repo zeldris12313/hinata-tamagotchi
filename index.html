@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="icon" type="image/png" href="./icon.png?v=38">
-  <link rel="apple-touch-icon" href="./icon.png?v=38">
+  <link rel="icon" type="image/png" href="./icon.png?v=39">
+  <link rel="apple-touch-icon" href="./icon.png?v=39">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -81,7 +81,7 @@ html, body {
         <div class="flex items-center justify-between text-[10px] bg-white/80 rounded-lg px-2 py-0.5 border border-amber-300 whitespace-nowrap">
           <span id="daily-cap-exp">📈 今日EXP 0/100</span>
           <span id="daily-lock-badge" class="hidden text-rose-600 font-black">🔒 EXP已達上限</span>
-          <span id="snack-bag-display" class="font-bold text-amber-800">🎒 小食: 無</span>
+          <button id="snack-bag-display" type="button" class="font-bold text-amber-800 hover:underline cursor-pointer">🎒 小食: 無</button>
           <span class="font-black text-emerald-700">👛 零錢 <span id="pocket-money">20</span></span>
         </div>
       </div>
@@ -222,76 +222,76 @@ html, body {
     // 1. 全套去背立繪（含摸頭專用笑面立繪）＋ 10間手繪動畫房間
     // =========================================================================
     const ASSET_URLS = {
-      chibiJersey: "./assets/chibiJersey.png?v=38",
-      chibiSchool: "./assets/chibiSchool.png?v=38",
-      chibiPajama: "./assets/chibiPajama.png?v=38",
-      portraitJersey: "./assets/portraitJersey.png?v=38",
-      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=38",
-      portraitSchool: "./assets/portraitSchool.png?v=38",
-      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=38",
-      portraitPajama: "./assets/portraitPajama.png?v=38",
-      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=38",
-      portraitSleepy: "./assets/portraitSleepy.jpg?v=38",
-      bg_living: "./assets/bg_living.jpg?v=38",
-      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=38",
-      bg_kitchen: "./assets/bg_kitchen.jpg?v=38",
-      bg_bath: "./assets/bg_bath.jpg?v=38",
-      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=38",
-      bg_hallway: "./assets/bg_hallway.jpg?v=38",
-      bg_backyard: "./assets/bg_backyard.jpg?v=38",
-      bg_street: "./assets/bg_street.jpg?v=38",
-      bg_school_class: "./assets/bg_school_class.jpg?v=38",
-      bg_school_court: "./assets/bg_school_court.jpg?v=38",
-      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=38",
-      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=38",
-      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=38",
-      chibiBrother: "./assets/chibiBrother.png?v=38",
-      bg_main_street: "./assets/bg_main_street.jpg?v=38",
-      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=38",
-      bg_canteen: "./assets/bg_canteen.jpg?v=38",
-      bg_mall: "./assets/bg_mall.jpg?v=38",
-      bg_park: "./assets/bg_park.jpg?v=38",
-      bg_restaurant: "./assets/bg_restaurant.jpg?v=38",
-      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=38",
-      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=38",
-      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=38",
-      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=38",
-      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=38",
-      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=38",
-      bg_hospital: "./assets/bg_hospital.jpg?v=38",
-      bg_street_night: "./assets/bg_street_night.jpg?v=38",
-      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=38",
-      bg_park_night: "./assets/bg_park_night.jpg?v=38",
-      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=38",
-      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=38",
-      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=38",
-      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=38",
-      bg_living_night: "./assets/bg_living_night.jpg?v=38",
-      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=38",
-      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=38",
-      bg_bath_night: "./assets/bg_bath_night.jpg?v=38",
-      bg_mall_night: "./assets/bg_mall_night.jpg?v=38",
-      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=38",
-      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=38",
-      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=38",
-      bg_living_morning: "./assets/bg_living_morning.jpg?v=38",
-      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=38",
-      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=38",
-      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=38",
-      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=38",
-      bg_street_morning: "./assets/bg_street_morning.jpg?v=38",
-      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=38",
-      bg_park_morning: "./assets/bg_park_morning.jpg?v=38",
-      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=38",
-      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=38",
-      chibiJerseySad: "./assets/chibiJerseySad.png?v=38",
-      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=38",
-      bg_school_hall: "./assets/bg_school_hall.jpg?v=38",
-      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=38",
-      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=38",
-      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=38",
-      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=38",
-      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=38"
+      chibiJersey: "./assets/chibiJersey.png?v=39",
+      chibiSchool: "./assets/chibiSchool.png?v=39",
+      chibiPajama: "./assets/chibiPajama.png?v=39",
+      portraitJersey: "./assets/portraitJersey.png?v=39",
+      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=39",
+      portraitSchool: "./assets/portraitSchool.png?v=39",
+      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=39",
+      portraitPajama: "./assets/portraitPajama.png?v=39",
+      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=39",
+      portraitSleepy: "./assets/portraitSleepy.jpg?v=39",
+      bg_living: "./assets/bg_living.jpg?v=39",
+      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=39",
+      bg_kitchen: "./assets/bg_kitchen.jpg?v=39",
+      bg_bath: "./assets/bg_bath.jpg?v=39",
+      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=39",
+      bg_hallway: "./assets/bg_hallway.jpg?v=39",
+      bg_backyard: "./assets/bg_backyard.jpg?v=39",
+      bg_street: "./assets/bg_street.jpg?v=39",
+      bg_school_class: "./assets/bg_school_class.jpg?v=39",
+      bg_school_court: "./assets/bg_school_court.jpg?v=39",
+      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=39",
+      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=39",
+      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=39",
+      chibiBrother: "./assets/chibiBrother.png?v=39",
+      bg_main_street: "./assets/bg_main_street.jpg?v=39",
+      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=39",
+      bg_canteen: "./assets/bg_canteen.jpg?v=39",
+      bg_mall: "./assets/bg_mall.jpg?v=39",
+      bg_park: "./assets/bg_park.jpg?v=39",
+      bg_restaurant: "./assets/bg_restaurant.jpg?v=39",
+      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=39",
+      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=39",
+      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=39",
+      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=39",
+      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=39",
+      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=39",
+      bg_hospital: "./assets/bg_hospital.jpg?v=39",
+      bg_street_night: "./assets/bg_street_night.jpg?v=39",
+      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=39",
+      bg_park_night: "./assets/bg_park_night.jpg?v=39",
+      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=39",
+      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=39",
+      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=39",
+      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=39",
+      bg_living_night: "./assets/bg_living_night.jpg?v=39",
+      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=39",
+      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=39",
+      bg_bath_night: "./assets/bg_bath_night.jpg?v=39",
+      bg_mall_night: "./assets/bg_mall_night.jpg?v=39",
+      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=39",
+      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=39",
+      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=39",
+      bg_living_morning: "./assets/bg_living_morning.jpg?v=39",
+      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=39",
+      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=39",
+      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=39",
+      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=39",
+      bg_street_morning: "./assets/bg_street_morning.jpg?v=39",
+      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=39",
+      bg_park_morning: "./assets/bg_park_morning.jpg?v=39",
+      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=39",
+      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=39",
+      chibiJerseySad: "./assets/chibiJerseySad.png?v=39",
+      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=39",
+      bg_school_hall: "./assets/bg_school_hall.jpg?v=39",
+      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=39",
+      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=39",
+      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=39",
+      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=39",
+      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=39"
     };
     const sprites = {};
 
@@ -383,9 +383,10 @@ html, body {
         { id: 'blackboard', label: '望黑板舉手', hx: 150, hy: 300, hr: 90, px: 165, py: 430, act: 'school_class', line: '「老師呢題我識答！舉手！🙋‍♂️📝」' }
       ],
       konbini: [
-        { id: 'nikuman', label: '熱辣辣肉包蒸籠', hx: 410, hy: 450, hr: 90, px: 350, py: 445, act: 'konbini', line: '「熱騰騰嘅肉包出爐喇！！哥哥食唔食？🥟✨」' },
-        { id: 'cooler',  label: '飲品雪櫃',       hx: 515, hy: 310, hr: 90, px: 470, py: 440, act: 'vend_drink', line: '「揀支冰凍運動飲品定熱牛奶好呢？🥤🥛」' },
-        { id: 'cashier', label: '收銀台排隊',     hx: 180, hy: 360, hr: 90, px: 200, py: 445, act: 'shop_snack', line: '「攞好晒零食排隊畀錢囉～💳🛍️」' }
+        { id: 'mag_rack',  label: '看雜誌架',   hx: 180, hy: 360, hr: 90, px: 195, py: 445, act: 'konbini_mag',   line: '「喺便利店雜誌架睇最新一期排球月刊！📖🏐」' },
+        { id: 'snack_shf', label: '睇零食架',   hx: 310, hy: 380, hr: 90, px: 310, py: 445, act: 'konbini_snack', line: '「嘩～好多新出嘅薯片同朱古力呀哥哥！🍡✨」' },
+        { id: 'cooler',    label: '睇飲品雪櫃', hx: 515, hy: 310, hr: 90, px: 465, py: 440, act: 'konbini_drink', line: '「睇下飲品雪櫃有咩冰凍運動飲品先！🥤🥛」' },
+        { id: 'nikuman',   label: '熱肉包蒸籠', hx: 410, hy: 450, hr: 85, px: 375, py: 445, act: 'konbini',       line: '「熱騰騰嘅肉包出爐喇！！哥哥食唔食？🥟✨」' }
       ],
       school_hall: [
         { id: 'sh_walk',   label: '走廊漫步', hx: 260, hy: 420, hr: 95, px: 260, py: 440, act: 'recess_walk', line: '「小息行出走廊鬆一鬆筋骨！🚶‍♂️」' },
@@ -578,7 +579,7 @@ html, body {
       if (p.dailyDate !== today) { p.dailyDate = today; p.dailyExpGained = 0; p.dailyCoinsGained = 0; }
       if (typeof p.pocketMoney !== 'number') p.pocketMoney = 20;
       if (!Array.isArray(p.feedTimestamps)) p.feedTimestamps = [];
-      if (!p.snacks) p.snacks = { bread: 0, drink: 0, candy: 0 };
+      if (!p.snacks) p.snacks = { bread: 0, drink: 0, candy: 0, soda: 0, snack: 0, nikuman: 0 };
       if (!state.fridge) state.fridge = { bread: 0, noodles: 0, siumai: 0, cheungfun: 0, sandwich: 0, fishball: 0, juice: 0, tea_soda: 0 };
       if (!state.balance) state.balance = { normal: { hunger: -10, energy: -10, mood: -10 }, practice: { hunger: -15, energy: -15, mood: 0 }, rest: { hunger: -4, energy: 25, mood: 0 }, meal: { hunger: 70, energy: 70, mood: 0 }, shopRate: { hunger: 3, energy: 3, mood: 0 }, feedRate: { hunger: 2, energy: 0, mood: 1 } };
       if (!state.outingMins) state.outingMins = { mall: 120, park: 30, restaurant: 60, konbini: 15 };
@@ -658,6 +659,7 @@ html, body {
         if (m < 480)  return { key: 'wd_sleep',  room: 'room_hinata',  act: 'sleep',        outfit: 2, px: 472, py: 355, label: '熟睡中' };
         if (m < 495)  return { key: 'wd_brush',  room: 'bath',         act: 'brush',        outfit: 2, px: 165, py: 440, label: '起身刷牙' };
         if (m < 515)  return { key: 'wd_bfast',  room: 'kitchen',      act: 'breakfast',    outfit: 1, px: 435, py: 455, label: '一齊食早餐' };
+        if (m < 517)  return { key: 'wd_hall_go', room: 'hallway',     act: 'hallway',      outfit: 1, px: 215, py: 440, label: '玄關檢查鎖匙出門' };
         if (m < 530)  return { key: 'wd_go',     room: 'street',       act: 'street',       outfit: 1, px: 285, py: 440, label: '一齊出門返學' };
         if (m < 660)  return { key: 'wd_class1a', room: 'school_class', act: 'school_class', outfit: 1, px: 235, py: 435, label: '上堂中' };
         if (m < 680)  return { key: 'wd_rec1',   room: 'school_hall',  act: 'recess_walk',  outfit: 1, px: 260, py: 440, label: '早堂小息', isRecess: true };
@@ -706,6 +708,7 @@ html, body {
         if (m < 480)  return { key: 'br_brush',      room: 'bath',       act: 'brush',         px: 200, py: 435 };
         if (m < 495)  return { key: 'br_prep_bf',    room: 'kitchen',    act: 'prep_bfast',    px: 280, py: 435 };
         if (m < 515)  return { key: 'br_bfast',      room: 'kitchen',    act: 'breakfast',     px: 505, py: 440 };
+        if (m < 517)  return { key: 'br_hall_go',    room: 'hallway',    act: 'aniki_hall_tidy', px: 345, py: 440 };
         if (m < 530)  return { key: 'br_go',         room: 'street',     act: 'street',        px: 385, py: 440 };
         if (m < 750)  return { key: 'br_work1',      room: 'pharmacy',   act: 'pharmacy_work', px: 260, py: 440 };
         if (m < 795)  return { key: 'br_canteen',    room: 'canteen',    act: 'canteen_lunch', px: 300, py: 440 };
@@ -792,17 +795,28 @@ html, body {
       viewRoomId = roomId;
       playSFX('pat');
       const tday = getTodayStr();
+      if (!pet.snacks) pet.snacks = { bread: 0, drink: 0, candy: 0, soda: 0, snack: 0, nikuman: 0 };
       if ((roomId === 'street' || roomId === 'main_street') && pet.pocketMoney >= 5) {
         if (pet.dailySodaDate !== tday && Math.random() < 0.25) {
           pet.dailySodaDate = tday; pet.pocketMoney -= 5;
-          customSpeech = '「行過街頭販賣機買咗罐凍汽水飲！（零用錢 -5 元）🥤✨」';
+          if (pet.hunger < 30) { pet.hunger = Math.min(100, pet.hunger + 10); pet.energy = Math.min(100, pet.energy + 10); customSpeech = '「買咗罐凍汽水即刻飲！（零用錢 -5 元、+10%）🥤✨」'; }
+          else { pet.snacks.soda = (pet.snacks.soda || 0) + 1; customSpeech = '「買咗罐凍汽水放入小背包！（零用錢 -5 元）🥤🎒」'; }
         } else if (pet.dailySnackDate !== tday && pet.pocketMoney >= 10 && Math.random() < 0.22) {
           pet.dailySnackDate = tday; pet.pocketMoney -= 10;
-          customSpeech = '「忍唔住買咗包小食返屋企！（零用錢 -10 元）🍡」';
+          if (pet.hunger < 30) { pet.hunger = Math.min(100, pet.hunger + 16); pet.energy = Math.min(100, pet.energy + 16); customSpeech = '「買咗包小食即刻食！（零用錢 -10 元、+16%）🍡✨」'; }
+          else { pet.snacks.snack = (pet.snacks.snack || 0) + 1; customSpeech = '「買咗包小食放入小背包！（零用錢 -10 元）🍡🎒」'; }
         }
-      } else if (roomId === 'konbini' && pet.dailyNikumanDate !== tday && pet.pocketMoney >= 10 && Math.random() < 0.55) {
-        pet.dailyNikumanDate = tday; pet.pocketMoney -= 10;
-        customSpeech = '「喺便利店自己買咗個熱辣辣肉包食！（零用錢 -10 元）🥟💛」';
+      } else if (roomId === 'konbini' && pet.dailyNikumanDate !== tday && Math.random() < 0.55) {
+        const broWith = (state.brother && state.brother.currentRoom === 'konbini');
+        if (broWith && pet.coins >= 10) {
+          pet.dailyNikumanDate = tday; pet.coins -= 10;
+          if (pet.hunger < 30) { pet.hunger = Math.min(100, pet.hunger + 20); pet.energy = Math.min(100, pet.energy + 20); customSpeech = '「多謝哥哥買熱辣辣肉包畀我食！！（哥哥 -10 元、+20%）🥟💛」'; }
+          else { pet.snacks.nikuman = (pet.snacks.nikuman || 0) + 1; customSpeech = '「多謝哥哥請我買肉包！放落小背包先！🥟🎒💛」'; }
+        } else if (!broWith && pet.pocketMoney >= 10) {
+          pet.dailyNikumanDate = tday; pet.pocketMoney -= 10;
+          if (pet.hunger < 30) { pet.hunger = Math.min(100, pet.hunger + 20); pet.energy = Math.min(100, pet.energy + 20); customSpeech = '「自己喺便利店買咗個熱肉包即刻食！（零用錢 -10 元）🥟」'; }
+          else { pet.snacks.nikuman = (pet.snacks.nikuman || 0) + 1; customSpeech = '「自己喺便利店買咗個熱肉包放入小背包！🥟🎒」'; }
+        }
       }
       if (customSpeech) speakAndShow(customSpeech);
       else speakAndShow(`「正一齊經過【${MAP_ROOMS[roomId]?.name || roomId}】前往目的地…🚶‍♂️」`);
@@ -1422,10 +1436,13 @@ html, body {
       const SNACK_META = {
         bread: { name: '麵包', emoji: '🥐', cost: 8, val: 16 },
         drink: { name: '紙包飲品', emoji: '🧃', cost: 7, val: 14 },
-        candy: { name: '糖果', emoji: '🍬', cost: 3, val: 6 }
+        candy: { name: '糖果', emoji: '🍬', cost: 3, val: 6 },
+        soda: { name: '汽水', emoji: '🥤', cost: 5, val: 10 },
+        snack: { name: '街頭小食', emoji: '🍡', cost: 10, val: 16 },
+        nikuman: { name: '熱肉包', emoji: '🥟', cost: 10, val: 20 }
       };
       function tryEatOwnedSnack(reasonMsg) {
-        const keys = ['bread', 'drink', 'candy'].filter(k => (pet.snacks[k] || 0) > 0);
+        const keys = ['bread', 'drink', 'candy', 'soda', 'snack', 'nikuman'].filter(k => (pet.snacks[k] || 0) > 0);
         if (!keys.length) return false;
         const k = keys[Math.floor(Math.random() * keys.length)];
         pet.snacks[k] -= 1;
@@ -1518,7 +1535,7 @@ html, body {
       // 7. Autonomous In-Room Interactions (every ~18s, excluding eating/cooking/bath/sleep)
       const nowMs = Date.now();
       const petFixed = ['sleep', 'waking', 'breakfast', 'lunch', 'dinner', 'cook', 'bath', 'brush'];
-      if (!transitionState && !rally.active && !petFixed.includes(pet.currentActivity) && !['bath', 'canteen'].includes(pet.currentRoom) && nowMs - lastPetAutoActAt > 18000) {
+      if (!transitionState && !rally.active && sched.key !== 'wd_hw' && !petFixed.includes(pet.currentActivity) && !['bath', 'canteen', 'hallway'].includes(pet.currentRoom) && nowMs - lastPetAutoActAt > 18000) {
         lastPetAutoActAt = nowMs;
         const furns = (pet.currentRoom === 'hallway') ? [] : (ROOM_FURNITURE[pet.currentRoom] || []).filter(f => f.act !== 'sleep' && f.act !== 'cook' && f.act !== 'breakfast' && f.act !== 'lunch' && f.act !== 'dinner');
         if (furns.length > 1) {
@@ -1925,7 +1942,7 @@ html, body {
       park_jog: '🏃 公園慢跑', park_walk: '🚶 公園散步', park_breeze: '🌊 睇海風中', court_run: '🏃 跑步熱身中', stretch: '🧘‍♂️ 拉筋放鬆中',
       gear_prep: '🏐 整理裝備中', window_gaze: '🌤️ 望窗外發呆', read_manga: '📚 睇排球漫畫',
       mirror_prep: '🪞 整理儀容中', tidy_bag: '🔑 檢查隨身物', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理'
+      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', konbini_mag: '📖 睇雜誌中', konbini_snack: '🍡 睇零食中', konbini_drink: '🥤 睇飲品中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理'
     };
     const BROTHER_ACTIVITY_LABELS = {
       sleep: '😴 哥哥熟睡中', brush: '🪥 哥哥刷牙中', cook_bfast: '🍳 煮緊早餐', prep_bfast: '🥞 準備早餐中',
@@ -2910,6 +2927,22 @@ html, body {
       { id: 'tea_soda',  name: '汽水/茶',  emoji: '🥤', cost: 8,  val: 24 }
     ];
     let lastShopBuyAt = 0;
+    function openSnackBagModal() {
+      const pet = ensurePetState(state.activeCharId);
+      const sk = pet.snacks || {};
+      const items = [
+        ['bread', '🥐 麵包 (+16%)'], ['drink', '🧃 紙包飲品 (+14%)'], ['candy', '🍬 糖果 (+6%)'],
+        ['soda', '🥤 汽水 (+10%)'], ['snack', '🍡 街頭小食 (+16%)'], ['nikuman', '🥟 熱肉包 (+20%)']
+      ];
+      const box = document.getElementById('choice-overlay');
+      const rows = items.map(([k, lbl]) => {
+        const cnt = sk[k] || 0;
+        return `<div class="flex items-center justify-between px-2.5 py-1 rounded-lg border border-amber-300 bg-amber-50/70 text-[11px] font-bold"><span>${lbl}</span><span class="${cnt > 0 ? 'text-emerald-700 font-black' : 'text-slate-400'}">x${cnt}</span></div>`;
+      }).join('');
+      box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12] mb-1">🎒 翔陽小背包（低於30%或小息時會自己食，食完歸0）</div><div class="grid grid-cols-2 gap-1">${rows}</div><button type="button" data-sms-close="1" class="mt-1 self-center px-3 py-1 rounded-xl bg-white text-[#2d1e12] border-2 border-[#2d1e12] text-[10px] font-black">關上背包</button>`;
+      box.classList.remove('hidden'); box.scrollTop = 0;
+    }
+
     function openFridgeModal() {
       const fr = state.fridge || {};
       const box = document.getElementById('choice-overlay');
@@ -3624,8 +3657,15 @@ html, body {
 
       document.getElementById('bond-level').textContent = pet.bondLevel;
       document.getElementById('coins-count').textContent = pet.coins;
+      const hsEl = document.getElementById('header-sub');
+      if (hsEl) hsEl.textContent = `📍 目前行程：${sched.label}`;
       const pmEl = document.getElementById('pocket-money'); if (pmEl) pmEl.textContent = pet.pocketMoney || 0;
-      const sbEl = document.getElementById('snack-bag-display'); if (sbEl) { const sk = pet.snacks || {}; const parts = []; if (sk.bread) parts.push('🥐'+sk.bread); if (sk.drink) parts.push('🧃'+sk.drink); if (sk.candy) parts.push('🍬'+sk.candy); sbEl.textContent = '🎒 小食: ' + (parts.length ? parts.join(' ') : '無'); }
+      const sbEl = document.getElementById('snack-bag-display');
+      if (sbEl) {
+        const sk = pet.snacks || {};
+        const tot = (sk.bread||0)+(sk.drink||0)+(sk.candy||0)+(sk.soda||0)+(sk.snack||0)+(sk.nikuman||0);
+        sbEl.textContent = tot > 0 ? `🎒 小食 (${tot})` : '🎒 小食: 無';
+      }
       const h = Math.round(pet.hunger), m = Math.round(pet.mood), en = Math.round(pet.energy);
       document.getElementById('val-hunger').textContent = `${h}%`; document.getElementById('bar-hunger').style.width = `${h}%`;
       document.getElementById('val-mood').textContent = `${m}%`; document.getElementById('bar-mood').style.width = `${m}%`;
@@ -3663,6 +3703,7 @@ html, body {
     document.getElementById('btn-schedule').addEventListener('click', openScheduleModal);
     document.getElementById('btn-settings').addEventListener('click', openSettingsModal);
     document.getElementById('btn-mailbox').addEventListener('click', openMailboxModal);
+    document.getElementById('snack-bag-display').addEventListener('click', openSnackBagModal);
     document.getElementById('btn-holiday').addEventListener('click', () => {
       const tom = getTomorrowStr();
       if (state.holidayDate === tom) {
