@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="icon" type="image/png" href="./icon.png?v=45">
-  <link rel="apple-touch-icon" href="./icon.png?v=45">
+  <link rel="icon" type="image/png" href="./icon.png?v=47">
+  <link rel="apple-touch-icon" href="./icon.png?v=47">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -194,6 +194,21 @@ html, body {
     </div>
   </div>
 
+  <!-- Modal: 大版面數值與隨機事件設定 -->
+  <div id="settings-modal" class="hidden fixed inset-0 bg-black/55 backdrop-blur-xs z-50 flex items-center justify-center p-3">
+    <div class="bg-[#fff7ed] rounded-3xl w-full max-w-md p-4 shadow-2xl border-2 border-[#2d1e12] max-h-[88vh] flex flex-col">
+      <div class="flex justify-between items-center mb-2 shrink-0">
+        <h3 class="text-base font-black text-orange-600">⚙️ 數值、外出時間與隨機事件設定</h3>
+        <button id="close-settings-modal" type="button" class="text-gray-500 hover:text-gray-800 font-bold text-lg px-2">✕</button>
+      </div>
+      <div id="settings-modal-body" style="touch-action: pan-y;" class="space-y-2 overflow-y-auto pr-1 flex-1"></div>
+      <div class="mt-2.5 flex items-center justify-center gap-2 shrink-0">
+        <button id="heal-stats-modal" type="button" class="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white border-2 border-[#2d1e12] text-xs font-black">🩹 恢復健康數值</button>
+        <button id="done-settings-modal" type="button" class="px-5 py-1.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white border-2 border-[#2d1e12] text-xs font-black">完成儲存</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal: 角色切換 & 新增自訂角色 -->
   <div id="char-modal" class="hidden fixed inset-0 bg-black/55 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-[#fff7ed] ui-card rounded-3xl w-full max-w-md p-5 max-h-[90vh] overflow-y-auto">
@@ -228,82 +243,82 @@ html, body {
     // 1. 全套去背立繪（含摸頭專用笑面立繪）＋ 10間手繪動畫房間
     // =========================================================================
     const ASSET_URLS = {
-      chibiJersey: "./assets/chibiJersey.png?v=45",
-      chibiSchool: "./assets/chibiSchool.png?v=45",
-      chibiPajama: "./assets/chibiPajama.png?v=45",
-      portraitJersey: "./assets/portraitJersey.png?v=45",
-      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=45",
-      portraitSchool: "./assets/portraitSchool.png?v=45",
-      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=45",
-      portraitPajama: "./assets/portraitPajama.png?v=45",
-      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=45",
-      portraitSleepy: "./assets/portraitSleepy.jpg?v=45",
-      bg_living: "./assets/bg_living.jpg?v=45",
-      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=45",
-      bg_kitchen: "./assets/bg_kitchen.jpg?v=45",
-      bg_bath: "./assets/bg_bath.jpg?v=45",
-      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=45",
-      bg_hallway: "./assets/bg_hallway.jpg?v=45",
-      bg_backyard: "./assets/bg_backyard.jpg?v=45",
-      bg_street: "./assets/bg_street.jpg?v=45",
-      bg_school_class: "./assets/bg_school_class.jpg?v=45",
-      bg_school_court: "./assets/bg_school_court.jpg?v=45",
-      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=45",
-      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=45",
-      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=45",
-      chibiBrother: "./assets/chibiBrother.png?v=45",
-      bg_main_street: "./assets/bg_main_street.jpg?v=45",
-      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=45",
-      bg_canteen: "./assets/bg_canteen.jpg?v=45",
-      bg_mall: "./assets/bg_mall.jpg?v=45",
-      bg_park: "./assets/bg_park.jpg?v=45",
-      bg_restaurant: "./assets/bg_restaurant.jpg?v=45",
-      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=45",
-      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=45",
-      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=45",
-      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=45",
-      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=45",
-      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=45",
-      bg_hospital: "./assets/bg_hospital.jpg?v=45",
-      bg_street_night: "./assets/bg_street_night.jpg?v=45",
-      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=45",
-      bg_park_night: "./assets/bg_park_night.jpg?v=45",
-      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=45",
-      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=45",
-      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=45",
-      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=45",
-      bg_living_night: "./assets/bg_living_night.jpg?v=45",
-      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=45",
-      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=45",
-      bg_bath_night: "./assets/bg_bath_night.jpg?v=45",
-      bg_mall_night: "./assets/bg_mall_night.jpg?v=45",
-      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=45",
-      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=45",
-      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=45",
-      bg_living_morning: "./assets/bg_living_morning.jpg?v=45",
-      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=45",
-      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=45",
-      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=45",
-      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=45",
-      bg_street_morning: "./assets/bg_street_morning.jpg?v=45",
-      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=45",
-      bg_park_morning: "./assets/bg_park_morning.jpg?v=45",
-      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=45",
-      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=45",
-      chibiJerseySad: "./assets/chibiJerseySad.png?v=45",
-      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=45",
-      bg_school_hall: "./assets/bg_school_hall.jpg?v=45",
-      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=45",
-      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=45",
-      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=45",
-      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=45",
-      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=45",
-      bg_toilet: "./assets/bg_toilet.jpg?v=45",
-      bg_toilet_morning: "./assets/bg_toilet_morning.jpg?v=45",
-      bg_toilet_night: "./assets/bg_toilet_night.jpg?v=45",
-      bg_park2: "./assets/bg_park2.jpg?v=45",
-      bg_park2_morning: "./assets/bg_park2_morning.jpg?v=45",
-      bg_park2_night: "./assets/bg_park2_night.jpg?v=45"
+      chibiJersey: "./assets/chibiJersey.png?v=47",
+      chibiSchool: "./assets/chibiSchool.png?v=47",
+      chibiPajama: "./assets/chibiPajama.png?v=47",
+      portraitJersey: "./assets/portraitJersey.png?v=47",
+      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=47",
+      portraitSchool: "./assets/portraitSchool.png?v=47",
+      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=47",
+      portraitPajama: "./assets/portraitPajama.png?v=47",
+      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=47",
+      portraitSleepy: "./assets/portraitSleepy.jpg?v=47",
+      bg_living: "./assets/bg_living.jpg?v=47",
+      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=47",
+      bg_kitchen: "./assets/bg_kitchen.jpg?v=47",
+      bg_bath: "./assets/bg_bath.jpg?v=47",
+      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=47",
+      bg_hallway: "./assets/bg_hallway.jpg?v=47",
+      bg_backyard: "./assets/bg_backyard.jpg?v=47",
+      bg_street: "./assets/bg_street.jpg?v=47",
+      bg_school_class: "./assets/bg_school_class.jpg?v=47",
+      bg_school_court: "./assets/bg_school_court.jpg?v=47",
+      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=47",
+      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=47",
+      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=47",
+      chibiBrother: "./assets/chibiBrother.png?v=47",
+      bg_main_street: "./assets/bg_main_street.jpg?v=47",
+      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=47",
+      bg_canteen: "./assets/bg_canteen.jpg?v=47",
+      bg_mall: "./assets/bg_mall.jpg?v=47",
+      bg_park: "./assets/bg_park.jpg?v=47",
+      bg_restaurant: "./assets/bg_restaurant.jpg?v=47",
+      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=47",
+      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=47",
+      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=47",
+      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=47",
+      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=47",
+      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=47",
+      bg_hospital: "./assets/bg_hospital.jpg?v=47",
+      bg_street_night: "./assets/bg_street_night.jpg?v=47",
+      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=47",
+      bg_park_night: "./assets/bg_park_night.jpg?v=47",
+      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=47",
+      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=47",
+      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=47",
+      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=47",
+      bg_living_night: "./assets/bg_living_night.jpg?v=47",
+      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=47",
+      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=47",
+      bg_bath_night: "./assets/bg_bath_night.jpg?v=47",
+      bg_mall_night: "./assets/bg_mall_night.jpg?v=47",
+      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=47",
+      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=47",
+      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=47",
+      bg_living_morning: "./assets/bg_living_morning.jpg?v=47",
+      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=47",
+      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=47",
+      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=47",
+      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=47",
+      bg_street_morning: "./assets/bg_street_morning.jpg?v=47",
+      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=47",
+      bg_park_morning: "./assets/bg_park_morning.jpg?v=47",
+      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=47",
+      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=47",
+      chibiJerseySad: "./assets/chibiJerseySad.png?v=47",
+      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=47",
+      bg_school_hall: "./assets/bg_school_hall.jpg?v=47",
+      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=47",
+      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=47",
+      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=47",
+      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=47",
+      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=47",
+      bg_toilet: "./assets/bg_toilet.jpg?v=47",
+      bg_toilet_morning: "./assets/bg_toilet_morning.jpg?v=47",
+      bg_toilet_night: "./assets/bg_toilet_night.jpg?v=47",
+      bg_park2: "./assets/bg_park2.jpg?v=47",
+      bg_park2_morning: "./assets/bg_park2_morning.jpg?v=47",
+      bg_park2_night: "./assets/bg_park2_night.jpg?v=47"
     };
     const sprites = {};
 
@@ -557,7 +572,7 @@ html, body {
         levelRewardCoins: 100
       },
       outingMins: { mall: 120, park: 30, restaurant: 60, konbini: 15 },
-      autoEvents: { toilet: { prob: 10, maxPerDay: 0 }, konbiniAsk: { prob: 20, maxPerDay: 1 }, parkAsk: { prob: 15, maxPerDay: 1 } },
+      autoEvents: { toilet: { prob: 10, maxPerDay: 0 }, konbiniAsk: { prob: 20, maxPerDay: 1 }, parkAsk: { prob: 15, maxPerDay: 1 }, backyardAsk: { prob: 13, maxPerDay: 0, mins: 15 }, freeRoam: { prob: 50, mins: 1 } }, broSoloMode: false,
       dates: {},
       mailbox: { items: [], lastMailDate: null, lastInviteDate: null },
       outing: { type: null, returnAt: null, fromMall: false },
@@ -625,7 +640,10 @@ html, body {
       if (typeof state.balance.levelRewardStep !== 'number') state.balance.levelRewardStep = 5;
       if (typeof state.balance.levelRewardCoins !== 'number') state.balance.levelRewardCoins = 100;
       if (!state.outingMins) state.outingMins = { mall: 120, park: 30, restaurant: 60, konbini: 15 };
-      if (!state.autoEvents) state.autoEvents = { toilet: { prob: 10, maxPerDay: 0 }, konbiniAsk: { prob: 20, maxPerDay: 1 }, parkAsk: { prob: 15, maxPerDay: 1 } };
+      if (!state.autoEvents) state.autoEvents = { toilet: { prob: 10, maxPerDay: 0 }, konbiniAsk: { prob: 20, maxPerDay: 1 }, parkAsk: { prob: 15, maxPerDay: 1 }, backyardAsk: { prob: 13, maxPerDay: 0, mins: 15 }, freeRoam: { prob: 50, mins: 1 } };
+      if (!state.autoEvents.backyardAsk) state.autoEvents.backyardAsk = { prob: 13, maxPerDay: 0, mins: 15 };
+      if (!state.autoEvents.freeRoam) state.autoEvents.freeRoam = { prob: 50, mins: 1 };
+      if (typeof state.broSoloMode !== 'boolean') state.broSoloMode = false;
       if (!p.dailyAutoCounts || p.dailyAutoCounts.date !== today) p.dailyAutoCounts = { date: today, toilet: 0, konbiniAsk: 0, parkAsk: 0 };
       if (!state.dates) state.dates = {};
       if (!state.mailbox) state.mailbox = { items: [], lastMailDate: null, lastInviteDate: null };
@@ -1442,7 +1460,9 @@ html, body {
         if (!sched.freeRoam && !state.outing?.type && !duoWalk && !transitionState && !pet.homeSeqStage && !pet.detentionUntil && !pet.fridgeStage && pet.currentRoom !== sched.room && !['room_aniki'].includes(pet.currentRoom)) {
           startDuoJourney(sched.room, sched.act, '「返到屋企啦！🏠✨」', null, null);
         }
-        if (sched.freeRoam && !state.gamingReturnAt && !transitionState && !rally.active && Date.now() - lastFreeRoamAt > 45000) {
+        const frAe = (state.autoEvents && state.autoEvents.freeRoam) || { prob: 50, mins: 1 };
+        const frMs = Math.max(15000, (frAe.mins || 1) * 60000);
+        if (sched.freeRoam && !state.gamingReturnAt && !transitionState && !rally.active && Date.now() - lastFreeRoamAt > frMs && Math.random() < ((frAe.prob ?? 50) / 100)) {
           lastFreeRoamAt = Date.now();
           const candidates = FREE_ROAM_ROOMS.filter(r => r !== pet.currentRoom);
           const nextRoom = candidates[Math.floor(Math.random() * candidates.length)];
@@ -1455,7 +1475,7 @@ html, body {
             pet.currentRoom = nextRoom; pet.currentActivity = nextAct;
             petX = pick.px - 35; petY = pick.py; targetX = petX; targetY = petY;
           }
-          if (bSched.followHinata) {
+          if (bSched.followHinata && !state.broSoloMode) {
             bro.currentRoom = nextRoom; bro.currentActivity = nextAct;
             bro.tx = Math.min(500, pick.px + 55); bro.ty = pick.py;
             if (!animateTransition) { bro.px = bro.tx; bro.py = bro.ty; }
@@ -1488,10 +1508,23 @@ html, body {
       }
 
       // 5. Sync Brother
-      if (bro.toiletState) { /* skip brother schedule while in toilet routine */ } else if (bro.scheduleSlotKey !== bSched.key) {
+      const canBroSolo = state.broSoloMode && !state.outing?.type && !['breakfast','lunch','dinner','bath','brush','sleep','waking','gaming'].includes(pet.currentActivity) && !['pharmacy','canteen','hospital','school_class','school_court'].includes(bro.currentRoom) && !['school_class','school_court'].includes(pet.currentRoom);
+      if (bro.toiletState) { /* skip brother schedule while in toilet routine */ }
+      else if (canBroSolo) {
+        if (!window.__lastBroSoloAt || Date.now() - window.__lastBroSoloAt > 18000) {
+          window.__lastBroSoloAt = Date.now();
+          const soloRooms = ['room_aniki', 'room_hinata', 'living', 'toilet'];
+          let sr = soloRooms[Math.floor(Math.random() * soloRooms.length)];
+          if (sr === 'toilet' && pet.currentRoom === 'toilet') sr = 'living';
+          const sFurns = (ROOM_FURNITURE[sr] || []).filter(f => f.act !== 'sleep' && f.act !== 'street');
+          const sf = sFurns.length ? sFurns[Math.floor(Math.random() * sFurns.length)] : { px: 280, py: 435, act: 'idle' };
+          bro.currentRoom = sr; bro.currentActivity = sf.act;
+          bro.tx = sf.px; bro.ty = sf.py;
+        }
+      } else if (bro.scheduleSlotKey !== bSched.key) {
         bro.scheduleSlotKey = bSched.key;
         if (bSched.followHinata) {
-          bro.currentRoom = pet.currentRoom; bro.currentActivity = pet.currentActivity;
+          bro.currentRoom = pet.currentRoom; bro.currentActivity = (pet.currentActivity === 'street' && !['street','main_street'].includes(pet.currentRoom)) ? 'idle' : pet.currentActivity;
           bro.tx = Math.min(500, targetX + 75); bro.ty = targetY;
           if (!animateTransition) { bro.px = bro.tx; bro.py = bro.ty; }
         } else {
@@ -1501,7 +1534,7 @@ html, body {
         }
       } else if (bSched.followHinata && !state.gamingReturnAt && !transitionState) {
         if (bro.currentRoom !== pet.currentRoom) {
-          bro.currentRoom = pet.currentRoom; bro.currentActivity = pet.currentActivity;
+          bro.currentRoom = pet.currentRoom; bro.currentActivity = (pet.currentActivity === 'street' && !['street','main_street'].includes(pet.currentRoom)) ? 'idle' : pet.currentActivity;
           bro.tx = Math.min(500, targetX + 75); bro.ty = targetY;
         }
       } else if (bSched.homeRoam && Date.now() - lastBrotherRoamAt > 35000) {
@@ -1526,6 +1559,15 @@ html, body {
         }
       }
 
+      if (pet.backyardUntil && Date.now() >= pet.backyardUntil) {
+        pet.backyardUntil = null;
+        if (pet.currentRoom === 'backyard' && !pet.toiletState) {
+          pet.currentRoom = sched.room || 'living'; pet.currentActivity = sched.act || 'tv';
+          targetX = sched.px || 330; targetY = sched.py || 420;
+          if (!state.broSoloMode) { bro.currentRoom = pet.currentRoom; bro.currentActivity = pet.currentActivity; bro.tx = Math.min(490, targetX + 85); bro.ty = targetY; }
+          if (viewRoomId === 'backyard') { viewRoomId = pet.currentRoom; speakAndShow('「練完波返入屋企客廳抖下先！🏠✨」'); }
+        }
+      }
       // 6. Occasional Evening TV / Weekend Free-Roam Duo Events (every ~75s chance)
       if (!state.gamingReturnAt && !transitionState && !rally.active && Date.now() - lastDuoEventAt > 75000) {
         const isEvTV = !info.isWeekend && sched.key === 'wd_living';
@@ -1552,14 +1594,19 @@ html, body {
             cnt.parkAsk = (cnt.parkAsk || 0) + 1;
             const pm = (state.outingMins && state.outingMins.park) || 30;
             startDuoOuting('park', pm, 'park_breeze', `翔陽約哥哥去公園吹海風（${pm}分鐘）🌳`, `「翔陽：哥哥我哋落公園散步吹下海風吖！留 ${pm} 分鐘就返～🌳🌊」`);
-          } else if (roll >= 0.27 && roll < 0.40) {
-            pet.currentRoom = 'backyard'; pet.currentActivity = 'backyard';
-            targetX = 250; targetY = 435;
-            bro.currentRoom = 'backyard'; bro.currentActivity = 'backyard';
-            bro.tx = 370; bro.ty = 435;
-            if (viewRoomId === 'living' || viewRoomId === 'backyard') {
-              viewRoomId = 'backyard';
-              speakAndShow('「翔陽：哥哥同我去後院托兩球排球練下先！🏐✨」');
+          } else {
+            const aeBy = ae.backyardAsk || { prob: 13, maxPerDay: 0, mins: 15 };
+            const byOk = (aeBy.prob > 0) && (aeBy.maxPerDay === 0 || (cnt.backyardAsk || 0) < aeBy.maxPerDay);
+            if (byOk && Math.random() < (aeBy.prob / 100)) {
+              cnt.backyardAsk = (cnt.backyardAsk || 0) + 1;
+              pet.backyardUntil = Date.now() + (aeBy.mins || 15) * 60000;
+              pet.currentRoom = 'backyard'; pet.currentActivity = 'backyard';
+              targetX = 250; targetY = 435;
+              if (!state.broSoloMode) { bro.currentRoom = 'backyard'; bro.currentActivity = 'backyard'; bro.tx = 370; bro.ty = 435; }
+              if (viewRoomId === 'living' || viewRoomId === 'backyard') {
+                viewRoomId = 'backyard';
+                speakAndShow(`「翔陽：哥哥同我去後院托 ${aeBy.mins || 15} 分鐘排球先！🏐✨」`);
+              }
             }
           }
         }
@@ -1838,7 +1885,25 @@ html, body {
     }
 
     function loadState() {
-      try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) state = { ...state, ...JSON.parse(raw) }; } catch (e) {}
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const p = JSON.parse(raw);
+          state = {
+            ...state, ...p,
+            balance: { ...state.balance, ...(p.balance || {}) },
+            outingMins: { ...state.outingMins, ...(p.outingMins || {}) },
+            autoEvents: {
+              ...state.autoEvents, ...(p.autoEvents || {}),
+              toilet: { ...(state.autoEvents?.toilet || {}), ...(p.autoEvents?.toilet || {}) },
+              konbiniAsk: { ...(state.autoEvents?.konbiniAsk || {}), ...(p.autoEvents?.konbiniAsk || {}) },
+              parkAsk: { ...(state.autoEvents?.parkAsk || {}), ...(p.autoEvents?.parkAsk || {}) },
+              backyardAsk: { ...(state.autoEvents?.backyardAsk || {}), ...(p.autoEvents?.backyardAsk || {}) },
+              freeRoam: { ...(state.autoEvents?.freeRoam || {}), ...(p.autoEvents?.freeRoam || {}) }
+            }
+          };
+        }
+      } catch (e) {}
       const pet = ensurePetState(state.activeCharId);
       applyTimeStatsDelta(pet, Date.now() - (pet.lastUpdated || Date.now()));
       syncScheduleActivity(pet, false);
@@ -2173,7 +2238,7 @@ html, body {
       dinner: '🍽️ 一齊食晚餐', street: '🚶 一齊行街中', bath: '🫧 一齊浸浴', gaming: '🎮 打機休息中',
       tv: '📺 陪睇電視', tea: '🍵 陪飲茶', tutoring: '📖 教導翔陽中',
       pharmacy_work: '💊 藥房工作中', pharmacy_dispense: '💊 配藥中', pharmacy_pc: '💻 打板入文件中', pharmacy_give: '🩺 出藥畀病人',
-      canteen_lunch: '🍱 Canteen 食飯', konbini: '🏪 陪買肉包', konbini_mag: '📖 睇緊雜誌', konbini_snack: '🍡 揀緊零食', konbini_drink: '🥤 揀緊飲品',
+      canteen_lunch: '🍱 Canteen 食飯', walking: '🚶 移動中', konbini: '🏪 陪買肉包', konbini_mag: '📖 睇緊雜誌', konbini_snack: '🍡 揀緊零食', konbini_drink: '🥤 揀緊飲品',
       mall: '🛍️ 陪行商場', restaurant: '🍽️ 餐廳食飯中',
       park_jog: '🏃 一齊慢跑', park_walk: '🚶 一齊散步', park_breeze: '🌊 陪睇海風', toilet_use: '🚽 如廁中', toilet_wash: '🧼 洗手中', toilet_wait: '⏳ 等緊廁所',
       backyard: '🏐 陪練排球', idle: '✨ 休息中', stretch: '🧘‍♂️ 拉筋中',
@@ -2252,7 +2317,7 @@ html, body {
       ctx.drawImage(img, -drawW / 2, -drawH / 2 - 22, drawW, drawH);
       if (isEating && !isWalking) { ctx.font = '26px sans-serif'; ctx.fillText('🍱', -48, 32); }
       ctx.restore();
-      drawBrotherBadge(bx, by + bounce, isWalking ? 'street' : act);
+      drawBrotherBadge(bx, by + bounce, isWalking ? (['street', 'main_street'].includes(bro.currentRoom) ? 'street' : 'walking') : act);
     }
 
     function drawBrotherBadge(cx, cy, act) {
@@ -3371,7 +3436,8 @@ html, body {
         { key: 'shopRate', title: '🛒 購物雪櫃食物（每1元）' },
         { key: 'feedRate', title: '🍱 餵食食物（每1元）' }
       ];
-      const box = document.getElementById('choice-overlay');
+      const modal = document.getElementById('settings-modal');
+      const box = document.getElementById('settings-modal-body');
       const prevScroll = preserveScroll ? box.scrollTop : 0;
       const catHtml = cats.map(c => {
         const obj = bal[c.key];
@@ -3407,26 +3473,33 @@ html, body {
             </div>`).join('')}
         </div>
       </div>`;
-      const ae = state.autoEvents || { toilet: { prob: 10, maxPerDay: 0 }, konbiniAsk: { prob: 20, maxPerDay: 1 }, parkAsk: { prob: 15, maxPerDay: 1 } };
+      const ae = state.autoEvents || { toilet: { prob: 10, maxPerDay: 0 }, konbiniAsk: { prob: 20, maxPerDay: 1 }, parkAsk: { prob: 15, maxPerDay: 1 }, backyardAsk: { prob: 13, maxPerDay: 0, mins: 15 }, freeRoam: { prob: 50, mins: 1 } };
       const aeHtml = `<div class="bg-purple-50 border border-purple-300 rounded-xl p-1.5">
-        <div class="text-[11px] font-black text-[#2d1e12] mb-1">🎲 自動事件機率與每日次數上限</div>
+        <div class="text-[11px] font-black text-[#2d1e12] mb-1">🎲 在家休息／假日隨機事件（機率・上限・時長）</div>
         <div class="space-y-1 text-[10px] font-bold">
-          ${[['toilet','🚽 自行如廁（0=不限）'],['konbiniAsk','🏪 叫哥哥去便利店'],['parkAsk','🌳 叫哥哥去公園']].map(([k, lbl]) => {
-            const obj = ae[k] || { prob: 10, maxPerDay: 1 };
-            const limTxt = k === 'toilet' ? (obj.maxPerDay === 0 ? '不限' : obj.maxPerDay + '次') : (obj.maxPerDay === 0 ? '停用' : obj.maxPerDay + '次');
-            return `<div class="flex items-center justify-between bg-white border border-purple-300 rounded px-1.5 py-0.5 gap-1">
-              <span class="truncate">${lbl}</span>
+          ${[['toilet','🚽 自行如廁',false,false],['konbiniAsk','🏪 叫哥哥去便利店',true,false],['parkAsk','🌳 叫哥哥去公園',true,false],['backyardAsk','🏐 叫哥哥去後院練波',true,true],['freeRoam','🚶 假日自由換房漫遊',false,true]].map(([k, lbl, hasMax, hasMins]) => {
+            const obj = ae[k] || { prob: 10, maxPerDay: 1, mins: 15 };
+            const limTxt = (k === 'toilet' || k === 'backyardAsk') ? (obj.maxPerDay === 0 ? '不限' : obj.maxPerDay + '次') : (obj.maxPerDay === 0 ? '停用' : obj.maxPerDay + '次');
+            return `<div class="flex flex-wrap items-center justify-between bg-white border border-purple-300 rounded px-1.5 py-1 gap-1">
+              <span class="font-black">${lbl}</span>
               <div class="flex items-center gap-1 shrink-0">
                 <span class="text-purple-700">機率</span>
                 <button type="button" data-ae-key="${k}" data-ae-field="prob" data-ae-delta="-5" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
-                <span id="ae-val-${k}-prob" class="min-w-[26px] text-center">${obj.prob}%</span>
+                <span id="ae-val-${k}-prob" class="min-w-[26px] text-center">${obj.prob ?? 10}%</span>
                 <button type="button" data-ae-key="${k}" data-ae-field="prob" data-ae-delta="5" class="w-4 h-4 rounded bg-purple-300 font-black">+</button>
-                <span class="text-purple-700 ml-1">上限</span>
+                ${k !== 'freeRoam' ? `<span class="text-purple-700 ml-1">上限</span>
                 <button type="button" data-ae-key="${k}" data-ae-field="maxPerDay" data-ae-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
                 <span id="ae-val-${k}-maxPerDay" class="min-w-[24px] text-center">${limTxt}</span>
-                <button type="button" data-ae-key="${k}" data-ae-field="maxPerDay" data-ae-delta="1" class="w-4 h-4 rounded bg-purple-300 font-black">+</button>
+                <button type="button" data-ae-key="${k}" data-ae-field="maxPerDay" data-ae-delta="1" class="w-4 h-4 rounded bg-purple-300 font-black">+</button>` : ''}
+                ${hasMins ? `<span class="text-purple-700 ml-1">${k==='freeRoam'?'間隔':'時長'}</span>
+                <button type="button" data-ae-key="${k}" data-ae-field="mins" data-ae-delta="${k==='freeRoam'?-1:-5}" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                <span id="ae-val-${k}-mins" class="min-w-[26px] text-center">${obj.mins ?? 15}分</span>
+                <button type="button" data-ae-key="${k}" data-ae-field="mins" data-ae-delta="${k==='freeRoam'?1:5}" class="w-4 h-4 rounded bg-purple-300 font-black">+</button>` : ''}
               </div>
             </div>`;
+          }).join('')}
+        </div>
+      </div>`;
           }).join('')}
         </div>
       </div>`;
@@ -3464,8 +3537,8 @@ html, body {
             </div>
           </div>
         </div>
-      </div>${durHtml}${aeHtml}<button type="button" data-sms-close="1" class="mt-1 self-center px-4 py-1 rounded-xl bg-orange-500 text-white border-2 border-[#2d1e12] text-xs font-black">完成儲存</button>`;
-      box.classList.remove('hidden'); box.scrollTop = 0;
+      </div>${durHtml}${aeHtml}`;
+      modal.classList.remove('hidden'); box.scrollTop = prevScroll;
     }
 
     // =========================================================================
@@ -3670,6 +3743,7 @@ html, body {
       }
 
       actions.push(
+        { id: 'toggle_bro_follow', emoji: state.broSoloMode ? '🚶' : '🫂', name: state.broSoloMode ? '陪同：自由中' : '陪同：陪伴中', sub: state.broSoloMode ? '按此鎖定陪翔陽' : '按此暫離自由行', highlight: !state.broSoloMode },
         { id: 'play',  emoji: '🏐', name: '雙人對打', sub: '輪流接波' },
         { id: 'practice', emoji: '🔥', name: '練球', sub: '去後院練習' },
         { id: 'furn',  emoji: '🛋️', name: '房間傢俬', sub: '場景互動' },
@@ -3796,6 +3870,28 @@ html, body {
           if (!bothHome) { playSFX('miss'); showToast('哥哥返緊工未返屋企呀！🏥'); return; }
           startDuoOuting('restaurant', 60, 'restaurant', '二人一齊去餐廳食飯（停留 1 小時）🍽️', '「同哥哥去家庭餐廳食大餐！好香呀～🍽️✨」');
           pet.hunger = Math.min(100, pet.hunger + 30); pet.mood = Math.min(100, pet.mood + 12); grantCappedRewards(pet, 6, 4);
+        } else if (id === 'toggle_bro_follow') {
+          const fixedDuoActs = ['breakfast', 'lunch', 'dinner', 'bath', 'brush', 'sleep', 'waking', 'gaming'];
+          const outOrWork = (state.outing && state.outing.type) || ['pharmacy', 'canteen', 'hospital', 'school_class', 'school_court', 'street', 'main_street'].includes(bro.currentRoom) || ['school_class', 'school_court', 'street', 'main_street'].includes(pet.currentRoom);
+          if (isRoomBusyLocked(pet) || outOrWork || fixedDuoActs.includes(pet.currentActivity)) {
+            playSFX('miss');
+            showToast('固定一齊活動、瞓覺或外出時唔可以切換陪同狀態 🔒');
+            return;
+          }
+          state.broSoloMode = !state.broSoloMode;
+          if (!state.broSoloMode) {
+            bro.currentRoom = pet.currentRoom;
+            bro.currentActivity = (pet.currentActivity === 'street' ? 'idle' : pet.currentActivity);
+            bro.tx = Math.min(490, targetX + 95); bro.ty = targetY;
+            playSFX('levelup');
+            showToast('哥哥已鎖定返嚟陪住翔陽！🫂💛');
+            speakAndShow('「哥哥返嚟陪住我一齊啦！😊💛」');
+          } else {
+            playSFX('pat');
+            showToast('哥哥暫時喺屋企自由移動（再按鎖定陪翔陽）🚶');
+            speakAndShow('「哥哥去自己做陣嘢／行下先，有需要再叫佢！👋」');
+          }
+          renderDock(); updateHUD(); saveState();
         } else if (id === 'stop_gaming') {
           state.gamingReturnAt = null;
           pet.scheduleSlotKey = null; bro.scheduleSlotKey = null;
@@ -4059,7 +4155,80 @@ html, body {
     });
 
     document.getElementById('btn-schedule').addEventListener('click', openScheduleModal);
-    document.getElementById('btn-settings').addEventListener('click', openSettingsModal);
+    document.getElementById('btn-settings').addEventListener('click', () => openSettingsModal(false));
+    document.getElementById('close-settings-modal').addEventListener('click', () => document.getElementById('settings-modal').classList.add('hidden'));
+    document.getElementById('done-settings-modal').addEventListener('click', () => document.getElementById('settings-modal').classList.add('hidden'));
+    document.getElementById('heal-stats-modal').addEventListener('click', () => {
+      const pet = ensurePetState(state.activeCharId);
+      pet.hunger = 80; pet.mood = 85; pet.energy = 90; pet.bladder = 0; pet.fainted = false; pet.recoverStage = null;
+      updateHUD(); saveState(); showToast('已恢復健康數值（飽食80% / 心情85% / 精力90% / 尿意0%）🩹✨');
+    });
+    document.getElementById('settings-modal-body').addEventListener('click', (e) => {
+      const balBtn = e.target.closest('[data-bal-cat]');
+      if (balBtn) {
+        const { balCat, balStat, balDelta } = balBtn.dataset;
+        const nv = (state.balance[balCat][balStat] ?? 0) + Number(balDelta);
+        state.balance[balCat][balStat] = nv;
+        const sp = document.getElementById(`bal-val-${balCat}-${balStat}`);
+        if (sp) sp.textContent = nv > 0 ? `+${nv}` : `${nv}`;
+        saveState(); return;
+      }
+      const blBtn = e.target.closest('[data-bl-key]');
+      if (blBtn) {
+        const { blKey, blDelta } = blBtn.dataset;
+        const def = blKey === 'bladderMeal' ? 25 : (blKey === 'bladderFood' ? 5 : 10);
+        const nv = Math.max(0, (state.balance[blKey] ?? def) + Number(blDelta));
+        state.balance[blKey] = nv;
+        const sp = document.getElementById(`bl-val-${blKey}`);
+        if (sp) sp.textContent = `+${nv}%`;
+        saveState(); return;
+      }
+      const lvlBtn = e.target.closest('[data-lvl-key]');
+      if (lvlBtn) {
+        const { lvlKey, lvlDelta } = lvlBtn.dataset;
+        if (lvlKey === 'levelRewardStep') {
+          const nv = Math.max(1, (state.balance.levelRewardStep ?? 5) + Number(lvlDelta));
+          state.balance.levelRewardStep = nv;
+          const sp = document.getElementById('lvl-val-step');
+          if (sp) sp.textContent = `${nv}級`;
+        } else {
+          const nv = Math.max(0, (state.balance.levelRewardCoins ?? 100) + Number(lvlDelta));
+          state.balance.levelRewardCoins = nv;
+          const sp = document.getElementById('lvl-val-coins');
+          if (sp) sp.textContent = `${nv}/${Math.floor(nv/2)}`;
+        }
+        saveState(); return;
+      }
+      const durBtn = e.target.closest('[data-dur-key]');
+      if (durBtn) {
+        const { durKey, durDelta } = durBtn.dataset;
+        const nv = Math.max(5, (state.outingMins[durKey] || 30) + Number(durDelta));
+        state.outingMins[durKey] = nv;
+        const sp = document.getElementById(`dur-val-${durKey}`);
+        if (sp) sp.textContent = `${nv}分`;
+        saveState(); return;
+      }
+      const aeBtn = e.target.closest('[data-ae-key]');
+      if (aeBtn) {
+        const { aeKey, aeField, aeDelta } = aeBtn.dataset;
+        const obj = state.autoEvents[aeKey];
+        if (aeField === 'prob') {
+          obj.prob = Math.max(0, Math.min(100, (obj.prob ?? 10) + Number(aeDelta)));
+          const sp = document.getElementById(`ae-val-${aeKey}-prob`);
+          if (sp) sp.textContent = `${obj.prob}%`;
+        } else if (aeField === 'mins') {
+          const minV = aeKey === 'freeRoam' ? 1 : 5;
+          obj.mins = Math.max(minV, Math.min(120, (obj.mins ?? 15) + Number(aeDelta)));
+          const sp = document.getElementById(`ae-val-${aeKey}-mins`);
+          if (sp) sp.textContent = `${obj.mins}分`;
+        } else {
+          obj.maxPerDay = Math.max(0, Math.min(20, (obj.maxPerDay ?? 1) + Number(aeDelta)));
+          const sp = document.getElementById(`ae-val-${aeKey}-maxPerDay`);
+          if (sp) sp.textContent = (aeKey === 'toilet' || aeKey === 'backyardAsk') ? (obj.maxPerDay === 0 ? '不限' : `${obj.maxPerDay}次`) : (obj.maxPerDay === 0 ? '停用' : `${obj.maxPerDay}次`);
+        }
+        saveState(); return;
+      }
+    });
     document.getElementById('btn-mailbox').addEventListener('click', openMailboxModal);
     document.getElementById('snack-bag-display').addEventListener('click', openSnackBagModal);
     document.getElementById('btn-holiday').addEventListener('click', () => {
@@ -4188,7 +4357,12 @@ html, body {
         let localTs = 0;
         try { if (cur) localTs = JSON.parse(cur).savedAt || 0; } catch (e) {}
         const remoteTs = data.updatedAt || 0;
-        if (remoteTs > localTs && cur !== data.payload) {
+        let localLv = 1, remoteLv = 1;
+        try {
+          if (cur) { const lp = JSON.parse(cur); localLv = (lp.pets && lp.pets.hinata && lp.pets.hinata.bondLevel) || 1; }
+          const rp = JSON.parse(data.payload); remoteLv = (rp.pets && rp.pets.hinata && rp.pets.hinata.bondLevel) || 1;
+        } catch (e) {}
+        if (remoteTs > localTs && remoteLv >= localLv && cur !== data.payload) {
           applyingRemote = true;
           localStorage.setItem('chibi_tama_nohara_v6', data.payload);
           if (typeof loadState === 'function') loadState();
