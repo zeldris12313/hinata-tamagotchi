@@ -206,7 +206,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v69.8</span>
+      <span id="save-status">💾 已自動儲存 · v70</span>
       
     </div>
 
@@ -718,6 +718,9 @@ html, body {
       supperProb: 50,
       supperSiumaiProb: 50,
       supperManualAcceptProb: 90,
+      weSupperProb: 50,
+      weSupperSiumaiProb: 50,
+      weSupperManualAcceptProb: 90,
       supermarketItemsCfg: {},
       supermarketTrip: null,
       supperState: null,
@@ -790,6 +793,13 @@ html, body {
       if (typeof state.supperProb !== 'number') state.supperProb = 50;
       if (typeof state.supperSiumaiProb !== 'number') state.supperSiumaiProb = 50;
       if (typeof state.supperManualAcceptProb !== 'number') state.supperManualAcceptProb = 90;
+      if (typeof state.weSupperProb !== 'number') state.weSupperProb = 50;
+      if (typeof state.weSupperSiumaiProb !== 'number') state.weSupperSiumaiProb = 50;
+      if (typeof state.weSupperManualAcceptProb !== 'number') state.weSupperManualAcceptProb = 90;
+      if (!state.autoEvents.weFreeRoam) state.autoEvents.weFreeRoam = { prob: 50, mins: 1 };
+      if (!state.autoEvents.weKonbiniAsk) state.autoEvents.weKonbiniAsk = { prob: 20, maxPerDay: 1 };
+      if (!state.autoEvents.weParkAsk) state.autoEvents.weParkAsk = { prob: 15, maxPerDay: 1 };
+      if (!state.autoEvents.weBackyardAsk) state.autoEvents.weBackyardAsk = { prob: 13, maxPerDay: 0, mins: 15 };
       if (!state.supermarketItemsCfg) state.supermarketItemsCfg = {};
       if (typeof ensureSupermarketCfg === 'function') ensureSupermarketCfg();
       if (typeof p.pocketMoney !== 'number') p.pocketMoney = 20;
@@ -1132,7 +1142,9 @@ html, body {
         if (m < 1115)           return { key: 'we_free2', room: 'living',      act: 'tea',       outfit: 2, px: 270, py: 440, label: '假日自由活動', freeRoam: true };
         if (m < 1145)           return { key: 'we_wait_din', room: 'living',   act: 'tv',        outfit: 2, px: 330, py: 420, label: '等哥哥煮晚餐' };
         if (m < 1185)           return { key: 'we_dinner', room: 'kitchen',    act: 'dinner',    outfit: 2, px: 435, py: 455, label: '一齊食假日晚餐' };
-        return                         { key: 'we_free3', room: 'living',      act: 'tv',        outfit: 2, px: 330, py: 420, label: '假日自由活動', freeRoam: true };
+        if (m < 1295)           return { key: 'we_free3', room: 'living',      act: 'tv',        outfit: 2, px: 330, py: 420, label: '假日自由活動', freeRoam: true };
+        if (m < 1330)           return { key: 'we_bath',  room: 'bath',        act: 'bath',      outfit: 2, px: 405, py: 332, label: '一齊沖涼浸浴' };
+        return                         { key: 'we_free4', room: 'living',      act: 'tv',        outfit: 2, px: 330, py: 420, label: '夜間自由活動', freeRoam: true };
       }
     }
 
@@ -1178,7 +1190,9 @@ html, body {
         if (m < 1145)           return { key: 'br_we_cook_d',room: 'kitchen',    act: 'cook_dinner', px: 255, py: 435 };
         if (m < 1185)           return { key: 'br_we_din',   room: 'kitchen',    act: 'dinner',      px: 505, py: 440 };
         if (m < 1195)           return { key: 'br_we_wash3', room: 'kitchen',    act: 'washing_dishes', px: 280, py: 400 };
-        return                         { key: 'br_we_f3',    room: 'living',     act: 'tv',          px: 420, py: 420, followHinata: true };
+        if (m < 1295)           return { key: 'br_we_f3',    room: 'living',     act: 'tv',          px: 420, py: 420, followHinata: true };
+        if (m < 1330)           return { key: 'br_we_bath',  room: 'bath',       act: 'bath',        px: 475, py: 332 };
+        return                         { key: 'br_we_f4',    room: 'living',     act: 'tv',          px: 420, py: 420, followHinata: true };
       }
     }
 
@@ -2027,7 +2041,7 @@ html, body {
         if (state.supperState && state.supperState.stage) {
           const ss = state.supperState;
           if (ss.stage === 'bro_asking' && Date.now() >= ss.until) {
-            const sProb = (state.supperSiumaiProb ?? 50) / 100;
+            const sProb = ((info.isWeekend ? state.weSupperSiumaiProb : state.supperSiumaiProb) ?? 50) / 100;
             let pickId = Math.random() < sProb ? 'sm_siumai' : 'sm_fishball';
             if ((state.fridge[pickId] || 0) <= 0) {
               const altId = pickId === 'sm_siumai' ? 'sm_fishball' : 'sm_siumai';
@@ -2069,7 +2083,7 @@ html, body {
           return;
         } else if (pet.supperDate !== tdSup) {
           pet.supperDate = tdSup;
-          const trigProb = (state.supperProb ?? 50) / 100;
+          const trigProb = ((info.isWeekend ? state.weSupperProb : state.supperProb) ?? 50) / 100;
           if (Math.random() < trigProb) {
             state.supperState = { stage: 'bro_asking', until: Date.now() + 4000 };
             startDuoJourney('kitchen', 'supper_wait', '「哥哥…有啲肚餓想食宵夜呀！你去冰格睇下有冇燒賣定魚蛋？😋🌙」', '23:00 宵夜時段觸發！🌙', () => {
@@ -2087,7 +2101,7 @@ html, body {
         if (!sched.freeRoam && !sched.isRecess && !pet.toiletState && !pet.backyardUntil && !state.outing?.type && !duoWalk && !transitionState && !pet.homeSeqStage && !pet.detentionUntil && !pet.fridgeStage && ['street', 'main_street', 'konbini', 'mall', 'park', 'park2', 'restaurant'].includes(pet.currentRoom) && !['street', 'main_street'].includes(sched.room)) {
           startSoloWalk('pet', sched.room, sched.act, '「返到嚟啦！🏠✨」', null);
         }
-        const frAe = (state.autoEvents && state.autoEvents.freeRoam) || { prob: 50, mins: 1 };
+        const frAe = (info.isWeekend ? (state.autoEvents && state.autoEvents.weFreeRoam) : (state.autoEvents && state.autoEvents.freeRoam)) || { prob: 50, mins: 1 };
         const frMs = Math.max(15000, (frAe.mins || 1) * 60000);
         if (sched.freeRoam && !state.gamingReturnAt && !transitionState && !rally.active && Date.now() - lastFreeRoamAt > frMs && Math.random() < ((frAe.prob ?? 50) / 100)) {
           lastFreeRoamAt = Date.now();
@@ -2208,12 +2222,17 @@ html, body {
         if (isEvTV || isWkFree) {
           lastDuoEventAt = Date.now();
           const ae = state.autoEvents || { toilet: { prob: 10, maxPerDay: 0 }, konbiniAsk: { prob: 20, maxPerDay: 1 }, parkAsk: { prob: 15, maxPerDay: 1 } };
-          const cnt = pet.dailyAutoCounts || { toilet: 0, konbiniAsk: 0, parkAsk: 0 };
-          const canKonbini = isEvTV && ae.konbiniAsk.maxPerDay > 0 && (cnt.konbiniAsk || 0) < ae.konbiniAsk.maxPerDay && ae.konbiniAsk.prob > 0;
-          const canPark = ae.parkAsk.maxPerDay > 0 && (cnt.parkAsk || 0) < ae.parkAsk.maxPerDay && ae.parkAsk.prob > 0;
-          const roll = Math.random();
-          if (canKonbini && Math.random() < (ae.konbiniAsk.prob / 100) && document.getElementById('choice-overlay').classList.contains('hidden')) {
-            cnt.konbiniAsk = (cnt.konbiniAsk || 0) + 1;
+          const cnt = pet.dailyAutoCounts || { toilet: 0, konbiniAsk: 0, parkAsk: 0, weKonbiniAsk: 0, weParkAsk: 0, weBackyardAsk: 0 };
+          const atHomeForAsk = ['living', 'kitchen', 'hallway', 'bath', 'toilet', 'room_hinata', 'room_aniki', 'backyard'].includes(pet.currentRoom);
+          const kKey = isWkFree ? 'weKonbiniAsk' : 'konbiniAsk';
+          const pKey = isWkFree ? 'weParkAsk' : 'parkAsk';
+          const bKey = isWkFree ? 'weBackyardAsk' : 'backyardAsk';
+          const aeK = ae[kKey] || { prob: 20, maxPerDay: 1 };
+          const aeP = ae[pKey] || { prob: 15, maxPerDay: 1 };
+          const canKonbini = (isEvTV || (isWkFree && atHomeForAsk)) && aeK.maxPerDay > 0 && (cnt[kKey] || 0) < aeK.maxPerDay && aeK.prob > 0;
+          const canPark = (!isWkFree || atHomeForAsk) && aeP.maxPerDay > 0 && (cnt[pKey] || 0) < aeP.maxPerDay && aeP.prob > 0;
+          if (canKonbini && Math.random() < (aeK.prob / 100) && document.getElementById('choice-overlay').classList.contains('hidden')) {
+            cnt[kKey] = (cnt[kKey] || 0) + 1;
             const box = document.getElementById('choice-overlay');
             const km = (state.outingMins && state.outingMins.konbini) || 15;
             speakAndShow(`「哥哥～夜晚不如一齊落便利店行 ${km} 分鐘買熱肉包好唔好？🏪🥟」`);
@@ -2223,15 +2242,15 @@ html, body {
                 <button type="button" data-konbini-ask="no" class="px-3 py-1 rounded-xl bg-slate-200 text-[#2d1e12] border-2 border-[#2d1e12] text-xs font-black">🏠 唔去住</button>
               </div>`;
             box.classList.remove('hidden');
-          } else if (canPark && Math.random() < (ae.parkAsk.prob / 100)) {
-            cnt.parkAsk = (cnt.parkAsk || 0) + 1;
+          } else if (canPark && Math.random() < (aeP.prob / 100)) {
+            cnt[pKey] = (cnt[pKey] || 0) + 1;
             const pm = (state.outingMins && state.outingMins.park) || 30;
             startDuoOuting('park', pm, 'park_breeze', `翔陽約哥哥去公園吹海風（${pm}分鐘）🌳`, `「翔陽：哥哥我哋落公園散步吹下海風吖！留 ${pm} 分鐘就返～🌳🌊」`);
           } else {
-            const aeBy = ae.backyardAsk || { prob: 13, maxPerDay: 0, mins: 15 };
-            const byOk = (aeBy.prob > 0) && (aeBy.maxPerDay === 0 || (cnt.backyardAsk || 0) < aeBy.maxPerDay);
+            const aeBy = ae[bKey] || { prob: 13, maxPerDay: 0, mins: 15 };
+            const byOk = (!isWkFree || atHomeForAsk) && (aeBy.prob > 0) && (aeBy.maxPerDay === 0 || (cnt[bKey] || 0) < aeBy.maxPerDay);
             if (byOk && Math.random() < (aeBy.prob / 100)) {
-              cnt.backyardAsk = (cnt.backyardAsk || 0) + 1;
+              cnt[bKey] = (cnt[bKey] || 0) + 1;
               pet.backyardUntil = Date.now() + (aeBy.mins || 15) * 60000;
               pet.currentRoom = 'backyard'; pet.currentActivity = 'backyard';
               targetX = 250; targetY = 435;
@@ -2602,7 +2621,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v69.8'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v70'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -2866,10 +2885,13 @@ html, body {
       { start: 670,  end: 750,  time: '11:10 - 12:30', roomName: '屋企／街外',      label: '🌟 假日自由陪伴時間' },
       { start: 750,  end: 780,  time: '12:30 - 13:00', roomName: '1F 廚房',         label: '🍳 哥哥煮假日午餐' },
       { start: 780,  end: 815,  time: '13:00 - 13:35', roomName: '1F 廚房',         label: '🍱 二人一齊食午餐' },
-      { start: 815,  end: 1110, time: '13:35 - 18:30', roomName: '屋企／街外',      label: '🌟 假日自由陪伴（可去商場/公園）' },
-      { start: 1110, end: 1140, time: '18:30 - 19:00', roomName: '1F 廚房',         label: '🍳 哥哥煮假日晚餐' },
-      { start: 1140, end: 1180, time: '19:00 - 19:40', roomName: '1F 廚房',         label: '🍽️ 二人一齊食晚餐' },
-      { start: 1180, end: 1440, time: '19:40 - 24:00', roomName: '屋企／街外',      label: '🌟 夜間自由活動（00:00 睡）' }
+      { start: 815,  end: 1115, time: '13:35 - 18:35', roomName: '屋企／街外',      label: '🌟 假日自由陪伴（可去商場/公園）' },
+      { start: 1115, end: 1145, time: '18:35 - 19:05', roomName: '1F 廚房',         label: '🍳 哥哥煮假日晚餐' },
+      { start: 1145, end: 1185, time: '19:05 - 19:45', roomName: '1F 廚房',         label: '🍽️ 二人一齊食晚餐' },
+      { start: 1185, end: 1295, time: '19:45 - 21:35', roomName: '屋企／街外',      label: '🌟 夜間自由活動' },
+      { start: 1295, end: 1330, time: '21:35 - 22:10', roomName: '1F 浴室',         label: '🫧 二人一齊浸浴' },
+      { start: 1330, end: 1380, time: '22:10 - 23:00', roomName: '1F 客廳',         label: '🌟 睡前自由活動' },
+      { start: 1380, end: 1440, time: '23:00 - 24:00', roomName: '客廳 / 廚房',     label: '🌙 自由活動・宵夜時段（00:00 睡）' }
     ];
 
     const LOCKED_ACTIVITY_ROOMS = new Set(['bath', 'street', 'school_class', 'school_court']);
@@ -4277,7 +4299,7 @@ html, body {
       if (state.supperState && state.supperState.stage) {
         showToast('已經準備／食緊宵夜啦！🥟🍢'); return;
       }
-      const accProb = (state.supperManualAcceptProb ?? 90) / 100;
+      const accProb = ((info.isWeekend ? state.weSupperManualAcceptProb : state.supperManualAcceptProb) ?? 90) / 100;
       if (Math.random() < accProb) {
         pet.supperDate = getTodayStr();
         state.supperState = { stage: 'bro_asking', until: Date.now() + 4000 };
@@ -4578,8 +4600,8 @@ html, body {
       const box = document.getElementById('settings-modal-body');
       const prevScroll = preserveScroll ? box.scrollTop : 0;
 
-      const tabsHtml = `<div class="grid grid-cols-4 gap-1 sticky top-0 bg-[#fff7ed] pb-1.5 z-10 border-b border-amber-200">
-        ${[['stats','📊 數值加減'],['probs','🎲 機率次數'],['rewards','⏱️ 時間獎勵'],['bladder','🚽 尿意摸頭']].map(([tid, tlbl]) => `
+      const tabsHtml = `<div class="grid grid-cols-5 gap-1 sticky top-0 bg-[#fff7ed] pb-1.5 z-10 border-b border-amber-200">
+        ${[['stats','📊 數值'],['probs','🎲 平日機率'],['weekend','🏖️ 假日設定'],['rewards','⏱️ 時間獎勵'],['bladder','🚽 尿意摸頭']].map(([tid, tlbl]) => `
           <button type="button" data-set-tab="${tid}" class="py-1 px-1 rounded-xl text-[10px] font-black border-2 border-[#2d1e12] ${settingsTab === tid ? 'bg-orange-500 text-white' : 'bg-white text-[#2d1e12]'}">${tlbl}</button>
         `).join('')}
       </div>`;
@@ -4797,6 +4819,68 @@ html, body {
           </div>
         </div>`;
         bodyHtml = aeHtml + smSupHtml;
+      } else if (settingsTab === 'weekend') {
+        const weRows = [
+          ['weFreeRoam','🚶 假日自由換房漫遊',false,true],
+          ['weKonbiniAsk','🏪 假日問去便利店（只限在家）',true,false],
+          ['weParkAsk','🌳 假日問去公園（只限在家）',true,false],
+          ['weBackyardAsk','🏐 假日問去後院練波',true,true]
+        ];
+        bodyHtml = `<div class="bg-teal-50 border border-teal-300 rounded-xl p-1.5">
+          <div class="text-[11px] font-black text-[#2d1e12] mb-1">🏖️ 星期六日／紅假・獨立機率與次數設定</div>
+          <div class="space-y-1 text-[10px] font-bold">
+            ${weRows.map(([k, lbl, hasMax, hasMins]) => {
+              const obj = ae[k] || { prob: 20, maxPerDay: 1, mins: 15 };
+              const limTxt = (k === 'weBackyardAsk') ? (obj.maxPerDay === 0 ? '不限' : obj.maxPerDay + '次') : (obj.maxPerDay === 0 ? '停用' : obj.maxPerDay + '次');
+              return `<div class="flex flex-wrap items-center justify-between bg-white border border-teal-300 rounded px-1.5 py-1 gap-1">
+                <span class="font-black">${lbl}</span>
+                <div class="flex items-center gap-1 shrink-0">
+                  <span class="text-teal-700">機率</span>
+                  <button type="button" data-ae-key="${k}" data-ae-field="prob" data-ae-delta="-5" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="ae-val-${k}-prob" class="min-w-[26px] text-center">${obj.prob ?? 20}%</span>
+                  <button type="button" data-ae-key="${k}" data-ae-field="prob" data-ae-delta="5" class="w-4 h-4 rounded bg-teal-300 font-black">+</button>
+                  ${hasMax ? `<span class="text-teal-700 ml-1">上限</span>
+                  <button type="button" data-ae-key="${k}" data-ae-field="maxPerDay" data-ae-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="ae-val-${k}-maxPerDay" class="min-w-[24px] text-center">${limTxt}</span>
+                  <button type="button" data-ae-key="${k}" data-ae-field="maxPerDay" data-ae-delta="1" class="w-4 h-4 rounded bg-teal-300 font-black">+</button>` : ''}
+                  ${hasMins ? `<span class="text-teal-700 ml-1">${k==='weFreeRoam'?'間隔':'時長'}</span>
+                  <button type="button" data-ae-key="${k}" data-ae-field="mins" data-ae-delta="${k==='weFreeRoam'?-1:-5}" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="ae-val-${k}-mins" class="min-w-[26px] text-center">${obj.mins ?? 15}分</span>
+                  <button type="button" data-ae-key="${k}" data-ae-field="mins" data-ae-delta="${k==='weFreeRoam'?1:5}" class="w-4 h-4 rounded bg-teal-300 font-black">+</button>` : ''}
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+        <div class="bg-amber-50 border border-amber-300 rounded-xl p-1.5 mt-1.5">
+          <div class="text-[11px] font-black text-[#2d1e12] mb-1">🌙 假日 23:00–24:00 宵夜獨立設定</div>
+          <div class="grid grid-cols-2 gap-1 text-[10px] font-bold">
+            <div class="flex items-center justify-between bg-white border border-amber-300 rounded px-1.5 py-0.5">
+              <span>🌙 假日宵夜觸發</span>
+              <div class="flex items-center gap-0.5">
+                <button type="button" data-smcfg-key="weSupperProb" data-smcfg-delta="-5" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                <span id="smcfg-val-weSupperProb">${state.weSupperProb ?? 50}%</span>
+                <button type="button" data-smcfg-key="weSupperProb" data-smcfg-delta="5" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-white border border-amber-300 rounded px-1.5 py-0.5">
+              <span>🥟 假日揀燒賣機率</span>
+              <div class="flex items-center gap-0.5">
+                <button type="button" data-smcfg-key="weSupperSiumaiProb" data-smcfg-delta="-5" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                <span id="smcfg-val-weSupperSiumaiProb">${state.weSupperSiumaiProb ?? 50}%</span>
+                <button type="button" data-smcfg-key="weSupperSiumaiProb" data-smcfg-delta="5" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-white border border-amber-300 rounded px-1.5 py-0.5">
+              <span>🌙 手動約宵夜答應</span>
+              <div class="flex items-center gap-0.5">
+                <button type="button" data-smcfg-key="weSupperManualAcceptProb" data-smcfg-delta="-5" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                <span id="smcfg-val-weSupperManualAcceptProb">${state.weSupperManualAcceptProb ?? 90}%</span>
+                <button type="button" data-smcfg-key="weSupperManualAcceptProb" data-smcfg-delta="5" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
       } else if (settingsTab === 'rewards') {
         bodyHtml = `<div class="bg-sky-50 border border-sky-300 rounded-xl p-1.5">
           <div class="text-[11px] font-black text-[#2d1e12] mb-1">🏖️ 外出停留時間（分鐘）</div>
@@ -5930,14 +6014,14 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const sp = document.getElementById(`ae-val-${aeKey}-caughtProb`);
           if (sp) sp.textContent = `${obj.caughtProb}%`;
         } else if (aeField === 'mins') {
-          const minV = aeKey === 'freeRoam' ? 1 : 5;
+          const minV = (aeKey === 'freeRoam' || aeKey === 'weFreeRoam') ? 1 : 5;
           obj.mins = Math.max(minV, Math.min(120, (obj.mins ?? 15) + Number(aeDelta)));
           const sp = document.getElementById(`ae-val-${aeKey}-mins`);
           if (sp) sp.textContent = `${obj.mins}分`;
         } else {
           obj.maxPerDay = Math.max(0, Math.min(20, (obj.maxPerDay ?? 1) + Number(aeDelta)));
           const sp = document.getElementById(`ae-val-${aeKey}-maxPerDay`);
-          if (sp) sp.textContent = (aeKey === 'toilet' || aeKey === 'backyardAsk') ? (obj.maxPerDay === 0 ? '不限' : `${obj.maxPerDay}次`) : (obj.maxPerDay === 0 ? '停用' : `${obj.maxPerDay}${aeKey === 'snackBuy' ? '件' : '次'}`);
+          if (sp) sp.textContent = (aeKey === 'toilet' || aeKey === 'backyardAsk' || aeKey === 'weBackyardAsk') ? (obj.maxPerDay === 0 ? '不限' : `${obj.maxPerDay}次`) : (obj.maxPerDay === 0 ? '停用' : `${obj.maxPerDay}${aeKey === 'snackBuy' ? '件' : '次'}`);
         }
         saveState(); return;
       }
@@ -6189,7 +6273,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v69.8';
+          if (el) el.textContent = '☁️ 雲端已同步 · v70';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6228,7 +6312,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v69.8';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v70';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
