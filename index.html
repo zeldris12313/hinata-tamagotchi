@@ -6,8 +6,8 @@
   <meta http-equiv="Expires" content="0" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="icon" type="image/png" href="./icon.png?v=67">
-  <link rel="apple-touch-icon" href="./icon.png?v=67">
+  <link rel="icon" type="image/png" href="./icon.png?v=68">
+  <link rel="apple-touch-icon" href="./icon.png?v=68">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -155,9 +155,14 @@ html, body {
       <button id="btn-outfit" type="button" class="ctrl-pill bg-white hover:bg-orange-50 rounded-xl py-1 px-2 text-[11px] font-black flex items-center justify-center gap-1">
         <span>👕</span><span id="outfit-name">烏野隊服</span>
       </button>
-      <button id="btn-find-pet" type="button" class="ctrl-pill bg-amber-100 hover:bg-amber-200 rounded-xl py-1 px-2 text-[11px] font-black flex items-center justify-center gap-1">
-        <span>🧭</span><span>搵翔陽</span>
-      </button>
+      <div class="grid grid-cols-2 gap-1">
+        <button id="btn-find-pet" type="button" class="ctrl-pill bg-amber-100 hover:bg-amber-200 rounded-xl py-1 px-1 text-[10px] font-black flex items-center justify-center gap-0.5">
+          <span>🧭</span><span>搵翔陽</span>
+        </button>
+        <button id="btn-find-bro" type="button" class="ctrl-pill bg-sky-100 hover:bg-sky-200 rounded-xl py-1 px-1 text-[10px] font-black flex items-center justify-center gap-0.5">
+          <span>🧭</span><span>搵哥哥</span>
+        </button>
+      </div>
     </div>
 
     <!-- Bottom Interactive Dock -->
@@ -179,7 +184,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v67</span>
+      <span id="save-status">💾 已自動儲存 · v68</span>
       
     </div>
 
@@ -216,24 +221,32 @@ html, body {
   <!-- Modal: 模擬手機短訊聊天室 -->
   <div id="sms-chat-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-2.5">
     <div class="bg-[#efeae2] rounded-3xl w-full max-w-md h-[86vh] shadow-2xl border-2 border-[#2d1e12] flex flex-col overflow-hidden">
-      <div class="bg-[#fff7ed] border-b-2 border-[#2d1e12] px-3 py-2 flex items-center justify-between shrink-0">
-        <div class="flex items-center gap-2">
-          <img src="./assets/chibiJersey.png?v=67" class="w-9 h-9 rounded-full border-2 border-[#2d1e12] bg-amber-100 object-cover object-top" alt="日向翔陽" />
-          <div>
+      <div class="bg-[#fff7ed] border-b-2 border-[#2d1e12] px-3 py-2 flex items-center justify-between gap-2 shrink-0">
+        <div class="flex items-center gap-2 min-w-0">
+          <img src="./assets/chibiJersey.png?v=68" class="w-9 h-9 rounded-full border-2 border-[#2d1e12] bg-amber-100 object-cover object-top shrink-0" alt="日向翔陽" />
+          <div class="min-w-0">
             <div class="text-sm font-black text-[#2d1e12] leading-tight">日向翔陽</div>
-            <div id="sms-chat-status" class="text-[10px] font-bold text-emerald-700 leading-tight">📱 在線中</div>
+            <div id="sms-chat-status" class="text-[10px] font-bold text-emerald-700 leading-tight truncate">📱 在線中</div>
           </div>
         </div>
-        <button id="close-sms-modal" type="button" class="px-3 py-1 rounded-xl bg-orange-500 hover:bg-orange-600 text-white border-2 border-[#2d1e12] text-xs font-black">關閉</button>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="sms-open-cal" type="button" class="px-2.5 py-1 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white border-2 border-[#2d1e12] text-[11px] font-black">🗓️ 約會預約</button>
+          <button id="close-sms-modal" type="button" class="px-2.5 py-1 rounded-xl bg-orange-500 hover:bg-orange-600 text-white border-2 border-[#2d1e12] text-[11px] font-black">關閉</button>
+        </div>
       </div>
       <div id="sms-chat-list" style="touch-action: pan-y;" class="flex-1 overflow-y-auto p-3 space-y-2.5"></div>
       <div id="sms-typing-ind" class="hidden px-3 py-1 text-[10px] font-bold text-slate-600 bg-[#efeae2]">💬 翔陽正在輸入回覆…</div>
       <div class="bg-white border-t-2 border-[#2d1e12] shrink-0">
+        <button id="toggle-sms-promise" type="button" class="w-full px-3 py-1.5 flex items-center justify-between bg-sky-50 hover:bg-sky-100 text-[11px] font-black text-[#2d1e12] border-b border-sky-200">
+          <span>📅 約定問題（每日約定今日行程）</span>
+          <span id="sms-promise-arrow" class="text-[11px]">▲</span>
+        </button>
+        <div id="sms-promise-drawer" style="touch-action: pan-y;" class="hidden max-h-[28vh] overflow-y-auto p-2 space-y-1.5 border-b border-sky-200 bg-white"></div>
         <button id="toggle-sms-drawer" type="button" class="w-full px-3 py-2 flex items-center justify-between bg-amber-50 hover:bg-amber-100 text-xs font-black text-[#2d1e12]">
-          <span id="sms-drawer-prompt">💬 點擊選擇要傳送嘅關心／回覆…</span>
+          <span id="sms-drawer-prompt">💬 展開回覆／當前場景問候…</span>
           <span id="sms-drawer-arrow" class="text-[11px]">▲</span>
         </button>
-        <div id="sms-reply-drawer" style="touch-action: pan-y;" class="hidden max-h-[34vh] overflow-y-auto p-2 space-y-1.5 border-t border-amber-200 bg-white"></div>
+        <div id="sms-reply-drawer" style="touch-action: pan-y;" class="hidden max-h-[30vh] overflow-y-auto p-2 space-y-1.5 border-t border-amber-200 bg-white"></div>
       </div>
     </div>
   </div>
@@ -272,104 +285,104 @@ html, body {
     // 1. 全套去背立繪（含摸頭專用笑面立繪）＋ 10間手繪動畫房間
     // =========================================================================
     const ASSET_URLS = {
-      chibiJersey: "./assets/chibiJersey.png?v=67",
-      chibiSchool: "./assets/chibiSchool.png?v=67",
-      chibiPajama: "./assets/chibiPajama.png?v=67",
-      portraitJersey: "./assets/portraitJersey.png?v=67",
-      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=67",
-      portraitSchool: "./assets/portraitSchool.png?v=67",
-      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=67",
-      portraitPajama: "./assets/portraitPajama.png?v=67",
-      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=67",
-      portraitSleepy: "./assets/portraitSleepy.jpg?v=67",
-      bg_living: "./assets/bg_living.jpg?v=67",
-      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=67",
-      bg_kitchen: "./assets/bg_kitchen.jpg?v=67",
-      bg_bath: "./assets/bg_bath.jpg?v=67",
-      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=67",
-      bg_hallway: "./assets/bg_hallway.jpg?v=67",
-      bg_backyard: "./assets/bg_backyard.jpg?v=67",
-      bg_street: "./assets/bg_street.jpg?v=67",
-      bg_school_class: "./assets/bg_school_class.jpg?v=67",
-      bg_school_court: "./assets/bg_school_court.jpg?v=67",
-      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=67",
-      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=67",
-      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=67",
-      chibiBrother: "./assets/chibiBrother.png?v=67",
-      bg_main_street: "./assets/bg_main_street.jpg?v=67",
-      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=67",
-      bg_canteen: "./assets/bg_canteen.jpg?v=67",
-      bg_mall: "./assets/bg_mall.jpg?v=67",
-      bg_park: "./assets/bg_park.jpg?v=67",
-      bg_restaurant: "./assets/bg_restaurant.jpg?v=67",
-      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=67",
-      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=67",
-      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=67",
-      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=67",
-      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=67",
-      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=67",
-      bg_hospital: "./assets/bg_hospital.jpg?v=67",
-      bg_street_night: "./assets/bg_street_night.jpg?v=67",
-      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=67",
-      bg_park_night: "./assets/bg_park_night.jpg?v=67",
-      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=67",
-      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=67",
-      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=67",
-      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=67",
-      bg_living_night: "./assets/bg_living_night.jpg?v=67",
-      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=67",
-      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=67",
-      bg_bath_night: "./assets/bg_bath_night.jpg?v=67",
-      bg_mall_night: "./assets/bg_mall_night.jpg?v=67",
-      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=67",
-      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=67",
-      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=67",
-      bg_living_morning: "./assets/bg_living_morning.jpg?v=67",
-      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=67",
-      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=67",
-      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=67",
-      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=67",
-      bg_street_morning: "./assets/bg_street_morning.jpg?v=67",
-      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=67",
-      bg_park_morning: "./assets/bg_park_morning.jpg?v=67",
-      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=67",
-      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=67",
-      chibiJerseySad: "./assets/chibiJerseySad.png?v=67",
-      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=67",
-      bg_school_hall: "./assets/bg_school_hall.jpg?v=67",
-      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=67",
-      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=67",
-      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=67",
-      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=67",
-      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=67",
-      bg_toilet: "./assets/bg_toilet.jpg?v=67",
-      bg_toilet_morning: "./assets/bg_toilet_morning.jpg?v=67",
-      bg_toilet_night: "./assets/bg_toilet_night.jpg?v=67",
-      bg_park2: "./assets/bg_park2.jpg?v=67",
-      bg_park2_morning: "./assets/bg_park2_morning.jpg?v=67",
-      bg_park2_night: "./assets/bg_park2_night.jpg?v=67",
-      bg_school_toilet: "./assets/bg_school_toilet.jpg?v=67",
-      bg_school_toilet_morning: "./assets/bg_school_toilet_morning.jpg?v=67",
-      bg_school_toilet_night: "./assets/bg_school_toilet_night.jpg?v=67",
-      chibiCry: "./assets/chibiCry.png?v=67",
-      chibiJerseyCry: "./assets/chibiJerseyCry.png?v=67",
-      chibiSchoolCry: "./assets/chibiSchoolCry.png?v=67",
-      bg_school_class_morning: "./assets/bg_school_class_morning.jpg?v=67",
-      bg_school_class_night: "./assets/bg_school_class_night.jpg?v=67",
-      bg_school_court_morning: "./assets/bg_school_court_morning.jpg?v=67",
-      bg_school_court_night: "./assets/bg_school_court_night.jpg?v=67",
-      bg_pharmacy_morning: "./assets/bg_pharmacy_morning.jpg?v=67",
-      bg_pharmacy_night: "./assets/bg_pharmacy_night.jpg?v=67",
-      bg_hospital_morning: "./assets/bg_hospital_morning.jpg?v=67",
-      bg_hospital_night: "./assets/bg_hospital_night.jpg?v=67",
-      bg_canteen_morning: "./assets/bg_canteen_morning.jpg?v=67",
-      bg_canteen_night: "./assets/bg_canteen_night.jpg?v=67",
-      bg_park_toilet: "./assets/bg_park_toilet.jpg?v=67",
-      bg_park_toilet_morning: "./assets/bg_park_toilet_morning.jpg?v=67",
-      bg_park_toilet_night: "./assets/bg_park_toilet_night.jpg?v=67",
-      bg_mall_toilet: "./assets/bg_mall_toilet.jpg?v=67",
-      bg_mall_toilet_morning: "./assets/bg_mall_toilet_morning.jpg?v=67",
-      bg_mall_toilet_night: "./assets/bg_mall_toilet_night.jpg?v=67"
+      chibiJersey: "./assets/chibiJersey.png?v=68",
+      chibiSchool: "./assets/chibiSchool.png?v=68",
+      chibiPajama: "./assets/chibiPajama.png?v=68",
+      portraitJersey: "./assets/portraitJersey.png?v=68",
+      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=68",
+      portraitSchool: "./assets/portraitSchool.png?v=68",
+      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=68",
+      portraitPajama: "./assets/portraitPajama.png?v=68",
+      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=68",
+      portraitSleepy: "./assets/portraitSleepy.jpg?v=68",
+      bg_living: "./assets/bg_living.jpg?v=68",
+      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=68",
+      bg_kitchen: "./assets/bg_kitchen.jpg?v=68",
+      bg_bath: "./assets/bg_bath.jpg?v=68",
+      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=68",
+      bg_hallway: "./assets/bg_hallway.jpg?v=68",
+      bg_backyard: "./assets/bg_backyard.jpg?v=68",
+      bg_street: "./assets/bg_street.jpg?v=68",
+      bg_school_class: "./assets/bg_school_class.jpg?v=68",
+      bg_school_court: "./assets/bg_school_court.jpg?v=68",
+      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=68",
+      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=68",
+      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=68",
+      chibiBrother: "./assets/chibiBrother.png?v=68",
+      bg_main_street: "./assets/bg_main_street.jpg?v=68",
+      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=68",
+      bg_canteen: "./assets/bg_canteen.jpg?v=68",
+      bg_mall: "./assets/bg_mall.jpg?v=68",
+      bg_park: "./assets/bg_park.jpg?v=68",
+      bg_restaurant: "./assets/bg_restaurant.jpg?v=68",
+      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=68",
+      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=68",
+      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=68",
+      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=68",
+      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=68",
+      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=68",
+      bg_hospital: "./assets/bg_hospital.jpg?v=68",
+      bg_street_night: "./assets/bg_street_night.jpg?v=68",
+      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=68",
+      bg_park_night: "./assets/bg_park_night.jpg?v=68",
+      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=68",
+      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=68",
+      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=68",
+      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=68",
+      bg_living_night: "./assets/bg_living_night.jpg?v=68",
+      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=68",
+      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=68",
+      bg_bath_night: "./assets/bg_bath_night.jpg?v=68",
+      bg_mall_night: "./assets/bg_mall_night.jpg?v=68",
+      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=68",
+      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=68",
+      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=68",
+      bg_living_morning: "./assets/bg_living_morning.jpg?v=68",
+      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=68",
+      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=68",
+      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=68",
+      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=68",
+      bg_street_morning: "./assets/bg_street_morning.jpg?v=68",
+      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=68",
+      bg_park_morning: "./assets/bg_park_morning.jpg?v=68",
+      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=68",
+      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=68",
+      chibiJerseySad: "./assets/chibiJerseySad.png?v=68",
+      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=68",
+      bg_school_hall: "./assets/bg_school_hall.jpg?v=68",
+      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=68",
+      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=68",
+      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=68",
+      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=68",
+      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=68",
+      bg_toilet: "./assets/bg_toilet.jpg?v=68",
+      bg_toilet_morning: "./assets/bg_toilet_morning.jpg?v=68",
+      bg_toilet_night: "./assets/bg_toilet_night.jpg?v=68",
+      bg_park2: "./assets/bg_park2.jpg?v=68",
+      bg_park2_morning: "./assets/bg_park2_morning.jpg?v=68",
+      bg_park2_night: "./assets/bg_park2_night.jpg?v=68",
+      bg_school_toilet: "./assets/bg_school_toilet.jpg?v=68",
+      bg_school_toilet_morning: "./assets/bg_school_toilet_morning.jpg?v=68",
+      bg_school_toilet_night: "./assets/bg_school_toilet_night.jpg?v=68",
+      chibiCry: "./assets/chibiCry.png?v=68",
+      chibiJerseyCry: "./assets/chibiJerseyCry.png?v=68",
+      chibiSchoolCry: "./assets/chibiSchoolCry.png?v=68",
+      bg_school_class_morning: "./assets/bg_school_class_morning.jpg?v=68",
+      bg_school_class_night: "./assets/bg_school_class_night.jpg?v=68",
+      bg_school_court_morning: "./assets/bg_school_court_morning.jpg?v=68",
+      bg_school_court_night: "./assets/bg_school_court_night.jpg?v=68",
+      bg_pharmacy_morning: "./assets/bg_pharmacy_morning.jpg?v=68",
+      bg_pharmacy_night: "./assets/bg_pharmacy_night.jpg?v=68",
+      bg_hospital_morning: "./assets/bg_hospital_morning.jpg?v=68",
+      bg_hospital_night: "./assets/bg_hospital_night.jpg?v=68",
+      bg_canteen_morning: "./assets/bg_canteen_morning.jpg?v=68",
+      bg_canteen_night: "./assets/bg_canteen_night.jpg?v=68",
+      bg_park_toilet: "./assets/bg_park_toilet.jpg?v=68",
+      bg_park_toilet_morning: "./assets/bg_park_toilet_morning.jpg?v=68",
+      bg_park_toilet_night: "./assets/bg_park_toilet_night.jpg?v=68",
+      bg_mall_toilet: "./assets/bg_mall_toilet.jpg?v=68",
+      bg_mall_toilet_morning: "./assets/bg_mall_toilet_morning.jpg?v=68",
+      bg_mall_toilet_night: "./assets/bg_mall_toilet_night.jpg?v=68"
     };
     const sprites = {};
 
@@ -1087,11 +1100,11 @@ html, body {
       if (dir === 'down')  return { ex: 300, ey: 525, ix: 300, iy: 330 };
       return { ex: 540, ey: 440, ix: 60, iy: 440 };
     }
-    function startCharacterWalkTransition(pet, destRoom, destAct, px, py) {
+    function startCharacterWalkTransition(pet, destRoom, destAct, px, py, followView = false) {
       if (pet.currentRoom === destRoom) { pet.currentActivity = destAct; targetX = px; targetY = py; saveState(); return; }
       const dir = getRoomMoveDir(pet.currentRoom, destRoom);
       const edge = getDirEdgeCoords(dir);
-      transitionState = { phase: 'out', targetRoom: destRoom, targetActivity: destAct, tx: px, ty: py, alpha: 1, ...edge };
+      transitionState = { phase: 'out', fromRoom: pet.currentRoom, targetRoom: destRoom, targetActivity: destAct, tx: px, ty: py, alpha: 1, followView, ...edge };
       if (viewRoomId === pet.currentRoom) speakAndShow(getActiveChar().dialogues.leaving[0]);
     }
 
@@ -1600,10 +1613,9 @@ html, body {
             updateHUD();
           } else if (ts.stage === 'wash' && nowOutT >= ts.stageUntil) {
             pet.lastToiletAt = nowOutT; recordStatLog(pet, 'bladder', '🚻 外出如廁完成', pet.bladder || 0, 0); pet.bladder = 0;
-            pet.currentRoom = ts.prevRoom || (state.outing.type === 'mall' ? 'mall' : 'park');
-            pet.currentActivity = ts.prevAct || (state.outing.type === 'mall' ? 'mall' : 'park_walk');
-            targetX = ts.prevX || 280; targetY = ts.prevY || 445; petX = targetX; petY = targetY;
-            if (['park_toilet', 'mall_toilet'].includes(viewRoomId)) viewRoomId = pet.currentRoom;
+            const retOutR = ts.prevRoom || (state.outing.type === 'mall' ? 'mall' : 'park');
+            const retOutA = ts.prevAct || (state.outing.type === 'mall' ? 'mall' : 'park_walk');
+            startCharacterWalkTransition(pet, retOutR, retOutA, ts.prevX || 280, ts.prevY || 445, true);
             pet.toiletState = null; updateHUD();
           }
           return;
@@ -1707,10 +1719,10 @@ html, body {
             if (nowT >= ts.stageUntil) {
               charObj.lastToiletAt = nowT;
               if (isHinata) { recordStatLog(charObj, 'bladder', '🚽 去完廁所', charObj.bladder || 0, 0); charObj.bladder = 0; }
-              charObj.currentRoom = ts.prevRoom || 'living';
-              charObj.currentActivity = ts.prevAct || 'idle';
-              if (isHinata) { targetX = ts.prevX || 260; targetY = ts.prevY || 435; petX = targetX; petY = targetY; if (['toilet', 'school_toilet', 'park_toilet', 'mall_toilet'].includes(viewRoomId)) viewRoomId = charObj.currentRoom; }
-              else { charObj.tx = ts.prevX || 330; charObj.ty = ts.prevY || 435; charObj.px = charObj.tx; charObj.py = charObj.ty; }
+              const retR = ts.prevRoom || 'living', retA = ts.prevAct || 'idle';
+              const retX = ts.prevX || (isHinata ? 260 : 330), retY = ts.prevY || 435;
+              if (isHinata) { startCharacterWalkTransition(charObj, retR, retA, retX, retY, true); }
+              else { startSoloWalk('bro', retR, retA, null, null); }
               charObj.toiletState = null;
               charObj.scheduleSlotKey = null;
               updateHUD();
@@ -2295,7 +2307,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v67'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v68'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -2849,6 +2861,7 @@ html, body {
           transitionState.alpha = Math.max(0, transitionState.alpha - 0.045);
           if (transitionState.alpha <= 0.05) {
             pet.currentRoom = transitionState.targetRoom; pet.currentActivity = transitionState.targetActivity;
+            if (transitionState.followView && viewRoomId === transitionState.fromRoom) viewRoomId = transitionState.targetRoom;
             petX = transitionState.ix ?? 60; petY = transitionState.iy ?? 440;
             targetX = transitionState.tx; targetY = transitionState.ty;
             transitionState.phase = 'in'; updateHUD();
@@ -3501,7 +3514,7 @@ html, body {
     }
 
     function openInteractiveChat() {
-      openMailboxModal(true);
+      openMailboxModal(false);
     }
 
     document.getElementById('choice-overlay').addEventListener('click', (e) => {
@@ -4384,7 +4397,7 @@ html, body {
         const isBro = it.sender === 'brother';
         if (it.type === 'invite' && !it.answered) {
           return `<div class="flex items-end gap-1.5">
-            <img src="./assets/chibiJersey.png?v=67" class="w-8 h-8 rounded-full border-2 border-[#2d1e12] bg-amber-100 object-cover object-top shrink-0" alt="翔陽" />
+            <img src="./assets/chibiJersey.png?v=68" class="w-8 h-8 rounded-full border-2 border-[#2d1e12] bg-amber-100 object-cover object-top shrink-0" alt="翔陽" />
             <div class="bg-rose-50 border-2 border-rose-400 rounded-2xl rounded-tl-sm p-2.5 text-[11px] font-bold max-w-[80%] shadow-xs">
               <div class="text-rose-700 font-black mb-1">💌 約會邀請（${it.date} ${it.slot}）</div>
               <div class="mb-1.5 text-[#2d1e12]">${it.text}</div>
@@ -4401,11 +4414,11 @@ html, body {
               <div class="bg-orange-400 text-white border-2 border-[#2d1e12] rounded-2xl rounded-tr-sm px-3 py-1.5 text-xs font-bold shadow-xs">${it.text}</div>
               <span class="text-[9px] text-slate-500 mt-0.5 pr-1">${it.timeStr || ''}</span>
             </div>
-            <img src="./assets/chibiBrother.png?v=67" class="w-8 h-8 rounded-full border-2 border-[#2d1e12] bg-sky-100 object-cover object-top shrink-0" alt="哥哥" />
+            <img src="./assets/chibiBrother.png?v=68" class="w-8 h-8 rounded-full border-2 border-[#2d1e12] bg-sky-100 object-cover object-top shrink-0" alt="哥哥" />
           </div>`;
         }
         return `<div class="flex items-end gap-1.5">
-          <img src="./assets/chibiJersey.png?v=67" class="w-8 h-8 rounded-full border-2 border-[#2d1e12] bg-amber-100 object-cover object-top shrink-0" alt="翔陽" />
+          <img src="./assets/chibiJersey.png?v=68" class="w-8 h-8 rounded-full border-2 border-[#2d1e12] bg-amber-100 object-cover object-top shrink-0" alt="翔陽" />
           <div class="flex flex-col items-start max-w-[78%]">
             <div class="bg-white text-[#2d1e12] border-2 border-[#2d1e12] rounded-2xl rounded-tl-sm px-3 py-1.5 text-xs font-bold shadow-xs whitespace-pre-line">${it.text}</div>
             <span class="text-[9px] text-slate-500 mt-0.5 pl-1">${it.timeStr || ''}</span>
@@ -4431,6 +4444,21 @@ html, body {
       drawerHtml += `<div class="text-[10px] font-black text-sky-700 px-1 ${qReplies.length ? 'pt-1' : ''}">📍 當前場景問候（${MAP_ROOMS[pet.currentRoom]?.name || ''}）：</div>` +
         ctxOpts.map((o, i) => `<button type="button" data-sms-send="${encodeURIComponent(o.label)}" data-sms-reply="${encodeURIComponent(o.reply)}" class="w-full text-left px-2.5 py-1.5 rounded-xl ${i%2===0?'bg-sky-50 hover:bg-sky-100 border-sky-300':'bg-amber-50 hover:bg-amber-100 border-amber-300'} border text-[11px] font-bold text-[#2d1e12]">${o.label}</button>`).join('');
       drawer.innerHTML = drawerHtml;
+      const pDrawer = document.getElementById('sms-promise-drawer');
+      const pArrow = document.getElementById('sms-promise-arrow');
+      if (pDrawer) {
+        const todayP = getTodayStr();
+        if (!state.msgLog || state.msgLog.date !== todayP) state.msgLog = { date: todayP, asked: {}, promises: {} };
+        pDrawer.innerHTML = SMS_QUESTIONS.map(q => {
+          const askedText = state.msgLog.asked[q.id];
+          if (askedText) {
+            return `<button type="button" disabled class="w-full text-left px-2.5 py-1.5 rounded-xl bg-slate-200 text-slate-500 border border-slate-300 text-[11px] font-bold opacity-80">🔒 ${q.title}<div class="text-[10px] text-emerald-700">✓ 今日已覆：${askedText}</div></button>`;
+          }
+          return `<button type="button" data-sms-promise="${q.id}" class="w-full text-left px-2.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-[#2d1e12] border border-sky-400 text-[11px] font-black">${q.title}</button>`;
+        }).join('');
+        pDrawer.classList.add('hidden');
+        if (pArrow) pArrow.textContent = '▲';
+      }
       if (smsDrawerOpen) { drawer.classList.remove('hidden'); if (arrow) arrow.textContent = '▼'; }
       else { drawer.classList.add('hidden'); if (arrow) arrow.textContent = '▲'; }
 
@@ -4515,8 +4543,7 @@ html, body {
         { id: 'mall_trip', emoji: '🛍️', name: '去商場', sub: '22:00關門' },
         { id: 'park_trip', emoji: '🌳', name: '去公園', sub: '散步吹海風' },
         { id: 'rest_trip', emoji: '🍽️', name: '去餐廳', sub: '22:00關門' },
-        { id: 'msg_hinata', emoji: '📱', name: '訊息翔陽', sub: '約定/關心/約會' },
-        { id: 'view_dates', emoji: '🗓️', name: '約會行程', sub: '查看/修改預約' },
+                { id: 'view_dates', emoji: '🗓️', name: '約會行程', sub: '查看/修改預約' },
         { id: 'chat',  emoji: '💬', name: '問候傾計', sub: '雙人對話' },
         state.gamingReturnAt ? { id: 'stop_gaming', emoji: '⏹️', name: '中斷打機', sub: '返去原行程', highlight: true } : { id: 'gaming', emoji: '🎮', name: '一齊打機', sub: '去哥哥房電腦' },
         { id: 'study', emoji: '📖', name: '一齊溫書', sub: '好感+6' },
@@ -4686,10 +4713,8 @@ html, body {
             viewRoomId = 'hallway';
             speakAndShow('「知道啦哥哥！我即刻過去，不過入面有人用緊，等陣先～🚽⏳」');
           } else {
-            pet.toiletState = { stage: 'use', stageUntil: Date.now() + 60000, ...prev };
-            pet.currentRoom = tInfo.room; pet.currentActivity = tInfo.act;
-            petX = tInfo.x; petY = 445; targetX = tInfo.x; targetY = 445;
-            viewRoomId = tInfo.room;
+            pet.toiletState = { stage: 'use', stageUntil: Date.now() + 65000, ...prev };
+            startCharacterWalkTransition(pet, tInfo.room, tInfo.act, tInfo.x, 445, true);
             speakAndShow('「知道啦哥哥！我即刻去廁所！🚽💨」');
           }
           playSFX('pat'); updateHUD(); saveState();
@@ -4937,6 +4962,14 @@ html, body {
       });
     });
 
+    document.getElementById('btn-find-bro')?.addEventListener('click', () => {
+      const bro = state.brother;
+      if (!bro) return;
+      isZoomed = false; viewRoomId = bro.currentRoom || 'living';
+      document.getElementById('zoom-icon').textContent = '🔍'; document.getElementById('zoom-label').textContent = '放大特寫';
+      playSFX('pat'); renderDock(); updateHUD();
+      showToast(`已切換至哥哥所在位置：${MAP_ROOMS[viewRoomId]?.name || viewRoomId}`);
+    });
     document.getElementById('btn-find-pet').addEventListener('click', () => {
       viewRoomId = ensurePetState(state.activeCharId).currentRoom; renderDock(); playSFX('pat'); updateHUD();
     });
@@ -5082,6 +5115,17 @@ html, body {
     });
     document.getElementById('btn-mailbox').addEventListener('click', () => openMailboxModal(false));
     document.getElementById('close-sms-modal').addEventListener('click', () => document.getElementById('sms-chat-modal').classList.add('hidden'));
+    document.getElementById('sms-open-cal').addEventListener('click', () => {
+      document.getElementById('sms-chat-modal').classList.add('hidden');
+      openDateCalendar(false);
+    });
+    document.getElementById('toggle-sms-promise').addEventListener('click', () => {
+      const pd = document.getElementById('sms-promise-drawer');
+      const pa = document.getElementById('sms-promise-arrow');
+      const openNow = pd.classList.contains('hidden');
+      pd.classList.toggle('hidden', !openNow);
+      if (pa) pa.textContent = openNow ? '▼' : '▲';
+    });
     document.getElementById('toggle-sms-drawer').addEventListener('click', () => {
       smsDrawerOpen = !smsDrawerOpen;
       const dr = document.getElementById('sms-reply-drawer');
@@ -5116,31 +5160,84 @@ html, body {
         }
         return;
       }
+      const promBtn = e.target.closest('[data-sms-promise]');
+      if (promBtn) {
+        const q = SMS_QUESTIONS.find(x => x.id === promBtn.dataset.smsPromise);
+        if (!q) return;
+        const pet = ensurePetState(state.activeCharId);
+        const bro = state.brother;
+        const today = getTodayStr();
+        if (!state.msgLog || state.msgLog.date !== today) state.msgLog = { date: today, asked: {}, promises: {} };
+        if (state.msgLog.asked[q.id]) return;
+        const res = q.resolve();
+        state.msgLog.asked[q.id] = res.badge;
+        Object.assign(state.msgLog.promises, res.promised);
+        pet.mood = Math.min(100, pet.mood + 10); grantCappedRewards(pet, 4, 0);
+        const atSchool = ['school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary'].includes(pet.currentRoom);
+        const isTogether = !atSchool && bro && (pet.currentRoom === bro.currentRoom);
+        playSFX('pat');
+        if (isTogether) {
+          document.getElementById('sms-chat-modal').classList.add('hidden');
+          viewRoomId = pet.currentRoom;
+          speakAndShow(`哥哥：「${q.title}」`);
+          setTimeout(() => {
+            speakAndShow(res.reply);
+            showToast(`💬 翔陽答應咗：${res.badge}`);
+            updateHUD(); saveState();
+          }, 5000);
+        } else {
+          pushSmsMessage({ sender: 'brother', type: 'chat', timeStr: getCurrentHourInfo().label, text: q.title, read: true });
+          openMailboxModal(false);
+          const typ = document.getElementById('sms-typing-ind');
+          if (typ) typ.classList.remove('hidden');
+          setTimeout(() => {
+            const typ2 = document.getElementById('sms-typing-ind');
+            if (typ2) typ2.classList.add('hidden');
+            const modalOpen = !document.getElementById('sms-chat-modal').classList.contains('hidden');
+            pushSmsMessage({ sender: 'hinata', type: 'letter', timeStr: getCurrentHourInfo().label, text: res.reply, read: modalOpen });
+            if (modalOpen) openMailboxModal(false);
+            else showToast(`✉️ 收到翔陽回覆：${res.badge}`);
+            updateHUD(); saveState();
+          }, atSchool ? 10000 : 1200);
+        }
+        return;
+      }
       const sendBtn = e.target.closest('[data-sms-send]');
       if (sendBtn) {
         const pet = ensurePetState(state.activeCharId);
+        const bro = state.brother;
         const info = getCurrentHourInfo();
         const labelTxt = decodeURIComponent(sendBtn.dataset.smsSend);
         const replyTxt = decodeURIComponent(sendBtn.dataset.smsReply);
         const atSchool = ['school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary'].includes(pet.currentRoom);
-        pushSmsMessage({ sender: 'brother', type: 'chat', timeStr: info.label, text: labelTxt, read: true });
+        const isTogether = !atSchool && bro && (pet.currentRoom === bro.currentRoom);
         pet.mood = Math.min(100, pet.mood + 6); grantCappedRewards(pet, 4, 0);
         playSFX('pat');
-        smsDrawerOpen = false;
-        openMailboxModal(false);
-        const typ = document.getElementById('sms-typing-ind');
-        if (typ) typ.classList.remove('hidden');
-        const delayMs = atSchool ? 10000 : 800;
-        setTimeout(() => {
-          const typ2 = document.getElementById('sms-typing-ind');
-          if (typ2) typ2.classList.add('hidden');
-          const modalOpen = !document.getElementById('sms-chat-modal').classList.contains('hidden');
-          pushSmsMessage({ sender: 'hinata', type: 'letter', timeStr: getCurrentHourInfo().label, text: replyTxt, read: modalOpen });
-          if (modalOpen) openMailboxModal(false);
-          else showToast('✉️ 收到翔陽嘅短訊回覆！');
-          if (!atSchool) speakAndShow(replyTxt);
-          updateHUD();
-        }, delayMs);
+        if (isTogether) {
+          document.getElementById('sms-chat-modal').classList.add('hidden');
+          viewRoomId = pet.currentRoom;
+          speakAndShow(`哥哥：「${labelTxt}」`);
+          setTimeout(() => {
+            speakAndShow(replyTxt);
+            updateHUD(); saveState();
+          }, 5000);
+        } else {
+          pushSmsMessage({ sender: 'brother', type: 'chat', timeStr: info.label, text: labelTxt, read: true });
+          smsDrawerOpen = false;
+          openMailboxModal(false);
+          const typ = document.getElementById('sms-typing-ind');
+          if (typ) typ.classList.remove('hidden');
+          const delayMs = atSchool ? 10000 : 800;
+          setTimeout(() => {
+            const typ2 = document.getElementById('sms-typing-ind');
+            if (typ2) typ2.classList.add('hidden');
+            const modalOpen = !document.getElementById('sms-chat-modal').classList.contains('hidden');
+            pushSmsMessage({ sender: 'hinata', type: 'letter', timeStr: getCurrentHourInfo().label, text: replyTxt, read: modalOpen });
+            if (modalOpen) openMailboxModal(false);
+            else showToast('✉️ 收到翔陽嘅短訊回覆！');
+            updateHUD();
+          }, delayMs);
+        }
       }
     });
     document.getElementById('btn-wallet')?.addEventListener('click', openWalletModal);
@@ -5263,7 +5360,7 @@ html, body {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v67';
+          if (el) el.textContent = '☁️ 雲端已同步 · v68';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -5302,7 +5399,7 @@ html, body {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v67';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v68';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
