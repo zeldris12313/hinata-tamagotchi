@@ -1240,12 +1240,12 @@ html, body {
           if (broWith && pet.coins >= 5) {
             pet.coins -= 5;
             recordPurchaseLog(pet, MAP_ROOMS[roomId]?.name || '街道', '🥤 冰凍飲品', 5, '哥哥代付');
-            if (pet.hunger < 30) { pet.hunger = Math.min(100, pet.hunger + 10); pet.energy = Math.min(100, pet.energy + 10); addBladderFromConsume(pet, true); customSpeech = '「多謝哥哥喺街買罐凍飲畀我即刻飲！（哥哥 -5 元、+10%）🥤💛」'; }
+            if (pet.hunger < 30) { const h0=pet.hunger, e0=pet.energy; pet.hunger = Math.min(100, pet.hunger + 10); pet.energy = Math.min(100, pet.energy + 10); recordStatLog(pet,'hunger','🥤 街上凍飲',h0,pet.hunger); recordStatLog(pet,'energy','🥤 街上凍飲',e0,pet.energy); addBladderFromConsume(pet, true); customSpeech = '「多謝哥哥喺街買罐凍飲畀我即刻飲！（哥哥 -5 元、+10%）🥤💛」'; }
             else { pet.snacks.soda = (pet.snacks.soda || 0) + 1; customSpeech = '「多謝哥哥喺街買咗罐凍飲畀我！放落小背包先！🥤🎒💛」'; }
           } else if (!broWith && pet.pocketMoney >= 5) {
             pet.pocketMoney -= 5;
             recordPurchaseLog(pet, MAP_ROOMS[roomId]?.name || '街道', '🥤 冰凍飲品', 5, '翔陽零用錢');
-            if (pet.hunger < 30) { pet.hunger = Math.min(100, pet.hunger + 10); pet.energy = Math.min(100, pet.energy + 10); addBladderFromConsume(pet, true); customSpeech = '「自己喺街買咗罐凍飲即刻飲！（零用錢 -5 元、+10%）🥤✨」'; }
+            if (pet.hunger < 30) { const h0=pet.hunger, e0=pet.energy; pet.hunger = Math.min(100, pet.hunger + 10); pet.energy = Math.min(100, pet.energy + 10); recordStatLog(pet,'hunger','🥤 街上凍飲',h0,pet.hunger); recordStatLog(pet,'energy','🥤 街上凍飲',e0,pet.energy); addBladderFromConsume(pet, true); customSpeech = '「自己喺街買咗罐凍飲即刻飲！（零用錢 -5 元、+10%）🥤✨」'; }
             else { pet.snacks.soda = (pet.snacks.soda || 0) + 1; customSpeech = '「自己喺街買咗罐凍飲放入小背包！（零用錢 -5 元）🥤🎒」'; }
           }
         }
@@ -1260,12 +1260,12 @@ html, body {
         if (broWith && pet.coins >= pickK.cost) {
           pet.coins -= pickK.cost;
           recordPurchaseLog(pet, '日式便利店', `${pickK.emoji} ${pickK.name}`, pickK.cost, '哥哥代付');
-          if (pet.hunger < 30) { pet.hunger = Math.min(100, pet.hunger + pickK.val); pet.energy = Math.min(100, pet.energy + pickK.val); addBladderFromConsume(pet, pickK.key === 'soda'); customSpeech = `「多謝哥哥買${pickK.name}畀我食！！（哥哥 -${pickK.cost} 元、+${pickK.val}%）${pickK.emoji}💛」`; }
+          if (pet.hunger < 30) { const h0=pet.hunger, e0=pet.energy; pet.hunger = Math.min(100, pet.hunger + pickK.val); pet.energy = Math.min(100, pet.energy + pickK.val); recordStatLog(pet,'hunger',`🏪 ${pickK.name}`,h0,pet.hunger); recordStatLog(pet,'energy',`🏪 ${pickK.name}`,e0,pet.energy); addBladderFromConsume(pet, pickK.key === 'soda'); customSpeech = `「多謝哥哥買${pickK.name}畀我食！！（哥哥 -${pickK.cost} 元、+${pickK.val}%）${pickK.emoji}💛」`; }
           else { pet.snacks[pickK.key] = (pet.snacks[pickK.key] || 0) + 1; customSpeech = `「多謝哥哥請我買${pickK.name}（-${pickK.cost} 元）！放落小背包先！${pickK.emoji}🎒💛」`; }
         } else if (!broWith && pet.pocketMoney >= pickK.cost) {
           pet.pocketMoney -= pickK.cost;
           recordPurchaseLog(pet, '日式便利店', `${pickK.emoji} ${pickK.name}`, pickK.cost, '翔陽零用錢');
-          if (pet.hunger < 30) { pet.hunger = Math.min(100, pet.hunger + pickK.val); pet.energy = Math.min(100, pet.energy + pickK.val); addBladderFromConsume(pet, pickK.key === 'soda'); customSpeech = `「自己喺便利店買咗${pickK.name}即刻食！（零用錢 -${pickK.cost} 元）${pickK.emoji}」`; }
+          if (pet.hunger < 30) { const h0=pet.hunger, e0=pet.energy; pet.hunger = Math.min(100, pet.hunger + pickK.val); pet.energy = Math.min(100, pet.energy + pickK.val); recordStatLog(pet,'hunger',`🏪 ${pickK.name}`,h0,pet.hunger); recordStatLog(pet,'energy',`🏪 ${pickK.name}`,e0,pet.energy); addBladderFromConsume(pet, pickK.key === 'soda'); customSpeech = `「自己喺便利店買咗${pickK.name}即刻食！（零用錢 -${pickK.cost} 元）${pickK.emoji}」`; }
           else { pet.snacks[pickK.key] = (pet.snacks[pickK.key] || 0) + 1; customSpeech = `「自己喺便利店買咗${pickK.name}放入小背包！${pickK.emoji}🎒」`; }
         }
       }
@@ -2262,9 +2262,13 @@ html, body {
               const sr = (state.balance && state.balance.shopRate) || { hunger: 3, energy: 3, mood: 0 };
               addH = pickIt.cost * (sr.hunger ?? 3); addE = pickIt.cost * (sr.energy ?? 3); addM = pickIt.cost * (sr.mood ?? 0);
             }
+            const fh0=pet.hunger, fe0=pet.energy, fm0=pet.mood;
             pet.hunger = Math.min(100, pet.hunger + addH);
             pet.energy = Math.min(100, pet.energy + addE);
             pet.mood   = Math.min(100, pet.mood   + addM);
+            recordStatLog(pet,'hunger',`🧊 雪櫃 ${pickIt.name}`,fh0,pet.hunger);
+            recordStatLog(pet,'energy',`🧊 雪櫃 ${pickIt.name}`,fe0,pet.energy);
+            recordStatLog(pet,'mood',`🧊 雪櫃 ${pickIt.name}`,fm0,pet.mood);
             addBladderFromConsume(pet, ['juice','tea_soda','sm_apple_juice','sm_soda','sm_tea'].includes(pickIt.id));
             pet.fridgeWaitingEmpty = false;
             pet.currentRoom = 'living'; pet.currentActivity = 'tea'; targetX = 280; targetY = 440;
@@ -2307,7 +2311,9 @@ html, body {
           recordPurchaseLog(pet, '室外街道販賣機', '🥤 罐裝汽水', 5, '翔陽零用錢');
           targetX = 485; targetY = 440;
           if (pet.hunger < 30 || pet.energy < 30) {
+            const vh0=pet.hunger, ve0=pet.energy;
             pet.hunger = Math.min(100, pet.hunger + 10); pet.energy = Math.min(100, pet.energy + 10);
+            recordStatLog(pet,'hunger','🥤 販賣機汽水',vh0,pet.hunger); recordStatLog(pet,'energy','🥤 販賣機汽水',ve0,pet.energy);
             if (viewRoomId === 'street') speakAndShow('「行去紅色販賣機買咗罐汽水即刻飲！（零用錢 -5、+10%）🥤✨」');
           } else {
             pet.snacks.drink = (pet.snacks.drink || 0) + 1;
@@ -2332,8 +2338,11 @@ html, body {
         const k = keys[Math.floor(Math.random() * keys.length)];
         pet.snacks[k] -= 1;
         const m = SNACK_META[k];
+        const sh0=pet.hunger, se0=pet.energy;
         pet.hunger = Math.min(100, pet.hunger + m.val);
         pet.energy = Math.min(100, pet.energy + m.val);
+        recordStatLog(pet,'hunger',`🎒 ${m.name}`,sh0,pet.hunger);
+        recordStatLog(pet,'energy',`🎒 ${m.name}`,se0,pet.energy);
         addBladderFromConsume(pet, k === 'drink' || k === 'soda');
         if (viewRoomId === pet.currentRoom) speakAndShow(reasonMsg.replace('{item}', m.emoji + m.name).replace('{val}', m.val));
         return true;
@@ -2381,8 +2390,10 @@ html, body {
             pet.pocketMoney -= m.cost;
             recordPurchaseLog(pet, '學校小食部', `${m.emoji} ${m.name}`, m.cost, '翔陽零用錢');
             if (pet.hunger < 30 || pet.energy < 30) {
-              pet.hunger = Math.min(100, pet.hunger + m.val);
-              pet.energy = Math.min(100, pet.energy + m.val);
+              const th0=pet.hunger, te0=pet.energy;
+              pet.hunger = Math.min(100, pet.hunger + m.val); pet.energy = Math.min(100, pet.energy + m.val);
+              recordStatLog(pet,'hunger',`🥐 小食部 ${m.name}`,th0,pet.hunger);
+              recordStatLog(pet,'energy',`🥐 小食部 ${m.name}`,te0,pet.energy);
               addBladderFromConsume(pet, c === 'drink');
               if (viewRoomId === 'school_tuckshop') speakAndShow(`「小息喺小食部買咗 ${m.emoji}${m.name}（-${m.cost}元）即刻食咗補 +${m.val}%！😋」`);
             } else {
@@ -2554,7 +2565,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v68'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v69'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -2607,7 +2618,7 @@ html, body {
       if (stroke) { ctx.lineWidth = lw; ctx.strokeStyle = stroke; ctx.stroke(); }
     }
 
-    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'bath', 'toilet', 'backyard', 'street', 'main_street', 'park', 'park2', 'mall', 'restaurant', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet']);
+    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'bath', 'toilet', 'backyard', 'street', 'street2', 'supermarket', 'main_street', 'park', 'park2', 'mall', 'restaurant', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet']);
     function drawAnimeRoomBackground(roomId, timeInfo) {
       const h = new Date().getHours();
       const isNight = (h >= 18 || h < 6);
@@ -2634,7 +2645,7 @@ html, body {
           ctx.fillStyle = 'rgba(251, 146, 60, 0.14)';
           ctx.fillRect(0, 0, 600, 600);
         }
-        else if (timeInfo.period === 'evening') { ctx.fillStyle = 'rgba(30, 41, 59, 0.22)'; ctx.fillRect(0, 0, 600, 600); }
+        else if (timeInfo.period === 'evening' && !(isNight && hasDedicatedNight)) { ctx.fillStyle = 'rgba(30, 41, 59, 0.22)'; ctx.fillRect(0, 0, 600, 600); }
       } else {
         ctx.fillStyle = '#fef3c7'; ctx.fillRect(0, 0, 600, 600);
         if (assetLoadFailed) {
@@ -3930,16 +3941,6 @@ html, body {
         saveState();
         return;
       }
-      const durBtn = e.target.closest('[data-dur-key]');
-      if (durBtn) {
-        const { durKey, durDelta } = durBtn.dataset;
-        const nv = Math.max(5, (state.outingMins[durKey] || 30) + Number(durDelta));
-        state.outingMins[durKey] = nv;
-        const sp = document.getElementById(`dur-val-${durKey}`);
-        if (sp) sp.textContent = `${nv}分`;
-        saveState();
-        return;
-      }
       const smCfgBtn = e.target.closest('[data-smcfg-key]');
       if (smCfgBtn) {
         const { smcfgKey, smcfgDelta } = smCfgBtn.dataset;
@@ -3987,6 +3988,16 @@ html, body {
         const sp = document.getElementById(`smi-${smiId}-${smiField}`);
         if (sp) sp.textContent = smiField === 'price' ? `${cfg[smiField]}元` : `+${cfg[smiField]}%`;
         saveState(); return;
+      }
+      const durBtn = e.target.closest('[data-dur-key]');
+      if (durBtn) {
+        const { durKey, durDelta } = durBtn.dataset;
+        const nv = Math.max(5, (state.outingMins[durKey] || 30) + Number(durDelta));
+        state.outingMins[durKey] = nv;
+        const sp = document.getElementById(`dur-val-${durKey}`);
+        if (sp) sp.textContent = `${nv}分`;
+        saveState();
+        return;
       }
       const aeBtn = e.target.closest('[data-ae-key]');
       if (aeBtn) {
@@ -5343,7 +5354,7 @@ html, body {
           const bothHome = !['pharmacy', 'canteen', 'school_class', 'school_court'].includes(bro.currentRoom);
           if (!bothHome) { playSFX('miss'); showToast('哥哥返緊工未返屋企呀！🏥'); return; }
           startDuoOuting('restaurant', 60, 'restaurant', '二人一齊去餐廳食飯（停留 1 小時）🍽️', '「同哥哥去家庭餐廳食大餐！好香呀～🍽️✨」');
-          pet.hunger = Math.min(100, pet.hunger + ((state.balance && state.balance.actRestHunger) ?? 30)); pet.mood = Math.min(100, pet.mood + ((state.balance && state.balance.actRestMood) ?? 12)); grantCappedRewards(pet, 6, 4);
+          const rh0=pet.hunger, rm0=pet.mood; pet.hunger = Math.min(100, pet.hunger + ((state.balance && state.balance.actRestHunger) ?? 30)); pet.mood = Math.min(100, pet.mood + ((state.balance && state.balance.actRestMood) ?? 12)); recordStatLog(pet,'hunger','🍽️ 餐廳大餐',rh0,pet.hunger); recordStatLog(pet,'mood','🍽️ 餐廳大餐',rm0,pet.mood); grantCappedRewards(pet, 6, 4);
         } else if (id === 'toggle_bro_follow') {
           const fixedDuoActs = ['breakfast', 'lunch', 'dinner', 'bath', 'brush', 'sleep', 'waking'];
           const outOrWork = (state.outing && state.outing.type) || ['pharmacy', 'canteen', 'hospital', 'school_class', 'school_court', 'street', 'main_street'].includes(bro.currentRoom) || ['school_class', 'school_court', 'street', 'main_street'].includes(pet.currentRoom);
@@ -5541,7 +5552,7 @@ html, body {
       const pBtn = e.target.closest('[data-food-porridge]');
       if (pBtn) {
         const pet = ensurePetState(state.activeCharId);
-        pet.hunger = Math.min(30, pet.hunger + 5);
+        const ph0=pet.hunger; pet.hunger = Math.min(30, pet.hunger + 5); recordStatLog(pet,'hunger','🥣 清淡白粥',ph0,pet.hunger);
         pet.energy = Math.min(30, pet.energy + 3);
         playSFX('eat');
         speakAndShow('「哥哥親手煲嘅清淡白粥…暖笠笠好舒服，謝哥哥…🥣😢」');
@@ -5742,6 +5753,14 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       const blBtn = e.target.closest('[data-bl-key]');
       if (blBtn) {
         const { blKey, blDelta } = blBtn.dataset;
+        if (blKey === 'bladderSupper') {
+          if (!state.balance.supper) state.balance.supper = { hunger: 3, energy: 3, mood: 3, bladder: 3 };
+          const nv = Math.max(0, (state.balance.supper.bladder ?? 3) + Number(blDelta));
+          state.balance.supper.bladder = nv;
+          const sp = document.getElementById('bl-val-bladderSupper');
+          if (sp) sp.textContent = `+${nv}%`;
+          saveState(); return;
+        }
         const def = blKey === 'bladderMeal' ? 25 : (blKey === 'bladderFood' ? 5 : 10);
         const nv = Math.max(0, (state.balance[blKey] ?? def) + Number(blDelta));
         state.balance[blKey] = nv;
@@ -6078,7 +6097,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v68';
+          if (el) el.textContent = '☁️ 雲端已同步 · v69';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6117,7 +6136,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v68';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v69';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
