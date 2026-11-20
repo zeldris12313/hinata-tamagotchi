@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="icon" type="image/png" href="./icon.png?v=52">
-  <link rel="apple-touch-icon" href="./icon.png?v=52">
+  <link rel="icon" type="image/png" href="./icon.png?v=53">
+  <link rel="apple-touch-icon" href="./icon.png?v=53">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -243,98 +243,98 @@ html, body {
     // 1. 全套去背立繪（含摸頭專用笑面立繪）＋ 10間手繪動畫房間
     // =========================================================================
     const ASSET_URLS = {
-      chibiJersey: "./assets/chibiJersey.png?v=52",
-      chibiSchool: "./assets/chibiSchool.png?v=52",
-      chibiPajama: "./assets/chibiPajama.png?v=52",
-      portraitJersey: "./assets/portraitJersey.png?v=52",
-      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=52",
-      portraitSchool: "./assets/portraitSchool.png?v=52",
-      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=52",
-      portraitPajama: "./assets/portraitPajama.png?v=52",
-      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=52",
-      portraitSleepy: "./assets/portraitSleepy.jpg?v=52",
-      bg_living: "./assets/bg_living.jpg?v=52",
-      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=52",
-      bg_kitchen: "./assets/bg_kitchen.jpg?v=52",
-      bg_bath: "./assets/bg_bath.jpg?v=52",
-      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=52",
-      bg_hallway: "./assets/bg_hallway.jpg?v=52",
-      bg_backyard: "./assets/bg_backyard.jpg?v=52",
-      bg_street: "./assets/bg_street.jpg?v=52",
-      bg_school_class: "./assets/bg_school_class.jpg?v=52",
-      bg_school_court: "./assets/bg_school_court.jpg?v=52",
-      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=52",
-      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=52",
-      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=52",
-      chibiBrother: "./assets/chibiBrother.png?v=52",
-      bg_main_street: "./assets/bg_main_street.jpg?v=52",
-      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=52",
-      bg_canteen: "./assets/bg_canteen.jpg?v=52",
-      bg_mall: "./assets/bg_mall.jpg?v=52",
-      bg_park: "./assets/bg_park.jpg?v=52",
-      bg_restaurant: "./assets/bg_restaurant.jpg?v=52",
-      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=52",
-      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=52",
-      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=52",
-      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=52",
-      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=52",
-      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=52",
-      bg_hospital: "./assets/bg_hospital.jpg?v=52",
-      bg_street_night: "./assets/bg_street_night.jpg?v=52",
-      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=52",
-      bg_park_night: "./assets/bg_park_night.jpg?v=52",
-      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=52",
-      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=52",
-      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=52",
-      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=52",
-      bg_living_night: "./assets/bg_living_night.jpg?v=52",
-      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=52",
-      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=52",
-      bg_bath_night: "./assets/bg_bath_night.jpg?v=52",
-      bg_mall_night: "./assets/bg_mall_night.jpg?v=52",
-      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=52",
-      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=52",
-      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=52",
-      bg_living_morning: "./assets/bg_living_morning.jpg?v=52",
-      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=52",
-      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=52",
-      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=52",
-      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=52",
-      bg_street_morning: "./assets/bg_street_morning.jpg?v=52",
-      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=52",
-      bg_park_morning: "./assets/bg_park_morning.jpg?v=52",
-      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=52",
-      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=52",
-      chibiJerseySad: "./assets/chibiJerseySad.png?v=52",
-      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=52",
-      bg_school_hall: "./assets/bg_school_hall.jpg?v=52",
-      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=52",
-      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=52",
-      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=52",
-      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=52",
-      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=52",
-      bg_toilet: "./assets/bg_toilet.jpg?v=52",
-      bg_toilet_morning: "./assets/bg_toilet_morning.jpg?v=52",
-      bg_toilet_night: "./assets/bg_toilet_night.jpg?v=52",
-      bg_park2: "./assets/bg_park2.jpg?v=52",
-      bg_park2_morning: "./assets/bg_park2_morning.jpg?v=52",
-      bg_park2_night: "./assets/bg_park2_night.jpg?v=52",
-      bg_school_toilet: "./assets/bg_school_toilet.jpg?v=52",
-      bg_school_toilet_morning: "./assets/bg_school_toilet_morning.jpg?v=52",
-      bg_school_toilet_night: "./assets/bg_school_toilet_night.jpg?v=52",
-      chibiCry: "./assets/chibiCry.png?v=52",
-      chibiJerseyCry: "./assets/chibiJerseyCry.png?v=52",
-      chibiSchoolCry: "./assets/chibiSchoolCry.png?v=52",
-      bg_school_class_morning: "./assets/bg_school_class_morning.jpg?v=52",
-      bg_school_class_night: "./assets/bg_school_class_night.jpg?v=52",
-      bg_school_court_morning: "./assets/bg_school_court_morning.jpg?v=52",
-      bg_school_court_night: "./assets/bg_school_court_night.jpg?v=52",
-      bg_pharmacy_morning: "./assets/bg_pharmacy_morning.jpg?v=52",
-      bg_pharmacy_night: "./assets/bg_pharmacy_night.jpg?v=52",
-      bg_hospital_morning: "./assets/bg_hospital_morning.jpg?v=52",
-      bg_hospital_night: "./assets/bg_hospital_night.jpg?v=52",
-      bg_canteen_morning: "./assets/bg_canteen_morning.jpg?v=52",
-      bg_canteen_night: "./assets/bg_canteen_night.jpg?v=52"
+      chibiJersey: "./assets/chibiJersey.png?v=53",
+      chibiSchool: "./assets/chibiSchool.png?v=53",
+      chibiPajama: "./assets/chibiPajama.png?v=53",
+      portraitJersey: "./assets/portraitJersey.png?v=53",
+      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=53",
+      portraitSchool: "./assets/portraitSchool.png?v=53",
+      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=53",
+      portraitPajama: "./assets/portraitPajama.png?v=53",
+      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=53",
+      portraitSleepy: "./assets/portraitSleepy.jpg?v=53",
+      bg_living: "./assets/bg_living.jpg?v=53",
+      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=53",
+      bg_kitchen: "./assets/bg_kitchen.jpg?v=53",
+      bg_bath: "./assets/bg_bath.jpg?v=53",
+      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=53",
+      bg_hallway: "./assets/bg_hallway.jpg?v=53",
+      bg_backyard: "./assets/bg_backyard.jpg?v=53",
+      bg_street: "./assets/bg_street.jpg?v=53",
+      bg_school_class: "./assets/bg_school_class.jpg?v=53",
+      bg_school_court: "./assets/bg_school_court.jpg?v=53",
+      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=53",
+      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=53",
+      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=53",
+      chibiBrother: "./assets/chibiBrother.png?v=53",
+      bg_main_street: "./assets/bg_main_street.jpg?v=53",
+      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=53",
+      bg_canteen: "./assets/bg_canteen.jpg?v=53",
+      bg_mall: "./assets/bg_mall.jpg?v=53",
+      bg_park: "./assets/bg_park.jpg?v=53",
+      bg_restaurant: "./assets/bg_restaurant.jpg?v=53",
+      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=53",
+      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=53",
+      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=53",
+      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=53",
+      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=53",
+      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=53",
+      bg_hospital: "./assets/bg_hospital.jpg?v=53",
+      bg_street_night: "./assets/bg_street_night.jpg?v=53",
+      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=53",
+      bg_park_night: "./assets/bg_park_night.jpg?v=53",
+      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=53",
+      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=53",
+      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=53",
+      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=53",
+      bg_living_night: "./assets/bg_living_night.jpg?v=53",
+      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=53",
+      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=53",
+      bg_bath_night: "./assets/bg_bath_night.jpg?v=53",
+      bg_mall_night: "./assets/bg_mall_night.jpg?v=53",
+      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=53",
+      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=53",
+      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=53",
+      bg_living_morning: "./assets/bg_living_morning.jpg?v=53",
+      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=53",
+      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=53",
+      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=53",
+      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=53",
+      bg_street_morning: "./assets/bg_street_morning.jpg?v=53",
+      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=53",
+      bg_park_morning: "./assets/bg_park_morning.jpg?v=53",
+      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=53",
+      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=53",
+      chibiJerseySad: "./assets/chibiJerseySad.png?v=53",
+      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=53",
+      bg_school_hall: "./assets/bg_school_hall.jpg?v=53",
+      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=53",
+      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=53",
+      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=53",
+      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=53",
+      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=53",
+      bg_toilet: "./assets/bg_toilet.jpg?v=53",
+      bg_toilet_morning: "./assets/bg_toilet_morning.jpg?v=53",
+      bg_toilet_night: "./assets/bg_toilet_night.jpg?v=53",
+      bg_park2: "./assets/bg_park2.jpg?v=53",
+      bg_park2_morning: "./assets/bg_park2_morning.jpg?v=53",
+      bg_park2_night: "./assets/bg_park2_night.jpg?v=53",
+      bg_school_toilet: "./assets/bg_school_toilet.jpg?v=53",
+      bg_school_toilet_morning: "./assets/bg_school_toilet_morning.jpg?v=53",
+      bg_school_toilet_night: "./assets/bg_school_toilet_night.jpg?v=53",
+      chibiCry: "./assets/chibiCry.png?v=53",
+      chibiJerseyCry: "./assets/chibiJerseyCry.png?v=53",
+      chibiSchoolCry: "./assets/chibiSchoolCry.png?v=53",
+      bg_school_class_morning: "./assets/bg_school_class_morning.jpg?v=53",
+      bg_school_class_night: "./assets/bg_school_class_night.jpg?v=53",
+      bg_school_court_morning: "./assets/bg_school_court_morning.jpg?v=53",
+      bg_school_court_night: "./assets/bg_school_court_night.jpg?v=53",
+      bg_pharmacy_morning: "./assets/bg_pharmacy_morning.jpg?v=53",
+      bg_pharmacy_night: "./assets/bg_pharmacy_night.jpg?v=53",
+      bg_hospital_morning: "./assets/bg_hospital_morning.jpg?v=53",
+      bg_hospital_night: "./assets/bg_hospital_night.jpg?v=53",
+      bg_canteen_morning: "./assets/bg_canteen_morning.jpg?v=53",
+      bg_canteen_night: "./assets/bg_canteen_night.jpg?v=53"
     };
     const sprites = {};
 
@@ -1440,7 +1440,8 @@ html, body {
 
       const isHomeToiletAllowed = HOME_TOILET_ROOMS.has(pet.currentRoom) && !['breakfast', 'lunch', 'dinner', 'bath', 'brush'].includes(pet.currentActivity);
       const isSchoolToiletAllowed = (sched.isRecess || sched.key === 'wd_lunch' || sched.act === 'school_court' || sched.act === 'water_break') && ['school_class', 'school_hall', 'school_tuckshop', 'school_court'].includes(pet.currentRoom);
-      if ((pet.bladder || 0) > 70 && !hInToilet && !pet.recoverStage && !pet.fainted && !transitionState && !rally.active && isSchoolToiletAllowed) {
+      if ((pet.bladder || 0) > 70 && !hInToilet && !pet.recoverStage && !pet.fainted && !rally.active && isSchoolToiletAllowed) {
+        transitionState = null;
         const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: false, sinkX: 300 };
         pet.toiletState = { stage: 'use', stageUntil: nowT + 60000, ...prev };
         pet.currentRoom = 'school_toilet', 'pharmacy', 'hospital', 'canteen'; pet.currentActivity = 'toilet_urinal';
@@ -1513,8 +1514,8 @@ html, body {
 
       // 4. Sync Hinata
       if (pet.toiletState) { /* skip normal schedule while in toilet routine */ } else if (pet.scheduleSlotKey === sched.key) {
-        if (!sched.freeRoam && !state.outing?.type && !duoWalk && !transitionState && !pet.homeSeqStage && !pet.detentionUntil && !pet.fridgeStage && pet.currentRoom !== sched.room && !['room_aniki'].includes(pet.currentRoom)) {
-          startDuoJourney(sched.room, sched.act, '「返到屋企啦！🏠✨」', null, null);
+        if (!sched.freeRoam && !sched.isRecess && !pet.toiletState && !pet.backyardUntil && !state.outing?.type && !duoWalk && !transitionState && !pet.homeSeqStage && !pet.detentionUntil && !pet.fridgeStage && ['street', 'main_street', 'konbini', 'mall', 'park', 'park2', 'restaurant'].includes(pet.currentRoom) && !['street', 'main_street'].includes(sched.room)) {
+          startSoloWalk('pet', sched.room, sched.act, '「返到嚟啦！🏠✨」', null);
         }
         const frAe = (state.autoEvents && state.autoEvents.freeRoam) || { prob: 50, mins: 1 };
         const frMs = Math.max(15000, (frAe.mins || 1) * 60000);
@@ -1564,6 +1565,9 @@ html, body {
       }
 
       // 5. Sync Brother
+      if (['pharmacy', 'canteen'].includes(bSched.room) && !['pharmacy', 'canteen', 'hospital'].includes(bro.currentRoom) && !bro.toiletState && !state.outing?.type) {
+        bro.currentRoom = bSched.room; bro.currentActivity = bSched.act; bro.px = bSched.px; bro.py = bSched.py; bro.tx = bSched.px; bro.ty = bSched.py;
+      }
       const broFixedChore = ['cook_bfast','prep_bfast','cook_lunch','cook_dinner','washing_dishes','breakfast','lunch','dinner','bath','brush','sleep','canteen_lunch','pharmacy_work','aniki_hall_tidy'].includes(bSched.act);
       const canBroSolo = state.broSoloMode && !broFixedChore && !state.outing?.type && !['breakfast','lunch','dinner','bath','brush','sleep','waking','gaming'].includes(pet.currentActivity) && !['pharmacy','canteen','hospital','school_class','school_court'].includes(bro.currentRoom) && !['school_class','school_court'].includes(pet.currentRoom);
       if (bro.toiletState) { /* skip brother schedule while in toilet routine */ }
@@ -1801,9 +1805,9 @@ html, body {
       }
 
       // Recess (11:00-11:20 & 14:30-14:50): roam class / school_hall / school_tuckshop, buy snack if pocketMoney >= 10
-      if (sched.isRecess && Date.now() - lastRecessActAt > 14000) {
+      if (sched.isRecess && !pet.toiletState && Date.now() - lastRecessActAt > 14000) {
         lastRecessActAt = Date.now();
-        const rRooms = ['school_class', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'pharmacy', 'hospital', 'canteen'];
+        const rRooms = ['school_class', 'school_class', 'school_court', 'school_hall', 'school_tuckshop'];
         const pickR = rRooms[Math.floor(Math.random() * rRooms.length)];
         pet.currentRoom = pickR; pet.currentActivity = pickR === 'school_tuckshop' ? 'tuckshop_buy' : 'recess_walk';
         targetX = 255; targetY = 440;
@@ -4346,6 +4350,38 @@ html, body {
         state.balance[blKey] = nv;
         const sp = document.getElementById(`bl-val-${blKey}`);
         if (sp) sp.textContent = `+${nv}%`;
+        saveState(); return;
+      }
+      const petLimBtn = e.target.closest('[data-petlim-key]');
+      if (petLimBtn) {
+        const { petlimKey, petlimDelta } = petLimBtn.dataset;
+        if (petlimKey === 'petWindowMins') {
+          const nv = Math.max(10, (state.balance.petWindowMins ?? 60) + Number(petlimDelta));
+          state.balance.petWindowMins = nv;
+          const sp = document.getElementById('petlim-val-win');
+          if (sp) sp.textContent = `${nv}分`;
+        } else {
+          const nv = Math.max(0, (state.balance.petMaxMood ?? 20) + Number(petlimDelta));
+          state.balance.petMaxMood = nv;
+          const sp = document.getElementById('petlim-val-mood');
+          if (sp) sp.textContent = `+${nv}%`;
+        }
+        saveState(); return;
+      }
+      const salBtn = e.target.closest('[data-sal-key]');
+      if (salBtn) {
+        const { salKey, salDelta } = salBtn.dataset;
+        if (salKey === 'dailySalaryCoins') {
+          const nv = Math.max(0, (state.balance.dailySalaryCoins ?? 200) + Number(salDelta));
+          state.balance.dailySalaryCoins = nv;
+          const sp = document.getElementById('sal-val-coins');
+          if (sp) sp.textContent = `🪙${nv}`;
+        } else {
+          const nv = Math.max(0, Math.min(23, (state.balance.dailySalaryHour ?? 17) + Number(salDelta)));
+          state.balance.dailySalaryHour = nv;
+          const sp = document.getElementById('sal-val-hour');
+          if (sp) sp.textContent = `${String(nv).padStart(2,'0')}:00`;
+        }
         saveState(); return;
       }
       const lvlBtn = e.target.closest('[data-lvl-key]');
