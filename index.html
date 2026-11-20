@@ -206,7 +206,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v69.6</span>
+      <span id="save-status">💾 已自動儲存 · v69.7</span>
       
     </div>
 
@@ -2602,7 +2602,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v69.6'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v69.7'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -4268,6 +4268,9 @@ html, body {
       if (pet.fainted || pet.recoverStage || pet.toiletState || state.supermarketTrip || state.outing?.type) {
         playSFX('miss'); showToast('而家唔方便食宵夜住！🌙'); return;
       }
+      if (state.supperState && state.supperState.stage) {
+        playSFX('miss'); showToast('正準備／食緊宵夜，食完先去超市啦！🌙'); return;
+      }
       if (!isBrotherAtHomeNow()) {
         playSFX('miss'); showToast('哥哥要喺屋企先可以整宵夜！🏠'); return;
       }
@@ -4435,6 +4438,10 @@ html, body {
       });
       state.cart = {};
       pet.fridgeWaitingEmpty = false;
+      if ((pendingDepletionType === 'tp' && state.supplies.tpSheets > 0) || (pendingDepletionType === 'bath' && state.supplies.shampooUses > 0 && state.supplies.bodywashUses > 0)) {
+        document.getElementById('depletion-alert')?.classList.add('hidden');
+        pendingDepletionType = null;
+      }
       document.getElementById('choice-overlay').classList.add('hidden');
       recordPurchaseLog(pet, '超級市場', summaryParts.join('、'), totalCost, '哥哥付款');
       playSFX('levelup');
@@ -5422,6 +5429,12 @@ html, body {
           else if (schoolSet.has(pet.currentRoom)) tInfo = { room: 'school_toilet', act: 'toilet_urinal', x: 145, sinkX: 300, checkBro: false };
           else if (parkSet.has(pet.currentRoom)) tInfo = { room: 'park_toilet', act: 'toilet_urinal', x: 155, sinkX: 295, checkBro: false };
           else if (mallSet.has(pet.currentRoom)) tInfo = { room: 'mall_toilet', act: 'toilet_urinal', x: 155, sinkX: 295, checkBro: false };
+          if (tInfo && tInfo.room === 'toilet' && (state.supplies?.tpSheets ?? 180) <= 0) {
+            pet.tpBlockedPending = true;
+            playSFX('miss');
+            showDepletionAlert('tp', '🧻 廁紙已經全部用晒！無法去廁所，請盡快去超市買廁紙！');
+            return;
+          }
           if (!tInfo) {
             playSFX('miss');
             showToast('呢度附近搵唔到廁所呀！🏠');
@@ -6176,7 +6189,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v69.6';
+          if (el) el.textContent = '☁️ 雲端已同步 · v69.7';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6215,7 +6228,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v69.6';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v69.7';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
