@@ -206,7 +206,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v69.7</span>
+      <span id="save-status">💾 已自動儲存 · v69.8</span>
       
     </div>
 
@@ -1060,7 +1060,7 @@ html, body {
             }
           }
           pet.gradualAcc = { slotKey, label: slotLabel, startedAt: Date.now() - Math.min(elapsedMs, 60000), start: { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 } };
-        } else if (Date.now() - pet.gradualAcc.startedAt >= 60 * 60 * 1000) {
+        } else if (!(slotKey === 'wd_sleep' || slotKey === 'we_sleep' || pet.currentActivity === 'sleep') && Date.now() - pet.gradualAcc.startedAt >= 60 * 60 * 1000) {
           const g = pet.gradualAcc;
           ['hunger','mood','energy','bladder'].forEach(st => recordStatLog(pet, st, `${g.label}（滿1小時）`, g.start[st], pet[st]));
           pet.gradualAcc = { slotKey, label: slotLabel, startedAt: Date.now(), start: { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 } };
@@ -2602,7 +2602,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v69.7'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v69.8'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -6189,7 +6189,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v69.7';
+          if (el) el.textContent = '☁️ 雲端已同步 · v69.8';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6228,7 +6228,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v69.7';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v69.8';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
