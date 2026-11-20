@@ -3941,54 +3941,6 @@ html, body {
         saveState();
         return;
       }
-      const smCfgBtn = e.target.closest('[data-smcfg-key]');
-      if (smCfgBtn) {
-        const { smcfgKey, smcfgDelta } = smCfgBtn.dataset;
-        const nv = Math.max(0, Math.min(100, (state[smcfgKey] ?? 50) + Number(smcfgDelta)));
-        state[smcfgKey] = nv;
-        const sp = document.getElementById(`smcfg-val-${smcfgKey}`);
-        if (sp) sp.textContent = `${nv}%`;
-        saveState(); return;
-      }
-      const supCfgBtn = e.target.closest('[data-supcfg-key]');
-      if (supCfgBtn) {
-        if (!state.supplyCfg) state.supplyCfg = { tpSheetsPerRoll: 180, tpUseSheets: 3, bathUsesPerBottle: 90, bathUsePerPerson: 3 };
-        const sc = state.supplyCfg;
-        const k = supCfgBtn.dataset.supcfgKey;
-        const d = Number(supCfgBtn.dataset.supcfgDelta);
-        if (k === 'tpSheetsPerRoll') {
-          const step = sc.tpUseSheets || 3;
-          sc.tpSheetsPerRoll = Math.max(step, Math.min(600, sc.tpSheetsPerRoll + d * step));
-          document.getElementById('supcfg-val-tpSheetsPerRoll').textContent = `${sc.tpSheetsPerRoll}格`;
-        } else if (k === 'tpUseSheets') {
-          const tot = sc.tpSheetsPerRoll || 180;
-          let nv = Math.max(1, Math.min(tot, sc.tpUseSheets + d));
-          while (nv >= 1 && nv <= tot && tot % nv !== 0) nv += (d > 0 ? 1 : -1);
-          if (nv >= 1 && nv <= tot && tot % nv === 0) sc.tpUseSheets = nv;
-          document.getElementById('supcfg-val-tpUseSheets').textContent = `-${sc.tpUseSheets}格`;
-        } else if (k === 'bathUsesPerBottle') {
-          const step = sc.bathUsePerPerson || 3;
-          sc.bathUsesPerBottle = Math.max(step, Math.min(300, sc.bathUsesPerBottle + d * step));
-          document.getElementById('supcfg-val-bathUsesPerBottle').textContent = `${sc.bathUsesPerBottle}次`;
-        } else if (k === 'bathUsePerPerson') {
-          const tot = sc.bathUsesPerBottle || 90;
-          let nv = Math.max(1, Math.min(tot, sc.bathUsePerPerson + d));
-          while (nv >= 1 && nv <= tot && tot % nv !== 0) nv += (d > 0 ? 1 : -1);
-          if (nv >= 1 && nv <= tot && tot % nv === 0) sc.bathUsePerPerson = nv;
-          document.getElementById('supcfg-val-bathUsePerPerson').textContent = `-${sc.bathUsePerPerson}次`;
-        }
-        saveState(); return;
-      }
-      const smiBtn = e.target.closest('[data-smi-id]');
-      if (smiBtn) {
-        const { smiId, smiField, smiDelta } = smiBtn.dataset;
-        ensureSupermarketCfg();
-        const cfg = state.supermarketItemsCfg[smiId];
-        cfg[smiField] = Math.max(smiField === 'price' ? 1 : 0, (cfg[smiField] ?? 3) + Number(smiDelta));
-        const sp = document.getElementById(`smi-${smiId}-${smiField}`);
-        if (sp) sp.textContent = smiField === 'price' ? `${cfg[smiField]}元` : `+${cfg[smiField]}%`;
-        saveState(); return;
-      }
       const durBtn = e.target.closest('[data-dur-key]');
       if (durBtn) {
         const { durKey, durDelta } = durBtn.dataset;
@@ -5732,6 +5684,54 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
     document.getElementById('settings-modal-body').addEventListener('click', (e) => {
       const sTab = e.target.closest('[data-set-tab]');
       if (sTab) { settingsTab = sTab.dataset.setTab; openSettingsModal(false); return; }
+      const smCfgBtn = e.target.closest('[data-smcfg-key]');
+      if (smCfgBtn) {
+        const { smcfgKey, smcfgDelta } = smCfgBtn.dataset;
+        const nv = Math.max(0, Math.min(100, (state[smcfgKey] ?? 50) + Number(smcfgDelta)));
+        state[smcfgKey] = nv;
+        const sp = document.getElementById(`smcfg-val-${smcfgKey}`);
+        if (sp) sp.textContent = `${nv}%`;
+        saveState(); return;
+      }
+      const supCfgBtn = e.target.closest('[data-supcfg-key]');
+      if (supCfgBtn) {
+        if (!state.supplyCfg) state.supplyCfg = { tpSheetsPerRoll: 180, tpUseSheets: 3, bathUsesPerBottle: 90, bathUsePerPerson: 3 };
+        const sc = state.supplyCfg;
+        const k = supCfgBtn.dataset.supcfgKey;
+        const d = Number(supCfgBtn.dataset.supcfgDelta);
+        if (k === 'tpSheetsPerRoll') {
+          const step = sc.tpUseSheets || 3;
+          sc.tpSheetsPerRoll = Math.max(step, Math.min(600, sc.tpSheetsPerRoll + d * step));
+          document.getElementById('supcfg-val-tpSheetsPerRoll').textContent = `${sc.tpSheetsPerRoll}格`;
+        } else if (k === 'tpUseSheets') {
+          const tot = sc.tpSheetsPerRoll || 180;
+          let nv = Math.max(1, Math.min(tot, sc.tpUseSheets + d));
+          while (nv >= 1 && nv <= tot && tot % nv !== 0) nv += (d > 0 ? 1 : -1);
+          if (nv >= 1 && nv <= tot && tot % nv === 0) sc.tpUseSheets = nv;
+          document.getElementById('supcfg-val-tpUseSheets').textContent = `-${sc.tpUseSheets}格`;
+        } else if (k === 'bathUsesPerBottle') {
+          const step = sc.bathUsePerPerson || 3;
+          sc.bathUsesPerBottle = Math.max(step, Math.min(300, sc.bathUsesPerBottle + d * step));
+          document.getElementById('supcfg-val-bathUsesPerBottle').textContent = `${sc.bathUsesPerBottle}次`;
+        } else if (k === 'bathUsePerPerson') {
+          const tot = sc.bathUsesPerBottle || 90;
+          let nv = Math.max(1, Math.min(tot, sc.bathUsePerPerson + d));
+          while (nv >= 1 && nv <= tot && tot % nv !== 0) nv += (d > 0 ? 1 : -1);
+          if (nv >= 1 && nv <= tot && tot % nv === 0) sc.bathUsePerPerson = nv;
+          document.getElementById('supcfg-val-bathUsePerPerson').textContent = `-${sc.bathUsePerPerson}次`;
+        }
+        saveState(); return;
+      }
+      const smiBtn = e.target.closest('[data-smi-id]');
+      if (smiBtn) {
+        const { smiId, smiField, smiDelta } = smiBtn.dataset;
+        ensureSupermarketCfg();
+        const cfg = state.supermarketItemsCfg[smiId];
+        cfg[smiField] = Math.max(smiField === 'price' ? 1 : 0, (cfg[smiField] ?? 3) + Number(smiDelta));
+        const sp = document.getElementById(`smi-${smiId}-${smiField}`);
+        if (sp) sp.textContent = smiField === 'price' ? `${cfg[smiField]}元` : `+${cfg[smiField]}%`;
+        saveState(); return;
+      }
       const numBtn = e.target.closest('[data-num-key]');
       if (numBtn) {
         const { numKey, numDelta, numMin, numSuf, numSign } = numBtn.dataset;
