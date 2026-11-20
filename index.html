@@ -206,7 +206,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v69.5</span>
+      <span id="save-status">💾 已自動儲存 · v69.6</span>
       
     </div>
 
@@ -931,7 +931,7 @@ html, body {
         } else if (isRest) {
           perMin = ((bal.rest && bal.rest[stat]) ?? 0) / 60;
         } else if (pet.currentRoom === 'supermarket') {
-          perMin = ((bal.supermarket && bal.supermarket[stat]) ?? -10) / 60;
+          perMin = ((bal.supermarket && typeof bal.supermarket[stat] === 'number') ? bal.supermarket[stat] : (stat === 'mood' ? 0 : -10)) / 60;
         } else if (isPrac) {
           perMin = ((bal.practice && bal.practice[stat]) ?? 0) / 60;
         } else {
@@ -2010,6 +2010,17 @@ html, body {
         // Brother is solo at supermarket; keep him there while Hinata follows schedule
       }
 
+      // 3e. Supper Slot (23:00-24:00) + 00:00 midnight rollover cleanup
+      if (state.supperState && state.supperState.stage && (info.totalMin < 1380)) {
+        const ss0 = state.supperState;
+        if (ss0.stage === 'eating' && ss0.startStats) {
+          recordStatLog(pet, 'hunger', `🌙 宵夜 (${ss0.pickName || '宵夜'})`, ss0.startStats.hunger, pet.hunger);
+          recordStatLog(pet, 'mood', `🌙 宵夜 (${ss0.pickName || '宵夜'})`, ss0.startStats.mood, pet.mood);
+          recordStatLog(pet, 'energy', `🌙 宵夜 (${ss0.pickName || '宵夜'})`, ss0.startStats.energy, pet.energy);
+          recordStatLog(pet, 'bladder', `🌙 宵夜 (${ss0.pickName || '宵夜'})`, ss0.startStats.bladder, pet.bladder || 0);
+        }
+        state.supperState = null;
+      }
       // 3e. Supper Slot (23:00-24:00)
       const tdSup = getTodayStr();
       if (info.totalMin >= 1380 && info.totalMin < 1440 && !state.supermarketTrip && !pet.fainted && !pet.recoverStage && !pet.toiletState && !state.outing?.type && !duoWalk && !broWalk) {
@@ -2591,7 +2602,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v69.5'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v69.6'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -4576,7 +4587,6 @@ html, body {
           { key: 'meal',     title: '早午晚三餐（每餐共加）' },
           { key: 'supermarket', title: '🛒 超市（每小時）' },
           { key: 'supper',   title: '🌙 宵夜心情（飽食/精力跟返所揀燒賣或魚蛋設定）', onlyMood: true },
-          { key: 'shopRate', title: '🛒 購物雪櫃食物（每1元）' },
           { key: 'feedRate', title: '🍱 餵食食物（每1元）' }
         ];
         const catHtml = cats.map(c => {
@@ -6166,7 +6176,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v69.5';
+          if (el) el.textContent = '☁️ 雲端已同步 · v69.6';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6205,7 +6215,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v69.5';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v69.6';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
