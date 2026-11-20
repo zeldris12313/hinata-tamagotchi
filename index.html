@@ -206,7 +206,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v69.1</span>
+      <span id="save-status">💾 已自動儲存 · v69.2</span>
       
     </div>
 
@@ -717,6 +717,7 @@ html, body {
       supermarketAccompanyProb: 90,
       supperProb: 50,
       supperSiumaiProb: 50,
+      supperManualAcceptProb: 90,
       supermarketItemsCfg: {},
       supermarketTrip: null,
       supperState: null,
@@ -788,6 +789,7 @@ html, body {
       if (typeof state.supermarketAccompanyProb !== 'number') state.supermarketAccompanyProb = 90;
       if (typeof state.supperProb !== 'number') state.supperProb = 50;
       if (typeof state.supperSiumaiProb !== 'number') state.supperSiumaiProb = 50;
+      if (typeof state.supperManualAcceptProb !== 'number') state.supperManualAcceptProb = 90;
       if (!state.supermarketItemsCfg) state.supermarketItemsCfg = {};
       if (typeof ensureSupermarketCfg === 'function') ensureSupermarketCfg();
       if (typeof p.pocketMoney !== 'number') p.pocketMoney = 20;
@@ -2565,7 +2567,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v69.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v69.2'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -4221,6 +4223,39 @@ html, body {
       return ['living', 'kitchen', 'hallway', 'bath', 'toilet', 'room_hinata', 'room_aniki', 'backyard'].includes(bro.currentRoom);
     }
 
+    function triggerManualSupper() {
+      const pet = ensurePetState(state.activeCharId);
+      const bro = state.brother;
+      const info = getCurrentHourInfo();
+      if (info.totalMin < 1380 || info.totalMin >= 1440) {
+        playSFX('miss'); showToast('宵夜時段為 23:00–24:00 呀！🌙'); return;
+      }
+      if (pet.fainted || pet.recoverStage || pet.toiletState || state.supermarketTrip || state.outing?.type) {
+        playSFX('miss'); showToast('而家唔方便食宵夜住！🌙'); return;
+      }
+      if (!isBrotherAtHomeNow()) {
+        playSFX('miss'); showToast('哥哥要喺屋企先可以整宵夜！🏠'); return;
+      }
+      if (state.supperState && state.supperState.stage) {
+        showToast('已經準備／食緊宵夜啦！🥟🍢'); return;
+      }
+      const accProb = (state.supperManualAcceptProb ?? 90) / 100;
+      if (Math.random() < accProb) {
+        pet.supperDate = getTodayStr();
+        state.supperState = { stage: 'bro_asking', until: Date.now() + 4000 };
+        playSFX('levelup');
+        startDuoJourney('kitchen', 'supper_wait', '「好呀！！哥哥問我想食燒賣定魚蛋？我去餐桌等食！😋🌙」', '翔陽答應食宵夜！前往廚房準備 🌙', () => {
+          bro.currentRoom = 'kitchen'; bro.currentActivity = 'supper_pick'; bro.tx = 145; bro.ty = 440;
+          pet.currentRoom = 'kitchen'; pet.currentActivity = 'supper_wait'; targetX = 435; targetY = 455;
+        });
+        saveState();
+      } else {
+        playSFX('pat');
+        speakAndShow('「唔好啦哥哥…今晚唔係好肚餓，唔食宵夜住喇～😊🌙」');
+        showToast('翔陽話今晚唔係好肚餓，唔食宵夜住～🌙');
+      }
+    }
+
     function triggerGoToSupermarket(bypassTimeCheck = false) {
       const pet = ensurePetState(state.activeCharId);
       const bro = state.brother;
@@ -4594,6 +4629,14 @@ html, body {
                 <button type="button" data-smcfg-key="supperProb" data-smcfg-delta="-5" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
                 <span id="smcfg-val-supperProb">${state.supperProb ?? 50}%</span>
                 <button type="button" data-smcfg-key="supperProb" data-smcfg-delta="5" class="w-4 h-4 rounded bg-emerald-300 font-black">+</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-white border border-emerald-300 rounded px-1.5 py-0.5">
+              <span>🌙 手動約宵夜答應</span>
+              <div class="flex items-center gap-0.5">
+                <button type="button" data-smcfg-key="supperManualAcceptProb" data-smcfg-delta="-5" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                <span id="smcfg-val-supperManualAcceptProb">${state.supperManualAcceptProb ?? 90}%</span>
+                <button type="button" data-smcfg-key="supperManualAcceptProb" data-smcfg-delta="5" class="w-4 h-4 rounded bg-emerald-300 font-black">+</button>
               </div>
             </div>
             <div class="flex items-center justify-between bg-white border border-emerald-300 rounded px-1.5 py-0.5">
@@ -5184,6 +5227,7 @@ html, body {
         { id: 'practice', emoji: '🔥', name: '練球', sub: '去後院練習' },
         { id: 'furn',  emoji: '🛋️', name: '房間傢俬', sub: '場景互動' },
         { id: 'go_supermarket', emoji: '🛒', name: '去超市', sub: '19:20-23:00' },
+        { id: 'eat_supper', emoji: '🌙', name: '食宵夜', sub: '23:00-24:00' },
         { id: 'konbini_trip', emoji: '🏪', name: '去便利店', sub: '24小時營業' },
         { id: 'mall_trip', emoji: '🛍️', name: '去商場', sub: '22:00關門' },
         { id: 'park_trip', emoji: '🌳', name: '去公園', sub: '散步吹海風' },
@@ -5281,6 +5325,7 @@ html, body {
         } else if (id === 'rest_eating') {
           playSFX('eat'); speakAndShow('「食緊美味大餐中～要食完一個鐘先返屋企！🍽️😋」');
         } else if (id === 'go_supermarket') { triggerGoToSupermarket(false); }
+        else if (id === 'eat_supper') { triggerManualSupper(); }
         else if (id === 'konbini_trip') {
           if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
           const bothHome = !['school_class', 'school_court', 'pharmacy', 'canteen'].includes(pet.currentRoom) && !['school_class', 'school_court', 'pharmacy', 'canteen'].includes(bro.currentRoom);
@@ -6097,7 +6142,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v69.1';
+          if (el) el.textContent = '☁️ 雲端已同步 · v69.2';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6136,7 +6181,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v69.1';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v69.2';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
