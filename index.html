@@ -6,8 +6,8 @@
   <meta http-equiv="Expires" content="0" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="icon" type="image/png" href="./icon.png?v=68">
-  <link rel="apple-touch-icon" href="./icon.png?v=68">
+  <link rel="icon" type="image/png" href="./icon.png?v=69">
+  <link rel="apple-touch-icon" href="./icon.png?v=69">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -115,6 +115,28 @@ html, body {
         <button id="dir-left" type="button" class="inscreen-dir absolute left-1.5 top-1/2 -translate-y-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full w-8 h-8 text-xs font-black z-20 flex items-center justify-center" title="向左">◀</button>
         <button id="dir-right" type="button" class="inscreen-dir absolute right-1.5 top-1/2 -translate-y-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full w-8 h-8 text-xs font-black z-20 flex items-center justify-center" title="向右">▶</button>
 
+        <!-- Supermarket 6 Interactive Zones + Basket -->
+        <div id="supermarket-zones" class="hidden pointer-events-none absolute inset-0 z-15">
+          <button type="button" data-sm-zone="sm_dry" style="left:15%;top:45%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute px-2 py-1 rounded-xl bg-amber-100/95 hover:bg-amber-200 border-2 border-[#2d1e12] text-[10px] font-black shadow">🍞 乾糧部</button>
+          <button type="button" data-sm-zone="sm_drink" style="left:56.7%;top:44.2%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute px-2 py-1 rounded-xl bg-sky-100/95 hover:bg-sky-200 border-2 border-[#2d1e12] text-[10px] font-black shadow">🥤 飲品部</button>
+          <button type="button" data-sm-zone="sm_freezer" style="left:85.8%;top:44.2%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute px-2 py-1 rounded-xl bg-cyan-100/95 hover:bg-cyan-200 border-2 border-[#2d1e12] text-[10px] font-black shadow">🧊 雪櫃部</button>
+          <button type="button" data-sm-zone="sm_tissue" style="left:15%;top:75.8%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute px-2 py-1 rounded-xl bg-rose-100/95 hover:bg-rose-200 border-2 border-[#2d1e12] text-[10px] font-black shadow">🧻 紙巾部</button>
+          <button type="button" data-sm-zone="sm_bath" style="left:40.8%;top:77.5%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute px-2 py-1 rounded-xl bg-purple-100/95 hover:bg-purple-200 border-2 border-[#2d1e12] text-[10px] font-black shadow">🧴 沐浴用部</button>
+          <button type="button" data-sm-zone="sm_checkout" style="left:83.3%;top:78.3%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute px-2 py-1 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white border-2 border-[#2d1e12] text-[10px] font-black shadow">💳 自助收銀</button>
+          <button id="btn-sm-basket" type="button" class="pointer-events-auto absolute top-2.5 right-2.5 px-2.5 py-1 rounded-xl bg-orange-500 hover:bg-orange-600 text-white border-2 border-[#2d1e12] text-[11px] font-black shadow">🧺 購物籃 (0)</button>
+        </div>
+
+        <!-- Visible Room Buttons: Kitchen Fridge / Toilet Cabinet / Bath Supplies -->
+        <button id="btn-kitchen-fridge" type="button" style="left:16%;top:62%;transform:translate(-50%,-50%)" class="hidden absolute px-2 py-1 rounded-xl bg-cyan-100/95 hover:bg-cyan-200 border-2 border-[#2d1e12] text-[10px] font-black shadow z-15">🧊 雪櫃</button>
+        <button id="btn-toilet-cabinet" type="button" class="hidden absolute top-10 right-2.5 px-2 py-1 rounded-xl bg-rose-100/95 hover:bg-rose-200 border-2 border-[#2d1e12] text-[10px] font-black shadow z-15">🧻 廁櫃</button>
+        <button id="btn-bath-supplies" type="button" style="left:24%;top:66%;transform:translate(-50%,-50%)" class="hidden absolute px-2 py-1 rounded-xl bg-purple-100/95 hover:bg-purple-200 border-2 border-[#2d1e12] text-[10px] font-black shadow z-15">🧴 沐浴用品</button>
+
+        <!-- Bottom-Left Depletion Alert -->
+        <div id="depletion-alert" class="hidden absolute bottom-10 left-2.5 max-w-[235px] bg-rose-50/95 border-2 border-rose-600 rounded-2xl p-2 shadow-xl z-35 text-[11px] font-bold text-[#2d1e12]">
+          <div id="depletion-alert-msg" class="leading-snug mb-1.5"></div>
+          <button id="depletion-alert-ok" type="button" class="px-3 py-0.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white border border-[#2d1e12] text-[10px] font-black">確定</button>
+        </div>
+
         <!-- Interactive Overlay (RPS / Chat / Jump Training) -->
         <div id="choice-overlay" style="touch-action: pan-y;" class="hidden absolute top-9 bottom-10 left-1/2 -translate-x-1/2 w-[90%] overflow-y-auto bg-white/95 border-2 border-[#2d1e12] rounded-2xl p-2.5 shadow-xl z-30 flex flex-col items-stretch justify-start gap-1.5"></div>
 
@@ -171,7 +193,7 @@ html, body {
         <div class="flex gap-1 items-center">
           <button id="tab-food" type="button" class="px-2 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] bg-orange-500 text-white">🍱 餵食</button>
           <button id="tab-act" type="button" class="px-2 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] bg-white text-[#2d1e12]">✨ 互動</button>
-          <button id="tab-shop" type="button" class="px-2 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] bg-white text-[#2d1e12]">🛒 購物</button>
+          
         </div>
         <div id="act-pager" class="hidden flex items-center gap-1">
           <button id="btn-act-prev" type="button" class="px-1.5 py-0.5 rounded bg-amber-100 hover:bg-amber-200 border border-[#2d1e12] text-[10px] font-black">◀</button>
@@ -184,7 +206,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v68</span>
+      <span id="save-status">💾 已自動儲存 · v69</span>
       
     </div>
 
@@ -223,7 +245,7 @@ html, body {
     <div class="bg-[#efeae2] rounded-3xl w-full max-w-md h-[86vh] shadow-2xl border-2 border-[#2d1e12] flex flex-col overflow-hidden">
       <div class="bg-[#fff7ed] border-b-2 border-[#2d1e12] px-3 py-2 flex items-center justify-between gap-2 shrink-0">
         <div class="flex items-center gap-2 min-w-0">
-          <img src="./assets/chibiJersey.png?v=68" class="w-9 h-9 rounded-full border-2 border-[#2d1e12] bg-amber-100 object-cover object-top shrink-0" alt="日向翔陽" />
+          <img src="./assets/chibiJersey.png?v=69" class="w-9 h-9 rounded-full border-2 border-[#2d1e12] bg-amber-100 object-cover object-top shrink-0" alt="日向翔陽" />
           <div class="min-w-0">
             <div class="text-sm font-black text-[#2d1e12] leading-tight">日向翔陽</div>
             <div id="sms-chat-status" class="text-[10px] font-bold text-emerald-700 leading-tight truncate">📱 在線中</div>
@@ -285,104 +307,110 @@ html, body {
     // 1. 全套去背立繪（含摸頭專用笑面立繪）＋ 10間手繪動畫房間
     // =========================================================================
     const ASSET_URLS = {
-      chibiJersey: "./assets/chibiJersey.png?v=68",
-      chibiSchool: "./assets/chibiSchool.png?v=68",
-      chibiPajama: "./assets/chibiPajama.png?v=68",
-      portraitJersey: "./assets/portraitJersey.png?v=68",
-      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=68",
-      portraitSchool: "./assets/portraitSchool.png?v=68",
-      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=68",
-      portraitPajama: "./assets/portraitPajama.png?v=68",
-      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=68",
-      portraitSleepy: "./assets/portraitSleepy.jpg?v=68",
-      bg_living: "./assets/bg_living.jpg?v=68",
-      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=68",
-      bg_kitchen: "./assets/bg_kitchen.jpg?v=68",
-      bg_bath: "./assets/bg_bath.jpg?v=68",
-      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=68",
-      bg_hallway: "./assets/bg_hallway.jpg?v=68",
-      bg_backyard: "./assets/bg_backyard.jpg?v=68",
-      bg_street: "./assets/bg_street.jpg?v=68",
-      bg_school_class: "./assets/bg_school_class.jpg?v=68",
-      bg_school_court: "./assets/bg_school_court.jpg?v=68",
-      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=68",
-      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=68",
-      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=68",
-      chibiBrother: "./assets/chibiBrother.png?v=68",
-      bg_main_street: "./assets/bg_main_street.jpg?v=68",
-      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=68",
-      bg_canteen: "./assets/bg_canteen.jpg?v=68",
-      bg_mall: "./assets/bg_mall.jpg?v=68",
-      bg_park: "./assets/bg_park.jpg?v=68",
-      bg_restaurant: "./assets/bg_restaurant.jpg?v=68",
-      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=68",
-      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=68",
-      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=68",
-      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=68",
-      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=68",
-      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=68",
-      bg_hospital: "./assets/bg_hospital.jpg?v=68",
-      bg_street_night: "./assets/bg_street_night.jpg?v=68",
-      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=68",
-      bg_park_night: "./assets/bg_park_night.jpg?v=68",
-      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=68",
-      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=68",
-      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=68",
-      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=68",
-      bg_living_night: "./assets/bg_living_night.jpg?v=68",
-      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=68",
-      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=68",
-      bg_bath_night: "./assets/bg_bath_night.jpg?v=68",
-      bg_mall_night: "./assets/bg_mall_night.jpg?v=68",
-      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=68",
-      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=68",
-      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=68",
-      bg_living_morning: "./assets/bg_living_morning.jpg?v=68",
-      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=68",
-      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=68",
-      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=68",
-      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=68",
-      bg_street_morning: "./assets/bg_street_morning.jpg?v=68",
-      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=68",
-      bg_park_morning: "./assets/bg_park_morning.jpg?v=68",
-      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=68",
-      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=68",
-      chibiJerseySad: "./assets/chibiJerseySad.png?v=68",
-      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=68",
-      bg_school_hall: "./assets/bg_school_hall.jpg?v=68",
-      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=68",
-      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=68",
-      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=68",
-      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=68",
-      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=68",
-      bg_toilet: "./assets/bg_toilet.jpg?v=68",
-      bg_toilet_morning: "./assets/bg_toilet_morning.jpg?v=68",
-      bg_toilet_night: "./assets/bg_toilet_night.jpg?v=68",
-      bg_park2: "./assets/bg_park2.jpg?v=68",
-      bg_park2_morning: "./assets/bg_park2_morning.jpg?v=68",
-      bg_park2_night: "./assets/bg_park2_night.jpg?v=68",
-      bg_school_toilet: "./assets/bg_school_toilet.jpg?v=68",
-      bg_school_toilet_morning: "./assets/bg_school_toilet_morning.jpg?v=68",
-      bg_school_toilet_night: "./assets/bg_school_toilet_night.jpg?v=68",
-      chibiCry: "./assets/chibiCry.png?v=68",
-      chibiJerseyCry: "./assets/chibiJerseyCry.png?v=68",
-      chibiSchoolCry: "./assets/chibiSchoolCry.png?v=68",
-      bg_school_class_morning: "./assets/bg_school_class_morning.jpg?v=68",
-      bg_school_class_night: "./assets/bg_school_class_night.jpg?v=68",
-      bg_school_court_morning: "./assets/bg_school_court_morning.jpg?v=68",
-      bg_school_court_night: "./assets/bg_school_court_night.jpg?v=68",
-      bg_pharmacy_morning: "./assets/bg_pharmacy_morning.jpg?v=68",
-      bg_pharmacy_night: "./assets/bg_pharmacy_night.jpg?v=68",
-      bg_hospital_morning: "./assets/bg_hospital_morning.jpg?v=68",
-      bg_hospital_night: "./assets/bg_hospital_night.jpg?v=68",
-      bg_canteen_morning: "./assets/bg_canteen_morning.jpg?v=68",
-      bg_canteen_night: "./assets/bg_canteen_night.jpg?v=68",
-      bg_park_toilet: "./assets/bg_park_toilet.jpg?v=68",
-      bg_park_toilet_morning: "./assets/bg_park_toilet_morning.jpg?v=68",
-      bg_park_toilet_night: "./assets/bg_park_toilet_night.jpg?v=68",
-      bg_mall_toilet: "./assets/bg_mall_toilet.jpg?v=68",
-      bg_mall_toilet_morning: "./assets/bg_mall_toilet_morning.jpg?v=68",
-      bg_mall_toilet_night: "./assets/bg_mall_toilet_night.jpg?v=68"
+      chibiJersey: "./assets/chibiJersey.png?v=69",
+      chibiSchool: "./assets/chibiSchool.png?v=69",
+      chibiPajama: "./assets/chibiPajama.png?v=69",
+      portraitJersey: "./assets/portraitJersey.png?v=69",
+      portraitJerseyHappy: "./assets/portraitJerseyHappy.png?v=69",
+      portraitSchool: "./assets/portraitSchool.png?v=69",
+      portraitSchoolHappy: "./assets/portraitSchoolHappy.png?v=69",
+      portraitPajama: "./assets/portraitPajama.png?v=69",
+      portraitPajamaHappy: "./assets/portraitPajamaHappy.png?v=69",
+      portraitSleepy: "./assets/portraitSleepy.jpg?v=69",
+      bg_living: "./assets/bg_living.jpg?v=69",
+      bg_room_hinata: "./assets/bg_room_hinata.jpg?v=69",
+      bg_kitchen: "./assets/bg_kitchen.jpg?v=69",
+      bg_bath: "./assets/bg_bath.jpg?v=69",
+      bg_room_aniki: "./assets/bg_room_aniki.jpg?v=69",
+      bg_hallway: "./assets/bg_hallway.jpg?v=69",
+      bg_backyard: "./assets/bg_backyard.jpg?v=69",
+      bg_street: "./assets/bg_street.jpg?v=69",
+      bg_school_class: "./assets/bg_school_class.jpg?v=69",
+      bg_school_court: "./assets/bg_school_court.jpg?v=69",
+      bg_konbini_morning: "./assets/bg_konbini_morning.jpg?v=69",
+      bg_konbini_afternoon: "./assets/bg_konbini_afternoon.jpg?v=69",
+      bg_konbini_night: "./assets/bg_konbini_night.jpg?v=69",
+      chibiBrother: "./assets/chibiBrother.png?v=69",
+      bg_main_street: "./assets/bg_main_street.jpg?v=69",
+      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=69",
+      bg_canteen: "./assets/bg_canteen.jpg?v=69",
+      bg_mall: "./assets/bg_mall.jpg?v=69",
+      bg_park: "./assets/bg_park.jpg?v=69",
+      bg_restaurant: "./assets/bg_restaurant.jpg?v=69",
+      chibiJerseyFaint: "./assets/chibiJerseyFaint.png?v=69",
+      chibiSchoolFaint: "./assets/chibiSchoolFaint.png?v=69",
+      chibiPajamaFaint: "./assets/chibiPajamaFaint.png?v=69",
+      chibiPajamaSad: "./assets/chibiPajamaSad.png?v=69",
+      chibiBrotherSad: "./assets/chibiBrotherSad.png?v=69",
+      bg_school_infirmary: "./assets/bg_school_infirmary.jpg?v=69",
+      bg_hospital: "./assets/bg_hospital.jpg?v=69",
+      bg_street_night: "./assets/bg_street_night.jpg?v=69",
+      bg_main_street_night: "./assets/bg_main_street_night.jpg?v=69",
+      bg_park_night: "./assets/bg_park_night.jpg?v=69",
+      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=69",
+      chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=69",
+      bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=69",
+      bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=69",
+      bg_living_night: "./assets/bg_living_night.jpg?v=69",
+      bg_kitchen_night: "./assets/bg_kitchen_night.jpg?v=69",
+      bg_hallway_night: "./assets/bg_hallway_night.jpg?v=69",
+      bg_bath_night: "./assets/bg_bath_night.jpg?v=69",
+      bg_mall_night: "./assets/bg_mall_night.jpg?v=69",
+      bg_restaurant_night: "./assets/bg_restaurant_night.jpg?v=69",
+      bg_room_hinata_morning: "./assets/bg_room_hinata_morning.jpg?v=69",
+      bg_room_aniki_morning: "./assets/bg_room_aniki_morning.jpg?v=69",
+      bg_living_morning: "./assets/bg_living_morning.jpg?v=69",
+      bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=69",
+      bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=69",
+      bg_bath_morning: "./assets/bg_bath_morning.jpg?v=69",
+      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=69",
+      bg_street_morning: "./assets/bg_street_morning.jpg?v=69",
+      bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=69",
+      bg_park_morning: "./assets/bg_park_morning.jpg?v=69",
+      bg_mall_morning: "./assets/bg_mall_morning.jpg?v=69",
+      bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=69",
+      chibiJerseySad: "./assets/chibiJerseySad.png?v=69",
+      chibiSchoolSad: "./assets/chibiSchoolSad.png?v=69",
+      bg_school_hall: "./assets/bg_school_hall.jpg?v=69",
+      bg_school_hall_morning: "./assets/bg_school_hall_morning.jpg?v=69",
+      bg_school_hall_night: "./assets/bg_school_hall_night.jpg?v=69",
+      bg_school_tuckshop: "./assets/bg_school_tuckshop.jpg?v=69",
+      bg_school_tuckshop_morning: "./assets/bg_school_tuckshop_morning.jpg?v=69",
+      bg_school_tuckshop_night: "./assets/bg_school_tuckshop_night.jpg?v=69",
+      bg_toilet: "./assets/bg_toilet.jpg?v=69",
+      bg_toilet_morning: "./assets/bg_toilet_morning.jpg?v=69",
+      bg_toilet_night: "./assets/bg_toilet_night.jpg?v=69",
+      bg_park2: "./assets/bg_park2.jpg?v=69",
+      bg_park2_morning: "./assets/bg_park2_morning.jpg?v=69",
+      bg_park2_night: "./assets/bg_park2_night.jpg?v=69",
+      bg_school_toilet: "./assets/bg_school_toilet.jpg?v=69",
+      bg_school_toilet_morning: "./assets/bg_school_toilet_morning.jpg?v=69",
+      bg_school_toilet_night: "./assets/bg_school_toilet_night.jpg?v=69",
+      chibiCry: "./assets/chibiCry.png?v=69",
+      chibiJerseyCry: "./assets/chibiJerseyCry.png?v=69",
+      chibiSchoolCry: "./assets/chibiSchoolCry.png?v=69",
+      bg_school_class_morning: "./assets/bg_school_class_morning.jpg?v=69",
+      bg_school_class_night: "./assets/bg_school_class_night.jpg?v=69",
+      bg_school_court_morning: "./assets/bg_school_court_morning.jpg?v=69",
+      bg_school_court_night: "./assets/bg_school_court_night.jpg?v=69",
+      bg_pharmacy_morning: "./assets/bg_pharmacy_morning.jpg?v=69",
+      bg_pharmacy_night: "./assets/bg_pharmacy_night.jpg?v=69",
+      bg_hospital_morning: "./assets/bg_hospital_morning.jpg?v=69",
+      bg_hospital_night: "./assets/bg_hospital_night.jpg?v=69",
+      bg_canteen_morning: "./assets/bg_canteen_morning.jpg?v=69",
+      bg_canteen_night: "./assets/bg_canteen_night.jpg?v=69",
+      bg_park_toilet: "./assets/bg_park_toilet.jpg?v=69",
+      bg_park_toilet_morning: "./assets/bg_park_toilet_morning.jpg?v=69",
+      bg_park_toilet_night: "./assets/bg_park_toilet_night.jpg?v=69",
+      bg_mall_toilet: "./assets/bg_mall_toilet.jpg?v=69",
+      bg_mall_toilet_morning: "./assets/bg_mall_toilet_morning.jpg?v=69",
+      bg_mall_toilet_night: "./assets/bg_mall_toilet_night.jpg?v=69",
+      bg_street2: "./assets/bg_street2.jpg?v=69",
+      bg_street2_morning: "./assets/bg_street2_morning.jpg?v=69",
+      bg_street2_night: "./assets/bg_street2_night.jpg?v=69",
+      bg_supermarket: "./assets/bg_supermarket.jpg?v=69",
+      bg_supermarket_morning: "./assets/bg_supermarket_morning.jpg?v=69",
+      bg_supermarket_night: "./assets/bg_supermarket_night.jpg?v=69"
     };
     const sprites = {};
 
@@ -419,8 +447,10 @@ html, body {
       bath:         { id: 'bath',         name: '1F 浴室',         short: '浴室',     icon: '🛁', gx: 0, gy: 2,  up: null, down: null, left: null, right: 'living' },
       living:       { id: 'living',       name: '1F 客廳',         short: '客廳',     icon: '🏠', gx: 1, gy: 2,  up: 'room_hinata', down: 'kitchen', left: 'bath', right: 'hallway' },
       hallway:      { id: 'hallway',      name: '1F 走廊玄關',     short: '走廊',     icon: '🚪', gx: 2, gy: 2,  up: 'toilet', down: 'backyard', left: 'living', right: 'street' },
-      street:       { id: 'street',       name: '室外街道',        short: '街道',     icon: '🛣️', gx: 3, gy: 2,  up: 'main_street', down: 'school_class', left: 'hallway', right: 'konbini' },
-      konbini:      { id: 'konbini',      name: '日式便利店',      short: '便利店',   icon: '🏪', gx: 4, gy: 2,  up: null, down: null, left: 'street', right: null },
+      street:       { id: 'street',       name: '室外街道',        short: '街道',     icon: '🛣️', gx: 3, gy: 2,  up: 'main_street', down: 'school_class', left: 'hallway', right: 'street2' },
+      street2:      { id: 'street2',      name: '室外街道2',       short: '街道2',    icon: '🛣️', gx: 4, gy: 2,  up: null, down: 'supermarket', left: 'street', right: 'konbini' },
+      konbini:      { id: 'konbini',      name: '日式便利店',      short: '便利店',   icon: '🏪', gx: 5, gy: 2,  up: null, down: null, left: 'street2', right: null },
+      supermarket:  { id: 'supermarket',  name: '超級市場',        short: '超市',     icon: '🛒', gx: 4, gy: 3,  up: 'street2', down: null, left: null, right: null },
       kitchen:      { id: 'kitchen',      name: '1F 廚房',         short: '廚房',     icon: '🍳', gx: 1, gy: 3,  up: 'living', down: null, left: null, right: 'backyard' },
       backyard:     { id: 'backyard',     name: '屋後院子',        short: '後院',     icon: '🏡', gx: 2, gy: 3,  up: 'hallway', down: null, left: 'kitchen', right: null },
       school_class: { id: 'school_class', name: '學校課室',        short: '課室',     icon: '🏫', gx: 3, gy: 3,  up: 'street', down: 'school_infirmary', left: null, right: 'school_hall' },
@@ -477,6 +507,17 @@ html, body {
         { id: 'lunch', label: '食午餐便當', hx: 425, hy: 400, hr: 90, px: 390, py: 435, act: 'lunch', line: '「午休時間食香噴噴便當！🍱」' },
         { id: 'class_chat', label: '小息傾排球', hx: 330, hy: 340, hr: 90, px: 325, py: 435, act: 'class_break', line: '「小息同隔離位同學講起今朝個快攻！💬🏐」' },
         { id: 'blackboard', label: '望黑板舉手', hx: 150, hy: 300, hr: 90, px: 165, py: 430, act: 'school_class', line: '「老師呢題我識答！舉手！🙋‍♂️📝」' }
+      ],
+      street2: [
+        { id: 'walk_st2', label: '街道2漫步', hx: 280, hy: 420, hr: 95, px: 280, py: 440, act: 'street', line: '「經過室外街道2，右邊係便利店，下面係超級市場！🛣️」' }
+      ],
+      supermarket: [
+        { id: 'sm_dry',      label: '乾糧部',     hx: 90,  hy: 270, hr: 75, px: 110, py: 440, act: 'supermarket', line: '「睇下乾糧部有咩麵包同三文治先！🍞🥪」' },
+        { id: 'sm_drink',    label: '飲品部',     hx: 340, hy: 265, hr: 75, px: 330, py: 440, act: 'supermarket', line: '「飲品部有蘋果汁、汽水同茶呀！🧃🥤」' },
+        { id: 'sm_freezer',  label: '雪櫃部',     hx: 515, hy: 265, hr: 75, px: 475, py: 440, act: 'supermarket', line: '「雪櫃部有雪藏燒賣同雪藏魚蛋！🥟🍢」' },
+        { id: 'sm_tissue',   label: '紙巾部',     hx: 90,  hy: 455, hr: 75, px: 120, py: 455, act: 'supermarket', line: '「紙巾部攞卷廁紙放落購物籃先！🧻」' },
+        { id: 'sm_bath',     label: '沐浴用品部', hx: 245, hy: 465, hr: 75, px: 250, py: 465, act: 'supermarket', line: '「睇下洗頭水同沐浴露仲夠唔夠用～🧴」' },
+        { id: 'sm_checkout', label: '自助收銀',   hx: 500, hy: 470, hr: 75, px: 470, py: 470, act: 'supermarket_checkout', line: '「去自助收銀睇下購物籃清單然後付款！💳」' }
       ],
       konbini: [
         { id: 'mag_rack',  label: '看雜誌架',   hx: 180, hy: 360, hr: 90, px: 195, py: 445, act: 'konbini_mag',   line: '「喺便利店雜誌架睇最新一期排球月刊！📖🏐」' },
@@ -645,6 +686,8 @@ html, body {
         rest:     { hunger: -4,  energy: 25,  mood: 0 },
         sleep:    { hunger: -4,  energy: 25,  mood: 0 },
         meal:     { hunger: 70,  energy: 70,  mood: 0 },
+        supermarket: { hunger: -10, energy: -10, mood: 0 },
+        supper:      { hunger: 3,   energy: 3,   mood: 3, bladder: 3 },
         shopRate: { hunger: 3,   energy: 3,   mood: 0 },
         feedRate: { hunger: 2,   energy: 0,   mood: 1 },
         bladderPerHour: 10,
@@ -668,6 +711,15 @@ html, body {
       },
       outingMins: { mall: 120, park: 30, restaurant: 60, konbini: 15 },
       autoEvents: { toilet: { prob: 10, maxPerDay: 0 }, konbiniAsk: { prob: 20, maxPerDay: 1 }, parkAsk: { prob: 15, maxPerDay: 1 }, backyardAsk: { prob: 13, maxPerDay: 0, mins: 15 }, freeRoam: { prob: 50, mins: 1 }, schoolMail: { prob: 5, maxPerDay: 1 }, snackBuy: { prob: 20, maxPerDay: 2 }, snackEat: { prob: 35 }, dateInvite: { prob: 20 }, dateAccept: { prob: 90 }, sneakEat: { prob: 14, caughtProb: 42 }, cleanReward: { prob: 14 } }, broSoloMode: false,
+      cart: {},
+      supplies: { tpSheets: 180, shampooUses: 90, bodywashUses: 90 },
+      supplyCfg: { tpSheetsPerRoll: 180, tpUseSheets: 3, bathUsesPerBottle: 90, bathUsePerPerson: 3 },
+      supermarketAccompanyProb: 90,
+      supperProb: 50,
+      supperSiumaiProb: 50,
+      supermarketItemsCfg: {},
+      supermarketTrip: null,
+      supperState: null,
       dates: {},
       mailbox: { items: [], lastMailDate: null, lastInviteDate: null },
       outing: { type: null, returnAt: null, fromMall: false },
@@ -722,6 +774,22 @@ html, body {
       if (!p.statLogs) p.statLogs = { hunger: [], mood: [], energy: [], bladder: [] };
       if (!Array.isArray(p.purchaseLogs)) p.purchaseLogs = [];
       if (!state.balance.sleep) state.balance.sleep = { hunger: -4, energy: 25, mood: 0 };
+      if (!state.balance.supermarket) state.balance.supermarket = { hunger: -10, energy: -10, mood: 0 };
+      if (!state.balance.supper) state.balance.supper = { hunger: 3, energy: 3, mood: 3, bladder: 3 };
+      if (!state.cart) state.cart = {};
+      if (!state.supplies) state.supplies = { tpSheets: 180, shampooUses: 90, bodywashUses: 90 };
+      if (!state.supplyCfg) state.supplyCfg = { tpSheetsPerRoll: 180, tpUseSheets: 3, bathUsesPerBottle: 90, bathUsePerPerson: 3 };
+      if (state.supplyCfg.tpSheetsPerRoll % state.supplyCfg.tpUseSheets !== 0) {
+        state.supplyCfg.tpSheetsPerRoll = Math.max(state.supplyCfg.tpUseSheets, Math.round(state.supplyCfg.tpSheetsPerRoll / state.supplyCfg.tpUseSheets) * state.supplyCfg.tpUseSheets);
+      }
+      if (state.supplyCfg.bathUsesPerBottle % state.supplyCfg.bathUsePerPerson !== 0) {
+        state.supplyCfg.bathUsesPerBottle = Math.max(state.supplyCfg.bathUsePerPerson, Math.round(state.supplyCfg.bathUsesPerBottle / state.supplyCfg.bathUsePerPerson) * state.supplyCfg.bathUsePerPerson);
+      }
+      if (typeof state.supermarketAccompanyProb !== 'number') state.supermarketAccompanyProb = 90;
+      if (typeof state.supperProb !== 'number') state.supperProb = 50;
+      if (typeof state.supperSiumaiProb !== 'number') state.supperSiumaiProb = 50;
+      if (!state.supermarketItemsCfg) state.supermarketItemsCfg = {};
+      if (typeof ensureSupermarketCfg === 'function') ensureSupermarketCfg();
       if (typeof p.pocketMoney !== 'number') p.pocketMoney = 20;
       if (typeof p.bladder !== 'number') p.bladder = 0;
       if (!Array.isArray(p.feedTimestamps)) p.feedTimestamps = [];
@@ -843,6 +911,8 @@ html, body {
           perMin = (sl[stat] ?? 0) / 60;
         } else if (isRest) {
           perMin = ((bal.rest && bal.rest[stat]) ?? 0) / 60;
+        } else if (pet.currentRoom === 'supermarket') {
+          perMin = ((bal.supermarket && bal.supermarket[stat]) ?? -10) / 60;
         } else if (isPrac) {
           perMin = ((bal.practice && bal.practice[stat]) ?? 0) / 60;
         } else {
@@ -911,6 +981,11 @@ html, body {
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + hrs * (bal.rest.hunger || 0)));
           pet.energy = Math.max(0, Math.min(100, pet.energy + hrs * (bal.rest.energy || 0)));
           pet.mood   = Math.max(0, Math.min(100, pet.mood   + hrs * (bal.rest.mood || 0)));
+        } else if (pet.currentRoom === 'supermarket') {
+          const smB = bal.supermarket || { hunger: -10, energy: -10, mood: 0 };
+          pet.hunger = Math.max(0, Math.min(100, pet.hunger + hrs * (smB.hunger ?? -10)));
+          pet.energy = Math.max(0, Math.min(100, pet.energy + hrs * (smB.energy ?? -10)));
+          pet.mood   = Math.max(0, Math.min(100, pet.mood   + hrs * (smB.mood ?? 0)));
         } else if (isVolleyPractice) {
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + hrs * (bal.practice.hunger || 0)));
           pet.energy = Math.max(0, Math.min(100, pet.energy + hrs * (bal.practice.energy || 0)));
@@ -1373,7 +1448,7 @@ html, body {
         playSFX('miss');
         showToast('📞 哥哥收到學校電話：翔陽暈倒送咗去醫療室（🪙-50）！10秒後出發去接佢');
         speakAndShow('「📞 喂？！咩話翔陽喺學校暈倒送咗去醫療室？！我即刻請假趕過嚟！！😰」');
-      } else if (['street', 'main_street', 'konbini', 'mall', 'park', 'restaurant', 'pharmacy', 'canteen'].includes(room)) {
+      } else if (['street', 'street2', 'supermarket', 'main_street', 'konbini', 'mall', 'park', 'restaurant', 'pharmacy', 'canteen'].includes(room)) {
         pet.coins = Math.max(0, pet.coins - 50);
         pet.recoverStage = 'phone_alert';
         pet.rescueRoom = 'hospital';
@@ -1495,6 +1570,59 @@ html, body {
     function syncScheduleActivity(pet, animateTransition = false) {
       if (checkAndHandleFaint(pet)) { duoWalk = null; return; }
       if (handleRecoveryTick(pet)) { duoWalk = null; return; }
+      // General solo walk stepping for Brother & Hinata (non-recovery)
+      if (broWalk && !pet.recoverStage) {
+        if (Date.now() - broWalk.stepEnteredAt >= 2600) {
+          broWalk.idx++;
+          const bw = broWalk;
+          if (bw.idx >= bw.steps.length - 1) {
+            broWalk = null;
+            const dEdge = getDirEdgeCoords(getRoomMoveDir(bro.currentRoom, bw.destRoom));
+            bro.currentRoom = bw.destRoom; bro.currentActivity = bw.finalAct;
+            bro.px = dEdge.ix; bro.py = dEdge.iy;
+            const f0 = (ROOM_FURNITURE[bw.destRoom] && ROOM_FURNITURE[bw.destRoom][0]) || { px: 320, py: 440 };
+            bro.tx = bw.tx || f0.px; bro.ty = bw.ty || f0.py;
+            if (bw.followView !== false) viewRoomId = bw.destRoom;
+            if (bw.finalSpeech) speakAndShow(bw.finalSpeech);
+            if (bw.onArrive) bw.onArrive();
+            renderDock(); updateHUD(); saveState();
+          } else {
+            const nr = bw.steps[bw.idx];
+            const dEdge = getDirEdgeCoords(getRoomMoveDir(bro.currentRoom, nr));
+            bw.stepEnteredAt = Date.now();
+            bro.currentRoom = nr; bro.currentActivity = 'street';
+            bro.px = dEdge.ix; bro.py = dEdge.iy; bro.tx = 300; bro.ty = 440;
+            if (bw.followView !== false) viewRoomId = nr;
+            updateHUD();
+          }
+        }
+      }
+      if (petWalk && !pet.recoverStage) {
+        if (Date.now() - petWalk.stepEnteredAt >= 2600) {
+          petWalk.idx++;
+          const pw = petWalk;
+          if (pw.idx >= pw.steps.length - 1) {
+            petWalk = null;
+            const dEdge = getDirEdgeCoords(getRoomMoveDir(pet.currentRoom, pw.destRoom));
+            pet.currentRoom = pw.destRoom; pet.currentActivity = pw.finalAct;
+            petX = dEdge.ix; petY = dEdge.iy;
+            const f0 = (ROOM_FURNITURE[pw.destRoom] && ROOM_FURNITURE[pw.destRoom][0]) || { px: 260, py: 440 };
+            targetX = pw.tx || f0.px; targetY = pw.ty || f0.py;
+            if (pw.followView !== false) viewRoomId = pw.destRoom;
+            if (pw.finalSpeech) speakAndShow(pw.finalSpeech);
+            if (pw.onArrive) pw.onArrive();
+            renderDock(); updateHUD(); saveState();
+          } else {
+            const nr = pw.steps[pw.idx];
+            const dEdge = getDirEdgeCoords(getRoomMoveDir(pet.currentRoom, nr));
+            pw.stepEnteredAt = Date.now();
+            pet.currentRoom = nr; pet.currentActivity = 'street';
+            petX = dEdge.ix; petY = dEdge.iy; targetX = 280; targetY = 440;
+            if (pw.followView !== false) viewRoomId = nr;
+            updateHUD();
+          }
+        }
+      }
       if (duoWalk) {
         if (Date.now() - duoWalk.stepEnteredAt >= 5000) {
           duoWalk.idx++;
@@ -1718,6 +1846,13 @@ html, body {
           if (ts.stage === 'wash') {
             if (nowT >= ts.stageUntil) {
               charObj.lastToiletAt = nowT;
+              if (charObj.currentRoom === 'toilet') {
+                const useSh = (state.supplyCfg && state.supplyCfg.tpUseSheets) || 3;
+                state.supplies.tpSheets = Math.max(0, (state.supplies.tpSheets ?? 180) - useSh);
+                if (state.supplies.tpSheets <= 0) {
+                  showDepletionAlert('tp', '🧻 廁紙已經全部用晒！無法再去廁所，請盡快去超市買廁紙！');
+                }
+              }
               if (isHinata) { recordStatLog(charObj, 'bladder', '🚽 去完廁所', charObj.bladder || 0, 0); charObj.bladder = 0; }
               const retR = ts.prevRoom || 'living', retA = ts.prevAct || 'idle';
               const retX = ts.prevX || (isHinata ? 260 : 330), retY = ts.prevY || 435;
@@ -1747,6 +1882,10 @@ html, body {
         if (viewRoomId === 'school_toilet') speakAndShow('「好急呀！趁小息／練波空檔去校內廁所小便先！🚻💨」');
         updateHUD();
       } else if ((pet.bladder || 0) > ((state.balance && state.balance.bladderAutoThreshold) ?? 70) && !hInToilet && !pet.recoverStage && !pet.fainted && !transitionState && !rally.active && isHomeToiletAllowed) {
+        if ((state.supplies?.tpSheets ?? 180) <= 0) {
+          pet.tpBlockedPending = true;
+          showDepletionAlert('tp', '🧻 廁紙已經全部用晒！翔陽去唔到廁所，請盡快去超市買廁紙！');
+        } else {
         const occupied = (bro.currentRoom === 'toilet' || (bro.toiletState && (bro.toiletState.stage === 'use' || bro.toiletState.stage === 'wash')));
         const wasSleep = (pet.currentActivity === 'sleep');
         const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: wasSleep };
@@ -1763,6 +1902,7 @@ html, body {
           if (viewRoomId === 'toilet') speakAndShow(wasSleep ? '「（迷迷糊糊起身去個廁所先…🚽）」' : '「忍唔住啦，去個廁所先！🚽」');
         }
         updateHUD();
+        }
       }
       if (!window.__lastToiletRollAt) window.__lastToiletRollAt = nowT;
       if (nowT - window.__lastToiletRollAt > 45000) {
@@ -1770,7 +1910,7 @@ html, body {
         const fixedToiletSkip = ['sleep', 'waking', 'bath', 'brush', 'cook', 'cook_bfast', 'prep_bfast', 'cook_lunch', 'cook_dinner', 'breakfast', 'lunch', 'dinner'];
         const aeT = (state.autoEvents && state.autoEvents.toilet) || { prob: 10, maxPerDay: 0 };
         const cntT = pet.dailyAutoCounts || { toilet: 0 };
-        const toiletAllowed = (aeT.prob > 0) && (aeT.maxPerDay === 0 || cntT.toilet < aeT.maxPerDay);
+        const toiletAllowed = (aeT.prob > 0) && (aeT.maxPerDay === 0 || cntT.toilet < aeT.maxPerDay) && ((state.supplies?.tpSheets ?? 180) > 0);
         if (toiletAllowed && !hInToilet && !pet.recoverStage && !pet.fainted && !pet.homeSeqStage && !transitionState && !rally.active && HOME_TOILET_ROOMS.has(pet.currentRoom) && !fixedToiletSkip.includes(pet.currentActivity) && nowT - (pet.lastToiletAt || 0) >= 30 * 60 * 1000) {
           if (Math.random() < (aeT.prob / 100)) {
             cntT.toilet = (cntT.toilet || 0) + 1;
@@ -1790,7 +1930,7 @@ html, body {
             updateHUD();
           }
         }
-        if (aeT.prob > 0 && !bInToilet && HOME_TOILET_ROOMS.has(bro.currentRoom) && !fixedToiletSkip.includes(bro.currentActivity) && nowT - (bro.lastToiletAt || 0) >= 30 * 60 * 1000) {
+        if ((state.supplies?.tpSheets ?? 180) > 0 && aeT.prob > 0 && !bInToilet && HOME_TOILET_ROOMS.has(bro.currentRoom) && !fixedToiletSkip.includes(bro.currentActivity) && nowT - (bro.lastToiletAt || 0) >= 30 * 60 * 1000) {
           if (Math.random() < (aeT.prob / 100)) {
             const occupied = (pet.currentRoom === 'toilet' || (pet.toiletState && (pet.toiletState.stage === 'use' || pet.toiletState.stage === 'wash')));
             const prev = { prevRoom: bro.currentRoom, prevAct: bro.currentActivity, prevX: bro.tx, prevY: bro.ty };
@@ -1805,6 +1945,102 @@ html, body {
               bro.px = 380; bro.py = 445; bro.tx = 380; bro.ty = 445;
             }
             updateHUD();
+          }
+        }
+      }
+
+      // 3c. Bath supplies check & deduction (shampoo / bodywash)
+      const sup = state.supplies || { tpSheets: 180, shampooUses: 90, bodywashUses: 90 };
+      const scfg = state.supplyCfg || { tpSheetsPerRoll: 180, tpUseSheets: 3, bathUsesPerBottle: 90, bathUsePerPerson: 3 };
+      if (sched.act === 'bath' && !state.supermarketTrip && !duoWalk && !pet.toiletState) {
+        if ((sup.shampooUses ?? 90) <= 0 || (sup.bodywashUses ?? 90) <= 0) {
+          showDepletionAlert('bath', '🧴 洗頭水／沐浴露已經用晒！無法浸浴，兩兄弟被迫返去客廳…請盡快買返！');
+          if (pet.currentRoom === 'bath') {
+            startCharacterWalkTransition(pet, 'living', 'tv', 330, 420, true);
+          }
+          if (bro.currentRoom === 'bath') {
+            bro.currentRoom = 'living'; bro.currentActivity = 'tv'; bro.tx = 445; bro.ty = 420;
+          }
+        } else if (pet.currentRoom === 'bath' && pet.lastBathDeductKey !== (getTodayStr() + '_' + sched.key)) {
+          pet.lastBathDeductKey = getTodayStr() + '_' + sched.key;
+          const bUse = (scfg.bathUsePerPerson || 3) * 2; // 2 persons
+          sup.shampooUses = Math.max(0, (sup.shampooUses ?? 90) - bUse);
+          sup.bodywashUses = Math.max(0, (sup.bodywashUses ?? 90) - bUse);
+          if (sup.shampooUses <= 0 || sup.bodywashUses <= 0) {
+            showDepletionAlert('bath', '🧴 浸完呢次浴，洗頭水／沐浴露用晒喇！下次浸浴前要記得去超市買！');
+          }
+        }
+      }
+
+      // 3d. If Supermarket trip is active, skip normal Hinata/Brother schedule overrides!
+      if (state.supermarketTrip) {
+        if (state.supermarketTrip.withHinata) {
+          return;
+        }
+        // Brother is solo at supermarket; keep him there while Hinata follows schedule
+      }
+
+      // 3e. Supper Slot (23:00-24:00)
+      const tdSup = getTodayStr();
+      if (info.totalMin >= 1380 && info.totalMin < 1440 && !state.supermarketTrip && !pet.fainted && !pet.recoverStage && !pet.toiletState && !state.outing?.type && !duoWalk && !broWalk) {
+        if (state.supperState && state.supperState.stage) {
+          const ss = state.supperState;
+          if (ss.stage === 'bro_asking' && Date.now() >= ss.until) {
+            const sProb = (state.supperSiumaiProb ?? 50) / 100;
+            let pickId = Math.random() < sProb ? 'sm_siumai' : 'sm_fishball';
+            if ((state.fridge[pickId] || 0) <= 0) {
+              const altId = pickId === 'sm_siumai' ? 'sm_fishball' : 'sm_siumai';
+              if ((state.fridge[altId] || 0) > 0) pickId = altId;
+              else pickId = null;
+            }
+            if (!pickId) {
+              state.supperState = null;
+              speakAndShow('「雪櫃上層冰格冇雪藏燒賣同魚蛋喇…聽日再去超市買啦 😢」');
+              startDuoJourney('living', 'tv', '「冇宵夜食住，返客廳休息啦～🏠」', null, () => { syncScheduleActivity(pet, false); });
+            } else {
+              state.fridge[pickId] -= 1;
+              ss.pickId = pickId;
+              ss.pickName = pickId === 'sm_siumai' ? '🥟 雪藏燒賣' : '🍢 雪藏魚蛋';
+              ss.stage = 'cooking';
+              ss.until = Date.now() + 210000; // 3m 30s
+              bro.currentRoom = 'kitchen'; bro.currentActivity = 'supper_cook'; bro.tx = 265; bro.ty = 400;
+              pet.currentRoom = 'kitchen'; pet.currentActivity = 'supper_wait'; targetX = 435; targetY = 455;
+              if (viewRoomId === 'kitchen') speakAndShow(`「我想食 ${ss.pickName}！！哥哥喺煮食位整緊（3分30秒），我喺餐桌等食～😋」`);
+              updateHUD(); saveState();
+            }
+          } else if (ss.stage === 'cooking' && Date.now() >= ss.until) {
+            ss.stage = 'eating';
+            ss.until = Date.now() + 15 * 60 * 1000; // 15m
+            bro.currentRoom = 'kitchen'; bro.currentActivity = 'supper_eat'; bro.tx = 505; bro.ty = 440;
+            pet.currentRoom = 'kitchen'; pet.currentActivity = 'supper_eat'; targetX = 435; targetY = 455;
+            if (viewRoomId === 'kitchen') speakAndShow(`「${ss.pickName} 整好啦！！兩兄弟一齊食宵夜（15分鐘）！🥟🍢✨」`);
+            updateHUD(); saveState();
+          } else if (ss.stage === 'eating' && Date.now() >= ss.until) {
+            const sb = (state.balance && state.balance.supper) || { hunger: 3, energy: 3, mood: 3, bladder: 3 };
+            const h0 = pet.hunger, m0 = pet.mood, e0 = pet.energy, b0 = pet.bladder || 0;
+            pet.hunger = Math.min(100, pet.hunger + (sb.hunger ?? 3));
+            pet.energy = Math.min(100, pet.energy + (sb.energy ?? 3));
+            pet.mood = Math.min(100, pet.mood + (sb.mood ?? 3));
+            pet.bladder = Math.min(100, (pet.bladder || 0) + (sb.bladder ?? 3));
+            recordStatLog(pet, 'hunger', `🌙 宵夜 (${ss.pickName})`, h0, pet.hunger);
+            recordStatLog(pet, 'mood', `🌙 宵夜 (${ss.pickName})`, m0, pet.mood);
+            recordStatLog(pet, 'energy', `🌙 宵夜 (${ss.pickName})`, e0, pet.energy);
+            recordStatLog(pet, 'bladder', `🌙 宵夜 (${ss.pickName})`, b0, pet.bladder);
+            state.supperState = null;
+            startDuoJourney('living', 'tea', '「食完宵夜返客廳休息啦，一陣準備瞓覺！🍵🌙」', '宵夜食完，返到客廳休息！', () => { syncScheduleActivity(pet, false); });
+          }
+          return;
+        } else if (pet.supperDate !== tdSup) {
+          pet.supperDate = tdSup;
+          const trigProb = (state.supperProb ?? 50) / 100;
+          if (Math.random() < trigProb) {
+            state.supperState = { stage: 'bro_asking', until: Date.now() + 4000 };
+            startDuoJourney('kitchen', 'supper_wait', '「哥哥…有啲肚餓想食宵夜呀！你去冰格睇下有冇燒賣定魚蛋？😋🌙」', '23:00 宵夜時段觸發！🌙', () => {
+              bro.currentRoom = 'kitchen'; bro.currentActivity = 'supper_pick'; bro.tx = 145; bro.ty = 440;
+              pet.currentRoom = 'kitchen'; pet.currentActivity = 'supper_wait'; targetX = 435; targetY = 455;
+            });
+            saveState();
+            return;
           }
         }
       }
@@ -1862,6 +2098,7 @@ html, body {
       }
 
       // 5. Sync Brother
+      if (state.supermarketTrip && !state.supermarketTrip.withHinata) { /* Brother solo at supermarket */ } else {
       if (['pharmacy', 'canteen'].includes(bSched.room) && !['pharmacy', 'canteen', 'hospital'].includes(bro.currentRoom) && !bro.toiletState && !state.outing?.type) {
         bro.currentRoom = bSched.room; bro.currentActivity = bSched.act; bro.px = bSched.px; bro.py = bSched.py; bro.tx = bSched.px; bro.ty = bSched.py;
       }
@@ -1917,6 +2154,7 @@ html, body {
         }
       }
 
+      }
       if (pet.backyardUntil && Date.now() >= pet.backyardUntil) {
         pet.backyardUntil = null;
         if (pet.currentRoom === 'backyard' && !pet.toiletState) {
@@ -2007,23 +2245,32 @@ html, body {
 
       // 6a-2. Hinata Fridge Self-Service (hunger <= 50 in 17:30 living15m / 21:00 TV / Weekend 12:00-01:30)
       const frMap = state.fridge || {};
-      const frKeys = SHOP_ITEMS.filter(it => (frMap[it.id] || 0) > 0);
+      const lowerSm = SUPERMARKET_ITEMS.filter(it => it.tier === 'lower' && (frMap[it.id] || 0) > 0);
+      const lowerLegacy = SHOP_ITEMS.filter(it => !['siumai','fishball'].includes(it.id) && (frMap[it.id] || 0) > 0);
+      const frKeys = [...lowerSm, ...lowerLegacy];
       if (pet.fridgeStage === 'choosing') {
         if (Date.now() >= (pet.fridgeUntil || 0)) {
           pet.fridgeStage = null;
           if (frKeys.length > 0) {
             const pickIt = frKeys[Math.floor(Math.random() * frKeys.length)];
             frMap[pickIt.id] -= 1;
-            const sr = (state.balance && state.balance.shopRate) || { hunger: 3, energy: 3, mood: 0 };
-            pet.hunger = Math.min(100, pet.hunger + pickIt.cost * (sr.hunger ?? 3));
-            pet.energy = Math.min(100, pet.energy + pickIt.cost * (sr.energy ?? 3));
-            pet.mood   = Math.min(100, pet.mood   + pickIt.cost * (sr.mood ?? 0));
-            addBladderFromConsume(pet, pickIt.id === 'juice' || pickIt.id === 'tea_soda');
+            let addH = 3, addE = 3, addM = 0;
+            if (pickIt.dept) {
+              const icfg = getSmItemCfg(pickIt.id);
+              addH = icfg.hunger; addE = icfg.energy;
+            } else {
+              const sr = (state.balance && state.balance.shopRate) || { hunger: 3, energy: 3, mood: 0 };
+              addH = pickIt.cost * (sr.hunger ?? 3); addE = pickIt.cost * (sr.energy ?? 3); addM = pickIt.cost * (sr.mood ?? 0);
+            }
+            pet.hunger = Math.min(100, pet.hunger + addH);
+            pet.energy = Math.min(100, pet.energy + addE);
+            pet.mood   = Math.min(100, pet.mood   + addM);
+            addBladderFromConsume(pet, ['juice','tea_soda','sm_apple_juice','sm_soda','sm_tea'].includes(pickIt.id));
             pet.fridgeWaitingEmpty = false;
             pet.currentRoom = 'living'; pet.currentActivity = 'tea'; targetX = 280; targetY = 440;
             if (viewRoomId === 'kitchen' || viewRoomId === 'living') {
               viewRoomId = 'living';
-              speakAndShow(`「喺雪櫃揀咗 ${pickIt.emoji}${pickIt.name} 返客廳食！好味！（飽食/精力 +${pickIt.val}%）😋」`);
+              speakAndShow(`「喺雪櫃下層揀咗 ${pickIt.emoji}${pickIt.name} 返客廳食！好味！（飽食+${addH}% 精力+${addE}%）😋」`);
             }
           } else {
             pet.fridgeWaitingEmpty = true;
@@ -2560,7 +2807,8 @@ html, body {
       { start: 1125, end: 1160, time: '18:45 - 19:20', roomName: '1F 廁所浴室',     label: '🫧 二人一齊浸浴' },
       { start: 1160, end: 1215, time: '19:20 - 20:15', roomName: '2F 哥哥房間',     label: '🎮 與哥哥玩樂時間' },
       { start: 1215, end: 1260, time: '20:15 - 21:00', roomName: '日向房 / 屋企',   label: '📖 溫書做功課・哥哥間中教導' },
-      { start: 1260, end: 1440, time: '21:00 - 24:00', roomName: '1F 客廳',         label: '📺 睇電視・偶爾去便利店/公園' }
+      { start: 1260, end: 1380, time: '21:00 - 23:00', roomName: '1F 客廳',         label: '📺 睇電視・偶爾去便利店/公園' },
+      { start: 1380, end: 1440, time: '23:00 - 24:00', roomName: '客廳 / 廚房',     label: '🌙 睇電視・50% 宵夜時段' }
     ];
     const WEEKEND_SCHEDULE_ITEMS = [
       { start: 0,    end: 600,  time: '00:00 - 10:00', roomName: '各自房間',        label: '😴 假日瞓懶覺（10:00 起身）' },
@@ -2620,7 +2868,7 @@ html, body {
       park_jog: '🏃 公園慢跑', park_walk: '🚶 公園散步', park_breeze: '🌊 睇海風中', toilet_use: '🚽 如廁中', toilet_urinal: '🚻 小便中', toilet_wash: '🧼 洗手中', toilet_wait: '⏳ 等緊廁所', court_run: '🏃 跑步熱身中', stretch: '🧘‍♂️ 拉筋放鬆中',
       gear_prep: '🏐 整理裝備中', window_gaze: '🌤️ 望窗外發呆', read_manga: '📚 睇排球漫畫',
       mirror_prep: '🪞 整理儀容中', tidy_bag: '🔑 檢查隨身物', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', konbini_mag: '📖 睇雜誌中', konbini_snack: '🍡 睇零食中', konbini_drink: '🥤 睇飲品中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理'
+      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', konbini_mag: '📖 睇雜誌中', konbini_snack: '🍡 睇零食中', konbini_drink: '🥤 睇飲品中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理', supermarket: '🛒 行超市中', supermarket_checkout: '💳 自助收銀付款', supper_wait: '🍽️ 等哥哥整宵夜', supper_eat: '🥟 一齊食宵夜'
     };
     const BROTHER_ACTIVITY_LABELS = {
       sleep: '😴 哥哥熟睡中', brush: '🪥 哥哥刷牙中', cook_bfast: '🍳 煮緊早餐', prep_bfast: '🥞 準備早餐中',
@@ -2634,7 +2882,7 @@ html, body {
       backyard: '🏐 陪練排球', idle: '✨ 休息中', stretch: '🧘‍♂️ 拉筋中',
       gear_prep: '🏐 幫手執裝備', window_gaze: '🌤️ 望窗外思考', read_manga: '📚 睇漫畫中',
       mirror_prep: '🪞 整理儀容', tidy_bag: '🔑 檢查鎖匙', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋', washing_dishes: '🫧 洗碗碟中'
+      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋', washing_dishes: '🫧 洗碗碟中', supermarket: '🛒 超市買嘢中', supermarket_checkout: '💳 自助收銀中', supper_pick: '🧊 睇上層冰格', supper_cook: '🍲 煮緊宵夜', supper_eat: '🥟 一齊食宵夜'
     };
     const IDLE_THOUGHTS = ['💭 想食玉子拌飯…', '💭 聽日要跳高啲！', '💭 哥哥幾時同我打機？', '💭 烏野一定打入全國！'];
 
@@ -3083,11 +3331,16 @@ html, body {
           particles.push({ x: state.brother.px, y: state.brother.py - 80, text: '💛 哥哥', color: '#f59e0b', life: 36 });
           return;
         }
+        if (viewRoomId === 'supermarket') {
+          const furnSm = (ROOM_FURNITURE.supermarket || []).find(f => Math.hypot(x - f.hx, y - f.hy) <= f.hr);
+          if (furnSm) { handleSupermarketZoneClick(furnSm.id); return; }
+        }
         showToast(`日向喺【${MAP_ROOMS[pet.currentRoom].short}】！`); return;
       }
       if (!isZoomed) {
         const furn = (ROOM_FURNITURE[viewRoomId] || []).find(f => Math.hypot(x - f.hx, y - f.hy) <= f.hr);
         if (furn && viewRoomId === 'kitchen' && furn.id === 'fridge') { openFridgeModal(); return; }
+        if (furn && viewRoomId === 'supermarket') { handleSupermarketZoneClick(furn.id); return; }
         if (furn && pet.currentActivity === 'sleep') {
           targetX = furn.px; targetY = furn.py; pet.currentActivity = furn.act;
           playSFX('wake'); speakAndShow(furn.line);
@@ -3612,6 +3865,14 @@ html, body {
       const blBtn = e.target.closest('[data-bl-key]');
       if (blBtn) {
         const { blKey, blDelta } = blBtn.dataset;
+        if (blKey === 'bladderSupper') {
+          if (!state.balance.supper) state.balance.supper = { hunger: 3, energy: 3, mood: 3, bladder: 3 };
+          const nv = Math.max(0, (state.balance.supper.bladder ?? 3) + Number(blDelta));
+          state.balance.supper.bladder = nv;
+          const sp = document.getElementById('bl-val-bladderSupper');
+          if (sp) sp.textContent = `+${nv}%`;
+          saveState(); return;
+        }
         const def = blKey === 'bladderMeal' ? 25 : (blKey === 'bladderFood' ? 5 : 10);
         const nv = Math.max(0, (state.balance[blKey] ?? def) + Number(blDelta));
         state.balance[blKey] = nv;
@@ -3679,6 +3940,54 @@ html, body {
         saveState();
         return;
       }
+      const smCfgBtn = e.target.closest('[data-smcfg-key]');
+      if (smCfgBtn) {
+        const { smcfgKey, smcfgDelta } = smCfgBtn.dataset;
+        const nv = Math.max(0, Math.min(100, (state[smcfgKey] ?? 50) + Number(smcfgDelta)));
+        state[smcfgKey] = nv;
+        const sp = document.getElementById(`smcfg-val-${smcfgKey}`);
+        if (sp) sp.textContent = `${nv}%`;
+        saveState(); return;
+      }
+      const supCfgBtn = e.target.closest('[data-supcfg-key]');
+      if (supCfgBtn) {
+        if (!state.supplyCfg) state.supplyCfg = { tpSheetsPerRoll: 180, tpUseSheets: 3, bathUsesPerBottle: 90, bathUsePerPerson: 3 };
+        const sc = state.supplyCfg;
+        const k = supCfgBtn.dataset.supcfgKey;
+        const d = Number(supCfgBtn.dataset.supcfgDelta);
+        if (k === 'tpSheetsPerRoll') {
+          const step = sc.tpUseSheets || 3;
+          sc.tpSheetsPerRoll = Math.max(step, Math.min(600, sc.tpSheetsPerRoll + d * step));
+          document.getElementById('supcfg-val-tpSheetsPerRoll').textContent = `${sc.tpSheetsPerRoll}格`;
+        } else if (k === 'tpUseSheets') {
+          const tot = sc.tpSheetsPerRoll || 180;
+          let nv = Math.max(1, Math.min(tot, sc.tpUseSheets + d));
+          while (nv >= 1 && nv <= tot && tot % nv !== 0) nv += (d > 0 ? 1 : -1);
+          if (nv >= 1 && nv <= tot && tot % nv === 0) sc.tpUseSheets = nv;
+          document.getElementById('supcfg-val-tpUseSheets').textContent = `-${sc.tpUseSheets}格`;
+        } else if (k === 'bathUsesPerBottle') {
+          const step = sc.bathUsePerPerson || 3;
+          sc.bathUsesPerBottle = Math.max(step, Math.min(300, sc.bathUsesPerBottle + d * step));
+          document.getElementById('supcfg-val-bathUsesPerBottle').textContent = `${sc.bathUsesPerBottle}次`;
+        } else if (k === 'bathUsePerPerson') {
+          const tot = sc.bathUsesPerBottle || 90;
+          let nv = Math.max(1, Math.min(tot, sc.bathUsePerPerson + d));
+          while (nv >= 1 && nv <= tot && tot % nv !== 0) nv += (d > 0 ? 1 : -1);
+          if (nv >= 1 && nv <= tot && tot % nv === 0) sc.bathUsePerPerson = nv;
+          document.getElementById('supcfg-val-bathUsePerPerson').textContent = `-${sc.bathUsePerPerson}次`;
+        }
+        saveState(); return;
+      }
+      const smiBtn = e.target.closest('[data-smi-id]');
+      if (smiBtn) {
+        const { smiId, smiField, smiDelta } = smiBtn.dataset;
+        ensureSupermarketCfg();
+        const cfg = state.supermarketItemsCfg[smiId];
+        cfg[smiField] = Math.max(smiField === 'price' ? 1 : 0, (cfg[smiField] ?? 3) + Number(smiDelta));
+        const sp = document.getElementById(`smi-${smiId}-${smiField}`);
+        if (sp) sp.textContent = smiField === 'price' ? `${cfg[smiField]}元` : `+${cfg[smiField]}%`;
+        saveState(); return;
+      }
       const aeBtn = e.target.closest('[data-ae-key]');
       if (aeBtn) {
         const { aeKey, aeField, aeDelta } = aeBtn.dataset;
@@ -3707,6 +4016,30 @@ html, body {
         }
         return;
       }
+      const smAdd = e.target.closest('[data-sm-add]');
+      if (smAdd) {
+        const id = smAdd.dataset.smAdd;
+        if (!state.cart) state.cart = {};
+        state.cart[id] = (state.cart[id] || 0) + 1;
+        playSFX('pat');
+        openSupermarketDeptModal(smAdd.dataset.smDept, smAdd.dataset.smTitle);
+        updateHUD(); saveState(); return;
+      }
+      const smOpenB = e.target.closest('[data-sm-open-basket]');
+      if (smOpenB) { openSupermarketCheckoutModal(false); return; }
+      const smDec = e.target.closest('[data-sm-dec]');
+      if (smDec) {
+        const id = smDec.dataset.smDec;
+        if (state.cart && state.cart[id] > 0) {
+          state.cart[id] -= 1;
+          if (state.cart[id] <= 0) delete state.cart[id];
+        }
+        playSFX('pat');
+        openSupermarketCheckoutModal(smDec.dataset.smChk === '1');
+        updateHUD(); saveState(); return;
+      }
+      const smPay = e.target.closest('[data-sm-pay]');
+      if (smPay) { completeSupermarketPayment(); return; }
       const smsClose = e.target.closest('[data-sms-close]');
       if (smsClose) { lastSmsReplyText = ''; document.getElementById('choice-overlay').classList.add('hidden'); return; }
       const smsBtn = e.target.closest('[data-sms-id]');
@@ -3823,17 +4156,288 @@ html, body {
       box.classList.remove('hidden'); box.scrollTop = 0;
     }
 
+    const SUPERMARKET_ITEMS = [
+      { id: 'sm_bread',       dept: 'sm_dry',     tier: 'lower', name: '麵包',     emoji: '🍞', unit: '個', isDrink: false },
+      { id: 'sm_sandwich',    dept: 'sm_dry',     tier: 'lower', name: '三文治',   emoji: '🥪', unit: '份', isDrink: false },
+      { id: 'sm_apple_juice', dept: 'sm_drink',   tier: 'lower', name: '蘋果汁',   emoji: '🍎', unit: '支', isDrink: true },
+      { id: 'sm_soda',        dept: 'sm_drink',   tier: 'lower', name: '汽水',     emoji: '🥤', unit: '罐', isDrink: true },
+      { id: 'sm_tea',         dept: 'sm_drink',   tier: 'lower', name: '茶',       emoji: '🍵', unit: '支', isDrink: true },
+      { id: 'sm_siumai',      dept: 'sm_freezer', tier: 'upper', name: '雪藏燒賣', emoji: '🥟', unit: '份', isDrink: false },
+      { id: 'sm_fishball',    dept: 'sm_freezer', tier: 'upper', name: '雪藏魚蛋', emoji: '🍢', unit: '份', isDrink: false },
+      { id: 'sm_tp',          dept: 'sm_tissue',  tier: 'supply',name: '廁紙',     emoji: '🧻', unit: '卷', isSupply: true },
+      { id: 'sm_shampoo',     dept: 'sm_bath',    tier: 'supply',name: '洗頭水',   emoji: '🧴', unit: '支', isSupply: true },
+      { id: 'sm_bodywash',    dept: 'sm_bath',    tier: 'supply',name: '沐浴露',   emoji: '🧼', unit: '支', isSupply: true }
+    ];
+    function ensureSupermarketCfg() {
+      if (!state.supermarketItemsCfg) state.supermarketItemsCfg = {};
+      SUPERMARKET_ITEMS.forEach(it => {
+        if (!state.supermarketItemsCfg[it.id]) state.supermarketItemsCfg[it.id] = { price: 3, hunger: 3, energy: 3 };
+      });
+    }
+    function getSmItemCfg(id) {
+      ensureSupermarketCfg();
+      return state.supermarketItemsCfg[id] || { price: 3, hunger: 3, energy: 3 };
+    }
+    function getCartTotalQty() {
+      const c = state.cart || {};
+      return Object.values(c).reduce((a, b) => a + (b || 0), 0);
+    }
+
     function openFridgeModal() {
       const fr = state.fridge || {};
       const box = document.getElementById('choice-overlay');
-      const rows = SHOP_ITEMS.map(it => {
+      const upperItems = SUPERMARKET_ITEMS.filter(it => it.tier === 'upper');
+      const lowerItems = SUPERMARKET_ITEMS.filter(it => it.tier === 'lower');
+      const mkRow = (it) => {
         const cnt = fr[it.id] || 0;
-        return `<div class="flex items-center justify-between px-2.5 py-1 rounded-lg border border-amber-300 bg-amber-50/70 text-[11px] font-bold"><span>${it.emoji} ${it.name} (+${it.val}%)</span><span class="${cnt > 0 ? 'text-emerald-700 font-black' : 'text-slate-400'}">x${cnt}</span></div>`;
-      }).join('');
-      box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12] mb-1">🧊 雪櫃食物存量（翔陽休息肚餓時會自己嚟攞）</div><div class="grid grid-cols-2 gap-1">${rows}</div><button type="button" data-sms-close="1" class="mt-1 self-center px-3 py-1 rounded-xl bg-white text-[#2d1e12] border-2 border-[#2d1e12] text-[10px] font-black">關上雪櫃</button>`;
+        const cfg = getSmItemCfg(it.id);
+        return `<div class="flex items-center justify-between px-2 py-1 rounded-lg border border-cyan-300 bg-cyan-50/70 text-[11px] font-bold"><span>${it.emoji} ${it.name} <span class="text-[9px] text-slate-500">(飽+${cfg.hunger}% 精+${cfg.energy}%)</span></span><span class="${cnt > 0 ? 'text-emerald-700 font-black' : 'text-slate-400'}">x${cnt}</span></div>`;
+      };
+      box.innerHTML = `<div class="sticky top-0 bg-white/95 pb-1 border-b border-cyan-200 flex items-center justify-between z-10">
+        <span class="text-xs font-black text-[#2d1e12]">🧊 雙層雪櫃存量</span>
+        <button type="button" data-sms-close="1" class="px-2.5 py-0.5 rounded-lg bg-orange-500 text-white border border-[#2d1e12] text-[10px] font-black">關上雪櫃</button>
+      </div>
+      <div class="text-[11px] font-black text-sky-700 mt-1">❄️ 上層冰格（宵夜專用）</div>
+      <div class="grid grid-cols-2 gap-1">${upperItems.map(mkRow).join('')}</div>
+      <div class="text-[11px] font-black text-emerald-700 mt-1.5">🧊 下層普通格（翔陽肚餓會自己嚟攞）</div>
+      <div class="grid grid-cols-2 gap-1">${lowerItems.map(mkRow).join('')}</div>`;
       box.classList.remove('hidden'); box.scrollTop = 0;
-      speakAndShow('「打開雪櫃睇下仲有幾多存糧～🧊」');
+      speakAndShow('「打開雪櫃！上層係冰格，下層放即食嘢食同飲品～🧊」');
     }
+
+    function openToiletCabinetModal() {
+      const sup = state.supplies || { tpSheets: 180 };
+      const scfg = state.supplyCfg || { tpSheetsPerRoll: 180, tpUseSheets: 3 };
+      const sheets = sup.tpSheets ?? 180;
+      const rolls = (sheets / (scfg.tpSheetsPerRoll || 180)).toFixed(1);
+      const box = document.getElementById('choice-overlay');
+      box.innerHTML = `<div class="sticky top-0 bg-white/95 pb-1 border-b border-rose-200 flex items-center justify-between z-10">
+        <span class="text-xs font-black text-[#2d1e12]">🧻 廁所儲物櫃</span>
+        <button type="button" data-sms-close="1" class="px-2.5 py-0.5 rounded-lg bg-orange-500 text-white border border-[#2d1e12] text-[10px] font-black">關閉</button>
+      </div>
+      <div class="bg-rose-50 border border-rose-300 rounded-xl p-2.5 text-xs font-bold space-y-1">
+        <div class="flex justify-between"><span>🧻 廁紙餘量</span><span class="${sheets > 0 ? 'text-emerald-700' : 'text-rose-600'} font-black">${sheets} 格（約 ${rolls} 卷）</span></div>
+        <div class="text-[10px] text-slate-600">每次去完廁所每人扣 ${scfg.tpUseSheets || 3} 格・每卷 ${scfg.tpSheetsPerRoll || 180} 格</div>
+        ${sheets <= 0 ? '<div class="text-rose-600 font-black text-[11px]">⚠️ 廁紙已用盡！目前無法使用廁所，請去超市買廁紙！</div>' : ''}
+      </div>`;
+      box.classList.remove('hidden'); box.scrollTop = 0;
+    }
+
+    function openBathSuppliesModal() {
+      const sup = state.supplies || { shampooUses: 90, bodywashUses: 90 };
+      const scfg = state.supplyCfg || { bathUsesPerBottle: 90, bathUsePerPerson: 3 };
+      const sh = sup.shampooUses ?? 90, bw = sup.bodywashUses ?? 90;
+      const box = document.getElementById('choice-overlay');
+      box.innerHTML = `<div class="sticky top-0 bg-white/95 pb-1 border-b border-purple-200 flex items-center justify-between z-10">
+        <span class="text-xs font-black text-[#2d1e12]">🧴 浴室沐浴用品</span>
+        <button type="button" data-sms-close="1" class="px-2.5 py-0.5 rounded-lg bg-orange-500 text-white border border-[#2d1e12] text-[10px] font-black">關閉</button>
+      </div>
+      <div class="bg-purple-50 border border-purple-300 rounded-xl p-2.5 text-xs font-bold space-y-1.5">
+        <div class="flex justify-between"><span>🧴 洗頭水餘量</span><span class="${sh > 0 ? 'text-emerald-700' : 'text-rose-600'} font-black">${sh} 次（每支 ${scfg.bathUsesPerBottle || 90} 次）</span></div>
+        <div class="flex justify-between"><span>🧼 沐浴露餘量</span><span class="${bw > 0 ? 'text-emerald-700' : 'text-rose-600'} font-black">${bw} 次（每支 ${scfg.bathUsesPerBottle || 90} 次）</span></div>
+        <div class="text-[10px] text-slate-600">每次浸浴每人各扣 ${scfg.bathUsePerPerson || 3} 次</div>
+        ${(sh <= 0 || bw <= 0) ? '<div class="text-rose-600 font-black text-[11px]">⚠️ 沐浴用品已用盡！無法浸浴，請去超市補充！</div>' : ''}
+      </div>`;
+      box.classList.remove('hidden'); box.scrollTop = 0;
+    }
+
+    let pendingDepletionType = null;
+    function showDepletionAlert(type, msg) {
+      pendingDepletionType = type;
+      const el = document.getElementById('depletion-alert');
+      const mEl = document.getElementById('depletion-alert-msg');
+      if (el && mEl) {
+        mEl.textContent = msg;
+        el.classList.remove('hidden');
+      }
+    }
+
+    function isBrotherAtHomeNow() {
+      const bro = state.brother;
+      if (!bro) return false;
+      return ['living', 'kitchen', 'hallway', 'bath', 'toilet', 'room_hinata', 'room_aniki', 'backyard'].includes(bro.currentRoom);
+    }
+
+    function triggerGoToSupermarket(bypassTimeCheck = false) {
+      const pet = ensurePetState(state.activeCharId);
+      const bro = state.brother;
+      const info = getCurrentHourInfo();
+      const totalMin = info.totalMin;
+      const isSmOpen = (totalMin >= 420 && totalMin < 1380); // 07:00-23:00
+      const isUserWindow = (totalMin >= 1160 && totalMin < 1440); // 19:20-24:00
+      if (!bypassTimeCheck && !isUserWindow) {
+        playSFX('miss'); showToast('哥哥只可以喺 19:20–24:00 之間去超市呀！🛒'); return;
+      }
+      if (!isSmOpen) {
+        playSFX('miss'); showToast('超級市場營業時間為 07:00–23:00，依家關門啦！🔒'); return;
+      }
+      if (!isBrotherAtHomeNow()) {
+        playSFX('miss'); showToast('哥哥而家唔喺屋企，返屋企先去到超市！🏠'); return;
+      }
+      if (state.supermarketTrip) {
+        viewRoomId = 'supermarket'; updateHUD(); return;
+      }
+      const prevH = { room: pet.currentRoom, act: pet.currentActivity, px: targetX, py: targetY };
+      const prevB = { room: bro.currentRoom, act: bro.currentActivity, px: bro.tx, py: bro.ty };
+      const accProb = (state.supermarketAccompanyProb ?? 90) / 100;
+      const withHinata = !pet.fainted && !pet.recoverStage && Math.random() < accProb;
+      state.supermarketTrip = { withHinata, prevHinata: prevH, prevBro: prevB, startedAt: Date.now() };
+      if (withHinata) {
+        pet.toiletState = null; pet.fridgeStage = null;
+        startDuoJourney('supermarket', 'supermarket', '「好呀！我陪哥哥一齊去超級市場買嘢！🛒✨」', '翔陽答應陪哥哥一齊去超級市場！🛒', () => {
+          updateHUD();
+        });
+      } else {
+        speakAndShow('「翔陽留喺屋企繼續佢原本嘅行程，哥哥自己一個行去超市買嘢！🛒」');
+        showToast('翔陽唔陪同，哥哥自己前往超級市場！🛒');
+        startSoloWalk('bro', 'supermarket', 'supermarket', '「哥哥行到嚟超級市場啦！揀部門買嘢先～🛒」', () => {
+          updateHUD();
+        });
+      }
+      saveState();
+    }
+
+    function handleSupermarketZoneClick(zoneId) {
+      const bro = state.brother;
+      const pet = ensurePetState(state.activeCharId);
+      const furn = (ROOM_FURNITURE.supermarket || []).find(f => f.id === zoneId);
+      if (!furn) return;
+      if (bro.currentRoom === 'supermarket') {
+        bro.tx = furn.px; bro.ty = furn.py; bro.currentActivity = furn.act;
+      }
+      if (pet.currentRoom === 'supermarket') {
+        targetX = Math.max(95, furn.px - 45); targetY = furn.py; pet.currentActivity = furn.act;
+      }
+      playSFX('pat');
+      if (zoneId === 'sm_checkout') {
+        openSupermarketCheckoutModal(true);
+      } else {
+        openSupermarketDeptModal(zoneId, furn.label);
+      }
+    }
+
+    function openSupermarketDeptModal(deptId, title) {
+      const items = SUPERMARKET_ITEMS.filter(it => it.dept === deptId);
+      const cart = state.cart || {};
+      const scfg = state.supplyCfg || { tpSheetsPerRoll: 180, bathUsesPerBottle: 90 };
+      const box = document.getElementById('choice-overlay');
+      const rows = items.map(it => {
+        const cfg = getSmItemCfg(it.id);
+        const inCart = cart[it.id] || 0;
+        const desc = it.isSupply
+          ? (it.id === 'sm_tp' ? `1卷=${scfg.tpSheetsPerRoll || 180}格` : `1支=${scfg.bathUsesPerBottle || 90}次`)
+          : `飽食+${cfg.hunger}%・精力+${cfg.energy}%`;
+        return `<div class="flex items-center justify-between bg-amber-50 border border-amber-300 rounded-xl px-2.5 py-1.5 text-[11px] font-bold">
+          <div>
+            <div class="text-[#2d1e12]">${it.emoji} ${it.name} <span class="text-amber-700 font-black">🪙${cfg.price}元/${it.unit}</span></div>
+            <div class="text-[9px] text-slate-600">${desc}${inCart > 0 ? ` · 籃內 x${inCart}` : ''}</div>
+          </div>
+          <button type="button" data-sm-add="${it.id}" data-sm-dept="${deptId}" data-sm-title="${title}" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white border border-[#2d1e12] text-[10px] font-black shrink-0">+ 放入購物籃</button>
+        </div>`;
+      }).join('');
+      box.innerHTML = `<div class="sticky top-0 bg-white/95 pb-1.5 border-b border-amber-200 flex items-center justify-between z-10">
+        <span class="text-xs font-black text-[#2d1e12]">🛒 ${title}</span>
+        <div class="flex gap-1">
+          <button type="button" data-sm-open-basket="1" class="px-2 py-0.5 rounded-lg bg-orange-100 text-[#2d1e12] border border-[#2d1e12] text-[10px] font-black">🧺 籃(${getCartTotalQty()})</button>
+          <button type="button" data-sms-close="1" class="px-2.5 py-0.5 rounded-lg bg-orange-500 text-white border border-[#2d1e12] text-[10px] font-black">關閉</button>
+        </div>
+      </div>${rows}`;
+      box.classList.remove('hidden'); box.scrollTop = 0;
+    }
+
+    function openSupermarketCheckoutModal(isCheckout = false) {
+      const cart = state.cart || {};
+      const pet = ensurePetState(state.activeCharId);
+      const entries = SUPERMARKET_ITEMS.filter(it => (cart[it.id] || 0) > 0);
+      let totalCost = 0;
+      const rows = entries.length ? entries.map(it => {
+        const qty = cart[it.id];
+        const cfg = getSmItemCfg(it.id);
+        const sub = qty * cfg.price;
+        totalCost += sub;
+        return `<div class="flex items-center justify-between bg-emerald-50 border border-emerald-300 rounded-xl px-2.5 py-1.5 text-[11px] font-bold">
+          <div>
+            <div class="text-[#2d1e12]">${it.emoji} ${it.name} x${qty}</div>
+            <div class="text-[9px] text-amber-700">單價 ${cfg.price}元 · 小計 🪙${sub}元</div>
+          </div>
+          <button type="button" data-sm-dec="${it.id}" data-sm-chk="${isCheckout ? 1 : 0}" class="px-2.5 py-0.5 rounded-lg bg-rose-500 hover:bg-rose-600 text-white border border-[#2d1e12] text-[11px] font-black">-1</button>
+        </div>`;
+      }).join('') : '<div class="text-center text-xs text-slate-400 py-5">購物籃暫時空空如也～去各部門揀嘢啦！🛒</div>';
+      const box = document.getElementById('choice-overlay');
+      box.innerHTML = `<div class="sticky top-0 bg-white/95 pb-1.5 border-b border-emerald-200 flex items-center justify-between z-10">
+        <span class="text-xs font-black text-[#2d1e12]">${isCheckout ? '💳 自助收銀・最後清單' : '🧺 購物籃（只可減少）'}</span>
+        <button type="button" data-sms-close="1" class="px-2.5 py-0.5 rounded-lg bg-orange-500 text-white border border-[#2d1e12] text-[10px] font-black">關閉</button>
+      </div>
+      ${rows}
+      <div class="mt-1.5 pt-1.5 border-t border-emerald-200 flex items-center justify-between text-xs font-black">
+        <span>總計：🪙${totalCost} 元（哥哥持有 🪙${pet.coins}）</span>
+        ${isCheckout && entries.length ? `<button type="button" data-sm-pay="1" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white border-2 border-[#2d1e12] text-[11px] font-black">💳 確認付款</button>` : ''}
+      </div>
+      ${!isCheckout && entries.length ? '<div class="text-[10px] text-amber-700 font-bold text-center">💡 請按「💳 自助收銀」進行付款，籃內有嘢唔可以離開超市！</div>' : ''}`;
+      box.classList.remove('hidden'); box.scrollTop = 0;
+    }
+
+    function completeSupermarketPayment() {
+      const cart = state.cart || {};
+      const entries = SUPERMARKET_ITEMS.filter(it => (cart[it.id] || 0) > 0);
+      if (!entries.length) { showToast('購物籃冇嘢喎！'); return; }
+      const pet = ensurePetState(state.activeCharId);
+      let totalCost = 0;
+      entries.forEach(it => { totalCost += (cart[it.id] || 0) * getSmItemCfg(it.id).price; });
+      if (pet.coins < totalCost) {
+        playSFX('miss'); showToast(`哥哥金幣唔夠 🪙${totalCost}！請減少購物籃物品！`); return;
+      }
+      pet.coins -= totalCost;
+      if (!state.fridge) state.fridge = {};
+      if (!state.supplies) state.supplies = { tpSheets: 180, shampooUses: 90, bodywashUses: 90 };
+      const scfg = state.supplyCfg || { tpSheetsPerRoll: 180, bathUsesPerBottle: 90 };
+      const summaryParts = [];
+      entries.forEach(it => {
+        const qty = cart[it.id];
+        summaryParts.push(`${it.emoji}${it.name}x${qty}`);
+        if (it.id === 'sm_tp') state.supplies.tpSheets = (state.supplies.tpSheets || 0) + qty * (scfg.tpSheetsPerRoll || 180);
+        else if (it.id === 'sm_shampoo') state.supplies.shampooUses = (state.supplies.shampooUses || 0) + qty * (scfg.bathUsesPerBottle || 90);
+        else if (it.id === 'sm_bodywash') state.supplies.bodywashUses = (state.supplies.bodywashUses || 0) + qty * (scfg.bathUsesPerBottle || 90);
+        else state.fridge[it.id] = (state.fridge[it.id] || 0) + qty;
+      });
+      state.cart = {};
+      pet.fridgeWaitingEmpty = false;
+      document.getElementById('choice-overlay').classList.add('hidden');
+      recordPurchaseLog(pet, '超級市場', summaryParts.join('、'), totalCost, '哥哥付款');
+      playSFX('levelup');
+      showToast(`付款成功 🪙-${totalCost}！買齊返屋企放好～🏠`);
+
+      const trip = state.supermarketTrip;
+      const hadTpBlock = pet.tpBlockedPending && (state.supplies.tpSheets > 0);
+      pet.tpBlockedPending = false;
+      if (trip && trip.withHinata) {
+        const ph = trip.prevHinata || { room: 'living', act: 'tv', px: 330, py: 420 };
+        startDuoJourney(ph.room, ph.act, '「買完嘢返到屋企放好雪櫃同儲物櫃啦！🛒🏠」', null, () => {
+          state.supermarketTrip = null;
+          if (hadTpBlock) {
+            pet.toiletState = { stage: 'use', stageUntil: Date.now() + 60000, prevRoom: ph.room, prevAct: ph.act, prevX: ph.px, prevY: ph.py };
+            startCharacterWalkTransition(pet, 'toilet', 'toilet_use', 380, 445, true);
+          } else {
+            syncScheduleActivity(pet, false);
+          }
+          updateHUD(); saveState();
+        });
+      } else {
+        const pb = (trip && trip.prevBro) || { room: 'living', act: 'tv', px: 445, py: 420 };
+        startSoloWalk('bro', pb.room, pb.act, '「哥哥買完超市返到屋企放好晒啦！🛒🏠」', () => {
+          state.supermarketTrip = null;
+          if (hadTpBlock) {
+            pet.toiletState = { stage: 'use', stageUntil: Date.now() + 60000, prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY };
+            startCharacterWalkTransition(pet, 'toilet', 'toilet_use', 380, 445, true);
+          } else {
+            syncScheduleActivity(pet, false);
+          }
+          updateHUD(); saveState();
+        });
+      }
+      updateHUD(); saveState();
+    }
+
 
 
     // =========================================================================
@@ -3948,6 +4552,8 @@ html, body {
           { key: 'rest',     title: '休息／浸浴（每小時）' },
           { key: 'sleep',    title: '😴 瞓覺（每小時）' },
           { key: 'meal',     title: '早午晚三餐（每餐共加）' },
+          { key: 'supermarket', title: '🛒 超市（每小時）' },
+          { key: 'supper',   title: '🌙 宵夜（23:00-24:00 每次）' },
           { key: 'shopRate', title: '🛒 購物雪櫃食物（每1元）' },
           { key: 'feedRate', title: '🍱 餵食食物（每1元）' }
         ];
@@ -4008,6 +4614,94 @@ html, body {
           ['dateAccept','💌 手動約會答應率',false,false],
           ['cleanReward','🧹 客廳執屋獎勵機率',false,false]
         ];
+        const smSupHtml = `<div class="bg-emerald-50 border border-emerald-300 rounded-xl p-1.5 mt-1.5">
+          <div class="text-[11px] font-black text-[#2d1e12] mb-1">🛒 超市陪同、宵夜機率與日用品消耗（整除鎖定）</div>
+          <div class="grid grid-cols-2 gap-1 text-[10px] font-bold">
+            <div class="flex items-center justify-between bg-white border border-emerald-300 rounded px-1.5 py-0.5">
+              <span>🛒 翔陽陪同去超市</span>
+              <div class="flex items-center gap-0.5">
+                <button type="button" data-smcfg-key="supermarketAccompanyProb" data-smcfg-delta="-5" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                <span id="smcfg-val-supermarketAccompanyProb">${state.supermarketAccompanyProb ?? 90}%</span>
+                <button type="button" data-smcfg-key="supermarketAccompanyProb" data-smcfg-delta="5" class="w-4 h-4 rounded bg-emerald-300 font-black">+</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-white border border-emerald-300 rounded px-1.5 py-0.5">
+              <span>🌙 23-24點宵夜觸發</span>
+              <div class="flex items-center gap-0.5">
+                <button type="button" data-smcfg-key="supperProb" data-smcfg-delta="-5" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                <span id="smcfg-val-supperProb">${state.supperProb ?? 50}%</span>
+                <button type="button" data-smcfg-key="supperProb" data-smcfg-delta="5" class="w-4 h-4 rounded bg-emerald-300 font-black">+</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-white border border-emerald-300 rounded px-1.5 py-0.5">
+              <span>🥟 宵夜揀燒賣機率</span>
+              <div class="flex items-center gap-0.5">
+                <button type="button" data-smcfg-key="supperSiumaiProb" data-smcfg-delta="-5" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                <span id="smcfg-val-supperSiumaiProb">${state.supperSiumaiProb ?? 50}%</span>
+                <button type="button" data-smcfg-key="supperSiumaiProb" data-smcfg-delta="5" class="w-4 h-4 rounded bg-emerald-300 font-black">+</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-white border border-emerald-300 rounded px-1.5 py-0.5">
+              <span>🧻 1卷廁紙格數</span>
+              <div class="flex items-center gap-0.5">
+                <button type="button" data-supcfg-key="tpSheetsPerRoll" data-supcfg-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                <span id="supcfg-val-tpSheetsPerRoll">${(state.supplyCfg && state.supplyCfg.tpSheetsPerRoll) || 180}格</span>
+                <button type="button" data-supcfg-key="tpSheetsPerRoll" data-supcfg-delta="1" class="w-4 h-4 rounded bg-emerald-300 font-black">+</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-white border border-emerald-300 rounded px-1.5 py-0.5">
+              <span>🧻 每次去廁所扣格</span>
+              <div class="flex items-center gap-0.5">
+                <button type="button" data-supcfg-key="tpUseSheets" data-supcfg-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                <span id="supcfg-val-tpUseSheets">-${(state.supplyCfg && state.supplyCfg.tpUseSheets) || 3}格</span>
+                <button type="button" data-supcfg-key="tpUseSheets" data-supcfg-delta="1" class="w-4 h-4 rounded bg-emerald-300 font-black">+</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-white border border-emerald-300 rounded px-1.5 py-0.5">
+              <span>🧴 1支沐浴用品次數</span>
+              <div class="flex items-center gap-0.5">
+                <button type="button" data-supcfg-key="bathUsesPerBottle" data-supcfg-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                <span id="supcfg-val-bathUsesPerBottle">${(state.supplyCfg && state.supplyCfg.bathUsesPerBottle) || 90}次</span>
+                <button type="button" data-supcfg-key="bathUsesPerBottle" data-supcfg-delta="1" class="w-4 h-4 rounded bg-emerald-300 font-black">+</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-white border border-emerald-300 rounded px-1.5 py-0.5">
+              <span>🧴 每次浸浴每人扣</span>
+              <div class="flex items-center gap-0.5">
+                <button type="button" data-supcfg-key="bathUsePerPerson" data-supcfg-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                <span id="supcfg-val-bathUsePerPerson">-${(state.supplyCfg && state.supplyCfg.bathUsePerPerson) || 3}次</span>
+                <button type="button" data-supcfg-key="bathUsePerPerson" data-supcfg-delta="1" class="w-4 h-4 rounded bg-emerald-300 font-black">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-amber-50 border border-amber-300 rounded-xl p-1.5 mt-1.5">
+          <div class="text-[11px] font-black text-[#2d1e12] mb-1">🛒 超市商品價錢與回復（預設 3元 / +3%）</div>
+          <div class="space-y-1 text-[10px] font-bold">
+            ${SUPERMARKET_ITEMS.map(it => {
+              const ic = getSmItemCfg(it.id);
+              return `<div class="flex flex-wrap items-center justify-between bg-white border border-amber-300 rounded px-1.5 py-0.5 gap-1">
+                <span>${it.emoji} ${it.name}</span>
+                <div class="flex items-center gap-1">
+                  <span>🪙</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="price" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="smi-${it.id}-price">${ic.price}元</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="price" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
+                  ${!it.isSupply ? `<span>🍙</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="hunger" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="smi-${it.id}-hunger">+${ic.hunger}%</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="hunger" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
+                  <span>⚡</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="energy" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="smi-${it.id}-energy">+${ic.energy}%</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="energy" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>` : ''}
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+        const _dummy = [
+        ];
         const aeHtml = `<div class="bg-purple-50 border border-purple-300 rounded-xl p-1.5">
           <div class="text-[11px] font-black text-[#2d1e12] mb-1">🎲 隨機事件機率、每日上限與時長</div>
           <div class="space-y-1 text-[10px] font-bold">
@@ -4055,7 +4749,7 @@ html, body {
             </div>
           </div>
         </div>`;
-        bodyHtml = aeHtml;
+        bodyHtml = aeHtml + smSupHtml;
       } else if (settingsTab === 'rewards') {
         bodyHtml = `<div class="bg-sky-50 border border-sky-300 rounded-xl p-1.5">
           <div class="text-[11px] font-black text-[#2d1e12] mb-1">🏖️ 外出停留時間（分鐘）</div>
@@ -4125,7 +4819,7 @@ html, body {
         bodyHtml = `<div class="bg-sky-50/90 border border-sky-300 rounded-xl p-1.5">
           <div class="text-[11px] font-black text-[#2d1e12] mb-1">🚽 尿意上升與門檻設定</div>
           <div class="grid grid-cols-2 gap-1 text-[10px] font-bold">
-            ${[['bladderPerHour','每小時自然上升'],['bladderFood','食食物/小食即時'],['bladderDrink','飲飲品即時'],['bladderMeal','三餐30分共加']].map(([bk, blbl]) => `
+            ${[['bladderPerHour','每小時自然上升'],['bladderFood','食食物/小食即時'],['bladderDrink','飲飲品即時'],['bladderMeal','三餐30分共加'],['bladderSupper','宵夜即時加尿意']].map(([bk, blbl]) => `
               <div class="flex items-center justify-between bg-white border border-sky-300 rounded px-1.5 py-0.5">
                 <span class="truncate">${blbl}</span>
                 <div class="flex items-center gap-0.5 shrink-0">
@@ -4397,7 +5091,7 @@ html, body {
         const isBro = it.sender === 'brother';
         if (it.type === 'invite' && !it.answered) {
           return `<div class="flex items-end gap-1.5">
-            <img src="./assets/chibiJersey.png?v=68" class="w-8 h-8 rounded-full border-2 border-[#2d1e12] bg-amber-100 object-cover object-top shrink-0" alt="翔陽" />
+            <img src="./assets/chibiJersey.png?v=69" class="w-8 h-8 rounded-full border-2 border-[#2d1e12] bg-amber-100 object-cover object-top shrink-0" alt="翔陽" />
             <div class="bg-rose-50 border-2 border-rose-400 rounded-2xl rounded-tl-sm p-2.5 text-[11px] font-bold max-w-[80%] shadow-xs">
               <div class="text-rose-700 font-black mb-1">💌 約會邀請（${it.date} ${it.slot}）</div>
               <div class="mb-1.5 text-[#2d1e12]">${it.text}</div>
@@ -4414,11 +5108,11 @@ html, body {
               <div class="bg-orange-400 text-white border-2 border-[#2d1e12] rounded-2xl rounded-tr-sm px-3 py-1.5 text-xs font-bold shadow-xs">${it.text}</div>
               <span class="text-[9px] text-slate-500 mt-0.5 pr-1">${it.timeStr || ''}</span>
             </div>
-            <img src="./assets/chibiBrother.png?v=68" class="w-8 h-8 rounded-full border-2 border-[#2d1e12] bg-sky-100 object-cover object-top shrink-0" alt="哥哥" />
+            <img src="./assets/chibiBrother.png?v=69" class="w-8 h-8 rounded-full border-2 border-[#2d1e12] bg-sky-100 object-cover object-top shrink-0" alt="哥哥" />
           </div>`;
         }
         return `<div class="flex items-end gap-1.5">
-          <img src="./assets/chibiJersey.png?v=68" class="w-8 h-8 rounded-full border-2 border-[#2d1e12] bg-amber-100 object-cover object-top shrink-0" alt="翔陽" />
+          <img src="./assets/chibiJersey.png?v=69" class="w-8 h-8 rounded-full border-2 border-[#2d1e12] bg-amber-100 object-cover object-top shrink-0" alt="翔陽" />
           <div class="flex flex-col items-start max-w-[78%]">
             <div class="bg-white text-[#2d1e12] border-2 border-[#2d1e12] rounded-2xl rounded-tl-sm px-3 py-1.5 text-xs font-bold shadow-xs whitespace-pre-line">${it.text}</div>
             <span class="text-[9px] text-slate-500 mt-0.5 pl-1">${it.timeStr || ''}</span>
@@ -4467,24 +5161,11 @@ html, body {
     }
 
     function renderDock() {
-      const tabFood = document.getElementById('tab-food'), tabAct = document.getElementById('tab-act'), tabShop = document.getElementById('tab-shop');
-      const isFood = state.dockTab === 'food', isShop = state.dockTab === 'shop';
+      const tabFood = document.getElementById('tab-food'), tabAct = document.getElementById('tab-act');
+      const isFood = state.dockTab === 'food';
       tabFood.className = `px-2 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] ${isFood ? 'bg-orange-500 text-white' : 'bg-white text-[#2d1e12]'}`;
-      tabAct.className = `px-2 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] ${(!isFood && !isShop) ? 'bg-orange-500 text-white' : 'bg-white text-[#2d1e12]'}`;
-      if (tabShop) tabShop.className = `px-2 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] ${isShop ? 'bg-emerald-600 text-white' : 'bg-white text-[#2d1e12]'}`;
+      tabAct.className = `px-2 py-0.5 rounded-lg text-[11px] font-black border-2 border-[#2d1e12] ${!isFood ? 'bg-orange-500 text-white' : 'bg-white text-[#2d1e12]'}`;
       const tray = document.getElementById('dock-tray');
-      if (isShop) {
-        const fr = state.fridge || {};
-        tray.innerHTML = SHOP_ITEMS.map(it => `
-          <button type="button" data-shop-id="${it.id}" class="dock-chip bg-white hover:bg-emerald-50 rounded-xl p-1 flex flex-col items-center justify-center h-[62px]">
-            <span class="text-lg leading-none">${it.emoji}</span>
-            <span class="text-[10px] font-bold text-[#2d1e12] leading-tight mt-0.5">${it.name} <span class="text-emerald-700">x${fr[it.id]||0}</span></span>
-            <span class="text-[9px] font-bold text-amber-700">🪙${it.cost} (+${it.val}%)</span>
-          </button>
-        `).join('');
-        document.getElementById('act-pager')?.classList.add('hidden');
-        return;
-      }
       if (isFood) {
         const pet = ensurePetState(state.activeCharId);
         if (pet.recoverStage === 'bed') {
@@ -4539,7 +5220,8 @@ html, body {
         { id: 'play',  emoji: '🏐', name: '雙人對打', sub: '輪流接波' },
         { id: 'practice', emoji: '🔥', name: '練球', sub: '去後院練習' },
         { id: 'furn',  emoji: '🛋️', name: '房間傢俬', sub: '場景互動' },
-        { id: 'konbini_trip', emoji: '🏪', name: '去便利店', sub: '一齊留10分鐘' },
+        { id: 'go_supermarket', emoji: '🛒', name: '去超市', sub: '19:20-23:00' },
+        { id: 'konbini_trip', emoji: '🏪', name: '去便利店', sub: '24小時營業' },
         { id: 'mall_trip', emoji: '🛍️', name: '去商場', sub: '22:00關門' },
         { id: 'park_trip', emoji: '🌳', name: '去公園', sub: '散步吹海風' },
         { id: 'rest_trip', emoji: '🍽️', name: '去餐廳', sub: '22:00關門' },
@@ -4635,7 +5317,8 @@ html, body {
           }
         } else if (id === 'rest_eating') {
           playSFX('eat'); speakAndShow('「食緊美味大餐中～要食完一個鐘先返屋企！🍽️😋」');
-        } else if (id === 'konbini_trip') {
+        } else if (id === 'go_supermarket') { triggerGoToSupermarket(false); }
+        else if (id === 'konbini_trip') {
           if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
           const bothHome = !['school_class', 'school_court', 'pharmacy', 'canteen'].includes(pet.currentRoom) && !['school_class', 'school_court', 'pharmacy', 'canteen'].includes(bro.currentRoom);
           if (!bothHome) { playSFX('miss'); showToast('哥哥仲喺醫院返工，等佢返屋企先一齊去啦！🏥'); return; }
@@ -4910,6 +5593,20 @@ html, body {
         hBtn.className = `whitespace-nowrap px-2 py-0.5 rounded-full font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm transition ${isTomHol ? 'bg-emerald-500 text-white' : 'bg-white text-emerald-700 hover:bg-emerald-50'}`;
       }
       document.getElementById('room-title-badge').textContent = `${viewRoom.icon} ${viewRoom.name}`;
+      const smZones = document.getElementById('supermarket-zones');
+      if (smZones) smZones.classList.toggle('hidden', viewRoomId !== 'supermarket' || isZoomed);
+      const bskBtn = document.getElementById('btn-sm-basket');
+      if (bskBtn) bskBtn.textContent = `🧺 購物籃 (${getCartTotalQty()})`;
+      const kfBtn = document.getElementById('btn-kitchen-fridge');
+      if (kfBtn) kfBtn.classList.toggle('hidden', viewRoomId !== 'kitchen' || isZoomed);
+      const tcBtn = document.getElementById('btn-toilet-cabinet');
+      if (tcBtn) {
+        tcBtn.classList.toggle('hidden', viewRoomId !== 'toilet' || isZoomed);
+        const tps = state.supplies ? (state.supplies.tpSheets ?? 180) : 180;
+        tcBtn.textContent = `🧻 廁櫃 (${tps}格)`;
+      }
+      const bsBtn = document.getElementById('btn-bath-supplies');
+      if (bsBtn) bsBtn.classList.toggle('hidden', viewRoomId !== 'bath' || isZoomed);
       document.getElementById('outfit-name').textContent = outfit.name;
       document.getElementById('zoom-icon').textContent = isZoomed ? '🔎' : '🔍';
       document.getElementById('zoom-label').textContent = isZoomed ? '縮細全景' : '放大特寫';
@@ -4958,6 +5655,9 @@ html, body {
     ['up', 'down', 'left', 'right'].forEach(dir => {
       document.getElementById('dir-' + dir).addEventListener('click', () => {
         const nextId = MAP_ROOMS[viewRoomId][dir]; if (!nextId) return;
+        if (viewRoomId === 'supermarket' && getCartTotalQty() > 0) {
+          playSFX('miss'); showToast('購物籃仲有嘢未俾錢，唔可以離開超市呀！🧺🔒'); return;
+        }
         viewRoomId = nextId; document.getElementById('choice-overlay').classList.add('hidden'); renderDock(); playSFX('pat'); updateHUD();
       });
     });
@@ -4970,7 +5670,25 @@ html, body {
       playSFX('pat'); renderDock(); updateHUD();
       showToast(`已切換至哥哥所在位置：${MAP_ROOMS[viewRoomId]?.name || viewRoomId}`);
     });
-    document.getElementById('btn-find-pet').addEventListener('click', () => {
+    document.getElementById('supermarket-zones')?.addEventListener('click', (e) => {
+      const zb = e.target.closest('[data-sm-zone]');
+      if (zb) { handleSupermarketZoneClick(zb.dataset.smZone); return; }
+      if (e.target.closest('#btn-sm-basket')) { openSupermarketCheckoutModal(false); return; }
+    });
+    document.getElementById('btn-kitchen-fridge')?.addEventListener('click', openFridgeModal);
+    document.getElementById('btn-toilet-cabinet')?.addEventListener('click', openToiletCabinetModal);
+    document.getElementById('btn-bath-supplies')?.addEventListener('click', openBathSuppliesModal);
+    document.getElementById('depletion-alert-ok')?.addEventListener('click', () => {
+      document.getElementById('depletion-alert')?.classList.add('hidden');
+      const info = getCurrentHourInfo();
+      const isSmOpen = (info.totalMin >= 420 && info.totalMin < 1380);
+      if (isBrotherAtHomeNow() && isSmOpen) {
+        triggerGoToSupermarket(true);
+      } else {
+        showToast('哥哥要喺屋企且喺超市營業時間 (07:00–23:00) 先可以即刻去買呀！🛒');
+      }
+    });
+document.getElementById('btn-find-pet').addEventListener('click', () => {
       viewRoomId = ensurePetState(state.activeCharId).currentRoom; renderDock(); playSFX('pat'); updateHUD();
     });
     document.getElementById('btn-zoom').addEventListener('click', () => { isZoomed = !isZoomed; playSFX('pat'); updateHUD(); });
