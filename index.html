@@ -206,7 +206,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v69.3</span>
+      <span id="save-status">💾 已自動儲存 · v69.4</span>
       
     </div>
 
@@ -890,13 +890,16 @@ html, body {
       const act = pet.currentActivity;
       const schedOsl = getScheduledState(getCurrentHourInfo());
       const mealActOsl = ['breakfast', 'lunch', 'dinner'].includes(act) ? act : ((pet.currentRoom === 'kitchen' && ['breakfast', 'lunch', 'dinner'].includes(schedOsl.act)) ? schedOsl.act : null);
+      const isSupperEat = (act === 'supper_eat');
       const isMeal = !!mealActOsl;
       const isSleep = (act === 'sleep');
       const isRest = (!isSleep && (pet.recoverStage === 'rest30' || ['bath','tea','tv','park_breeze','water_break'].includes(act) || pet.homeSeqStage === 'living15m'));
       const isPrac = (act === 'backyard' || act === 'school_court' || pet.currentRoom === 'school_court');
       let perMin = 0;
       if (stat === 'bladder') {
-        if (isMeal) {
+        if (isSupperEat) {
+          perMin = ((bal.supper && bal.supper.bladder) ?? 3) / 15;
+        } else if (isMeal) {
           const isWk = getCurrentHourInfo().isWeekend;
           const md = mealActOsl === 'breakfast' ? (isWk?30:20) : (mealActOsl === 'lunch' ? (isWk?35:60) : (isWk?40:30));
           perMin = (bal.bladderMeal ?? 25) / md;
@@ -904,7 +907,9 @@ html, body {
           perMin = (bal.bladderPerHour ?? 10) / 60;
         }
       } else {
-        if (isMeal) {
+        if (isSupperEat) {
+          perMin = ((bal.supper && bal.supper[stat]) ?? 3) / 15;
+        } else if (isMeal) {
           const isWk = getCurrentHourInfo().isWeekend;
           const md = mealActOsl === 'breakfast' ? (isWk?30:20) : (mealActOsl === 'lunch' ? (isWk?35:60) : (isWk?40:30));
           perMin = ((bal.meal && bal.meal[stat]) ?? 0) / md;
@@ -964,11 +969,17 @@ html, body {
         const bal = state.balance || { normal: { hunger: -10, energy: -10, mood: -10 }, practice: { hunger: -15, energy: -15, mood: 0 }, rest: { hunger: -4, energy: 25, mood: 0 }, meal: { hunger: 70, energy: 70, mood: 0 } };
         const hrs = mins / 60;
         const isVolleyPractice = (pet.currentActivity === 'backyard' || pet.currentActivity === 'school_court' || pet.currentRoom === 'school_court');
+        const isSupperEatAct = (pet.currentActivity === 'supper_eat');
         const isSleepAct = (pet.currentActivity === 'sleep');
         const isRestAct = (!isSleepAct && (pet.recoverStage === 'rest30' || pet.currentActivity === 'bath' || pet.currentActivity === 'tea' || pet.currentActivity === 'tv' || pet.currentActivity === 'park_breeze' || pet.currentActivity === 'water_break' || pet.homeSeqStage === 'living15m'));
         const schedMealChk = (typeof getScheduledState === 'function' && typeof getCurrentHourInfo === 'function') ? getScheduledState(getCurrentHourInfo()) : null;
         const effectiveMealAct = ['breakfast', 'lunch', 'dinner'].includes(pet.currentActivity) ? pet.currentActivity : ((pet.currentRoom === 'kitchen' && schedMealChk && ['breakfast', 'lunch', 'dinner'].includes(schedMealChk.act)) ? schedMealChk.act : null);
-        if (isSleepAct) {
+        if (isSupperEatAct) {
+          const sb = bal.supper || { hunger: 3, energy: 3, mood: 3, bladder: 3 };
+          pet.hunger = Math.max(0, Math.min(100, pet.hunger + (mins / 15) * (sb.hunger ?? 3)));
+          pet.energy = Math.max(0, Math.min(100, pet.energy + (mins / 15) * (sb.energy ?? 3)));
+          pet.mood   = Math.max(0, Math.min(100, pet.mood   + (mins / 15) * (sb.mood ?? 3)));
+        } else if (isSleepAct) {
           const sl = bal.sleep || { hunger: -4, energy: 25, mood: 0 };
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + hrs * (sl.hunger ?? -4)));
           pet.energy = Math.max(0, Math.min(100, pet.energy + hrs * (sl.energy ?? 25)));
@@ -997,7 +1008,10 @@ html, body {
           pet.energy = Math.max(0, Math.min(100, pet.energy + hrs * (bal.normal.energy || 0)));
           pet.mood   = Math.max(0, Math.min(100, pet.mood   + hrs * (bal.normal.mood || 0)));
         }
-        if (effectiveMealAct) {
+        if (isSupperEatAct) {
+          const sb = bal.supper || { bladder: 3 };
+          pet.bladder = Math.max(0, Math.min(100, (pet.bladder || 0) + (mins / 15) * (sb.bladder ?? 3)));
+        } else if (effectiveMealAct) {
           const isWkndB = (typeof getCurrentHourInfo === 'function') ? getCurrentHourInfo().isWeekend : false;
           const mealDurB = (effectiveMealAct === 'breakfast') ? (isWkndB ? 30 : 20) : (effectiveMealAct === 'lunch' ? (isWkndB ? 35 : 60) : (isWkndB ? 40 : 30));
           const bMeal = (bal.bladderMeal ?? 25);
@@ -2013,21 +2027,17 @@ html, body {
           } else if (ss.stage === 'cooking' && Date.now() >= ss.until) {
             ss.stage = 'eating';
             ss.until = Date.now() + 15 * 60 * 1000; // 15m
+            ss.startStats = { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 };
             bro.currentRoom = 'kitchen'; bro.currentActivity = 'supper_eat'; bro.tx = 505; bro.ty = 440;
             pet.currentRoom = 'kitchen'; pet.currentActivity = 'supper_eat'; targetX = 435; targetY = 455;
             if (viewRoomId === 'kitchen') speakAndShow(`「${ss.pickName} 整好啦！！兩兄弟一齊食宵夜（15分鐘）！🥟🍢✨」`);
             updateHUD(); saveState();
           } else if (ss.stage === 'eating' && Date.now() >= ss.until) {
-            const sb = (state.balance && state.balance.supper) || { hunger: 3, energy: 3, mood: 3, bladder: 3 };
-            const h0 = pet.hunger, m0 = pet.mood, e0 = pet.energy, b0 = pet.bladder || 0;
-            pet.hunger = Math.min(100, pet.hunger + (sb.hunger ?? 3));
-            pet.energy = Math.min(100, pet.energy + (sb.energy ?? 3));
-            pet.mood = Math.min(100, pet.mood + (sb.mood ?? 3));
-            pet.bladder = Math.min(100, (pet.bladder || 0) + (sb.bladder ?? 3));
-            recordStatLog(pet, 'hunger', `🌙 宵夜 (${ss.pickName})`, h0, pet.hunger);
-            recordStatLog(pet, 'mood', `🌙 宵夜 (${ss.pickName})`, m0, pet.mood);
-            recordStatLog(pet, 'energy', `🌙 宵夜 (${ss.pickName})`, e0, pet.energy);
-            recordStatLog(pet, 'bladder', `🌙 宵夜 (${ss.pickName})`, b0, pet.bladder);
+            const s0 = ss.startStats || { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 };
+            recordStatLog(pet, 'hunger', `🌙 宵夜 (${ss.pickName})`, s0.hunger, pet.hunger);
+            recordStatLog(pet, 'mood', `🌙 宵夜 (${ss.pickName})`, s0.mood, pet.mood);
+            recordStatLog(pet, 'energy', `🌙 宵夜 (${ss.pickName})`, s0.energy, pet.energy);
+            recordStatLog(pet, 'bladder', `🌙 宵夜 (${ss.pickName})`, s0.bladder, pet.bladder || 0);
             state.supperState = null;
             startDuoJourney('living', 'tea', '「食完宵夜返客廳休息啦，一陣準備瞓覺！🍵🌙」', '宵夜食完，返到客廳休息！', () => { syncScheduleActivity(pet, false); });
           }
@@ -2567,7 +2577,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v69.3'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v69.4'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -6142,7 +6152,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v69.3';
+          if (el) el.textContent = '☁️ 雲端已同步 · v69.4';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6181,7 +6191,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v69.3';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v69.4';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
