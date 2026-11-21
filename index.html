@@ -207,7 +207,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v72.8</span>
+      <span id="save-status">💾 已自動儲存 · v73.1</span>
       
     </div>
 
@@ -387,6 +387,7 @@ html, body {
       bg_school_toilet_night: "./assets/bg_school_toilet_night.jpg?v=69",
       chibiCry: "./assets/chibiCry.png?v=69",
       chibiJerseyCry: "./assets/chibiJerseyCry.png?v=69",
+      chibiSquat: "./assets/chibiSquat.png?v=73.1",
       chibiSchoolCry: "./assets/chibiSchoolCry.png?v=69",
       bg_school_class_morning: "./assets/bg_school_class_morning.jpg?v=69",
       bg_school_class_night: "./assets/bg_school_class_night.jpg?v=69",
@@ -493,7 +494,7 @@ html, body {
       kitchen: [
         { id: 'fridge', label: '雪櫃存量', hx: 95, hy: 375, hr: 95, px: 145, py: 440, act: 'fridge', line: '「打開雪櫃睇下哥哥買咗咩好嘢食！🧊」' },
         { id: 'stove',  label: '煮食／洗碗位', hx: 265, hy: 365, hr: 95, px: 265, py: 400, act: 'cook', line: '「哥哥喺度煮飯同洗碗辛苦晒！🍳🫧」' },
-        { id: 'table',  label: '餐桌', hx: 475, hy: 455, hr: 95, px: 435, py: 455, act: 'breakfast', line: '「坐喺餐桌一齊食熱辣辣飯菜，充滿力量！🍚」' }
+        { id: 'table',  label: '餐桌', hx: 475, hy: 455, hr: 95, px: 435, py: 455, act: 'kitchen_table', line: '「坐喺餐桌傾下計飲啖水休息下！🪑✨」' }
       ],
       room_hinata: [
         { id: 'desk', label: '書枱', hx: 115, hy: 350, hr: 90, px: 165, py: 430, act: 'homework', line: '「開着盞枱燈溫下英文單字先…哥哥記得教我！📖」' },
@@ -518,7 +519,8 @@ html, body {
       backyard: [
         { id: 'net', label: '後院排球網', hx: 420, hy: 340, hr: 100, px: 315, py: 435, act: 'backyard', line: '「喺後院練排球！跳起扣殺！！🏐🔥」' },
         { id: 'by_jump', label: '助跑摸高', hx: 200, hy: 340, hr: 95, px: 210, py: 435, act: 'jump', line: '「助跑三步起跳摸高！要比尋日高多 1cm！⬆️💨」' },
-        { id: 'by_stretch', label: '草地拉筋', hx: 340, hy: 430, hr: 90, px: 350, py: 445, act: 'stretch', line: '「練完波記住拉下筋放鬆小腿肌肉～🧘‍♂️」' }
+        { id: 'by_stretch', label: '草地拉筋', hx: 340, hy: 430, hr: 90, px: 350, py: 445, act: 'stretch', line: '「練完波記住拉下筋放鬆小腿肌肉～🧘‍♂️」' },
+        { id: 'by_squat',   label: '草地深蹲特訓', hx: 270, hy: 445, hr: 90, px: 270, py: 445, act: 'squat', line: '「深蹲鍛鍊下盤力量！跳得更高靠晒佢！！🏋️🔥」' }
       ],
       street: [
         { id: 'vend', label: '自動販賣機', hx: 480, hy: 350, hr: 95, px: 380, py: 440, act: 'vend_drink', line: '「喺自動販賣機叮一罐熱粟米湯／運動飲品！🥤」' },
@@ -532,7 +534,7 @@ html, body {
         { id: 'blackboard', label: '望黑板舉手', hx: 150, hy: 300, hr: 90, px: 165, py: 430, act: 'school_class', line: '「老師呢題我識答！舉手！🙋‍♂️📝」' }
       ],
       street3: [
-        { id: 'walk_st3', label: '街邊食雪糕位', hx: 300, hy: 420, hr: 95, px: 300, py: 440, act: 'eating_ice_cream', line: '「企喺街道3吹住微風食雪糕，特別好味！🍦🛣️」' }
+        { id: 'walk_st3', label: '街邊食雪糕位', hx: 260, hy: 440, hr: 95, px: 260, py: 455, act: 'eating_ice_cream', line: '「企喺街道3吹住微風食雪糕，特別好味！🍦🛣️」' }
       ],
       ice_cream: [
         { id: 'ic_counter', label: '雪糕店揀口味區', hx: 475, hy: 475, hr: 110, px: 475, py: 485, act: 'ice_cream', line: '「原味、咖啡、朱古力、抹茶…每隻味都好想試！🍦✨」' }
@@ -582,7 +584,8 @@ html, body {
       school_court: [
         { id: 'cnet', label: '球場排球網', hx: 360, hy: 320, hr: 120, px: 300, py: 435, act: 'school_court', line: '「放學社團練習！跳到最高點扣殺！！🏐🔥」' },
         { id: 'c_run', label: '繞場跑步熱身', hx: 160, hy: 410, hr: 100, px: 165, py: 440, act: 'court_run', line: '「一二、一二！繞住排球場跑步熱身十個圈！🏃‍♂️💨」' },
-        { id: 'c_jump', label: '網前跳高特訓', hx: 460, hy: 390, hr: 100, px: 435, py: 435, act: 'jump', line: '「助跑起跳摸高！！每次都要跳得比尋日更高！⬆️🔥」' }
+        { id: 'c_jump', label: '網前跳高特訓', hx: 460, hy: 390, hr: 100, px: 435, py: 435, act: 'jump', line: '「助跑起跳摸高！！每次都要跳得比尋日更高！⬆️🔥」' },
+        { id: 'c_squat', label: '場邊深蹲特訓', hx: 300, hy: 440, hr: 95, px: 300, py: 440, act: 'squat', line: '「喺排球場做多 20 下深蹲強化彈跳力！！🏋️🔥」' }
       ],
       main_street: [
         { id: 'walk_main', label: '大街步道', hx: 300, hy: 380, hr: 110, px: 280, py: 445, act: 'street', line: '「呢條大街好熱鬧！上面係哥哥醫院，左右有公園同商場～🏙️」' },
@@ -1376,8 +1379,8 @@ html, body {
       targetX = Math.max(120, furn.px - 40); targetY = furn.py;
       bro.currentRoom = roomId;
       bro.currentActivity = isFinal ? (actName || furn.act) : 'street';
-      bro.px = Math.min(540, dEdge.ix + 50); bro.py = dEdge.iy;
-      bro.tx = Math.min(480, furn.px + 55); bro.ty = furn.py;
+      bro.px = Math.max(60, Math.min(540, dEdge.ix + (dEdge.ix > 300 ? -75 : 75))); bro.py = dEdge.iy;
+      bro.tx = Math.min(465, furn.px + 55); bro.ty = furn.py;
       viewRoomId = roomId;
       playSFX('pat');
       const tday = getTodayStr();
@@ -1454,7 +1457,9 @@ html, body {
         closeAt.setHours(22, 0, 0, 0); if (retAt > closeAt.getTime()) retAt = closeAt.getTime();
       }
       state.gamingReturnAt = null;
-      state.outing = { type, returnAt: retAt, fromMall };
+      state.iceCreamState = null;
+      state.mallCafeUntil = null;
+      state.outing = { type, returnAt: retAt, startedAt: Date.now(), fromMall };
       if (type === 'restaurant') {
         const info = getCurrentHourInfo();
         if (!info.isWeekend) state.skipDinnerDate = getTodayStr();
@@ -2121,7 +2126,7 @@ html, body {
             if (bro.currentRoom === 'ice_cream') { bro.tx = 495; bro.ty = 485; }
           }
           if (!state.iceCreamState && pet.currentRoom === 'ice_cream') {
-            const outStartEst = state.outing.returnAt ? (state.outing.returnAt - 60 * 60 * 1000) : Date.now();
+            const outStartEst = state.outing.startedAt || (state.outing.returnAt ? (state.outing.returnAt - 60 * 60 * 1000) : Date.now());
             const pastMs = Date.now() - outStartEst;
             if (pastMs >= 5 * 60 * 1000 && pastMs < 60 * 60 * 1000) {
               const pickF = ICE_CREAM_FLAVORS[Math.floor(Math.random() * ICE_CREAM_FLAVORS.length)];
@@ -2555,6 +2560,23 @@ html, body {
           if (viewRoomId === 'backyard') { viewRoomId = pet.currentRoom; speakAndShow('「練完波返入屋企客廳抖下先！🏠✨」'); }
         }
       }
+      // Autonomous practice cycling (including squat!) in backyard & school_court
+      if ((pet.currentRoom === 'backyard' || pet.currentRoom === 'school_court') && pet.currentActivity !== 'water_break' && !pet.toiletState && !transitionState && !duoWalk && !rally.active && !pet.fainted && !pet.recoverStage) {
+        if (!window.__lastPracticeCycleAt) window.__lastPracticeCycleAt = Date.now();
+        if (Date.now() - window.__lastPracticeCycleAt >= 20000) {
+          window.__lastPracticeCycleAt = Date.now();
+          const pool = ROOM_FURNITURE[pet.currentRoom] || [];
+          if (pool.length > 1) {
+            const pick = pool[Math.floor(Math.random() * pool.length)];
+            if (pick && pick.act !== pet.currentActivity) {
+              pet.currentActivity = pick.act;
+              targetX = pick.px; targetY = pick.py;
+              if (viewRoomId === pet.currentRoom) speakAndShow(pick.line);
+              updateHUD();
+            }
+          }
+        }
+      }
       // 6. Occasional Evening TV / Weekend Free-Roam Duo Events (every ~75s chance)
       if (!state.gamingReturnAt && !transitionState && !rally.active && Date.now() - lastDuoEventAt > 75000) {
         const isEvTV = !info.isWeekend && sched.key === 'wd_living';
@@ -2979,7 +3001,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v72.8'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v73.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3165,7 +3187,8 @@ html, body {
       const curPet = ensurePetState(state.activeCharId);
       const isHoldingBladder = (curPet.bladder || 0) > ((state.balance && state.balance.bladderCryThreshold) ?? 90) && !['toilet_use', 'toilet_urinal', 'toilet_wash', 'sleep'].includes(curPet.currentActivity);
       let spriteKey = outfit.spriteKey;
-      if (expr === 'faint') spriteKey = outfit.faintKey || 'chibiJerseyFaint';
+      if (expr === 'squat') spriteKey = 'chibiSquat';
+      else if (expr === 'faint') spriteKey = outfit.faintKey || 'chibiJerseyFaint';
       else if (isHoldingBladder) {
         spriteKey = outfit.cryKey || 'chibiCry';
         cx += Math.sin(frame * 0.95) * 2.0;
@@ -3182,7 +3205,7 @@ html, body {
       ctx.scale(scale * sx, scale * sy);
       ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
 
-      const isBlinking = (!isHoldingBladder && curPet.mood >= 40 && expr !== 'sleep' && expr !== 'waking' && expr !== 'happy' && expr !== 'faint' && expr !== 'sad_rest' && !isPetting) && ((frame % 110) > 104);
+      const isBlinking = (!isHoldingBladder && curPet.mood >= 40 && expr !== 'squat' && expr !== 'sleep' && expr !== 'waking' && expr !== 'happy' && expr !== 'faint' && expr !== 'sad_rest' && !isPetting) && ((frame % 110) > 104);
       const coverEyes = () => {
         ctx.fillStyle = '#f8dcc2';
         ctx.beginPath(); ctx.ellipse(-22, 2, 9.5, 11, 0, 0, Math.PI * 2); ctx.ellipse(22, 2, 9.5, 11, 0, 0, Math.PI * 2); ctx.fill();
@@ -3297,7 +3320,7 @@ html, body {
       park_jog: '🏃 公園慢跑', park_walk: '🚶 公園散步', park_breeze: '🌊 睇海風中', toilet_use: '🚽 如廁中', toilet_urinal: '🚻 小便中', toilet_wash: '🧼 洗手中', toilet_wait: '⏳ 等緊廁所', court_run: '🏃 跑步熱身中', stretch: '🧘‍♂️ 拉筋放鬆中',
       gear_prep: '🏐 整理裝備中', window_gaze: '🌤️ 望窗外發呆', read_manga: '📚 睇排球漫畫',
       mirror_prep: '🪞 整理儀容中', tidy_bag: '🔑 檢查隨身物', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', konbini_mag: '📖 睇雜誌中', konbini_snack: '🍡 睇零食中', konbini_drink: '🥤 睇飲品中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理', supermarket: '🛒 行超市中', supermarket_checkout: '💳 自助收銀付款', supper_wait: '🍽️ 等哥哥整宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 揀緊雪糕口味', eating_ice_cream: '🍦 街邊食雪糕中', mall2: '🏬 行商場2樓中', clothing_store: '👕 睇衫中', toy_store: '🧸 睇玩具中', mall_promenade: '🌊 行海邊大道中', promenade_cafe: '🍮 食布丁休息中'
+      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', konbini_mag: '📖 睇雜誌中', konbini_snack: '🍡 睇零食中', konbini_drink: '🥤 睇飲品中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理', supermarket: '🛒 行超市中', supermarket_checkout: '💳 自助收銀付款', supper_wait: '🍽️ 等哥哥整宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 揀緊雪糕口味', eating_ice_cream: '🍦 街邊食雪糕中', mall2: '🏬 行商場2樓中', clothing_store: '👕 睇衫中', toy_store: '🧸 睇玩具中', mall_promenade: '🌊 行海邊大道中', promenade_cafe: '🍮 食布丁休息中', kitchen_table: '🪑 餐桌休息中', squat: '🏋️ 深蹲特訓中'
     };
     const BROTHER_ACTIVITY_LABELS = {
       sleep: '😴 哥哥熟睡中', brush: '🪥 哥哥刷牙中', cook_bfast: '🍳 煮緊早餐', prep_bfast: '🥞 準備早餐中',
@@ -3311,7 +3334,7 @@ html, body {
       backyard: '🏐 陪練排球', idle: '✨ 休息中', stretch: '🧘‍♂️ 拉筋中',
       gear_prep: '🏐 幫手執裝備', window_gaze: '🌤️ 望窗外思考', read_manga: '📚 睇漫畫中',
       mirror_prep: '🪞 整理儀容', tidy_bag: '🔑 檢查鎖匙', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋', washing_dishes: '🫧 洗碗碟中', supermarket: '🛒 超市買嘢中', supermarket_checkout: '💳 自助收銀中', supper_pick: '🧊 睇上層冰格', supper_cook: '🍲 煮緊宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 陪揀雪糕中', eating_ice_cream: '🍦 陪食雪糕中', mall2: '🏬 陪行商場2樓', clothing_store: '👕 陪睇衫中', toy_store: '🧸 陪睇玩具中', mall_promenade: '🌊 陪行觀光大道', promenade_cafe: '☕ 飲咖啡陪翔陽'
+      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋', washing_dishes: '🫧 洗碗碟中', supermarket: '🛒 超市買嘢中', supermarket_checkout: '💳 自助收銀中', supper_pick: '🧊 睇上層冰格', supper_cook: '🍲 煮緊宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 陪揀雪糕中', eating_ice_cream: '🍦 陪食雪糕中', mall2: '🏬 陪行商場2樓', clothing_store: '👕 陪睇衫中', toy_store: '🧸 陪睇玩具中', mall_promenade: '🌊 陪行觀光大道', promenade_cafe: '☕ 飲咖啡陪翔陽', kitchen_table: '🪑 陪坐餐桌', squat: '🏋️ 陪做深蹲'
     };
     const IDLE_THOUGHTS = ['💭 想食玉子拌飯…', '💭 聽日要跳高啲！', '💭 哥哥幾時同我打機？', '💭 烏野一定打入全國！'];
 
@@ -3439,7 +3462,7 @@ html, body {
       const cx = petX, cy = petY;
       const isWalking = transitionState !== null || (Math.hypot(targetX - petX, targetY - petY) > 5);
       const isJumping = (act === 'school_court' || act === 'backyard' || act === 'jump') && !isWalking && !rally.active;
-      const jumpY = isJumping ? -Math.abs(Math.sin(frame * 0.16)) * 55 : (act === 'happy' || isPetting ? -Math.abs(Math.sin(frame * 0.18)) * 16 : ((isWalking || act === 'park_jog' || act === 'court_run') ? -Math.abs(Math.sin(frame * 0.24)) * 11 : 0));
+      const jumpY = isJumping ? -Math.abs(Math.sin(frame * 0.16)) * 55 : (act === 'squat' && !isWalking ? Math.abs(Math.sin(frame * 0.14)) * 10 : (act === 'happy' || isPetting ? -Math.abs(Math.sin(frame * 0.18)) * 16 : ((isWalking || act === 'park_jog' || act === 'court_run') ? -Math.abs(Math.sin(frame * 0.24)) * 11 : 0)));
       const breathSy = 1 + Math.sin(frame * 0.07) * 0.024;
       const breathSx = 1 - Math.sin(frame * 0.07) * 0.014;
       const tilt = isWalking ? Math.sin(frame * 0.24) * 0.08 : (isPetting ? Math.sin(frame * 0.15) * 0.07 : Math.sin(frame * 0.04) * 0.02);
@@ -4756,7 +4779,7 @@ html, body {
       ics.until = Date.now() + 8 * 60 * 1000;
       playSFX('eat');
       const msg = isOfflineAuto
-        ? `「離線自動幫哥哥揀咗 ☕咖啡雪糕！已付款 🪙${paid}，一齊行出街道3街邊食 8 分鐘～🍦」`
+        ? `「啱啱幫哥哥揀咗 ☕咖啡味雪糕（🪙-${paid}），我哋一齊喺街道3邊吹風邊食先～🍦✨」`
         : `「哥哥揀咗 ${bf.emoji}${bf.name}！已付款 🪙${paid}，一齊行出街道3街邊食 8 分鐘雪糕啦！🍦🛣️」`;
       startDuoJourney('street3', 'eating_ice_cream', msg, '去到街道3街邊食雪糕（8分鐘）🍦', () => {
         updateHUD();
@@ -6763,7 +6786,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v72.8';
+          if (el) el.textContent = '☁️ 雲端已同步 · v73.1';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6802,7 +6825,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v72.8';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v73.1';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
