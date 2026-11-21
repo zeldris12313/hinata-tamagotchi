@@ -131,6 +131,21 @@ html, body {
         <button id="btn-kitchen-fridge" type="button" style="left:16%;top:62%;transform:translate(-50%,-50%)" class="hidden absolute px-2 py-1 rounded-xl bg-cyan-100/95 hover:bg-cyan-200 border-2 border-[#2d1e12] text-[10px] font-black shadow z-15">🧊 雪櫃</button>
         <button id="btn-toilet-cabinet" type="button" class="hidden absolute top-10 right-2.5 px-2 py-1 rounded-xl bg-rose-100/95 hover:bg-rose-200 border-2 border-[#2d1e12] text-[10px] font-black shadow z-15">🧻 廁櫃</button>
         <button id="btn-bath-supplies" type="button" style="left:24%;top:66%;transform:translate(-50%,-50%)" class="hidden absolute px-2 py-1 rounded-xl bg-purple-100/95 hover:bg-purple-200 border-2 border-[#2d1e12] text-[10px] font-black shadow z-15">🧴 沐浴用品</button>
+        <button id="btn-hallway-living" type="button" style="left:36%;top:47%;transform:translate(-50%,-50%)" class="hidden absolute px-2 py-1 rounded-xl bg-amber-100/90 hover:bg-amber-200 border-2 border-[#2d1e12] text-[10px] font-black shadow-md z-15">🏠 客廳</button>
+        <div id="hallway-2f-doors" class="hidden pointer-events-none absolute inset-0 z-15">
+          <button type="button" data-door-room="room_hinata" style="left:13%;top:37%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-xl bg-orange-50/95 hover:bg-orange-100 border-2 border-[#2d1e12] shadow-md">
+            <img src="./assets/head_hinata.png?v=76" alt="翔陽" class="w-8 h-8 rounded-full border border-[#2d1e12] bg-white object-cover">
+            <span class="text-[10px] font-black text-[#2d1e12] leading-none">翔陽</span>
+          </button>
+          <button type="button" data-door-room="room_aniki" style="left:87%;top:37%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-xl bg-indigo-50/95 hover:bg-indigo-100 border-2 border-[#2d1e12] shadow-md">
+            <img src="./assets/head_aniki.png?v=76" alt="哥哥" class="w-8 h-8 rounded-full border border-[#2d1e12] bg-white object-cover">
+            <span class="text-[10px] font-black text-[#2d1e12] leading-none">哥哥</span>
+          </button>
+        </div>
+        <div id="wash-hall-doors" class="hidden pointer-events-none absolute inset-0 z-15">
+          <button type="button" data-door-room="toilet" style="left:25%;top:56%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute px-2.5 py-1 rounded-xl bg-sky-50/90 hover:bg-sky-100 border-2 border-[#2d1e12] text-[11px] font-black shadow-md">🚽 廁所</button>
+          <button type="button" data-door-room="bath" style="left:65%;top:56%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute px-2.5 py-1 rounded-xl bg-purple-50/90 hover:bg-purple-100 border-2 border-[#2d1e12] text-[11px] font-black shadow-md">🛁 浴室</button>
+        </div>
 
         <!-- Bottom-Left Depletion Alert -->
         <div id="depletion-alert" class="hidden absolute bottom-10 left-2.5 max-w-[235px] bg-rose-50/95 border-2 border-rose-600 rounded-2xl p-2 shadow-xl z-35 text-[11px] font-bold text-[#2d1e12]">
@@ -207,7 +222,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v75</span>
+      <span id="save-status">💾 已自動儲存 · v76</span>
       
     </div>
 
@@ -322,7 +337,7 @@ html, body {
       bg_bath: "./assets/bg_bath.jpg?v=69",
       bg_room_aniki: "./assets/bg_room_aniki.jpg?v=69",
       bg_hallway: "./assets/bg_hallway.jpg?v=69",
-      bg_backyard: "./assets/bg_backyard.jpg?v=69",
+      bg_backyard: "./assets/bg_backyard.jpg?v=76",
       bg_street: "./assets/bg_street.jpg?v=69",
       bg_school_class: "./assets/bg_school_class.jpg?v=69",
       bg_school_court: "./assets/bg_school_court.jpg?v=69",
@@ -346,7 +361,7 @@ html, body {
       bg_street_night: "./assets/bg_street_night.jpg?v=69",
       bg_main_street_night: "./assets/bg_main_street_night.jpg?v=69",
       bg_park_night: "./assets/bg_park_night.jpg?v=69",
-      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=69",
+      bg_backyard_night: "./assets/bg_backyard_night.jpg?v=76",
       chibiBrotherSleep: "./assets/chibiBrotherSleep.png?v=69",
       bg_room_hinata_night: "./assets/bg_room_hinata_night.jpg?v=69",
       bg_room_aniki_night: "./assets/bg_room_aniki_night.jpg?v=69",
@@ -362,7 +377,7 @@ html, body {
       bg_kitchen_morning: "./assets/bg_kitchen_morning.jpg?v=69",
       bg_hallway_morning: "./assets/bg_hallway_morning.jpg?v=69",
       bg_bath_morning: "./assets/bg_bath_morning.jpg?v=69",
-      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=69",
+      bg_backyard_morning: "./assets/bg_backyard_morning.jpg?v=76",
       bg_street_morning: "./assets/bg_street_morning.jpg?v=69",
       bg_main_street_morning: "./assets/bg_main_street_morning.jpg?v=69",
       bg_park_morning: "./assets/bg_park_morning.jpg?v=69",
@@ -387,8 +402,8 @@ html, body {
       bg_school_toilet_night: "./assets/bg_school_toilet_night.jpg?v=69",
       chibiCry: "./assets/chibiCry.png?v=75",
       chibiJerseyCry: "./assets/chibiJerseyCry.png?v=75",
-      chibiSquat: "./assets/chibiSquat.png?v=73.2",
-      chibiSquatPajama: "./assets/chibiSquatPajama.png?v=73.2",
+      chibiSquat: "./assets/chibiSquat.png?v=75.1",
+      chibiSquatPajama: "./assets/chibiSquatPajama.png?v=75.1",
       chibiSchoolCry: "./assets/chibiSchoolCry.png?v=75",
       bg_school_class_morning: "./assets/bg_school_class_morning.jpg?v=69",
       bg_school_class_night: "./assets/bg_school_class_night.jpg?v=69",
@@ -429,7 +444,13 @@ html, body {
       bg_toy_store_night: "./assets/bg_toy_store_night.jpg?v=72",
       bg_mall_promenade: "./assets/bg_mall_promenade.jpg?v=72",
       bg_mall_promenade_morning: "./assets/bg_mall_promenade_morning.jpg?v=72",
-      bg_mall_promenade_night: "./assets/bg_mall_promenade_night.jpg?v=72"
+      bg_mall_promenade_night: "./assets/bg_mall_promenade_night.jpg?v=72",
+      bg_hallway_2f: "./assets/bg_hallway_2f.jpg?v=76",
+      bg_hallway_2f_morning: "./assets/bg_hallway_2f_morning.jpg?v=76",
+      bg_hallway_2f_night: "./assets/bg_hallway_2f_night.jpg?v=76",
+      bg_wash_hall: "./assets/bg_wash_hall.jpg?v=76",
+      bg_wash_hall_morning: "./assets/bg_wash_hall_morning.jpg?v=76",
+      bg_wash_hall_night: "./assets/bg_wash_hall_night.jpg?v=76"
     };
     const sprites = {};
 
@@ -464,20 +485,22 @@ html, body {
       mall_promenade:{ id: 'mall_promenade', name: '商場海邊觀光大道', short: '觀光大道', icon: '🌊', gx: 4, gy: -2, up: null, down: 'mall2', left: null, right: null },
       mall_toilet:  { id: 'mall_toilet',  name: '商場廁所',        short: '商場廁所', icon: '🚻', gx: 4, gy: 1,  up: 'mall', down: null, left: null, right: null },
       restaurant:   { id: 'restaurant',   name: '家庭餐廳',        short: '餐廳',     icon: '🍽️', gx: 5, gy: 0,  up: null, down: null, left: 'mall', right: null },
-      room_hinata:  { id: 'room_hinata',  name: '2F 日向房',       short: '日向房',   icon: '🛏️', gx: 1, gy: 1,  up: null, down: 'living', left: null, right: 'room_aniki' },
-      room_aniki:   { id: 'room_aniki',   name: '2F 哥哥房間',     short: '哥哥房',   icon: '🎮', gx: 2, gy: 1,  up: null, down: null, left: 'room_hinata', right: null },
-      toilet:       { id: 'toilet',       name: '1F 廁所',         short: '廁所',     icon: '🚽', gx: 2, gy: 1,  up: null, down: 'hallway', left: null, right: null },
-      bath:         { id: 'bath',         name: '1F 浴室',         short: '浴室',     icon: '🛁', gx: 0, gy: 2,  up: null, down: null, left: null, right: 'living' },
-      living:       { id: 'living',       name: '1F 客廳',         short: '客廳',     icon: '🏠', gx: 1, gy: 2,  up: 'room_hinata', down: 'kitchen', left: 'bath', right: 'hallway' },
-      hallway:      { id: 'hallway',      name: '1F 走廊玄關',     short: '走廊',     icon: '🚪', gx: 2, gy: 2,  up: 'toilet', down: 'backyard', left: 'living', right: 'street' },
+      room_hinata:  { id: 'room_hinata',  name: '2F 日向房',       short: '日向房',   icon: '🛏️', gx: 0, gy: 1,  up: null, down: 'hallway_2f', left: null, right: null },
+      room_aniki:   { id: 'room_aniki',   name: '2F 哥哥房間',     short: '哥哥房',   icon: '🎮', gx: 2, gy: 1,  up: null, down: 'hallway_2f', left: null, right: null },
+      hallway_2f:   { id: 'hallway_2f',   name: '2F 走廊',         short: '2F走廊',   icon: '🪜', gx: 1, gy: 1,  up: null, down: null, left: null, right: 'hallway', doors: ['room_hinata', 'room_aniki'] },
+      wash_hall:    { id: 'wash_hall',    name: '1F 洗漱走廊',     short: '洗漱間',   icon: '🚰', gx: 2, gy: 1,  up: null, down: 'hallway', left: 'toilet', right: 'bath' },
+      toilet:       { id: 'toilet',       name: '1F 廁所',         short: '廁所',     icon: '🚽', gx: 1, gy: 1,  up: null, down: 'wash_hall', left: null, right: null },
+      bath:         { id: 'bath',         name: '1F 浴室',         short: '浴室',     icon: '🛁', gx: 3, gy: 1,  up: null, down: 'wash_hall', left: null, right: null },
+      living:       { id: 'living',       name: '1F 客廳',         short: '客廳',     icon: '🏠', gx: 1, gy: 2,  up: null, down: null, left: 'backyard', right: 'hallway' },
+      hallway:      { id: 'hallway',      name: '1F 走廊玄關',     short: '走廊',     icon: '🚪', gx: 2, gy: 2,  up: 'wash_hall', down: 'kitchen', left: 'hallway_2f', right: 'street', doors: ['living'] },
       street:       { id: 'street',       name: '室外街道',        short: '街道',     icon: '🛣️', gx: 3, gy: 2,  up: 'main_street', down: 'school_class', left: 'hallway', right: 'street2' },
       street2:      { id: 'street2',      name: '室外街道2',       short: '街道2',    icon: '🛣️', gx: 4, gy: 2,  up: 'street3', down: 'supermarket', left: 'street', right: 'konbini' },
       street3:      { id: 'street3',      name: '室外街道3',       short: '街道3',    icon: '🛣️', gx: 4, gy: 1,  up: null, down: 'street2', left: null, right: 'ice_cream' },
       ice_cream:    { id: 'ice_cream',    name: '雪糕店',          short: '雪糕店',   icon: '🍦', gx: 5, gy: 1,  up: null, down: null, left: 'street3', right: null },
       konbini:      { id: 'konbini',      name: '日式便利店',      short: '便利店',   icon: '🏪', gx: 5, gy: 2,  up: null, down: null, left: 'street2', right: null },
       supermarket:  { id: 'supermarket',  name: '超級市場',        short: '超市',     icon: '🛒', gx: 4, gy: 3,  up: 'street2', down: null, left: null, right: null },
-      kitchen:      { id: 'kitchen',      name: '1F 廚房',         short: '廚房',     icon: '🍳', gx: 1, gy: 3,  up: 'living', down: null, left: null, right: 'backyard' },
-      backyard:     { id: 'backyard',     name: '屋後院子',        short: '後院',     icon: '🏡', gx: 2, gy: 3,  up: 'hallway', down: null, left: 'kitchen', right: null },
+      kitchen:      { id: 'kitchen',      name: '1F 廚房',         short: '廚房',     icon: '🍳', gx: 2, gy: 3,  up: 'hallway', down: null, left: null, right: 'backyard' },
+      backyard:     { id: 'backyard',     name: '屋後院子',        short: '後院',     icon: '🏡', gx: 0, gy: 2,  up: null, down: 'kitchen', left: null, right: 'living' },
       school_class: { id: 'school_class', name: '學校課室',        short: '課室',     icon: '🏫', gx: 3, gy: 3,  up: 'street', down: 'school_infirmary', left: null, right: 'school_hall' },
       school_hall:  { id: 'school_hall',  name: '學校走廊',        short: '校走廊',   icon: '🚶', gx: 4, gy: 3,  up: 'school_court', down: 'school_toilet', left: 'school_class', right: 'school_tuckshop' },
       school_tuckshop: { id: 'school_tuckshop', name: '學校小食部', short: '小食部',   icon: '🥐', gx: 5, gy: 3,  up: null, down: null, left: 'school_hall', right: null },
@@ -518,10 +541,10 @@ html, body {
         { id: 'umbrella', label: '傘架執嘢', hx: 470, hy: 380, hr: 80, px: 430, py: 440, act: 'tidy_bag', line: '「檢查清楚有冇帶齊鎖匙同水樽先～🔑💧」' }
       ],
       backyard: [
-        { id: 'net', label: '後院排球網', hx: 420, hy: 340, hr: 100, px: 315, py: 435, act: 'backyard', line: '「喺後院練排球！跳起扣殺！！🏐🔥」' },
-        { id: 'by_jump', label: '助跑摸高', hx: 200, hy: 340, hr: 95, px: 210, py: 435, act: 'jump', line: '「助跑三步起跳摸高！要比尋日高多 1cm！⬆️💨」' },
-        { id: 'by_stretch', label: '草地拉筋', hx: 340, hy: 430, hr: 90, px: 350, py: 445, act: 'stretch', line: '「練完波記住拉下筋放鬆小腿肌肉～🧘‍♂️」' },
-        { id: 'by_squat',   label: '草地深蹲特訓', hx: 270, hy: 445, hr: 90, px: 270, py: 445, act: 'squat', line: '「深蹲鍛鍊下盤力量！跳得更高靠晒佢！！🏋️🔥」' }
+        { id: 'net', label: '後院排球網', hx: 180, hy: 340, hr: 100, px: 285, py: 435, act: 'backyard', line: '「喺後院練排球！跳起扣殺！！🏐🔥」' },
+        { id: 'by_jump', label: '助跑摸高', hx: 400, hy: 340, hr: 95, px: 390, py: 435, act: 'jump', line: '「助跑三步起跳摸高！要比尋日高多 1cm！⬆️💨」' },
+        { id: 'by_stretch', label: '草地拉筋', hx: 260, hy: 430, hr: 90, px: 250, py: 445, act: 'stretch', line: '「練完波記住拉下筋放鬆小腿肌肉～🧘‍♂️」' },
+        { id: 'by_squat',   label: '草地深蹲特訓', hx: 330, hy: 445, hr: 90, px: 330, py: 445, act: 'squat', line: '「深蹲鍛鍊下盤力量！跳得更高靠晒佢！！🏋️🔥」' }
       ],
       street: [
         { id: 'vend', label: '自動販賣機', hx: 480, hy: 350, hr: 95, px: 380, py: 440, act: 'vend_drink', line: '「喺自動販賣機叮一罐熱粟米湯／運動飲品！🥤」' },
@@ -1320,6 +1343,12 @@ html, body {
       if (r.down === hop) return 'down';
       if (r.left === hop) return 'left';
       if (r.right === hop) return 'right';
+      if (r.doors && r.doors.includes(hop)) {
+        if (fromId === 'hallway' && hop === 'living') return 'door_living';
+        if (fromId === 'hallway_2f' && hop === 'room_hinata') return 'left';
+        if (fromId === 'hallway_2f' && hop === 'room_aniki') return 'right';
+        return 'left';
+      }
       const t = MAP_ROOMS[toId];
       if (t) {
         const dx = t.gx - r.gx, dy = t.gy - r.gy;
@@ -1329,6 +1358,7 @@ html, body {
       return 'right';
     }
     function getDirEdgeCoords(dir) {
+      if (dir === 'door_living') return { ex: 215, ey: 420, ix: 520, iy: 440 };
       if (dir === 'left')  return { ex: 60,  ey: 440, ix: 540, iy: 440 };
       if (dir === 'up')    return { ex: 300, ey: 315, ix: 300, iy: 520 };
       if (dir === 'down')  return { ex: 300, ey: 525, ix: 300, iy: 330 };
@@ -1360,8 +1390,8 @@ html, body {
         const cur = path[path.length - 1];
         const r = MAP_ROOMS[cur];
         if (!r) continue;
-        for (const dir of ['up', 'down', 'left', 'right']) {
-          const nxt = r[dir];
+        const nextNodes = ['up', 'down', 'left', 'right'].map(d => r[d]).concat(r.doors || []);
+        for (const nxt of nextNodes) {
           if (!nxt || seen.has(nxt)) continue;
           const nextPath = [...path, nxt];
           if (nxt === endId) return nextPath.slice(1);
@@ -2244,7 +2274,7 @@ html, body {
       }
 
       // 3b. Autonomous Toilet Routine (10% chance at home, 30m cooldown, 1m use -> 10s wash -> return; wait in hallway if occupied)
-      const HOME_TOILET_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'backyard', 'toilet']);
+      const HOME_TOILET_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'backyard', 'toilet']);
       const nowT = Date.now();
       const stepToilet = (charObj, otherObj, isHinata) => {
         if (charObj.toiletState) {
@@ -2922,7 +2952,7 @@ html, body {
       const petFixed = ['sleep', 'waking', 'breakfast', 'lunch', 'dinner', 'cook', 'bath', 'brush'];
       if (!transitionState && !rally.active && sched.key !== 'wd_hw' && !petFixed.includes(pet.currentActivity) && !['bath', 'canteen', 'hallway'].includes(pet.currentRoom) && nowMs - lastPetAutoActAt > 18000) {
         lastPetAutoActAt = nowMs;
-        const furns = (pet.currentRoom === 'hallway') ? [] : (ROOM_FURNITURE[pet.currentRoom] || []).filter(f => f.act !== 'sleep' && f.act !== 'cook' && f.act !== 'breakfast' && f.act !== 'lunch' && f.act !== 'dinner');
+        const furns = (['hallway', 'hallway_2f', 'wash_hall'].includes(pet.currentRoom)) ? [] : (ROOM_FURNITURE[pet.currentRoom] || []).filter(f => f.act !== 'sleep' && f.act !== 'cook' && f.act !== 'breakfast' && f.act !== 'lunch' && f.act !== 'dinner');
         if (furns.length > 1) {
           const pick = furns[Math.floor(Math.random() * furns.length)];
           pet.currentActivity = pick.act;
@@ -2954,7 +2984,7 @@ html, body {
       const broInterval = (bro.currentRoom === 'pharmacy') ? 9000 : 18000;
       if (!broFixed.includes(bro.currentActivity) && !['bath', 'canteen', 'school_class', 'school_court'].includes(bro.currentRoom) && nowMs - lastBroAutoActAt > broInterval) {
         lastBroAutoActAt = nowMs;
-        const bFurns = (bro.currentRoom === 'hallway') ? [] : (ROOM_FURNITURE[bro.currentRoom] || []).filter(f => f.act !== 'sleep' && f.act !== 'cook' && f.act !== 'breakfast' && f.act !== 'lunch' && f.act !== 'dinner');
+        const bFurns = (['hallway', 'hallway_2f', 'wash_hall'].includes(bro.currentRoom)) ? [] : (ROOM_FURNITURE[bro.currentRoom] || []).filter(f => f.act !== 'sleep' && f.act !== 'cook' && f.act !== 'breakfast' && f.act !== 'lunch' && f.act !== 'dinner');
         if (bFurns.length > 0) {
           const pick = bFurns[Math.floor(Math.random() * bFurns.length)];
           bro.currentActivity = pick.act;
@@ -3042,7 +3072,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v75'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v76'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3096,7 +3126,7 @@ html, body {
     }
 
     const MALL_AREA_SET = new Set(['mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade']);
-    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'bath', 'toilet', 'backyard', 'street', 'street2', 'supermarket', 'main_street', 'park', 'park2', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'restaurant', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet']);
+    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'park', 'park2', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'restaurant', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet']);
     function drawAnimeRoomBackground(roomId, timeInfo) {
       const h = new Date().getHours();
       const isNight = (h >= 18 || h < 6);
@@ -3228,9 +3258,12 @@ html, body {
       const curPet = ensurePetState(state.activeCharId);
       const isHoldingBladder = (curPet.bladder || 0) > ((state.balance && state.balance.bladderCryThreshold) ?? 90) && !['toilet_use', 'toilet_urinal', 'toilet_wash', 'sleep'].includes(curPet.currentActivity);
       let spriteKey = outfit.spriteKey;
-      const isSquatRep = (expr === 'squat' || curPet.currentActivity === 'squat') && (Math.floor(frame / 36) % 2 === 1);
+      const isSquatAct = (expr === 'squat' || curPet.currentActivity === 'squat');
+      if (isSquatAct && !window.__squatStartAt) window.__squatStartAt = Date.now();
+      if (!isSquatAct && window.__squatStartAt) window.__squatStartAt = 0;
+      const isSquatRep = isSquatAct && (((Date.now() - window.__squatStartAt) % 7000) < 5000);
       if (isSquatRep) {
-        const sqPref = (curPet.currentRoom === 'backyard') ? 'chibiSquatPajama' : 'chibiSquat';
+        const sqPref = (outfit.spriteKey === 'chibiPajama') ? 'chibiSquatPajama' : 'chibiSquat';
         spriteKey = sprites[sqPref] ? sqPref : (sprites.chibiSquat ? 'chibiSquat' : (sprites.chibiSquatPajama ? 'chibiSquatPajama' : outfit.spriteKey));
       }
       else if (expr === 'faint') spriteKey = outfit.faintKey || 'chibiJerseyFaint';
@@ -3716,7 +3749,7 @@ html, body {
             ctx.beginPath(); ctx.arc(rally.bx, rally.by, 42, 0, Math.PI * 2); ctx.stroke();
           }
           ctx.font = '52px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('🏐', rally.bx, rally.by + 16);
-        } else if (pet.currentRoom === viewRoomId && (pet.currentRoom === 'school_court' || pet.currentRoom === 'backyard')) {
+        } else if (pet.currentRoom === viewRoomId && (pet.currentRoom === 'school_court' || pet.currentRoom === 'backyard') && ['backyard', 'school_court', 'jump'].includes(pet.currentActivity)) {
           const by = 270 - Math.abs(Math.sin(frameCount * 0.14)) * 75;
           ctx.font = '44px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('🏐', petX + 65, by);
         }
@@ -6320,6 +6353,12 @@ html, body {
       }
       const bsBtn = document.getElementById('btn-bath-supplies');
       if (bsBtn) bsBtn.classList.toggle('hidden', viewRoomId !== 'bath' || isZoomed);
+      const hlBtn = document.getElementById('btn-hallway-living');
+      if (hlBtn) hlBtn.classList.toggle('hidden', viewRoomId !== 'hallway' || isZoomed);
+      const h2fDoors = document.getElementById('hallway-2f-doors');
+      if (h2fDoors) h2fDoors.classList.toggle('hidden', viewRoomId !== 'hallway_2f' || isZoomed);
+      const whDoors = document.getElementById('wash-hall-doors');
+      if (whDoors) whDoors.classList.toggle('hidden', viewRoomId !== 'wash_hall' || isZoomed);
       document.getElementById('outfit-name').textContent = outfit.name;
       document.getElementById('zoom-icon').textContent = isZoomed ? '🔎' : '🔍';
       document.getElementById('zoom-label').textContent = isZoomed ? '縮細全景' : '放大特寫';
@@ -6368,9 +6407,7 @@ html, body {
     ['up', 'down', 'left', 'right'].forEach(dir => {
       document.getElementById('dir-' + dir).addEventListener('click', () => {
         const nextId = MAP_ROOMS[viewRoomId][dir]; if (!nextId) return;
-        if (viewRoomId === 'mall' && nextId === 'restaurant' && !(state.outing && state.outing.type === 'restaurant')) {
-          playSFX('miss'); showToast('餐廳只喺食飯時段先會進入呀！🍽️'); return;
-        }
+
         if (viewRoomId === 'supermarket' && getCartTotalQty() > 0) {
           playSFX('miss'); showToast('購物籃仲有嘢未俾錢，唔可以離開超市呀！🧺🔒'); return;
         }
@@ -6394,6 +6431,18 @@ html, body {
     document.getElementById('btn-kitchen-fridge')?.addEventListener('click', openFridgeModal);
     document.getElementById('btn-toilet-cabinet')?.addEventListener('click', openToiletCabinetModal);
     document.getElementById('btn-bath-supplies')?.addEventListener('click', openBathSuppliesModal);
+    document.getElementById('btn-hallway-living')?.addEventListener('click', () => {
+      viewRoomId = 'living'; document.getElementById('choice-overlay').classList.add('hidden');
+      renderDock(); playSFX('pat'); updateHUD();
+    });
+    document.querySelectorAll('[data-door-room]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const dest = btn.dataset.doorRoom;
+        if (!dest || !MAP_ROOMS[dest]) return;
+        viewRoomId = dest; document.getElementById('choice-overlay').classList.add('hidden');
+        renderDock(); playSFX('pat'); updateHUD();
+      });
+    });
     document.getElementById('depletion-alert-ok')?.addEventListener('click', () => {
       document.getElementById('depletion-alert')?.classList.add('hidden');
       const info = getCurrentHourInfo();
@@ -6859,7 +6908,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v75';
+          if (el) el.textContent = '☁️ 雲端已同步 · v76';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6898,7 +6947,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v75';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v76';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
