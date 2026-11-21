@@ -1839,6 +1839,7 @@ html, body {
     }
 
     function syncScheduleActivity(pet, animateTransition = false) {
+      const bro = state.brother;
       if (checkAndHandleFaint(pet)) { duoWalk = null; return; }
       if (handleRecoveryTick(pet)) { duoWalk = null; return; }
       // General solo walk stepping for Brother & Hinata (non-recovery)
@@ -2036,7 +2037,6 @@ html, body {
         }
       }
       const bSched = getBrotherScheduledState(info);
-      const bro = state.brother;
 
       // 1. Check bedtime cutoff for any active outing or gaming
       if (sched.act === 'sleep') {
