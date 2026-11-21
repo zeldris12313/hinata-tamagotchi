@@ -206,7 +206,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v71.1</span>
+      <span id="save-status">💾 已自動儲存 · v71.2</span>
       
     </div>
 
@@ -884,7 +884,7 @@ html, body {
       const now = new Date();
       const tm = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
       pet.statLogs[stat].unshift({ time: tm, label, delta: diff > 0 ? `+${diff}%` : `${diff}%`, from: f, to: t });
-      if (pet.statLogs[stat].length > 5) pet.statLogs[stat].length = 5;
+      if (pet.statLogs[stat].length > 10) pet.statLogs[stat].length = 10;
     }
 
     function recordPurchaseLog(pet, location, item, cost, payer) {
@@ -932,10 +932,10 @@ html, body {
     function openStatLogModal(stat) {
       const pet = ensurePetState(state.activeCharId);
       const meta = {
-        hunger:  { title: '🍙 飽食度・最近 5 次變化紀錄', bg: 'bg-amber-50 border-amber-300' },
-        mood:    { title: '😊 心情・最近 5 次變化紀錄',   bg: 'bg-rose-50 border-rose-300' },
-        energy:  { title: '⚡ 精力・最近 5 次變化紀錄',   bg: 'bg-emerald-50 border-emerald-300' },
-        bladder: { title: '🚽 尿意・最近 5 次變化紀錄',   bg: 'bg-sky-50 border-sky-300' }
+        hunger:  { title: '🍙 飽食度・最近 10 次變化紀錄', bg: 'bg-amber-50 border-amber-300' },
+        mood:    { title: '😊 心情・最近 10 次變化紀錄',   bg: 'bg-rose-50 border-rose-300' },
+        energy:  { title: '⚡ 精力・最近 10 次變化紀錄',   bg: 'bg-emerald-50 border-emerald-300' },
+        bladder: { title: '🚽 尿意・最近 10 次變化紀錄',   bg: 'bg-sky-50 border-sky-300' }
       }[stat];
       const logs = (pet.statLogs && pet.statLogs[stat]) || [];
       const bal = state.balance || {};
@@ -2710,7 +2710,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v71.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v71.2'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -6426,7 +6426,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       applyTimeStatsDelta(pet, 3000);
       updateHUD(); saveState();
       const co = document.getElementById('choice-overlay');
-      if (co && !co.classList.contains('hidden') && window.__openStatLogStat && co.innerHTML.includes('最近 5 次變化紀錄')) {
+      if (co && !co.classList.contains('hidden') && window.__openStatLogStat && co.innerHTML.includes('最近 10 次變化紀錄')) {
         openStatLogModal(window.__openStatLogStat);
       }
     }, 3000);
@@ -6483,7 +6483,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v71.1';
+          if (el) el.textContent = '☁️ 雲端已同步 · v71.2';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6522,7 +6522,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v71.1';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v71.2';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
