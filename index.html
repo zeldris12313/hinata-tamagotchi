@@ -206,7 +206,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v72.3</span>
+      <span id="save-status">💾 已自動儲存 · v72.4</span>
       
     </div>
 
@@ -1882,6 +1882,18 @@ html, body {
           endDuoOuting(oldType === 'konbini' ? '「喺便利店買完嘢返屋企啦！🏪🏠」' : (oldType === 'mall' ? '「商場夠鐘啦，一齊返屋企休息！🛍️🏠」' : (oldType === 'park' ? '「喺公園吹完海風返屋企啦！🌳🏠」' : '「食飽飽返屋企啦！好滿足！🍽️🏠」')));
           return;
         }
+        // Auto-recover if state.outing.type is active but characters are not yet in that outing area (e.g. from saved state)
+        if (!duoWalk && !pet.toiletState && !transitionState) {
+          const ot = state.outing.type;
+          const inOutArea = (ot === 'mall' && MALL_AREA_SET.has(pet.currentRoom))
+            || (ot === 'park' && (pet.currentRoom === 'park' || pet.currentRoom === 'park2'))
+            || (ot === 'ice_cream' && (pet.currentRoom === 'ice_cream' || pet.currentRoom === 'street3'))
+            || (pet.currentRoom === ot);
+          if (!inOutArea) {
+            startDuoJourney(ot, ot === 'park' ? 'park_walk' : ot, `「出發前往【${MAP_ROOMS[ot]?.name || ot}】啦！🚶‍♂️✨」`, null, () => { updateHUD(); });
+            return;
+          }
+        }
         // Auto-roam across Mall 1, Mall 2, Clothing Store, Toy Store, Promenade (15m intervals) + Promenade Cafe (1x/day, 15m, -30 coins)
         if (state.outing.type === 'mall' && !duoWalk && !pet.toiletState) {
           if (state.mallCafeUntil) {
@@ -2854,7 +2866,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v72.3'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v72.4'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -6637,7 +6649,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v72.3';
+          if (el) el.textContent = '☁️ 雲端已同步 · v72.4';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6676,7 +6688,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v72.3';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v72.4';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
