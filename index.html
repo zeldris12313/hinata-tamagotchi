@@ -207,7 +207,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v73.3</span>
+      <span id="save-status">💾 已自動儲存 · v74</span>
       
     </div>
 
@@ -673,7 +673,8 @@ html, body {
       restaurant: [
         { id: 'rest_booth', label: '餐廳卡位', hx: 300, hy: 390, hr: 110, px: 290, py: 440, act: 'restaurant', line: '「同哥哥坐卡位食大餐！漢堡扒加蛋包飯！🍽️✨」' },
         { id: 'rest_menu',  label: '睇餐牌揀嘢食', hx: 170, hy: 390, hr: 90, px: 185, py: 440, act: 'rest_menu', line: '「餐牌每樣都好想食！哥哥你幫我揀吖～📖😋」' },
-        { id: 'rest_water', label: '飲凍水傾計', hx: 430, hy: 390, hr: 90, px: 410, py: 440, act: 'tea', line: '「一邊飲住凍檸檬水一邊等上菜，好香呀！🥤✨」' }
+        { id: 'rest_water', label: '飲凍水傾計', hx: 430, hy: 390, hr: 90, px: 410, py: 440, act: 'tea', line: '「一邊飲住凍檸檬水一邊等上菜，好香呀！🥤✨」' },
+        { id: 'rest_drinkbar', label: '飲品吧斟嘢飲', hx: 375, hy: 290, hr: 90, px: 380, py: 420, act: 'rest_drinkbar', line: '「去飲品吧斟杯冰凍橙汁同綠茶返嚟飲！🧃✨」' }
       ]
     };
 
@@ -1023,7 +1024,8 @@ html, body {
       const bal = state.balance || {};
       const act = pet.currentActivity;
       const schedOsl = getScheduledState(getCurrentHourInfo());
-      const mealActOsl = ['breakfast', 'lunch', 'dinner'].includes(act) ? act : ((['breakfast', 'lunch', 'dinner'].includes(schedOsl.act) && (pet.currentRoom === 'kitchen' || (pet.gradualAcc && pet.gradualAcc.slotKey === schedOsl.key))) ? schedOsl.act : null);
+      const isRestMeal = (pet.currentRoom === 'restaurant' || (state.outing && state.outing.type === 'restaurant'));
+      const mealActOsl = isRestMeal ? 'restaurant' : (['breakfast', 'lunch', 'dinner'].includes(act) ? act : ((['breakfast', 'lunch', 'dinner'].includes(schedOsl.act) && (pet.currentRoom === 'kitchen' || (pet.gradualAcc && pet.gradualAcc.slotKey === schedOsl.key))) ? schedOsl.act : null));
       const isSupperEat = (act === 'supper_eat');
       const isMeal = !!mealActOsl;
       const isSleep = (act === 'sleep');
@@ -1035,7 +1037,7 @@ html, body {
           perMin = getActiveSupperRates().bladder / 15;
         } else if (isMeal) {
           const isWk = getCurrentHourInfo().isWeekend;
-          const md = mealActOsl === 'breakfast' ? (isWk?30:20) : (mealActOsl === 'lunch' ? (isWk?35:60) : (isWk?40:30));
+          const md = mealActOsl === 'restaurant' ? 60 : (mealActOsl === 'breakfast' ? (isWk?30:20) : (mealActOsl === 'lunch' ? (isWk?35:60) : (isWk?40:30)));
           perMin = (bal.bladderMeal ?? 25) / md;
         } else if (!['toilet_use','toilet_urinal','toilet_wash'].includes(act)) {
           perMin = (bal.bladderPerHour ?? 10) / 60;
@@ -1045,7 +1047,7 @@ html, body {
           perMin = (getActiveSupperRates()[stat] ?? 0) / 15;
         } else if (isMeal) {
           const isWk = getCurrentHourInfo().isWeekend;
-          const md = mealActOsl === 'breakfast' ? (isWk?30:20) : (mealActOsl === 'lunch' ? (isWk?35:60) : (isWk?40:30));
+          const md = mealActOsl === 'restaurant' ? 60 : (mealActOsl === 'breakfast' ? (isWk?30:20) : (mealActOsl === 'lunch' ? (isWk?35:60) : (isWk?40:30)));
           perMin = ((bal.meal && bal.meal[stat]) ?? 0) / md;
         } else if (isSleep) {
           const sl = bal.sleep || { hunger: -4, energy: 25, mood: 0 };
@@ -1107,7 +1109,8 @@ html, body {
         const isSleepAct = (pet.currentActivity === 'sleep');
         const isRestAct = (!isSleepAct && (pet.recoverStage === 'rest30' || pet.currentActivity === 'bath' || pet.currentActivity === 'tea' || pet.currentActivity === 'tv' || pet.currentActivity === 'park_breeze' || pet.currentActivity === 'water_break' || pet.homeSeqStage === 'living15m'));
         const schedMealChk = (typeof getScheduledState === 'function' && typeof getCurrentHourInfo === 'function') ? getScheduledState(getCurrentHourInfo()) : null;
-        const effectiveMealAct = ['breakfast', 'lunch', 'dinner'].includes(pet.currentActivity) ? pet.currentActivity : ((pet.currentRoom === 'kitchen' && schedMealChk && ['breakfast', 'lunch', 'dinner'].includes(schedMealChk.act)) ? schedMealChk.act : null);
+        const isRestMealAts = (pet.currentRoom === 'restaurant' || (state.outing && state.outing.type === 'restaurant'));
+        const effectiveMealAct = isRestMealAts ? 'restaurant' : (['breakfast', 'lunch', 'dinner'].includes(pet.currentActivity) ? pet.currentActivity : ((pet.currentRoom === 'kitchen' && schedMealChk && ['breakfast', 'lunch', 'dinner'].includes(schedMealChk.act)) ? schedMealChk.act : null));
         if (isSupperEatAct) {
           const srSup = getActiveSupperRates();
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + (mins / 15) * srSup.hunger));
@@ -1120,7 +1123,7 @@ html, body {
           pet.mood   = Math.max(0, Math.min(100, pet.mood   + hrs * (sl.mood ?? 0)));
         } else if (effectiveMealAct) {
           const isWknd = (typeof getCurrentHourInfo === 'function') ? getCurrentHourInfo().isWeekend : false;
-          const mealDur = (effectiveMealAct === 'breakfast') ? (isWknd ? 30 : 20) : (effectiveMealAct === 'lunch' ? (isWknd ? 35 : 60) : (isWknd ? 40 : 30));
+          const mealDur = (effectiveMealAct === 'restaurant') ? 60 : ((effectiveMealAct === 'breakfast') ? (isWknd ? 30 : 20) : (effectiveMealAct === 'lunch' ? (isWknd ? 35 : 60) : (isWknd ? 40 : 30)));
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + (mins / mealDur) * (bal.meal.hunger || 0)));
           pet.energy = Math.max(0, Math.min(100, pet.energy + (mins / mealDur) * (bal.meal.energy || 0)));
           pet.mood   = Math.max(0, Math.min(100, pet.mood   + (mins / mealDur) * (bal.meal.mood || 0)));
@@ -1147,7 +1150,7 @@ html, body {
           pet.bladder = Math.max(0, Math.min(100, (pet.bladder || 0) + (mins / 15) * srSupB.bladder));
         } else if (effectiveMealAct) {
           const isWkndB = (typeof getCurrentHourInfo === 'function') ? getCurrentHourInfo().isWeekend : false;
-          const mealDurB = (effectiveMealAct === 'breakfast') ? (isWkndB ? 30 : 20) : (effectiveMealAct === 'lunch' ? (isWkndB ? 35 : 60) : (isWkndB ? 40 : 30));
+          const mealDurB = (effectiveMealAct === 'restaurant') ? 60 : ((effectiveMealAct === 'breakfast') ? (isWkndB ? 30 : 20) : (effectiveMealAct === 'lunch' ? (isWkndB ? 35 : 60) : (isWkndB ? 40 : 30)));
           const bMeal = (bal.bladderMeal ?? 25);
           pet.bladder = Math.max(0, Math.min(100, (pet.bladder || 0) + (mins / mealDurB) * bMeal));
         } else if (!['toilet_use', 'toilet_wash'].includes(pet.currentActivity)) {
@@ -1460,6 +1463,8 @@ html, body {
       state.gamingReturnAt = null;
       state.iceCreamState = null;
       state.mallCafeUntil = null;
+      state.restDrinkBarCount = 0;
+      state.restDrinkBarUntil = null;
       state.outing = { type, returnAt: retAt, startedAt: Date.now(), fromMall };
       if (type === 'restaurant') {
         const info = getCurrentHourInfo();
@@ -2172,6 +2177,37 @@ html, body {
               state.iceCreamState = null;
               endDuoOuting(`「食完 ${hf.emoji}${hf.name}雪糕好滿足！！我哋直接返屋企啦！🍦🏠」`);
               return;
+            }
+          }
+        }
+        // Restaurant occasional drink bar pour (max 2 times per visit, ~12s at drink bar then back to booth)
+        if (state.outing.type === 'restaurant' && pet.currentRoom === 'restaurant' && !duoWalk && !pet.toiletState) {
+          if (state.restDrinkBarUntil) {
+            if (Date.now() >= state.restDrinkBarUntil) {
+              state.restDrinkBarUntil = null;
+              pet.currentActivity = 'restaurant'; targetX = 285; targetY = 445;
+              bro.currentActivity = 'restaurant'; bro.tx = 355; bro.ty = 445;
+              if (viewRoomId === 'restaurant') speakAndShow('「斟好冰凍飲品返埋位繼續食大餐！🍽️🥤」');
+              updateHUD();
+            }
+          } else {
+            if (!window.__lastRestBarRollAt) window.__lastRestBarRollAt = Date.now();
+            if (Date.now() - window.__lastRestBarRollAt >= 45000 && (state.restDrinkBarCount || 0) < 2) {
+              window.__lastRestBarRollAt = Date.now();
+              if (Math.random() < 0.25) {
+                state.restDrinkBarCount = (state.restDrinkBarCount || 0) + 1;
+                state.restDrinkBarUntil = Date.now() + 12000;
+                const whoPour = Math.random() < 0.5 ? 'pet' : 'bro';
+                if (whoPour === 'pet') {
+                  pet.currentActivity = 'rest_drinkbar'; targetX = 380; targetY = 420;
+                  if (viewRoomId === 'restaurant') speakAndShow('「我去飲品吧斟杯汽水／果汁返嚟呀！🥤✨」');
+                } else {
+                  bro.currentActivity = 'rest_drinkbar'; bro.tx = 380; bro.ty = 420;
+                  if (viewRoomId === 'restaurant') speakAndShow('「哥哥去飲品吧幫我哋斟杯飲品先！🧃💛」');
+                }
+                addBladderFromConsume(pet, true);
+                updateHUD(); saveState();
+              }
             }
           }
         }
@@ -3002,7 +3038,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v73.3'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v74'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3325,7 +3361,7 @@ html, body {
       park_jog: '🏃 公園慢跑', park_walk: '🚶 公園散步', park_breeze: '🌊 睇海風中', toilet_use: '🚽 如廁中', toilet_urinal: '🚻 小便中', toilet_wash: '🧼 洗手中', toilet_wait: '⏳ 等緊廁所', court_run: '🏃 跑步熱身中', stretch: '🧘‍♂️ 拉筋放鬆中',
       gear_prep: '🏐 整理裝備中', window_gaze: '🌤️ 望窗外發呆', read_manga: '📚 睇排球漫畫',
       mirror_prep: '🪞 整理儀容中', tidy_bag: '🔑 檢查隨身物', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', konbini_mag: '📖 睇雜誌中', konbini_snack: '🍡 睇零食中', konbini_drink: '🥤 睇飲品中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理', supermarket: '🛒 行超市中', supermarket_checkout: '💳 自助收銀付款', supper_wait: '🍽️ 等哥哥整宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 揀緊雪糕口味', eating_ice_cream: '🍦 街邊食雪糕中', mall2: '🏬 行商場2樓中', clothing_store: '👕 睇衫中', toy_store: '🧸 睇玩具中', mall_promenade: '🌊 行海邊大道中', promenade_cafe: '🍮 食布丁休息中', kitchen_table: '🪑 餐桌休息中', squat: '🏋️ 深蹲特訓中'
+      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', konbini_mag: '📖 睇雜誌中', konbini_snack: '🍡 睇零食中', konbini_drink: '🥤 睇飲品中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理', supermarket: '🛒 行超市中', supermarket_checkout: '💳 自助收銀付款', supper_wait: '🍽️ 等哥哥整宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 揀緊雪糕口味', eating_ice_cream: '🍦 街邊食雪糕中', mall2: '🏬 行商場2樓中', clothing_store: '👕 睇衫中', toy_store: '🧸 睇玩具中', mall_promenade: '🌊 行海邊大道中', promenade_cafe: '🍮 食布丁休息中', kitchen_table: '🪑 餐桌休息中', squat: '🏋️ 深蹲特訓中', rest_drinkbar: '🥤 飲品吧斟嘢飲'
     };
     const BROTHER_ACTIVITY_LABELS = {
       sleep: '😴 哥哥熟睡中', brush: '🪥 哥哥刷牙中', cook_bfast: '🍳 煮緊早餐', prep_bfast: '🥞 準備早餐中',
@@ -3339,7 +3375,7 @@ html, body {
       backyard: '🏐 陪練排球', idle: '✨ 休息中', stretch: '🧘‍♂️ 拉筋中',
       gear_prep: '🏐 幫手執裝備', window_gaze: '🌤️ 望窗外思考', read_manga: '📚 睇漫畫中',
       mirror_prep: '🪞 整理儀容', tidy_bag: '🔑 檢查鎖匙', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋', washing_dishes: '🫧 洗碗碟中', supermarket: '🛒 超市買嘢中', supermarket_checkout: '💳 自助收銀中', supper_pick: '🧊 睇上層冰格', supper_cook: '🍲 煮緊宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 陪揀雪糕中', eating_ice_cream: '🍦 陪食雪糕中', mall2: '🏬 陪行商場2樓', clothing_store: '👕 陪睇衫中', toy_store: '🧸 陪睇玩具中', mall_promenade: '🌊 陪行觀光大道', promenade_cafe: '☕ 飲咖啡陪翔陽', kitchen_table: '🪑 陪坐餐桌', squat: '🏋️ 陪做深蹲'
+      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋', washing_dishes: '🫧 洗碗碟中', supermarket: '🛒 超市買嘢中', supermarket_checkout: '💳 自助收銀中', supper_pick: '🧊 睇上層冰格', supper_cook: '🍲 煮緊宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 陪揀雪糕中', eating_ice_cream: '🍦 陪食雪糕中', mall2: '🏬 陪行商場2樓', clothing_store: '👕 陪睇衫中', toy_store: '🧸 陪睇玩具中', mall_promenade: '🌊 陪行觀光大道', promenade_cafe: '☕ 飲咖啡陪翔陽', kitchen_table: '🪑 陪坐餐桌', squat: '🏋️ 陪做深蹲', rest_drinkbar: '🥤 斟飲品中'
     };
     const IDLE_THOUGHTS = ['💭 想食玉子拌飯…', '💭 聽日要跳高啲！', '💭 哥哥幾時同我打機？', '💭 烏野一定打入全國！'];
 
@@ -3398,7 +3434,7 @@ html, body {
 
       const bx = bro.px, by = bro.py;
       const isWalking = Math.hypot(bro.tx - bro.px, bro.ty - bro.py) > 5;
-      const isEating = (act === 'canteen_lunch' || act === 'breakfast' || act === 'lunch' || act === 'dinner');
+      const isEating = ['canteen_lunch','breakfast','lunch','dinner','restaurant','supper_eat','eating_ice_cream','promenade_cafe','rest_drinkbar'].includes(act);
       const bounce = isWalking ? -Math.abs(Math.sin(frame * 0.22)) * 8 : (act === 'park_jog' ? -Math.abs(Math.sin(frame * 0.2)) * 14 : (isEating ? Math.sin(frame * 0.16) * 2.5 : 0));
       const breathSy = 1 + Math.sin(frame * 0.065 + 1) * 0.02;
       const breathSx = 1 - Math.sin(frame * 0.065 + 1) * 0.012;
@@ -3410,7 +3446,11 @@ html, body {
       ctx.translate(bx, by + bounce);
       ctx.scale(breathSx, breathSy);
       ctx.drawImage(img, -drawW / 2, -drawH / 2 - 22, drawW, drawH);
-      if (isEating && !isWalking) { ctx.font = '26px sans-serif'; ctx.fillText('🍱', -48, 32); }
+      if (isEating && !isWalking) {
+        const bIcon = act === 'promenade_cafe' ? '☕' : (act === 'eating_ice_cream' ? '🍦' : (act === 'rest_drinkbar' ? '🥤' : (act === 'restaurant' ? '🍽️' : (act === 'supper_eat' ? '🍢' : '🍱'))));
+        ctx.font = '25px sans-serif';
+        ctx.fillText(bIcon, -48, 30 + Math.sin(frame * 0.22) * 3);
+      }
       ctx.restore();
       drawBrotherBadge(bx, by + bounce, isWalking ? (['street', 'main_street'].includes(bro.currentRoom) ? 'street' : 'walking') : act);
     }
@@ -3480,7 +3520,14 @@ html, body {
       if (act === 'tea' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🍵', cx + 42, cy + 28); }
       if (act === 'water_break' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('💧', cx + 40, cy + 16); }
       if (act === 'brush' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🪥', cx + 38, cy + 10); }
-      if ((act === 'lunch' || act === 'dinner') && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🍱', cx + 40, cy + 25); }
+      const eatIcons = { breakfast: '🍚', lunch: '🍱', dinner: '🍱', restaurant: '🍽️', supper_eat: '🥟', eating_ice_cream: '🍦', promenade_cafe: '🍮', rest_drinkbar: '🥤' };
+      if (eatIcons[act] && !isWalking) {
+        const chewY = Math.sin(frame * 0.22) * 3.5;
+        ctx.font = '25px sans-serif';
+        ctx.fillText(eatIcons[act], cx + 42, cy + 24 + chewY);
+        if (act === 'restaurant') ctx.fillText('🍖', cx - 44, cy + 24 - chewY);
+        if (frame % 48 < 18) { ctx.font = '16px sans-serif'; ctx.fillText('✨', cx + 52, cy - 12 - (frame % 18)); }
+      }
       if (act === 'gaming' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🎮', cx + 42, cy + 25); }
       ctx.restore();
       drawOverheadBadge(cx, cy - 28 + jumpY, isWalking ? 'idle' : act, frame);
@@ -6791,7 +6838,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v73.3';
+          if (el) el.textContent = '☁️ 雲端已同步 · v74';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6830,7 +6877,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v73.3';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v74';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
