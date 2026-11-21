@@ -84,6 +84,7 @@ html, body {
         </div>
         <div class="flex items-center justify-between text-[10px] bg-white/80 rounded-lg px-2 py-0.5 border border-amber-300 whitespace-nowrap">
           <span id="daily-cap-exp">📈 今日EXP 0/100</span>
+          <button id="btn-hud-dates" type="button" class="px-1.5 py-0.5 rounded bg-emerald-100 hover:bg-emerald-200 border border-emerald-500 text-emerald-900 font-black cursor-pointer">🗓️ 約會</button>
           <span id="daily-lock-badge" class="hidden text-rose-600 font-black">🔒 EXP已達上限</span>
           <button id="snack-bag-display" type="button" class="font-bold text-amber-800 hover:underline cursor-pointer">🎒 小食: 無</button>
           <button id="btn-wallet" type="button" class="font-black text-emerald-700 hover:underline cursor-pointer">👛 零錢 <span id="pocket-money">20</span></button>
@@ -206,7 +207,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v72.5</span>
+      <span id="save-status">💾 已自動儲存 · v72.6</span>
       
     </div>
 
@@ -534,7 +535,7 @@ html, body {
         { id: 'walk_st3', label: '街邊食雪糕位', hx: 300, hy: 420, hr: 95, px: 300, py: 440, act: 'eating_ice_cream', line: '「企喺街道3吹住微風食雪糕，特別好味！🍦🛣️」' }
       ],
       ice_cream: [
-        { id: 'ic_counter', label: '雪糕櫃檯揀口味', hx: 270, hy: 370, hr: 110, px: 270, py: 445, act: 'ice_cream', line: '「原味、咖啡、朱古力、抹茶…每隻味都好想試！🍦✨」' }
+        { id: 'ic_counter', label: '雪糕店揀口味區', hx: 475, hy: 475, hr: 110, px: 475, py: 485, act: 'ice_cream', line: '「原味、咖啡、朱古力、抹茶…每隻味都好想試！🍦✨」' }
       ],
       street2: [
         { id: 'walk_st2', label: '街道2漫步', hx: 280, hy: 420, hr: 95, px: 280, py: 440, act: 'street', line: '「經過室外街道2，右邊係便利店，下面係超級市場！🛣️」' }
@@ -1516,7 +1517,56 @@ html, body {
             if (loc && loc !== 'home_eat' && pet.lastDateSlotRun !== today + '_' + i) {
               pet.lastDateSlotRun = today + '_' + i;
               const remMin = Math.max(10, sEnd - info.totalMin);
-              startDuoOuting(loc, remMin, loc, `約會時間到！一齊去【${MAP_ROOMS[loc]?.name}】❤️`, `「哥哥！約好咗今日呢個鐘數去【${MAP_ROOMS[loc]?.name}】，出發啦！！❤️✨」`);
+              const dtSlotStart = new Date(); dtSlotStart.setHours(Math.floor(sStart / 60), sStart % 60, 0, 0);
+              const elapsedMsSlot = Date.now() - dtSlotStart.getTime();
+              if (elapsedMsSlot > 90000) {
+                // Offline catch-up: already in progress at destination
+                const retAtSlot = dtSlotStart.getTime() + 60 * 60 * 1000;
+                state.outing = { type: loc, returnAt: retAtSlot, fromMall: false };
+                if (loc === 'ice_cream') {
+                  if (elapsedMsSlot >= 10 * 60 * 1000) {
+                    // Already finished 5m choosing + offline coffee + 5m eating on street3
+                    const hf = ICE_CREAM_FLAVORS[Math.floor(Math.random() * ICE_CREAM_FLAVORS.length)];
+                    const bf = ICE_CREAM_FLAVORS[1];
+                    const paid = Math.min(pet.coins, getIcCfg(hf.id).price + getIcCfg(bf.id).price);
+                    pet.coins -= paid;
+                    if (paid > 0) recordCoinLog(pet, '🍦 雪糕店（離線自動）', -paid, pet.coins);
+                    recordPurchaseLog(pet, '雪糕店', `${hf.emoji}${hf.name}＋${bf.emoji}${bf.name}雪糕`, paid, '哥哥付款');
+                    const hcfg = getIcCfg(hf.id);
+                    const h0 = pet.hunger, m0 = pet.mood, e0 = pet.energy;
+                    pet.hunger = Math.min(100, pet.hunger + hcfg.hunger);
+                    pet.mood = Math.min(100, pet.mood + hcfg.mood);
+                    pet.energy = Math.min(100, pet.energy + hcfg.energy);
+                    recordStatLog(pet, 'hunger', `🍦 ${hf.name}雪糕`, h0, pet.hunger);
+                    recordStatLog(pet, 'mood', `🍦 ${hf.name}雪糕`, m0, pet.mood);
+                    recordStatLog(pet, 'energy', `🍦 ${hf.name}雪糕`, e0, pet.energy);
+                    addBladderFromConsume(pet, false);
+                    state.outing = { type: null, returnAt: null, fromMall: false };
+                    state.iceCreamState = null;
+                    showToast(`離線已完成 ${DATE_SLOTS[i]} 雪糕約會（自動揀 ☕咖啡）🍦`);
+                  } else if (elapsedMsSlot >= 5 * 60 * 1000) {
+                    const hf = ICE_CREAM_FLAVORS[Math.floor(Math.random() * ICE_CREAM_FLAVORS.length)];
+                    state.iceCreamState = { stage: 'choosing', until: dtSlotStart.getTime() + 5 * 60 * 1000, hinataFlavor: hf.id, broFlavor: null };
+                    stepDuoIntoRoom('street3', 'eating_ice_cream', true, null);
+                    completeIceCreamPayment('coffee', true);
+                    state.iceCreamState.until = dtSlotStart.getTime() + 10 * 60 * 1000;
+                  } else {
+                    stepDuoIntoRoom('ice_cream', 'ice_cream', true, '「離線時已經準時嚟到雪糕店揀緊口味～🍦」');
+                    state.iceCreamState = { stage: 'choosing', until: dtSlotStart.getTime() + 5 * 60 * 1000, hinataFlavor: null, broFlavor: null };
+                  }
+                } else {
+                  const targetR = (loc === 'park' && elapsedMsSlot > 20 * 60 * 1000) ? 'park2' : loc;
+                  stepDuoIntoRoom(targetR, loc === 'park' ? 'park_walk' : loc, true, `「離線時已經準時去咗【${MAP_ROOMS[targetR]?.name}】約會中！❤️」`);
+                  if (loc === 'mall' && elapsedMsSlot >= 30 * 60 * 1000 && pet.mallCafeDate !== today) {
+                    pet.mallCafeDate = today;
+                    const payC = Math.min(pet.coins, 30); pet.coins -= payC;
+                    if (payC > 0) recordCoinLog(pet, '☕ 海邊咖啡店（離線）', -payC, pet.coins);
+                  }
+                }
+                saveState();
+              } else {
+                startDuoOuting(loc, remMin, loc, `約會時間到！一齊去【${MAP_ROOMS[loc]?.name}】❤️`, `「哥哥！約好咗今日呢個鐘數去【${MAP_ROOMS[loc]?.name}】，出發啦！！❤️✨」`);
+              }
             }
             break;
           }
@@ -1846,7 +1896,56 @@ html, body {
             if (loc && loc !== 'home_eat' && pet.lastDateSlotRun !== today + '_' + i) {
               pet.lastDateSlotRun = today + '_' + i;
               const remMin = Math.max(10, sEnd - info.totalMin);
-              startDuoOuting(loc, remMin, loc, `約會時間到！一齊去【${MAP_ROOMS[loc]?.name}】❤️`, `「哥哥！約好咗今日呢個鐘數去【${MAP_ROOMS[loc]?.name}】，出發啦！！❤️✨」`);
+              const dtSlotStart = new Date(); dtSlotStart.setHours(Math.floor(sStart / 60), sStart % 60, 0, 0);
+              const elapsedMsSlot = Date.now() - dtSlotStart.getTime();
+              if (elapsedMsSlot > 90000) {
+                // Offline catch-up: already in progress at destination
+                const retAtSlot = dtSlotStart.getTime() + 60 * 60 * 1000;
+                state.outing = { type: loc, returnAt: retAtSlot, fromMall: false };
+                if (loc === 'ice_cream') {
+                  if (elapsedMsSlot >= 10 * 60 * 1000) {
+                    // Already finished 5m choosing + offline coffee + 5m eating on street3
+                    const hf = ICE_CREAM_FLAVORS[Math.floor(Math.random() * ICE_CREAM_FLAVORS.length)];
+                    const bf = ICE_CREAM_FLAVORS[1];
+                    const paid = Math.min(pet.coins, getIcCfg(hf.id).price + getIcCfg(bf.id).price);
+                    pet.coins -= paid;
+                    if (paid > 0) recordCoinLog(pet, '🍦 雪糕店（離線自動）', -paid, pet.coins);
+                    recordPurchaseLog(pet, '雪糕店', `${hf.emoji}${hf.name}＋${bf.emoji}${bf.name}雪糕`, paid, '哥哥付款');
+                    const hcfg = getIcCfg(hf.id);
+                    const h0 = pet.hunger, m0 = pet.mood, e0 = pet.energy;
+                    pet.hunger = Math.min(100, pet.hunger + hcfg.hunger);
+                    pet.mood = Math.min(100, pet.mood + hcfg.mood);
+                    pet.energy = Math.min(100, pet.energy + hcfg.energy);
+                    recordStatLog(pet, 'hunger', `🍦 ${hf.name}雪糕`, h0, pet.hunger);
+                    recordStatLog(pet, 'mood', `🍦 ${hf.name}雪糕`, m0, pet.mood);
+                    recordStatLog(pet, 'energy', `🍦 ${hf.name}雪糕`, e0, pet.energy);
+                    addBladderFromConsume(pet, false);
+                    state.outing = { type: null, returnAt: null, fromMall: false };
+                    state.iceCreamState = null;
+                    showToast(`離線已完成 ${DATE_SLOTS[i]} 雪糕約會（自動揀 ☕咖啡）🍦`);
+                  } else if (elapsedMsSlot >= 5 * 60 * 1000) {
+                    const hf = ICE_CREAM_FLAVORS[Math.floor(Math.random() * ICE_CREAM_FLAVORS.length)];
+                    state.iceCreamState = { stage: 'choosing', until: dtSlotStart.getTime() + 5 * 60 * 1000, hinataFlavor: hf.id, broFlavor: null };
+                    stepDuoIntoRoom('street3', 'eating_ice_cream', true, null);
+                    completeIceCreamPayment('coffee', true);
+                    state.iceCreamState.until = dtSlotStart.getTime() + 10 * 60 * 1000;
+                  } else {
+                    stepDuoIntoRoom('ice_cream', 'ice_cream', true, '「離線時已經準時嚟到雪糕店揀緊口味～🍦」');
+                    state.iceCreamState = { stage: 'choosing', until: dtSlotStart.getTime() + 5 * 60 * 1000, hinataFlavor: null, broFlavor: null };
+                  }
+                } else {
+                  const targetR = (loc === 'park' && elapsedMsSlot > 20 * 60 * 1000) ? 'park2' : loc;
+                  stepDuoIntoRoom(targetR, loc === 'park' ? 'park_walk' : loc, true, `「離線時已經準時去咗【${MAP_ROOMS[targetR]?.name}】約會中！❤️」`);
+                  if (loc === 'mall' && elapsedMsSlot >= 30 * 60 * 1000 && pet.mallCafeDate !== today) {
+                    pet.mallCafeDate = today;
+                    const payC = Math.min(pet.coins, 30); pet.coins -= payC;
+                    if (payC > 0) recordCoinLog(pet, '☕ 海邊咖啡店（離線）', -payC, pet.coins);
+                  }
+                }
+                saveState();
+              } else {
+                startDuoOuting(loc, remMin, loc, `約會時間到！一齊去【${MAP_ROOMS[loc]?.name}】❤️`, `「哥哥！約好咗今日呢個鐘數去【${MAP_ROOMS[loc]?.name}】，出發啦！！❤️✨」`);
+              }
             }
             break;
           }
@@ -2866,7 +2965,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v72.5'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v72.6'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -6530,6 +6629,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
     });
     document.getElementById('btn-wallet')?.addEventListener('click', openWalletModal);
     document.getElementById('btn-coins-log')?.addEventListener('click', openCoinLogModal);
+    document.getElementById('btn-hud-dates')?.addEventListener('click', () => openDateCalendar(true));
     ['hunger','mood','energy','bladder'].forEach(st => {
       const el = document.getElementById('stat-box-' + st);
       if (el) el.addEventListener('click', () => openStatLogModal(st));
@@ -6649,7 +6749,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v72.5';
+          if (el) el.textContent = '☁️ 雲端已同步 · v72.6';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6688,7 +6788,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v72.5';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v72.6';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
