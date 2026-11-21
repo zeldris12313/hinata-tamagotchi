@@ -206,7 +206,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v72.2</span>
+      <span id="save-status">💾 已自動儲存 · v72.3</span>
       
     </div>
 
@@ -1533,6 +1533,7 @@ html, body {
           showToast(`💼 哥哥獲得薪金 🪙+${salC}（09:00–17:00 每 ${salH} 小時）`);
         }
       }
+      if (state.outing && state.outing.type) return;
       const destRoom = sched.room || 'living';
       startDuoJourney(destRoom, sched.act, customMsg || '「返到屋企啦！🏠✨」', null, () => {
         pet.scheduleSlotKey = null;
@@ -1979,6 +1980,14 @@ html, body {
             else if (r < 0.76) nextParkAct = 'park_jog';
             else nextParkAct = 'park_breeze';
             if (nextParkAct !== pet.currentActivity) {
+              if (nextParkAct === 'park_breeze' && Math.random() < 0.5) {
+                const otherPark = (pet.currentRoom === 'park') ? 'park2' : 'park';
+                const bx = (otherPark === 'park2') ? 195 : 360;
+                startDuoJourney(otherPark, 'park_breeze', `「行過嚟【${MAP_ROOMS[otherPark]?.name}】坐長椅吹海風！🌊✨」`, null, () => {
+                  targetX = bx; bro.tx = bx + 85; targetY = 445; bro.ty = 445;
+                });
+                return;
+              }
               pet.currentActivity = nextParkAct;
               bro.currentActivity = nextParkAct;
               if (nextParkAct === 'park_breeze') {
@@ -2845,7 +2854,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v72.2'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v72.3'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -6628,7 +6637,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v72.2';
+          if (el) el.textContent = '☁️ 雲端已同步 · v72.3';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6667,7 +6676,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v72.2';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v72.3';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
