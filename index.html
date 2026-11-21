@@ -139,7 +139,7 @@ html, body {
         </div>
 
         <!-- Interactive Overlay (RPS / Chat / Jump Training) -->
-        <div id="choice-overlay" style="touch-action: pan-y;" class="hidden absolute top-9 bottom-10 left-1/2 -translate-x-1/2 w-[90%] overflow-y-auto bg-white/95 border-2 border-[#2d1e12] rounded-2xl p-2.5 shadow-xl z-30 flex flex-col items-stretch justify-start gap-1.5"></div>
+        <div id="choice-overlay" style="touch-action: pan-y;" class="hidden absolute top-3 bottom-3 left-1/2 -translate-x-1/2 w-[94%] overflow-y-auto bg-white/95 border-2 border-[#2d1e12] rounded-2xl p-2 shadow-xl z-30 flex flex-col items-stretch justify-start gap-1"></div>
 
         <!-- Rally Mini-game Overlay -->
         <div id="mg-hud" class="hidden pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 bg-[#2d1e12]/90 text-white text-xs font-bold px-3.5 py-1 rounded-full shadow z-20">
@@ -207,7 +207,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v72.6</span>
+      <span id="save-status">💾 已自動儲存 · v72.7</span>
       
     </div>
 
@@ -918,7 +918,7 @@ html, body {
       if (!state.dates) state.dates = {};
       if (!state.mailbox) state.mailbox = { items: [], lastMailDate: null, lastInviteDate: null };
       if (!state.brother) state.brother = { currentRoom: 'living', currentActivity: 'tea', px: 380, py: 440, tx: 380, ty: 440, scheduleSlotKey: null };
-      if (!state.outing) state.outing = { type: null, returnAt: null, fromMall: false }; state.iceCreamState = null;
+      if (!state.outing) { state.outing = { type: null, returnAt: null, fromMall: false }; state.iceCreamState = null; }
       if (!state.msgLog || state.msgLog.date !== today) state.msgLog = { date: today, asked: {}, promises: {} };
       return p;
     }
@@ -2116,6 +2116,10 @@ html, body {
         }
         // Ice Cream Shop 2-person flow (5m choosing -> bro pick / offline coffee -> pay -> 5m eat on street3 -> go home)
         if (state.outing.type === 'ice_cream' && !duoWalk) {
+          if (pet.currentRoom === 'ice_cream') {
+            targetX = 435; targetY = 485;
+            if (bro.currentRoom === 'ice_cream') { bro.tx = 495; bro.ty = 485; }
+          }
           if (!state.iceCreamState && pet.currentRoom === 'ice_cream') {
             state.iceCreamState = { stage: 'choosing', until: Date.now() + 5 * 60 * 1000, hinataFlavor: null, broFlavor: null };
             speakAndShow('「到雪糕店啦！哥哥我哋睇 5 分鐘揀下想食咩口味先～🍦✨」');
@@ -2965,7 +2969,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v72.6'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v72.7'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -6749,7 +6753,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v72.6';
+          if (el) el.textContent = '☁️ 雲端已同步 · v72.7';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6788,7 +6792,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v72.6';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v72.7';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
