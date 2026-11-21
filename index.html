@@ -219,7 +219,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v78</span>
+      <span id="save-status">💾 已自動儲存 · v78.1</span>
       
     </div>
 
@@ -3126,7 +3126,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v78'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v78.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3180,7 +3180,7 @@ html, body {
     }
 
     const MALL_AREA_SET = new Set(['mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade']);
-    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'park', 'park2', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'restaurant', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet']);
+    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'park', 'park2', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet']);
     function drawAnimeRoomBackground(roomId, timeInfo) {
       const h = new Date().getHours();
       const isNight = (h >= 18 || h < 6);
@@ -3196,9 +3196,9 @@ html, body {
       const bg = sprites[bgKey] || sprites['bg_' + roomId];
       if (bg) {
         ctx.drawImage(bg, 0, 0, 600, 600);
-        const hasDedicatedNight = (roomId === 'konbini' || NIGHT_BG_ROOMS.has(roomId));
-        if (timeInfo.isLateNight) {
-          ctx.fillStyle = hasDedicatedNight ? 'rgba(15, 23, 42, 0.14)' : 'rgba(15, 23, 42, 0.38)';
+        const hasDedicatedNight = (roomId === 'konbini' || NIGHT_BG_ROOMS.has(roomId)) && Boolean(sprites[bgKey]);
+        if (timeInfo.isLateNight && !hasDedicatedNight) {
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.38)';
           ctx.fillRect(0, 0, 600, 600);
         } else if (isNight && !hasDedicatedNight) {
           ctx.fillStyle = 'rgba(10, 18, 38, 0.42)';
@@ -3999,6 +3999,15 @@ html, body {
       if (!isZoomed && LOCKED_MEAL_ACTS.has(pet.currentActivity) && pet.currentRoom === 'kitchen') {
         playSFX('miss'); showToast('食緊正餐中 🔒 食完先可以互動呀！'); return;
       }
+      if (isTouchingHinata(x, y)) {
+        if (pet.currentActivity === 'sleep') {
+          playSFX('pat');
+          speakAndShow(pickLine(SLEEP_DREAM_LINES));
+          particles.push({ x, y: y - 20, text: '💭💛', color: '#f43f5e', life: 42 });
+          return;
+        }
+        triggerPetHead(x, y); return;
+      }
       if (!isZoomed) {
         const furn = (ROOM_FURNITURE[viewRoomId] || []).find(f => Math.hypot(x - f.hx, y - f.hy) <= f.hr);
         if (furn && viewRoomId === 'kitchen' && furn.id === 'fridge') { openFridgeModal(); return; }
@@ -4009,15 +4018,6 @@ html, body {
           particles.push({ x: furn.hx, y: furn.hy - 20, text: '叫醒! ✨', color: '#f59e0b', life: 30 });
           updateHUD(); saveState(); return;
         }
-      }
-      if (isTouchingHinata(x, y)) {
-        if (pet.currentActivity === 'sleep') {
-          playSFX('pat');
-          speakAndShow(pickLine(SLEEP_DREAM_LINES));
-          particles.push({ x, y: y - 20, text: '💭💛', color: '#f43f5e', life: 42 });
-          return;
-        }
-        triggerPetHead(x, y); return;
       }
       if (!isZoomed) {
         const furn = (ROOM_FURNITURE[viewRoomId] || []).find(f => Math.hypot(x - f.hx, y - f.hy) <= f.hr);
@@ -7058,7 +7058,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v78';
+          if (el) el.textContent = '☁️ 雲端已同步 · v78.1';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7097,7 +7097,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v78';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v78.1';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
