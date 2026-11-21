@@ -206,7 +206,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v71</span>
+      <span id="save-status">💾 已自動儲存 · v71.1</span>
       
     </div>
 
@@ -871,8 +871,11 @@ html, body {
       return p;
     }
 
-    function recordStatLog(pet, stat, label, fromVal, toVal) {
+    function recordStatLog(pet, stat, label, fromVal, toVal, isGradual = false) {
       if (!pet) return;
+      if (!isGradual && pet.gradualAcc && pet.gradualAcc.start && typeof pet.gradualAcc.start[stat] === 'number') {
+        pet.gradualAcc.start[stat] += (toVal - fromVal);
+      }
       const f = Math.round(fromVal), t = Math.round(toVal);
       const diff = t - f;
       if (diff === 0) return;
@@ -1093,13 +1096,13 @@ html, body {
             const g = pet.gradualAcc;
             const mDone = Math.max(1, Math.round((g.startedAt ? (Date.now() - g.startedAt) : g.accMs) / 60000));
             if (mDone >= 1) {
-              ['hunger','mood','energy','bladder'].forEach(st => recordStatLog(pet, st, `${g.label}（${mDone}分）`, g.start[st], pet[st]));
+              ['hunger','mood','energy','bladder'].forEach(st => recordStatLog(pet, st, `${g.label}（${mDone}分）`, g.start[st], pet[st], true));
             }
           }
           pet.gradualAcc = { slotKey, label: slotLabel, startedAt: Date.now() - Math.min(elapsedMs, 60000), start: { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 } };
         } else if (!(slotKey === 'wd_sleep' || slotKey === 'we_sleep' || pet.currentActivity === 'sleep') && Date.now() - pet.gradualAcc.startedAt >= 60 * 60 * 1000) {
           const g = pet.gradualAcc;
-          ['hunger','mood','energy','bladder'].forEach(st => recordStatLog(pet, st, `${g.label}（滿1小時）`, g.start[st], pet[st]));
+          ['hunger','mood','energy','bladder'].forEach(st => recordStatLog(pet, st, `${g.label}（滿1小時）`, g.start[st], pet[st], true));
           pet.gradualAcc = { slotKey, label: slotLabel, startedAt: Date.now(), start: { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 } };
         }
       }
@@ -2354,6 +2357,10 @@ html, body {
         } else if (pet.currentActivity !== sched.act) {
           pet.currentActivity = sched.act;
         }
+        if (pet.currentRoom === 'kitchen' && ['breakfast','lunch','dinner'].includes(pet.currentActivity)) {
+          targetX = 435; targetY = 455;
+          if (bro.currentRoom === 'kitchen' && ['breakfast','lunch','dinner'].includes(bro.currentActivity)) { bro.tx = 505; bro.ty = 440; }
+        }
       }
       if (!info.isWeekend && sched.isHomeSeq) {
         const nowHms = Date.now();
@@ -2703,7 +2710,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v71'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v71.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3285,7 +3292,7 @@ html, body {
         updateHUD();
       }
 
-      if (state.brother && pet.currentRoom === state.brother.currentRoom && pet.currentRoom !== 'bath' && pet.currentActivity !== 'sleep' && pet.currentActivity !== 'waking') {
+      if (state.brother && pet.currentRoom === state.brother.currentRoom && pet.currentRoom !== 'bath' && !['sleep','waking','breakfast','lunch','dinner'].includes(pet.currentActivity)) {
         const bro = state.brother;
         if (Math.abs(targetX - bro.tx) < 92) {
           const mid = Math.max(150, Math.min(450, (targetX + bro.tx) / 2));
@@ -3488,6 +3495,9 @@ html, body {
           if (furnSm) { handleSupermarketZoneClick(furnSm.id); return; }
         }
         showToast(`日向喺【${MAP_ROOMS[pet.currentRoom].short}】！`); return;
+      }
+      if (!isZoomed && LOCKED_MEAL_ACTS.has(pet.currentActivity) && pet.currentRoom === 'kitchen') {
+        playSFX('miss'); showToast('食緊正餐中 🔒 食完先可以互動呀！'); return;
       }
       if (!isZoomed) {
         const furn = (ROOM_FURNITURE[viewRoomId] || []).find(f => Math.hypot(x - f.hx, y - f.hy) <= f.hr);
@@ -4513,6 +4523,11 @@ html, body {
     }
 
     function handleSupermarketZoneClick(zoneId) {
+      const broIn = state.brother && state.brother.currentRoom === 'supermarket';
+      const petIn = ensurePetState(state.activeCharId).currentRoom === 'supermarket';
+      if (!broIn && !petIn) {
+        playSFX('miss'); showToast('哥哥未行入超市！請先喺「✨ 互動 → 🛒 去超市」前往 🛒'); return;
+      }
       const bro = state.brother;
       const pet = ensurePetState(state.activeCharId);
       const furn = (ROOM_FURNITURE.supermarket || []).find(f => f.id === zoneId);
@@ -5917,7 +5932,8 @@ html, body {
       }
       document.getElementById('room-title-badge').textContent = `${viewRoom.icon} ${viewRoom.name}`;
       const smZones = document.getElementById('supermarket-zones');
-      if (smZones) smZones.classList.toggle('hidden', viewRoomId !== 'supermarket' || isZoomed);
+      const inSmReal = (pet.currentRoom === 'supermarket') || (state.brother && state.brother.currentRoom === 'supermarket');
+      if (smZones) smZones.classList.toggle('hidden', viewRoomId !== 'supermarket' || isZoomed || !inSmReal);
       const bskBtn = document.getElementById('btn-sm-basket');
       if (bskBtn) bskBtn.textContent = `🧺 購物籃 (${getCartTotalQty()})`;
       const kfBtn = document.getElementById('btn-kitchen-fridge');
@@ -6467,7 +6483,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v71';
+          if (el) el.textContent = '☁️ 雲端已同步 · v71.1';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6506,7 +6522,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v71';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v71.1';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
