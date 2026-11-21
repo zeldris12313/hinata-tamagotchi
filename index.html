@@ -42,6 +42,8 @@ html, body {
     .ui-card { border: 2.5px solid #2d1e12; box-shadow: 0 4px 0 rgba(45, 30, 18, 0.85); }
     .dock-chip, .ctrl-pill { border: 2px solid #2d1e12; box-shadow: 0 3px 0 rgba(45, 30, 18, 0.85); touch-action: none; transition: transform 0.1s ease, opacity 0.15s ease; }
     .dock-chip:active, .ctrl-pill:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(45, 30, 18, 0.85); }
+    .ctrl-pill.is-pressed { transform: translateY(2px); box-shadow: inset 0 2px 5px rgba(45,30,18,0.38) !important; background: #fed7aa !important; border-color: #c2410c !important; }
+    #btn-find-bro.is-pressed { background: #bae6fd !important; border-color: #0369a1 !important; }
     .inscreen-dir {
       border: 2px solid rgba(45, 30, 18, 0.85);
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
@@ -133,14 +135,8 @@ html, body {
         <button id="btn-bath-supplies" type="button" style="left:24%;top:66%;transform:translate(-50%,-50%)" class="hidden absolute px-2 py-1 rounded-xl bg-purple-100/95 hover:bg-purple-200 border-2 border-[#2d1e12] text-[10px] font-black shadow z-15">🧴 沐浴用品</button>
         <button id="btn-hallway-living" type="button" style="left:36%;top:47%;transform:translate(-50%,-50%)" class="hidden absolute px-2 py-1 rounded-xl bg-amber-100/90 hover:bg-amber-200 border-2 border-[#2d1e12] text-[10px] font-black shadow-md z-15">🏠 客廳</button>
         <div id="hallway-2f-doors" class="hidden pointer-events-none absolute inset-0 z-15">
-          <button type="button" data-door-room="room_hinata" style="left:13%;top:37%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-xl bg-orange-50/95 hover:bg-orange-100 border-2 border-[#2d1e12] shadow-md">
-            <img src="./assets/head_hinata.png?v=76" alt="翔陽" class="w-8 h-8 rounded-full border border-[#2d1e12] bg-white object-cover">
-            <span class="text-[10px] font-black text-[#2d1e12] leading-none">翔陽</span>
-          </button>
-          <button type="button" data-door-room="room_aniki" style="left:87%;top:37%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute flex flex-col items-center gap-0.5 px-1.5 py-1 rounded-xl bg-indigo-50/95 hover:bg-indigo-100 border-2 border-[#2d1e12] shadow-md">
-            <img src="./assets/head_aniki.png?v=76" alt="哥哥" class="w-8 h-8 rounded-full border border-[#2d1e12] bg-white object-cover">
-            <span class="text-[10px] font-black text-[#2d1e12] leading-none">哥哥</span>
-          </button>
+          <button type="button" data-door-room="room_hinata" title="進入翔陽房間" style="left:11%;top:48%;width:18%;height:62%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute rounded-xl hover:bg-orange-400/15 active:bg-orange-400/25 transition"></button>
+          <button type="button" data-door-room="room_aniki" title="進入哥哥房間" style="left:89%;top:48%;width:18%;height:62%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute rounded-xl hover:bg-indigo-400/15 active:bg-indigo-400/25 transition"></button>
         </div>
         <div id="wash-hall-doors" class="hidden pointer-events-none absolute inset-0 z-15">
           <button type="button" data-door-room="toilet" style="left:25%;top:56%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute px-2.5 py-1 rounded-xl bg-sky-50/90 hover:bg-sky-100 border-2 border-[#2d1e12] text-[11px] font-black shadow-md">🚽 廁所</button>
@@ -222,7 +218,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v76</span>
+      <span id="save-status">💾 已自動儲存 · v77</span>
       
     </div>
 
@@ -445,12 +441,12 @@ html, body {
       bg_mall_promenade: "./assets/bg_mall_promenade.jpg?v=72",
       bg_mall_promenade_morning: "./assets/bg_mall_promenade_morning.jpg?v=72",
       bg_mall_promenade_night: "./assets/bg_mall_promenade_night.jpg?v=72",
-      bg_hallway_2f: "./assets/bg_hallway_2f.jpg?v=76",
-      bg_hallway_2f_morning: "./assets/bg_hallway_2f_morning.jpg?v=76",
-      bg_hallway_2f_night: "./assets/bg_hallway_2f_night.jpg?v=76",
-      bg_wash_hall: "./assets/bg_wash_hall.jpg?v=76",
-      bg_wash_hall_morning: "./assets/bg_wash_hall_morning.jpg?v=76",
-      bg_wash_hall_night: "./assets/bg_wash_hall_night.jpg?v=76"
+      bg_hallway_2f: "./assets/bg_hallway_2f.jpg?v=76.1",
+      bg_hallway_2f_morning: "./assets/bg_hallway_2f_morning.jpg?v=76.1",
+      bg_hallway_2f_night: "./assets/bg_hallway_2f_night.jpg?v=76.1",
+      bg_wash_hall: "./assets/bg_wash_hall.jpg?v=76.1",
+      bg_wash_hall_morning: "./assets/bg_wash_hall_morning.jpg?v=76.1",
+      bg_wash_hall_night: "./assets/bg_wash_hall_night.jpg?v=76.1"
     };
     const sprites = {};
 
@@ -1364,11 +1360,29 @@ html, body {
       if (dir === 'down')  return { ex: 300, ey: 525, ix: 300, iy: 330 };
       return { ex: 540, ey: 440, ix: 60, iy: 440 };
     }
+    let followTarget = null;
     function startCharacterWalkTransition(pet, destRoom, destAct, px, py, followView = false) {
       if (pet.currentRoom === destRoom) { pet.currentActivity = destAct; targetX = px; targetY = py; saveState(); return; }
-      const dir = getRoomMoveDir(pet.currentRoom, destRoom);
+      const path = findRoomPath(pet.currentRoom, destRoom);
+      const nextRoom = path[0] || destRoom;
+      const dir = getRoomMoveDir(pet.currentRoom, nextRoom);
       const edge = getDirEdgeCoords(dir);
-      transitionState = { phase: 'out', fromRoom: pet.currentRoom, targetRoom: destRoom, targetActivity: destAct, tx: px, ty: py, alpha: 1, followView, ...edge };
+      transitionState = {
+        phase: 'out',
+        fromRoom: pet.currentRoom,
+        targetRoom: nextRoom,
+        targetActivity: (path.length > 1) ? 'street' : destAct,
+        pathQueue: path,
+        finalRoom: destRoom,
+        finalAct: destAct,
+        finalTx: px,
+        finalTy: py,
+        tx: (path.length > 1) ? 300 : px,
+        ty: (path.length > 1) ? 440 : py,
+        alpha: 1,
+        followView,
+        ...edge
+      };
       if (viewRoomId === pet.currentRoom) speakAndShow(getActiveChar().dialogues.leaving[0]);
     }
 
@@ -1645,27 +1659,42 @@ html, body {
     let lastRecessActAt = 0;
     let lastSneakCheckAt = 0;
 
-    function startSoloWalk(who, destRoom, finalAct, finalSpeech, onArrive) {
+    function startSoloWalk(who, destRoom, finalAct, finalSpeech, onArrive, followView = false) {
       const pet = ensurePetState(state.activeCharId);
       const bro = state.brother;
       const curRoom = (who === 'bro') ? bro.currentRoom : pet.currentRoom;
-      const steps = findRoomPath(curRoom, destRoom);
-      if (steps.length <= 1) {
-        if (who === 'bro') { bro.currentRoom = destRoom; bro.currentActivity = finalAct; }
-        else { pet.currentRoom = destRoom; pet.currentActivity = finalAct; }
+      if (curRoom === destRoom) {
+        if (who === 'bro') bro.currentActivity = finalAct;
+        else pet.currentActivity = finalAct;
         if (finalSpeech) speakAndShow(finalSpeech);
         if (onArrive) onArrive();
         return;
       }
-      const wObj = { steps, idx: 0, stepEnteredAt: Date.now(), destRoom, finalAct, finalSpeech, onArrive };
+      const steps = findRoomPath(curRoom, destRoom);
+      if (steps.length <= 1) {
+        const dEdge = getDirEdgeCoords(getRoomMoveDir(curRoom, destRoom));
+        if (who === 'bro') { bro.currentRoom = destRoom; bro.currentActivity = finalAct; bro.px = dEdge.ix; bro.py = dEdge.iy; const f0 = (ROOM_FURNITURE[destRoom] && ROOM_FURNITURE[destRoom][0]) || { px: 320, py: 440 }; bro.tx = f0.px; bro.ty = f0.py; }
+        else { pet.currentRoom = destRoom; pet.currentActivity = finalAct; petX = dEdge.ix; petY = dEdge.iy; const f0 = (ROOM_FURNITURE[destRoom] && ROOM_FURNITURE[destRoom][0]) || { px: 280, py: 440 }; targetX = f0.px; targetY = f0.py; }
+        if (finalSpeech) speakAndShow(finalSpeech);
+        if (onArrive) onArrive();
+        updateHUD();
+        return;
+      }
+      const dEdgeIn = getDirEdgeCoords(getRoomMoveDir(curRoom, steps[0]));
+      const dEdgeOut = getDirEdgeCoords(getRoomMoveDir(steps[0], steps[1]));
+      const wObj = { steps, idx: 0, stepEnteredAt: Date.now(), destRoom, finalAct, finalSpeech, onArrive, followView };
       if (who === 'bro') {
         broWalk = wObj;
-        bro.currentRoom = steps[0]; bro.currentActivity = 'street'; bro.tx = 320; bro.ty = 440;
+        bro.currentRoom = steps[0]; bro.currentActivity = 'street';
+        bro.px = dEdgeIn.ix; bro.py = dEdgeIn.iy;
+        bro.tx = dEdgeOut.ex; bro.ty = dEdgeOut.ey;
       } else {
         petWalk = wObj;
-        pet.currentRoom = steps[0]; pet.currentActivity = 'street'; targetX = 280; targetY = 440;
+        pet.currentRoom = steps[0]; pet.currentActivity = 'street';
+        petX = dEdgeIn.ix; petY = dEdgeIn.iy;
+        targetX = dEdgeOut.ex; targetY = dEdgeOut.ey;
       }
-      viewRoomId = steps[0];
+      if (followView) viewRoomId = steps[0];
       updateHUD();
     }
 
@@ -1814,7 +1843,7 @@ html, body {
       if (handleRecoveryTick(pet)) { duoWalk = null; return; }
       // General solo walk stepping for Brother & Hinata (non-recovery)
       if (broWalk && !pet.recoverStage) {
-        if (Date.now() - broWalk.stepEnteredAt >= 2600) {
+        if (Date.now() - broWalk.stepEnteredAt >= 5000) {
           broWalk.idx++;
           const bw = broWalk;
           if (bw.idx >= bw.steps.length - 1) {
@@ -1824,23 +1853,25 @@ html, body {
             bro.px = dEdge.ix; bro.py = dEdge.iy;
             const f0 = (ROOM_FURNITURE[bw.destRoom] && ROOM_FURNITURE[bw.destRoom][0]) || { px: 320, py: 440 };
             bro.tx = bw.tx || f0.px; bro.ty = bw.ty || f0.py;
-            if (bw.followView !== false) viewRoomId = bw.destRoom;
+            if (bw.followView) viewRoomId = bw.destRoom;
             if (bw.finalSpeech) speakAndShow(bw.finalSpeech);
             if (bw.onArrive) bw.onArrive();
             renderDock(); updateHUD(); saveState();
           } else {
             const nr = bw.steps[bw.idx];
+            const nextNr = bw.steps[bw.idx + 1] || bw.destRoom;
             const dEdge = getDirEdgeCoords(getRoomMoveDir(bro.currentRoom, nr));
+            const dOut = getDirEdgeCoords(getRoomMoveDir(nr, nextNr));
             bw.stepEnteredAt = Date.now();
             bro.currentRoom = nr; bro.currentActivity = 'street';
-            bro.px = dEdge.ix; bro.py = dEdge.iy; bro.tx = 300; bro.ty = 440;
-            if (bw.followView !== false) viewRoomId = nr;
+            bro.px = dEdge.ix; bro.py = dEdge.iy; bro.tx = dOut.ex; bro.ty = dOut.ey;
+            if (bw.followView) viewRoomId = nr;
             updateHUD();
           }
         }
       }
       if (petWalk && !pet.recoverStage) {
-        if (Date.now() - petWalk.stepEnteredAt >= 2600) {
+        if (Date.now() - petWalk.stepEnteredAt >= 5000) {
           petWalk.idx++;
           const pw = petWalk;
           if (pw.idx >= pw.steps.length - 1) {
@@ -1850,17 +1881,19 @@ html, body {
             petX = dEdge.ix; petY = dEdge.iy;
             const f0 = (ROOM_FURNITURE[pw.destRoom] && ROOM_FURNITURE[pw.destRoom][0]) || { px: 260, py: 440 };
             targetX = pw.tx || f0.px; targetY = pw.ty || f0.py;
-            if (pw.followView !== false) viewRoomId = pw.destRoom;
+            if (pw.followView) viewRoomId = pw.destRoom;
             if (pw.finalSpeech) speakAndShow(pw.finalSpeech);
             if (pw.onArrive) pw.onArrive();
             renderDock(); updateHUD(); saveState();
           } else {
             const nr = pw.steps[pw.idx];
+            const nextNr = pw.steps[pw.idx + 1] || pw.destRoom;
             const dEdge = getDirEdgeCoords(getRoomMoveDir(pet.currentRoom, nr));
+            const dOut = getDirEdgeCoords(getRoomMoveDir(nr, nextNr));
             pw.stepEnteredAt = Date.now();
             pet.currentRoom = nr; pet.currentActivity = 'street';
-            petX = dEdge.ix; petY = dEdge.iy; targetX = 280; targetY = 440;
-            if (pw.followView !== false) viewRoomId = nr;
+            petX = dEdge.ix; petY = dEdge.iy; targetX = dOut.ex; targetY = dOut.ey;
+            if (pw.followView) viewRoomId = nr;
             updateHUD();
           }
         }
@@ -2580,8 +2613,11 @@ html, body {
           if (sr === 'toilet' && pet.currentRoom === 'toilet') sr = 'living';
           const sFurns = (ROOM_FURNITURE[sr] || []).filter(f => f.act !== 'sleep' && f.act !== 'street');
           const sf = sFurns.length ? sFurns[Math.floor(Math.random() * sFurns.length)] : { px: 280, py: 435, act: 'idle' };
-          bro.currentRoom = sr; bro.currentActivity = sf.act;
-          bro.tx = sf.px; bro.ty = sf.py;
+          if (!broWalk && bro.currentRoom !== sr) {
+            startSoloWalk('bro', sr, sf.act, null, () => { bro.tx = sf.px; bro.ty = sf.py; }, false);
+          } else if (bro.currentRoom === sr) {
+            bro.currentActivity = sf.act; bro.tx = sf.px; bro.ty = sf.py;
+          }
         }
       } else if (bro.scheduleSlotKey !== bSched.key) {
         bro.scheduleSlotKey = bSched.key;
@@ -3072,7 +3108,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v76'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v77'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3647,17 +3683,53 @@ html, body {
       const now = Date.now(), idleSec = (now - lastInteractAt) / 1000;
       syncScheduleActivity(pet, true);
 
+      if (followTarget === 'hinata' && !isZoomed && viewRoomId !== pet.currentRoom) {
+        viewRoomId = pet.currentRoom; updateHUD();
+      } else if (followTarget === 'bro' && !isZoomed && state.brother && viewRoomId !== state.brother.currentRoom) {
+        viewRoomId = state.brother.currentRoom; updateHUD();
+      }
+
       if (transitionState) {
         if (transitionState.phase === 'out') {
           const ex = transitionState.ex ?? 540, ey = transitionState.ey ?? 440;
           petX += (ex - petX) * 0.09; petY += (ey - petY) * 0.09;
           transitionState.alpha = Math.max(0, transitionState.alpha - 0.045);
           if (transitionState.alpha <= 0.05) {
-            pet.currentRoom = transitionState.targetRoom; pet.currentActivity = transitionState.targetActivity;
-            if (transitionState.followView && viewRoomId === transitionState.fromRoom) viewRoomId = transitionState.targetRoom;
+            pet.currentRoom = transitionState.targetRoom;
+            if (followTarget === 'hinata' && !isZoomed) viewRoomId = pet.currentRoom;
+            else if (transitionState.followView && viewRoomId === transitionState.fromRoom) viewRoomId = transitionState.targetRoom;
             petX = transitionState.ix ?? 60; petY = transitionState.iy ?? 440;
-            targetX = transitionState.tx; targetY = transitionState.ty;
-            transitionState.phase = 'in'; updateHUD();
+            if (transitionState.pathQueue && transitionState.pathQueue.length > 1) {
+              transitionState.pathQueue.shift();
+              const nextHop = transitionState.pathQueue[0];
+              const nextDir = getRoomMoveDir(pet.currentRoom, nextHop);
+              const nextEdge = getDirEdgeCoords(nextDir);
+              pet.currentActivity = 'street';
+              targetX = nextEdge.ex; targetY = nextEdge.ey;
+              transitionState.nextHop = nextHop;
+              transitionState.nextEdge = nextEdge;
+              transitionState.phase = 'pass';
+              transitionState.passUntil = Date.now() + 5000;
+              transitionState.alpha = 1;
+              updateHUD();
+            } else {
+              pet.currentActivity = transitionState.finalAct || transitionState.targetActivity;
+              targetX = transitionState.finalTx ?? transitionState.tx;
+              targetY = transitionState.finalTy ?? transitionState.ty;
+              transitionState.phase = 'in';
+              updateHUD();
+            }
+          }
+        } else if (transitionState.phase === 'pass') {
+          petX += (targetX - petX) * 0.025; petY += (targetY - petY) * 0.025;
+          if (Date.now() >= transitionState.passUntil) {
+            const nextHop = transitionState.nextHop;
+            const ne = transitionState.nextEdge || getDirEdgeCoords(getRoomMoveDir(pet.currentRoom, nextHop));
+            transitionState.fromRoom = pet.currentRoom;
+            transitionState.targetRoom = nextHop;
+            transitionState.ex = ne.ex; transitionState.ey = ne.ey;
+            transitionState.ix = ne.ix; transitionState.iy = ne.iy;
+            transitionState.phase = 'out';
           }
         } else if (transitionState.phase === 'in') {
           petX += (targetX - petX) * 0.08; petY += (targetY - petY) * 0.08;
@@ -6359,6 +6431,16 @@ html, body {
       if (h2fDoors) h2fDoors.classList.toggle('hidden', viewRoomId !== 'hallway_2f' || isZoomed);
       const whDoors = document.getElementById('wash-hall-doors');
       if (whDoors) whDoors.classList.toggle('hidden', viewRoomId !== 'wash_hall' || isZoomed);
+      const fpBtn = document.getElementById('btn-find-pet');
+      if (fpBtn) {
+        fpBtn.classList.toggle('is-pressed', followTarget === 'hinata');
+        fpBtn.innerHTML = followTarget === 'hinata' ? '<span>📌</span><span>監控翔陽</span>' : '<span>🧭</span><span>搵翔陽</span>';
+      }
+      const fbBtn = document.getElementById('btn-find-bro');
+      if (fbBtn) {
+        fbBtn.classList.toggle('is-pressed', followTarget === 'bro');
+        fbBtn.innerHTML = followTarget === 'bro' ? '<span>📌</span><span>監控哥哥</span>' : '<span>🧭</span><span>搵哥哥</span>';
+      }
       document.getElementById('outfit-name').textContent = outfit.name;
       document.getElementById('zoom-icon').textContent = isZoomed ? '🔎' : '🔍';
       document.getElementById('zoom-label').textContent = isZoomed ? '縮細全景' : '放大特寫';
@@ -6418,10 +6500,15 @@ html, body {
     document.getElementById('btn-find-bro')?.addEventListener('click', () => {
       const bro = state.brother;
       if (!bro) return;
-      isZoomed = false; viewRoomId = bro.currentRoom || 'living';
-      document.getElementById('zoom-icon').textContent = '🔍'; document.getElementById('zoom-label').textContent = '放大特寫';
+      followTarget = (followTarget === 'bro') ? null : 'bro';
+      if (followTarget === 'bro') {
+        isZoomed = false; viewRoomId = bro.currentRoom || 'living';
+        document.getElementById('zoom-icon').textContent = '🔍'; document.getElementById('zoom-label').textContent = '放大特寫';
+        showToast(`📡 已鎖定監控哥哥：${MAP_ROOMS[viewRoomId]?.name || viewRoomId}（再按一下解除）`);
+      } else {
+        showToast('🔓 已解除監控哥哥');
+      }
       playSFX('pat'); renderDock(); updateHUD();
-      showToast(`已切換至哥哥所在位置：${MAP_ROOMS[viewRoomId]?.name || viewRoomId}`);
     });
     document.getElementById('supermarket-zones')?.addEventListener('click', (e) => {
       const zb = e.target.closest('[data-sm-zone]');
@@ -6454,7 +6541,15 @@ html, body {
       }
     });
 document.getElementById('btn-find-pet').addEventListener('click', () => {
-      viewRoomId = ensurePetState(state.activeCharId).currentRoom; renderDock(); playSFX('pat'); updateHUD();
+      followTarget = (followTarget === 'hinata') ? null : 'hinata';
+      if (followTarget === 'hinata') {
+        isZoomed = false; viewRoomId = ensurePetState(state.activeCharId).currentRoom;
+        document.getElementById('zoom-icon').textContent = '🔍'; document.getElementById('zoom-label').textContent = '放大特寫';
+        showToast(`📡 已鎖定監控翔陽：${MAP_ROOMS[viewRoomId]?.name || viewRoomId}（再按一下解除）`);
+      } else {
+        showToast('🔓 已解除監控翔陽');
+      }
+      renderDock(); playSFX('pat'); updateHUD();
     });
     document.getElementById('btn-zoom').addEventListener('click', () => { isZoomed = !isZoomed; playSFX('pat'); updateHUD(); });
     document.getElementById('btn-outfit').addEventListener('click', () => {
@@ -6908,7 +7003,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v76';
+          if (el) el.textContent = '☁️ 雲端已同步 · v77';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6947,7 +7042,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v76';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v77';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
