@@ -207,7 +207,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v73.2</span>
+      <span id="save-status">💾 已自動儲存 · v73.3</span>
       
     </div>
 
@@ -3002,7 +3002,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v73.2'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v73.3'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3188,7 +3188,11 @@ html, body {
       const curPet = ensurePetState(state.activeCharId);
       const isHoldingBladder = (curPet.bladder || 0) > ((state.balance && state.balance.bladderCryThreshold) ?? 90) && !['toilet_use', 'toilet_urinal', 'toilet_wash', 'sleep'].includes(curPet.currentActivity);
       let spriteKey = outfit.spriteKey;
-      if (expr === 'squat' || curPet.currentActivity === 'squat') spriteKey = (curPet.currentRoom === 'backyard') ? 'chibiSquatPajama' : 'chibiSquat';
+      const isSquatRep = (expr === 'squat' || curPet.currentActivity === 'squat') && (Math.floor(frame / 36) % 2 === 1);
+      if (isSquatRep) {
+        const sqPref = (curPet.currentRoom === 'backyard') ? 'chibiSquatPajama' : 'chibiSquat';
+        spriteKey = sprites[sqPref] ? sqPref : (sprites.chibiSquat ? 'chibiSquat' : (sprites.chibiSquatPajama ? 'chibiSquatPajama' : outfit.spriteKey));
+      }
       else if (expr === 'faint') spriteKey = outfit.faintKey || 'chibiJerseyFaint';
       else if (isHoldingBladder) {
         spriteKey = outfit.cryKey || 'chibiCry';
@@ -3206,7 +3210,7 @@ html, body {
       ctx.scale(scale * sx, scale * sy);
       ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
 
-      const isBlinking = (!isHoldingBladder && curPet.mood >= 40 && expr !== 'squat' && expr !== 'sleep' && expr !== 'waking' && expr !== 'happy' && expr !== 'faint' && expr !== 'sad_rest' && !isPetting) && ((frame % 110) > 104);
+      const isBlinking = (!isHoldingBladder && curPet.mood >= 40 && !isSquatRep && expr !== 'sleep' && expr !== 'waking' && expr !== 'happy' && expr !== 'faint' && expr !== 'sad_rest' && !isPetting) && ((frame % 110) > 104);
       const coverEyes = () => {
         ctx.fillStyle = '#f8dcc2';
         ctx.beginPath(); ctx.ellipse(-22, 2, 9.5, 11, 0, 0, Math.PI * 2); ctx.ellipse(22, 2, 9.5, 11, 0, 0, Math.PI * 2); ctx.fill();
@@ -3463,7 +3467,7 @@ html, body {
       const cx = petX, cy = petY;
       const isWalking = transitionState !== null || (Math.hypot(targetX - petX, targetY - petY) > 5);
       const isJumping = (act === 'school_court' || act === 'backyard' || act === 'jump') && !isWalking && !rally.active;
-      const jumpY = isJumping ? -Math.abs(Math.sin(frame * 0.16)) * 55 : (act === 'squat' && !isWalking ? Math.abs(Math.sin(frame * 0.14)) * 10 : (act === 'happy' || isPetting ? -Math.abs(Math.sin(frame * 0.18)) * 16 : ((isWalking || act === 'park_jog' || act === 'court_run') ? -Math.abs(Math.sin(frame * 0.24)) * 11 : 0)));
+      const jumpY = isJumping ? -Math.abs(Math.sin(frame * 0.16)) * 55 : (act === 'squat' && !isWalking ? (Math.floor(frame / 36) % 2 === 1 ? 10 : 0) : (act === 'happy' || isPetting ? -Math.abs(Math.sin(frame * 0.18)) * 16 : ((isWalking || act === 'park_jog' || act === 'court_run') ? -Math.abs(Math.sin(frame * 0.24)) * 11 : 0)));
       const breathSy = 1 + Math.sin(frame * 0.07) * 0.024;
       const breathSx = 1 - Math.sin(frame * 0.07) * 0.014;
       const tilt = isWalking ? Math.sin(frame * 0.24) * 0.08 : (isPetting ? Math.sin(frame * 0.15) * 0.07 : Math.sin(frame * 0.04) * 0.02);
@@ -6787,7 +6791,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v73.2';
+          if (el) el.textContent = '☁️ 雲端已同步 · v73.3';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6826,7 +6830,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v73.2';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v73.3';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
