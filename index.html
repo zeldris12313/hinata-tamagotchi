@@ -207,7 +207,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v72.7</span>
+      <span id="save-status">💾 已自動儲存 · v72.8</span>
       
     </div>
 
@@ -1524,8 +1524,8 @@ html, body {
                 const retAtSlot = dtSlotStart.getTime() + 60 * 60 * 1000;
                 state.outing = { type: loc, returnAt: retAtSlot, fromMall: false };
                 if (loc === 'ice_cream') {
-                  if (elapsedMsSlot >= 10 * 60 * 1000) {
-                    // Already finished 5m choosing + offline coffee + 5m eating on street3
+                  if (elapsedMsSlot >= 13 * 60 * 1000) {
+                    // Already finished 5m choosing + offline coffee + 8m eating on street3
                     const hf = ICE_CREAM_FLAVORS[Math.floor(Math.random() * ICE_CREAM_FLAVORS.length)];
                     const bf = ICE_CREAM_FLAVORS[1];
                     const paid = Math.min(pet.coins, getIcCfg(hf.id).price + getIcCfg(bf.id).price);
@@ -1549,7 +1549,7 @@ html, body {
                     state.iceCreamState = { stage: 'choosing', until: dtSlotStart.getTime() + 5 * 60 * 1000, hinataFlavor: hf.id, broFlavor: null };
                     stepDuoIntoRoom('street3', 'eating_ice_cream', true, null);
                     completeIceCreamPayment('coffee', true);
-                    state.iceCreamState.until = dtSlotStart.getTime() + 10 * 60 * 1000;
+                    state.iceCreamState.until = dtSlotStart.getTime() + 13 * 60 * 1000;
                   } else {
                     stepDuoIntoRoom('ice_cream', 'ice_cream', true, '「離線時已經準時嚟到雪糕店揀緊口味～🍦」');
                     state.iceCreamState = { stage: 'choosing', until: dtSlotStart.getTime() + 5 * 60 * 1000, hinataFlavor: null, broFlavor: null };
@@ -2121,9 +2121,19 @@ html, body {
             if (bro.currentRoom === 'ice_cream') { bro.tx = 495; bro.ty = 485; }
           }
           if (!state.iceCreamState && pet.currentRoom === 'ice_cream') {
-            state.iceCreamState = { stage: 'choosing', until: Date.now() + 5 * 60 * 1000, hinataFlavor: null, broFlavor: null };
-            speakAndShow('「到雪糕店啦！哥哥我哋睇 5 分鐘揀下想食咩口味先～🍦✨」');
-            saveState();
+            const outStartEst = state.outing.returnAt ? (state.outing.returnAt - 60 * 60 * 1000) : Date.now();
+            const pastMs = Date.now() - outStartEst;
+            if (pastMs >= 5 * 60 * 1000 && pastMs < 60 * 60 * 1000) {
+              const pickF = ICE_CREAM_FLAVORS[Math.floor(Math.random() * ICE_CREAM_FLAVORS.length)];
+              state.iceCreamState = { stage: 'waiting_bro_choice', until: Date.now(), hinataFlavor: pickF.id, broFlavor: null };
+              speakAndShow(`「哥哥！我決定要食 ${pickF.emoji}${pickF.name}味雪糕！！到哥哥你揀口味啦～🍦💛」`);
+              openIceCreamChoiceModal();
+              saveState();
+            } else {
+              state.iceCreamState = { stage: 'choosing', until: Date.now() + 5 * 60 * 1000, hinataFlavor: null, broFlavor: null };
+              speakAndShow('「到雪糕店啦！哥哥我哋睇 5 分鐘揀下想食咩口味先～🍦✨」');
+              saveState();
+            }
           } else if (state.iceCreamState) {
             const ics = state.iceCreamState;
             const nowIc = Date.now();
@@ -2969,7 +2979,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v72.7'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v72.8'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -4726,7 +4736,7 @@ html, body {
           <span class="font-black text-amber-700 shrink-0 ml-2">🪙${cfg.price}元</span>
         </button>`;
       }).join('');
-      box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12] mb-1">🍦 翔陽揀咗【${hf.emoji}${hf.name}】，請哥哥揀雪糕口味（付款後去街道3食5分鐘）：</div>
+      box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12] mb-1">🍦 翔陽揀咗【${hf.emoji}${hf.name}】，請哥哥揀雪糕口味（付款後去街道3食8分鐘）：</div>
         <div class="flex flex-col gap-1.5">${btns}</div>`;
       box.classList.remove('hidden'); box.scrollTop = 0;
     }
@@ -4743,12 +4753,12 @@ html, body {
       document.getElementById('choice-overlay').classList.add('hidden');
       ics.broFlavor = bf.id;
       ics.stage = 'eating_street3';
-      ics.until = Date.now() + 5 * 60 * 1000;
+      ics.until = Date.now() + 8 * 60 * 1000;
       playSFX('eat');
       const msg = isOfflineAuto
-        ? `「離線自動幫哥哥揀咗 ☕咖啡雪糕！已付款 🪙${paid}，一齊行出街道3街邊食 5 分鐘～🍦」`
-        : `「哥哥揀咗 ${bf.emoji}${bf.name}！已付款 🪙${paid}，一齊行出街道3街邊食 5 分鐘雪糕啦！🍦🛣️」`;
-      startDuoJourney('street3', 'eating_ice_cream', msg, '去到街道3街邊食雪糕（5分鐘）🍦', () => {
+        ? `「離線自動幫哥哥揀咗 ☕咖啡雪糕！已付款 🪙${paid}，一齊行出街道3街邊食 8 分鐘～🍦」`
+        : `「哥哥揀咗 ${bf.emoji}${bf.name}！已付款 🪙${paid}，一齊行出街道3街邊食 8 分鐘雪糕啦！🍦🛣️」`;
+      startDuoJourney('street3', 'eating_ice_cream', msg, '去到街道3街邊食雪糕（8分鐘）🍦', () => {
         updateHUD();
       });
       saveState();
@@ -6753,7 +6763,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v72.7';
+          if (el) el.textContent = '☁️ 雲端已同步 · v72.8';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6792,7 +6802,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v72.7';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v72.8';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
