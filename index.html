@@ -218,7 +218,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v77.1</span>
+      <span id="save-status">💾 已自動儲存 · v77.2</span>
       
     </div>
 
@@ -1361,6 +1361,8 @@ html, body {
       return { ex: 540, ey: 440, ix: 60, iy: 440 };
     }
     let followTarget = null;
+    const OUTDOOR_STREET_ROOMS = new Set(['street', 'street2', 'street3', 'main_street', 'park', 'park2']);
+    function getWalkActForRoom(rm) { return OUTDOOR_STREET_ROOMS.has(rm) ? 'street' : 'walking'; }
     function startCharacterWalkTransition(pet, destRoom, destAct, px, py, followView = false) {
       if (pet.currentRoom === destRoom) { pet.currentActivity = destAct; targetX = px; targetY = py; saveState(); return; }
       const path = findRoomPath(pet.currentRoom, destRoom);
@@ -1371,7 +1373,7 @@ html, body {
         phase: 'out',
         fromRoom: pet.currentRoom,
         targetRoom: nextRoom,
-        targetActivity: (path.length > 1) ? 'street' : destAct,
+        targetActivity: (path.length > 1) ? getWalkActForRoom(nextRoom) : destAct,
         pathQueue: path,
         finalRoom: destRoom,
         finalAct: destAct,
@@ -1685,12 +1687,12 @@ html, body {
       const wObj = { steps, idx: 0, stepEnteredAt: Date.now(), destRoom, finalAct, finalSpeech, onArrive, followView };
       if (who === 'bro') {
         broWalk = wObj;
-        bro.currentRoom = steps[0]; bro.currentActivity = 'street';
+        bro.currentRoom = steps[0]; bro.currentActivity = getWalkActForRoom(steps[0]);
         bro.px = dEdgeIn.ix; bro.py = dEdgeIn.iy;
         bro.tx = dEdgeOut.ex; bro.ty = dEdgeOut.ey;
       } else {
         petWalk = wObj;
-        pet.currentRoom = steps[0]; pet.currentActivity = 'street';
+        pet.currentRoom = steps[0]; pet.currentActivity = getWalkActForRoom(steps[0]);
         petX = dEdgeIn.ix; petY = dEdgeIn.iy;
         targetX = dEdgeOut.ex; targetY = dEdgeOut.ey;
       }
@@ -1782,7 +1784,7 @@ html, body {
           } else {
             const nr = broWalk.steps[broWalk.idx];
             broWalk.stepEnteredAt = nowMs;
-            bro.currentRoom = nr; bro.currentActivity = 'street';
+            bro.currentRoom = nr; bro.currentActivity = getWalkActForRoom(nr);
             viewRoomId = nr;
             speakAndShow(`「哥哥趕緊去接翔陽…經過【${MAP_ROOMS[nr]?.name}】🏃‍♂️😰」`);
             updateHUD();
@@ -1892,7 +1894,7 @@ html, body {
             const dEdge = getDirEdgeCoords(getRoomMoveDir(pet.currentRoom, nr));
             const dOut = getDirEdgeCoords(getRoomMoveDir(nr, nextNr));
             pw.stepEnteredAt = Date.now();
-            pet.currentRoom = nr; pet.currentActivity = 'street';
+            pet.currentRoom = nr; pet.currentActivity = getWalkActForRoom(nr);
             petX = dEdge.ix; petY = dEdge.iy; targetX = dOut.ex; targetY = dOut.ey;
             if (pw.followView) viewRoomId = nr;
             updateHUD();
@@ -2423,20 +2425,23 @@ html, body {
             updateHUD();
           }
         }
-        if ((state.supplies?.tpSheets ?? 180) > 0 && aeT.prob > 0 && !bInToilet && HOME_TOILET_ROOMS.has(bro.currentRoom) && bro.currentRoom !== 'toilet' && !fixedToiletSkip.includes(bro.currentActivity) && nowT - (bro.lastToiletAt || 0) >= 30 * 60 * 1000) {
+        if ((state.supplies?.tpSheets ?? 180) > 0 && aeT.prob > 0 && !bInToilet && !broWalk && HOME_TOILET_ROOMS.has(bro.currentRoom) && bro.currentRoom !== 'toilet' && !fixedToiletSkip.includes(bro.currentActivity) && nowT - (bro.lastToiletAt || 0) >= 30 * 60 * 1000) {
           if (Math.random() < (aeT.prob / 100)) {
-            const occupied = (pet.currentRoom === 'toilet' || (pet.toiletState && (pet.toiletState.stage === 'use' || pet.toiletState.stage === 'wash')));
             const prev = { prevRoom: bro.currentRoom, prevAct: bro.currentActivity, prevX: bro.tx, prevY: bro.ty };
-            if (occupied) {
-              bro.toiletState = { stage: 'wait', ...prev };
-              bro.currentRoom = 'hallway'; bro.currentActivity = 'toilet_wait';
-              bro.px = 340; bro.py = 440; bro.tx = 340; bro.ty = 440;
-              if (viewRoomId === 'hallway') speakAndShow('「（哥哥喺走廊等緊翔陽用完廁所…⏳）」');
-            } else {
-              bro.toiletState = { stage: 'use', stageUntil: nowT + 30000, ...prev };
-              bro.currentRoom = 'toilet'; bro.currentActivity = 'toilet_use';
-              bro.px = 380; bro.py = 445; bro.tx = 380; bro.ty = 445;
-            }
+            startSoloWalk('bro', 'toilet', 'toilet_use', null, () => {
+              const occupied = (pet.currentRoom === 'toilet' || (pet.toiletState && (pet.toiletState.stage === 'use' || pet.toiletState.stage === 'wash')));
+              if (occupied) {
+                bro.toiletState = { stage: 'wait', ...prev };
+                bro.currentRoom = 'wash_hall'; bro.currentActivity = 'toilet_wait';
+                bro.px = 260; bro.py = 440; bro.tx = 260; bro.ty = 440;
+                if (viewRoomId === 'wash_hall') speakAndShow('「（哥哥喺洗漱走廊等緊翔陽用完廁所…⏳）」');
+              } else {
+                bro.toiletState = { stage: 'use', stageUntil: Date.now() + 30000, ...prev };
+                bro.currentRoom = 'toilet'; bro.currentActivity = 'toilet_use';
+                bro.px = 380; bro.py = 445; bro.tx = 380; bro.ty = 445;
+              }
+              updateHUD();
+            }, false);
             updateHUD();
           }
         }
@@ -2604,55 +2609,59 @@ html, body {
       }
       const broFixedChore = ['cook_bfast','prep_bfast','cook_lunch','cook_dinner','washing_dishes','breakfast','lunch','dinner','bath','brush','sleep','canteen_lunch','pharmacy_work','aniki_hall_tidy'].includes(bSched.act);
       const canBroSolo = state.broSoloMode && !broFixedChore && !state.outing?.type && !['breakfast','lunch','dinner','bath','brush','sleep','waking','gaming'].includes(pet.currentActivity) && !['pharmacy','canteen','hospital','school_class','school_court'].includes(bro.currentRoom) && !['school_class','school_court'].includes(pet.currentRoom);
-      if (bro.toiletState) { /* skip brother schedule while in toilet routine */ }
+      if (bro.toiletState || broWalk) { /* skip brother schedule while in toilet or walking routine */ }
       else if (canBroSolo) {
-        if (!window.__lastBroSoloAt || Date.now() - window.__lastBroSoloAt > 12000) {
+        if (!window.__lastBroSoloAt) window.__lastBroSoloAt = Date.now();
+        if (Date.now() - window.__lastBroSoloAt > 35000) {
           window.__lastBroSoloAt = Date.now();
-          const soloRooms = ['room_aniki', 'room_hinata', 'living'];
-          let sr = soloRooms[Math.floor(Math.random() * soloRooms.length)];
-          if (sr === 'toilet' && pet.currentRoom === 'toilet') sr = 'living';
+          const soloRooms = ['room_aniki', 'room_hinata', 'living', 'kitchen'].filter(r => r !== bro.currentRoom);
+          const sr = soloRooms[Math.floor(Math.random() * soloRooms.length)] || 'living';
           const sFurns = (ROOM_FURNITURE[sr] || []).filter(f => f.act !== 'sleep' && f.act !== 'street');
           const sf = sFurns.length ? sFurns[Math.floor(Math.random() * sFurns.length)] : { px: 280, py: 435, act: 'idle' };
-          if (!broWalk && bro.currentRoom !== sr) {
-            startSoloWalk('bro', sr, sf.act, null, () => { bro.tx = sf.px; bro.ty = sf.py; }, false);
-          } else if (bro.currentRoom === sr) {
-            bro.currentActivity = sf.act; bro.tx = sf.px; bro.ty = sf.py;
-          }
+          startSoloWalk('bro', sr, sf.act, null, () => { bro.tx = sf.px; bro.ty = sf.py; }, false);
         }
       } else if (bro.scheduleSlotKey !== bSched.key) {
         bro.scheduleSlotKey = bSched.key;
         if (bSched.followHinata) {
-          bro.currentRoom = pet.currentRoom; bro.currentActivity = (pet.currentActivity === 'street' && !['street','main_street'].includes(pet.currentRoom)) ? 'idle' : pet.currentActivity;
-          bro.tx = Math.min(500, targetX + 75); bro.ty = targetY;
-          if (!animateTransition) { bro.px = bro.tx; bro.py = bro.ty; }
+          const fAct = (pet.currentActivity === 'street' && !OUTDOOR_STREET_ROOMS.has(pet.currentRoom)) ? 'idle' : pet.currentActivity;
+          if (animateTransition && bro.currentRoom !== pet.currentRoom) {
+            startSoloWalk('bro', pet.currentRoom, fAct, null, () => { bro.tx = Math.min(500, targetX + 75); bro.ty = targetY; }, false);
+          } else {
+            bro.currentRoom = pet.currentRoom; bro.currentActivity = fAct;
+            bro.tx = Math.min(500, targetX + 75); bro.ty = targetY;
+            if (!animateTransition) { bro.px = bro.tx; bro.py = bro.ty; }
+          }
         } else {
-          bro.currentRoom = bSched.room; bro.currentActivity = bSched.act;
-          bro.tx = bSched.px; bro.ty = bSched.py;
-          if (!animateTransition) { bro.px = bSched.px; bro.py = bSched.py; }
+          if (animateTransition && bro.currentRoom !== bSched.room && HOME_TOILET_ROOMS.has(bro.currentRoom) && HOME_TOILET_ROOMS.has(bSched.room)) {
+            startSoloWalk('bro', bSched.room, bSched.act, null, () => { bro.tx = bSched.px; bro.ty = bSched.py; }, false);
+          } else {
+            bro.currentRoom = bSched.room; bro.currentActivity = bSched.act;
+            bro.tx = bSched.px; bro.ty = bSched.py;
+            if (!animateTransition) { bro.px = bSched.px; bro.py = bSched.py; }
+          }
         }
       } else if (bSched.followHinata && !state.gamingReturnAt && !transitionState) {
         if (bro.currentRoom !== pet.currentRoom) {
-          bro.currentRoom = pet.currentRoom; bro.currentActivity = (pet.currentActivity === 'street' && !['street','main_street'].includes(pet.currentRoom)) ? 'idle' : pet.currentActivity;
-          bro.tx = Math.min(500, targetX + 75); bro.ty = targetY;
+          const fAct = (pet.currentActivity === 'street' && !OUTDOOR_STREET_ROOMS.has(pet.currentRoom)) ? 'idle' : pet.currentActivity;
+          startSoloWalk('bro', pet.currentRoom, fAct, null, () => { bro.tx = Math.min(500, targetX + 75); bro.ty = targetY; }, false);
         }
       } else if (bSched.homeRoam && Date.now() - lastBrotherRoamAt > 35000) {
         // 20:15-21:00: Brother roams home, occasionally enters Hinata's room to tutor; Hinata occasionally asks homework
         lastBrotherRoamAt = Date.now();
         const r = Math.random();
         if (r < 0.35) {
-          bro.currentRoom = 'room_hinata'; bro.currentActivity = 'tutoring';
-          bro.tx = 255; bro.ty = 430;
-          if (viewRoomId === 'room_hinata') speakAndShow('「哥哥入房睇下我啲功課：呢條英文文法應該咁寫～📖✨」');
+          startSoloWalk('bro', 'room_hinata', 'tutoring', null, () => {
+            bro.tx = 255; bro.ty = 430;
+            if (viewRoomId === 'room_hinata') speakAndShow('「哥哥入房睇下我啲功課：呢條英文文法應該咁寫～📖✨」');
+          }, false);
         } else if (r < 0.60 && !transitionState) {
           const bRoom = BROTHER_HOME_ROAM[Math.floor(Math.random() * BROTHER_HOME_ROAM.length)];
-          bro.currentRoom = bRoom; bro.currentActivity = 'idle';
-          bro.tx = 320; bro.ty = 435;
+          startSoloWalk('bro', bRoom, 'idle', null, () => { bro.tx = 320; bro.ty = 435; }, false);
           startCharacterWalkTransition(pet, bRoom, 'asking_hw', 225, 435);
           if (viewRoomId === bRoom) speakAndShow('「哥哥！呢條數學題我唔識計呀，可唔可以教我？🙋‍♂️📝」');
         } else {
           const bRoom = BROTHER_HOME_ROAM[Math.floor(Math.random() * BROTHER_HOME_ROAM.length)];
-          bro.currentRoom = bRoom; bro.currentActivity = 'idle';
-          bro.tx = 320; bro.ty = 435;
+          startSoloWalk('bro', bRoom, 'idle', null, () => { bro.tx = 320; bro.ty = 435; }, false);
           if (pet.currentRoom !== 'room_hinata') startCharacterWalkTransition(pet, 'room_hinata', 'homework', 165, 430);
         }
       }
@@ -3108,7 +3117,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v77.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v77.2'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3425,7 +3434,7 @@ html, body {
 
     const ACTIVITY_LABELS = {
       sleep: '😴 熟睡中', waking: '🥱 剛被叫醒', brush: '🪥 刷牙洗臉', breakfast: '🍚 食早餐中',
-      street: '🚶 行路中', school_class: '📚 上堂中', lunch: '🍱 食午餐中', dinner: '🍽️ 食晚餐中',
+      street: '🚶 行路中', walking: '🚶 移動中', school_class: '📚 上堂中', lunch: '🍱 食午餐中', dinner: '🍽️ 食晚餐中',
       school_court: '🏐 社團練波', backyard: '🏐 後院練波', bath: '🫧 浸熱水浴',
       gaming: '🎮 打機休息中', homework: '📖 溫書做功課', asking_hw: '🙋‍♂️ 問哥哥功課',
       tv: '📺 睇電視中', tea: '🍵 飲茶休息', fridge: '🧊 睇雪櫃', cook: '🍳 幫手煮飯', kitchen_tidy: '🧼 執拾廚房中',
@@ -3704,7 +3713,7 @@ html, body {
               const nextHop = transitionState.pathQueue[0];
               const nextDir = getRoomMoveDir(pet.currentRoom, nextHop);
               const nextEdge = getDirEdgeCoords(nextDir);
-              pet.currentActivity = 'street';
+              pet.currentActivity = getWalkActForRoom(pet.currentRoom);
               targetX = nextEdge.ex; targetY = nextEdge.ey;
               transitionState.nextHop = nextHop;
               transitionState.nextEdge = nextEdge;
@@ -7003,7 +7012,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v77.1';
+          if (el) el.textContent = '☁️ 雲端已同步 · v77.2';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7042,7 +7051,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v77.1';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v77.2';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
