@@ -206,7 +206,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v70</span>
+      <span id="save-status">💾 已自動儲存 · v71</span>
       
     </div>
 
@@ -410,7 +410,13 @@ html, body {
       bg_street2_night: "./assets/bg_street2_night.jpg?v=69",
       bg_supermarket: "./assets/bg_supermarket.jpg?v=69",
       bg_supermarket_morning: "./assets/bg_supermarket_morning.jpg?v=69",
-      bg_supermarket_night: "./assets/bg_supermarket_night.jpg?v=69"
+      bg_supermarket_night: "./assets/bg_supermarket_night.jpg?v=69",
+      bg_street3: "./assets/bg_street3.jpg?v=71",
+      bg_street3_morning: "./assets/bg_street3_morning.jpg?v=71",
+      bg_street3_night: "./assets/bg_street3_night.jpg?v=71",
+      bg_ice_cream: "./assets/bg_ice_cream.jpg?v=71",
+      bg_ice_cream_morning: "./assets/bg_ice_cream_morning.jpg?v=71",
+      bg_ice_cream_night: "./assets/bg_ice_cream_night.jpg?v=71"
     };
     const sprites = {};
 
@@ -448,7 +454,9 @@ html, body {
       living:       { id: 'living',       name: '1F 客廳',         short: '客廳',     icon: '🏠', gx: 1, gy: 2,  up: 'room_hinata', down: 'kitchen', left: 'bath', right: 'hallway' },
       hallway:      { id: 'hallway',      name: '1F 走廊玄關',     short: '走廊',     icon: '🚪', gx: 2, gy: 2,  up: 'toilet', down: 'backyard', left: 'living', right: 'street' },
       street:       { id: 'street',       name: '室外街道',        short: '街道',     icon: '🛣️', gx: 3, gy: 2,  up: 'main_street', down: 'school_class', left: 'hallway', right: 'street2' },
-      street2:      { id: 'street2',      name: '室外街道2',       short: '街道2',    icon: '🛣️', gx: 4, gy: 2,  up: null, down: 'supermarket', left: 'street', right: 'konbini' },
+      street2:      { id: 'street2',      name: '室外街道2',       short: '街道2',    icon: '🛣️', gx: 4, gy: 2,  up: 'street3', down: 'supermarket', left: 'street', right: 'konbini' },
+      street3:      { id: 'street3',      name: '室外街道3',       short: '街道3',    icon: '🛣️', gx: 4, gy: 1,  up: null, down: 'street2', left: null, right: 'ice_cream' },
+      ice_cream:    { id: 'ice_cream',    name: '雪糕店',          short: '雪糕店',   icon: '🍦', gx: 5, gy: 1,  up: null, down: null, left: 'street3', right: null },
       konbini:      { id: 'konbini',      name: '日式便利店',      short: '便利店',   icon: '🏪', gx: 5, gy: 2,  up: null, down: null, left: 'street2', right: null },
       supermarket:  { id: 'supermarket',  name: '超級市場',        short: '超市',     icon: '🛒', gx: 4, gy: 3,  up: 'street2', down: null, left: null, right: null },
       kitchen:      { id: 'kitchen',      name: '1F 廚房',         short: '廚房',     icon: '🍳', gx: 1, gy: 3,  up: 'living', down: null, left: null, right: 'backyard' },
@@ -507,6 +515,12 @@ html, body {
         { id: 'lunch', label: '食午餐便當', hx: 425, hy: 400, hr: 90, px: 390, py: 435, act: 'lunch', line: '「午休時間食香噴噴便當！🍱」' },
         { id: 'class_chat', label: '小息傾排球', hx: 330, hy: 340, hr: 90, px: 325, py: 435, act: 'class_break', line: '「小息同隔離位同學講起今朝個快攻！💬🏐」' },
         { id: 'blackboard', label: '望黑板舉手', hx: 150, hy: 300, hr: 90, px: 165, py: 430, act: 'school_class', line: '「老師呢題我識答！舉手！🙋‍♂️📝」' }
+      ],
+      street3: [
+        { id: 'walk_st3', label: '街邊食雪糕位', hx: 300, hy: 420, hr: 95, px: 300, py: 440, act: 'eating_ice_cream', line: '「企喺街道3吹住微風食雪糕，特別好味！🍦🛣️」' }
+      ],
+      ice_cream: [
+        { id: 'ic_counter', label: '雪糕櫃檯揀口味', hx: 270, hy: 370, hr: 110, px: 270, py: 445, act: 'ice_cream', line: '「原味、咖啡、朱古力、抹茶…每隻味都好想試！🍦✨」' }
       ],
       street2: [
         { id: 'walk_st2', label: '街道2漫步', hx: 280, hy: 420, hr: 95, px: 280, py: 440, act: 'street', line: '「經過室外街道2，右邊係便利店，下面係超級市場！🛣️」' }
@@ -592,6 +606,14 @@ html, body {
       ],
       hospital: [
         { id: 'hosp_bed', label: '醫院病床', hx: 260, hy: 400, hr: 120, px: 255, py: 420, act: 'faint', line: '「喺醫院吊鹽水休息緊…好快回復到 10% 就可以返屋企！🏥」' }
+      ],
+      street3: [
+        '「翔陽：喺街道3街邊吹住風食雪糕好爽呀！｜哥哥：小心唔好滴到件衫呀～🍦🛣️」',
+        '「哥哥：呢條街好靜好舒服呢｜翔陽：同哥哥並肩行住食甜品最幸福！💛」'
+      ],
+      ice_cream: [
+        '「翔陽：哥哥！雪糕櫃入面四隻口味都好吸引呀！！｜哥哥：慢慢睇，今日哥哥請你食！🍦✨」',
+        '「哥哥：原味、咖啡、朱古力、抹茶，你最想試邊隻？｜翔陽：好難揀呀，全部都想試！😋」'
       ],
       restaurant: [
         { id: 'rest_booth', label: '餐廳卡位', hx: 300, hy: 390, hr: 110, px: 290, py: 440, act: 'restaurant', line: '「同哥哥坐卡位食大餐！漢堡扒加蛋包飯！🍽️✨」' },
@@ -724,6 +746,8 @@ html, body {
       supermarketItemsCfg: {},
       supermarketTrip: null,
       supperState: null,
+      iceCreamState: null,
+      iceCreamCfg: null,
       dates: {},
       mailbox: { items: [], lastMailDate: null, lastInviteDate: null },
       outing: { type: null, returnAt: null, fromMall: false },
@@ -800,6 +824,9 @@ html, body {
       if (!state.autoEvents.weKonbiniAsk) state.autoEvents.weKonbiniAsk = { prob: 20, maxPerDay: 1 };
       if (!state.autoEvents.weParkAsk) state.autoEvents.weParkAsk = { prob: 15, maxPerDay: 1 };
       if (!state.autoEvents.weBackyardAsk) state.autoEvents.weBackyardAsk = { prob: 13, maxPerDay: 0, mins: 15 };
+      if (!state.autoEvents.iceCreamAsk) state.autoEvents.iceCreamAsk = { prob: 20, maxPerDay: 1 };
+      if (!state.autoEvents.weIceCreamAsk) state.autoEvents.weIceCreamAsk = { prob: 20, maxPerDay: 1 };
+      if (typeof ensureIceCreamCfg === 'function') ensureIceCreamCfg();
       if (!state.supermarketItemsCfg) state.supermarketItemsCfg = {};
       if (typeof ensureSupermarketCfg === 'function') ensureSupermarketCfg();
       if (typeof p.pocketMoney !== 'number') p.pocketMoney = 20;
@@ -839,7 +866,7 @@ html, body {
       if (!state.dates) state.dates = {};
       if (!state.mailbox) state.mailbox = { items: [], lastMailDate: null, lastInviteDate: null };
       if (!state.brother) state.brother = { currentRoom: 'living', currentActivity: 'tea', px: 380, py: 440, tx: 380, ty: 440, scheduleSlotKey: null };
-      if (!state.outing) state.outing = { type: null, returnAt: null, fromMall: false };
+      if (!state.outing) state.outing = { type: null, returnAt: null, fromMall: false }; state.iceCreamState = null;
       if (!state.msgLog || state.msgLog.date !== today) state.msgLog = { date: today, asked: {}, promises: {} };
       return p;
     }
@@ -1377,7 +1404,7 @@ html, body {
             if (chk.ok) { targetDate = ds; targetTag = chk.tag; break; }
           }
           if (targetDate) {
-            const locs = ['mall', 'park', 'restaurant'];
+            const locs = ['mall', 'park', 'restaurant', 'ice_cream'];
             const pickLoc = locs[Math.floor(Math.random() * locs.length)];
             const pickSlot = pickLoc === 'restaurant' ? '18:35-19:35' : DATE_SLOTS[Math.floor(Math.random() * 5)];
             const locName = MAP_ROOMS[pickLoc]?.name || pickLoc;
@@ -1492,7 +1519,7 @@ html, body {
         playSFX('miss');
         showToast('📞 哥哥收到學校電話：翔陽暈倒送咗去醫療室（🪙-50）！10秒後出發去接佢');
         speakAndShow('「📞 喂？！咩話翔陽喺學校暈倒送咗去醫療室？！我即刻請假趕過嚟！！😰」');
-      } else if (['street', 'street2', 'supermarket', 'main_street', 'konbini', 'mall', 'park', 'restaurant', 'pharmacy', 'canteen'].includes(room)) {
+      } else if (['street', 'street2', 'street3', 'supermarket', 'ice_cream', 'main_street', 'konbini', 'mall', 'park', 'restaurant', 'pharmacy', 'canteen'].includes(room)) {
         pet.coins = Math.max(0, pet.coins - 50);
         pet.recoverStage = 'phone_alert';
         pet.rescueRoom = 'hospital';
@@ -1706,7 +1733,7 @@ html, body {
             if (chk.ok) { targetDate = ds; targetTag = chk.tag; break; }
           }
           if (targetDate) {
-            const locs = ['mall', 'park', 'restaurant'];
+            const locs = ['mall', 'park', 'restaurant', 'ice_cream'];
             const pickLoc = locs[Math.floor(Math.random() * locs.length)];
             const pickSlot = pickLoc === 'restaurant' ? '18:35-19:35' : DATE_SLOTS[Math.floor(Math.random() * 5)];
             const locName = MAP_ROOMS[pickLoc]?.name || pickLoc;
@@ -1826,6 +1853,47 @@ html, body {
                 if (viewRoomId === pet.currentRoom) speakAndShow('「同哥哥喺公園一邊散步一邊傾計～🌳😊」');
               }
               updateHUD();
+            }
+          }
+        }
+        // Ice Cream Shop 2-person flow (5m choosing -> bro pick / offline coffee -> pay -> 5m eat on street3 -> go home)
+        if (state.outing.type === 'ice_cream' && !duoWalk) {
+          if (!state.iceCreamState && pet.currentRoom === 'ice_cream') {
+            state.iceCreamState = { stage: 'choosing', until: Date.now() + 5 * 60 * 1000, hinataFlavor: null, broFlavor: null };
+            speakAndShow('「到雪糕店啦！哥哥我哋睇 5 分鐘揀下想食咩口味先～🍦✨」');
+            saveState();
+          } else if (state.iceCreamState) {
+            const ics = state.iceCreamState;
+            const nowIc = Date.now();
+            if (ics.stage === 'choosing' && nowIc >= ics.until) {
+              const pickF = ICE_CREAM_FLAVORS[Math.floor(Math.random() * ICE_CREAM_FLAVORS.length)];
+              ics.hinataFlavor = pickF.id;
+              if (nowIc - ics.until > 45000) {
+                completeIceCreamPayment('coffee', true);
+              } else {
+                ics.stage = 'waiting_bro_choice';
+                speakAndShow(`「哥哥！我決定要食 ${pickF.emoji}${pickF.name}味雪糕！！到哥哥你揀口味啦～🍦💛」`);
+                openIceCreamChoiceModal();
+                saveState();
+              }
+            } else if (ics.stage === 'waiting_bro_choice') {
+              if (document.getElementById('choice-overlay').classList.contains('hidden')) {
+                openIceCreamChoiceModal();
+              }
+            } else if (ics.stage === 'eating_street3' && nowIc >= ics.until) {
+              const hf = ICE_CREAM_FLAVORS.find(x => x.id === ics.hinataFlavor) || ICE_CREAM_FLAVORS[0];
+              const hcfg = getIcCfg(hf.id);
+              const h0 = pet.hunger, m0 = pet.mood, e0 = pet.energy;
+              pet.hunger = Math.min(100, pet.hunger + hcfg.hunger);
+              pet.mood = Math.min(100, pet.mood + hcfg.mood);
+              pet.energy = Math.min(100, pet.energy + hcfg.energy);
+              recordStatLog(pet, 'hunger', `🍦 ${hf.name}雪糕`, h0, pet.hunger);
+              recordStatLog(pet, 'mood', `🍦 ${hf.name}雪糕`, m0, pet.mood);
+              recordStatLog(pet, 'energy', `🍦 ${hf.name}雪糕`, e0, pet.energy);
+              addBladderFromConsume(pet, false);
+              state.iceCreamState = null;
+              endDuoOuting(`「食完 ${hf.emoji}${hf.name}雪糕好滿足！！我哋直接返屋企啦！🍦🏠」`);
+              return;
             }
           }
         }
@@ -2229,6 +2297,10 @@ html, body {
           const bKey = isWkFree ? 'weBackyardAsk' : 'backyardAsk';
           const aeK = ae[kKey] || { prob: 20, maxPerDay: 1 };
           const aeP = ae[pKey] || { prob: 15, maxPerDay: 1 };
+          const icKey = isWkFree ? 'weIceCreamAsk' : 'iceCreamAsk';
+          const aeIc = ae[icKey] || { prob: 20, maxPerDay: 1 };
+          const isIcOpen = (info.totalMin >= 720 && info.totalMin < 1320);
+          const canIceCream = isIcOpen && (isEvTV || (isWkFree && atHomeForAsk)) && aeIc.maxPerDay > 0 && (cnt[icKey] || 0) < aeIc.maxPerDay && aeIc.prob > 0;
           const canKonbini = (isEvTV || (isWkFree && atHomeForAsk)) && aeK.maxPerDay > 0 && (cnt[kKey] || 0) < aeK.maxPerDay && aeK.prob > 0;
           const canPark = (!isWkFree || atHomeForAsk) && aeP.maxPerDay > 0 && (cnt[pKey] || 0) < aeP.maxPerDay && aeP.prob > 0;
           if (canKonbini && Math.random() < (aeK.prob / 100) && document.getElementById('choice-overlay').classList.contains('hidden')) {
@@ -2240,6 +2312,16 @@ html, body {
               <div class="flex justify-center gap-2 mt-1">
                 <button type="button" data-konbini-ask="yes" class="px-3 py-1 rounded-xl bg-emerald-500 text-white border-2 border-[#2d1e12] text-xs font-black">🏪 好呀一齊去</button>
                 <button type="button" data-konbini-ask="no" class="px-3 py-1 rounded-xl bg-slate-200 text-[#2d1e12] border-2 border-[#2d1e12] text-xs font-black">🏠 唔去住</button>
+              </div>`;
+            box.classList.remove('hidden');
+          } else if (canIceCream && Math.random() < (aeIc.prob / 100) && document.getElementById('choice-overlay').classList.contains('hidden')) {
+            cnt[icKey] = (cnt[icKey] || 0) + 1;
+            const box = document.getElementById('choice-overlay');
+            speakAndShow('「哥哥～不如我哋去雪糕店買雪糕食好唔好？🍦😋」');
+            box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12]">🍦 翔陽問哥哥去唔去雪糕店（12:00–22:00）：</div>
+              <div class="flex justify-center gap-2 mt-1">
+                <button type="button" data-icecream-ask="yes" class="px-3 py-1 rounded-xl bg-emerald-500 text-white border-2 border-[#2d1e12] text-xs font-black">🍦 好呀一齊去</button>
+                <button type="button" data-icecream-ask="no" class="px-3 py-1 rounded-xl bg-slate-200 text-[#2d1e12] border-2 border-[#2d1e12] text-xs font-black">🏠 唔去住</button>
               </div>`;
             box.classList.remove('hidden');
           } else if (canPark && Math.random() < (aeP.prob / 100)) {
@@ -2621,7 +2703,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v70'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v71'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -2938,7 +3020,7 @@ html, body {
       park_jog: '🏃 公園慢跑', park_walk: '🚶 公園散步', park_breeze: '🌊 睇海風中', toilet_use: '🚽 如廁中', toilet_urinal: '🚻 小便中', toilet_wash: '🧼 洗手中', toilet_wait: '⏳ 等緊廁所', court_run: '🏃 跑步熱身中', stretch: '🧘‍♂️ 拉筋放鬆中',
       gear_prep: '🏐 整理裝備中', window_gaze: '🌤️ 望窗外發呆', read_manga: '📚 睇排球漫畫',
       mirror_prep: '🪞 整理儀容中', tidy_bag: '🔑 檢查隨身物', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', konbini_mag: '📖 睇雜誌中', konbini_snack: '🍡 睇零食中', konbini_drink: '🥤 睇飲品中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理', supermarket: '🛒 行超市中', supermarket_checkout: '💳 自助收銀付款', supper_wait: '🍽️ 等哥哥整宵夜', supper_eat: '🥟 一齊食宵夜'
+      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', konbini_mag: '📖 睇雜誌中', konbini_snack: '🍡 睇零食中', konbini_drink: '🥤 睇飲品中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理', supermarket: '🛒 行超市中', supermarket_checkout: '💳 自助收銀付款', supper_wait: '🍽️ 等哥哥整宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 揀緊雪糕口味', eating_ice_cream: '🍦 街邊食雪糕中'
     };
     const BROTHER_ACTIVITY_LABELS = {
       sleep: '😴 哥哥熟睡中', brush: '🪥 哥哥刷牙中', cook_bfast: '🍳 煮緊早餐', prep_bfast: '🥞 準備早餐中',
@@ -2952,7 +3034,7 @@ html, body {
       backyard: '🏐 陪練排球', idle: '✨ 休息中', stretch: '🧘‍♂️ 拉筋中',
       gear_prep: '🏐 幫手執裝備', window_gaze: '🌤️ 望窗外思考', read_manga: '📚 睇漫畫中',
       mirror_prep: '🪞 整理儀容', tidy_bag: '🔑 檢查鎖匙', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋', washing_dishes: '🫧 洗碗碟中', supermarket: '🛒 超市買嘢中', supermarket_checkout: '💳 自助收銀中', supper_pick: '🧊 睇上層冰格', supper_cook: '🍲 煮緊宵夜', supper_eat: '🥟 一齊食宵夜'
+      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋', washing_dishes: '🫧 洗碗碟中', supermarket: '🛒 超市買嘢中', supermarket_checkout: '💳 自助收銀中', supper_pick: '🧊 睇上層冰格', supper_cook: '🍲 煮緊宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 陪揀雪糕中', eating_ice_cream: '🍦 陪食雪糕中'
     };
     const IDLE_THOUGHTS = ['💭 想食玉子拌飯…', '💭 聽日要跳高啲！', '💭 哥哥幾時同我打機？', '💭 烏野一定打入全國！'];
 
@@ -3728,6 +3810,13 @@ html, body {
           { label: '💛 哥哥返工辛唔辛苦呀？加油！', reply: '「睇到哥哥傳訊息嚟我即刻充滿電！！❤️」' }
         ];
       }
+      if (r === 'ice_cream' || r === 'street3') {
+        return [
+          { label: '🍦 四隻雪糕口味最想食邊隻？', reply: '「抹茶同朱古力我都好鍾意！不過原味牛奶都好香滑～😋」' },
+          { label: '🛣️ 買完雪糕一齊喺街道3邊吹風邊食！', reply: '「好呀！喺街邊企定定慢慢食唔怕滴到周圍都係！🍦✨」' },
+          { label: '☕ 哥哥試下咖啡味雪糕好唔好？', reply: '「咖啡味有啲大人感覺，好啱哥哥！！☕💛」' }
+        ];
+      }
       if (r === 'school_court') {
         return [
           { label: '🏐 社團練波順唔順利？跳高咗未？', reply: '「啱啱練扣殺手感超好！影山都讚我快咗少少！🏐🔥」' },
@@ -4038,6 +4127,18 @@ html, body {
         }
         return;
       }
+      const icPick = e.target.closest('[data-ic-pick]');
+      if (icPick) { completeIceCreamPayment(icPick.dataset.icPick, false); return; }
+      const icAsk = e.target.closest('[data-icecream-ask]');
+      if (icAsk) {
+        document.getElementById('choice-overlay').classList.add('hidden');
+        if (icAsk.dataset.icecreamAsk === 'yes') {
+          startDuoOuting('ice_cream', 60, 'ice_cream', '二人一齊去雪糕店食雪糕！🍦', '「Yeah!! 同哥哥去街道3隔離間雪糕店！！🍦✨」');
+        } else {
+          speakAndShow('「好啦～咁我哋留喺屋企休息住先，遲啲先食雪糕！🏠😊」');
+        }
+        return;
+      }
       const smAdd = e.target.closest('[data-sm-add]');
       if (smAdd) {
         const id = smAdd.dataset.smAdd;
@@ -4314,6 +4415,62 @@ html, body {
         speakAndShow('「唔好啦哥哥…今晚唔係好肚餓，唔食宵夜住喇～😊🌙」');
         showToast('翔陽話今晚唔係好肚餓，唔食宵夜住～🌙');
       }
+    }
+
+    const ICE_CREAM_FLAVORS = [
+      { id: 'original',  name: '原味',   emoji: '🍦', price: 8,  hunger: 10, mood: 15, energy: 8 },
+      { id: 'coffee',    name: '咖啡',   emoji: '☕', price: 9,  hunger: 10, mood: 15, energy: 12 },
+      { id: 'chocolate', name: '朱古力', emoji: '🍫', price: 9,  hunger: 12, mood: 18, energy: 10 },
+      { id: 'matcha',    name: '抹茶',   emoji: '🍵', price: 10, hunger: 10, mood: 18, energy: 10 }
+    ];
+    function ensureIceCreamCfg() {
+      if (!state.iceCreamCfg) state.iceCreamCfg = {};
+      ICE_CREAM_FLAVORS.forEach(f => {
+        if (!state.iceCreamCfg[f.id]) state.iceCreamCfg[f.id] = { price: f.price, hunger: f.hunger, mood: f.mood, energy: f.energy };
+      });
+    }
+    function getIcCfg(id) {
+      ensureIceCreamCfg();
+      return state.iceCreamCfg[id] || { price: 8, hunger: 10, mood: 15, energy: 8 };
+    }
+    function openIceCreamChoiceModal() {
+      const ics = state.iceCreamState;
+      if (!ics) return;
+      const hf = ICE_CREAM_FLAVORS.find(x => x.id === ics.hinataFlavor) || ICE_CREAM_FLAVORS[0];
+      const box = document.getElementById('choice-overlay');
+      const btns = ICE_CREAM_FLAVORS.map(f => {
+        const cfg = getIcCfg(f.id);
+        return `<button type="button" data-ic-pick="${f.id}" class="flex items-center justify-between bg-amber-50 hover:bg-amber-100 border-2 border-[#2d1e12] rounded-xl px-2.5 py-1.5 text-left text-xs font-bold">
+          <span>${f.emoji} ${f.name}雪糕 <span class="text-[10px] text-slate-600">(飽+${cfg.hunger}% 心+${cfg.mood}% 精+${cfg.energy}%)</span></span>
+          <span class="font-black text-amber-700 shrink-0 ml-2">🪙${cfg.price}元</span>
+        </button>`;
+      }).join('');
+      box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12] mb-1">🍦 翔陽揀咗【${hf.emoji}${hf.name}】，請哥哥揀雪糕口味（付款後去街道3食5分鐘）：</div>
+        <div class="flex flex-col gap-1.5">${btns}</div>`;
+      box.classList.remove('hidden'); box.scrollTop = 0;
+    }
+    function completeIceCreamPayment(broFlavorId, isOfflineAuto = false) {
+      const ics = state.iceCreamState;
+      if (!ics) return;
+      const pet = ensurePetState(state.activeCharId);
+      const hf = ICE_CREAM_FLAVORS.find(x => x.id === ics.hinataFlavor) || ICE_CREAM_FLAVORS[0];
+      const bf = ICE_CREAM_FLAVORS.find(x => x.id === broFlavorId) || ICE_CREAM_FLAVORS[1];
+      const totalCost = getIcCfg(hf.id).price + getIcCfg(bf.id).price;
+      const paid = Math.min(pet.coins, totalCost);
+      pet.coins -= paid;
+      recordPurchaseLog(pet, '雪糕店', `${hf.emoji}${hf.name}＋${bf.emoji}${bf.name}雪糕`, paid, '哥哥付款');
+      document.getElementById('choice-overlay').classList.add('hidden');
+      ics.broFlavor = bf.id;
+      ics.stage = 'eating_street3';
+      ics.until = Date.now() + 5 * 60 * 1000;
+      playSFX('eat');
+      const msg = isOfflineAuto
+        ? `「離線自動幫哥哥揀咗 ☕咖啡雪糕！已付款 🪙${paid}，一齊行出街道3街邊食 5 分鐘～🍦」`
+        : `「哥哥揀咗 ${bf.emoji}${bf.name}！已付款 🪙${paid}，一齊行出街道3街邊食 5 分鐘雪糕啦！🍦🛣️」`;
+      startDuoJourney('street3', 'eating_ice_cream', msg, '去到街道3街邊食雪糕（5分鐘）🍦', () => {
+        updateHUD();
+      });
+      saveState();
     }
 
     function triggerGoToSupermarket(bypassTimeCheck = false) {
@@ -4660,11 +4817,29 @@ html, body {
             }).join('')}
           </div>
         </div>`;
-        bodyHtml = catHtml + actHtml;
+        const icSetHtml = `<div class="bg-pink-50 border border-pink-300 rounded-xl p-1.5 mt-1.5">
+          <div class="text-[11px] font-black text-[#2d1e12] mb-1">🍦 雪糕店 4 種口味價錢與回復設定</div>
+          <div class="space-y-1 text-[10px] font-bold">
+            ${ICE_CREAM_FLAVORS.map(f => {
+              const ic = getIcCfg(f.id);
+              return `<div class="flex flex-wrap items-center justify-between bg-white border border-pink-300 rounded px-1.5 py-0.5 gap-1">
+                <span>${f.emoji} ${f.name}</span>
+                <div class="flex items-center gap-1">
+                  <span>🪙</span><button type="button" data-iccfg-id="${f.id}" data-iccfg-field="price" data-iccfg-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button><span id="iccfg-${f.id}-price">${ic.price}元</span><button type="button" data-iccfg-id="${f.id}" data-iccfg-field="price" data-iccfg-delta="1" class="w-4 h-4 rounded bg-pink-300 font-black">+</button>
+                  <span>🍙</span><button type="button" data-iccfg-id="${f.id}" data-iccfg-field="hunger" data-iccfg-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button><span id="iccfg-${f.id}-hunger">+${ic.hunger}%</span><button type="button" data-iccfg-id="${f.id}" data-iccfg-field="hunger" data-iccfg-delta="1" class="w-4 h-4 rounded bg-pink-300 font-black">+</button>
+                  <span>😊</span><button type="button" data-iccfg-id="${f.id}" data-iccfg-field="mood" data-iccfg-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button><span id="iccfg-${f.id}-mood">+${ic.mood}%</span><button type="button" data-iccfg-id="${f.id}" data-iccfg-field="mood" data-iccfg-delta="1" class="w-4 h-4 rounded bg-pink-300 font-black">+</button>
+                  <span>⚡</span><button type="button" data-iccfg-id="${f.id}" data-iccfg-field="energy" data-iccfg-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button><span id="iccfg-${f.id}-energy">+${ic.energy}%</span><button type="button" data-iccfg-id="${f.id}" data-iccfg-field="energy" data-iccfg-delta="1" class="w-4 h-4 rounded bg-pink-300 font-black">+</button>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+        bodyHtml = catHtml + actHtml + icSetHtml;
       } else if (settingsTab === 'probs') {
         const aeRows = [
           ['toilet','🚽 自行如廁',true,false],
           ['konbiniAsk','🏪 夜晚問去便利店',true,false],
+          ['iceCreamAsk','🍦 夜晚問去雪糕店（12-22時）',true,false],
           ['parkAsk','🌳 問去公園',true,false],
           ['backyardAsk','🏐 問去後院練波',true,true],
           ['freeRoam','🚶 假日自由換房漫遊',false,true],
@@ -4823,6 +4998,7 @@ html, body {
         const weRows = [
           ['weFreeRoam','🚶 假日自由換房漫遊',false,true],
           ['weKonbiniAsk','🏪 假日問去便利店（只限在家）',true,false],
+          ['weIceCreamAsk','🍦 假日問去雪糕店（只限在家）',true,false],
           ['weParkAsk','🌳 假日問去公園（只限在家）',true,false],
           ['weBackyardAsk','🏐 假日問去後院練波',true,true]
         ];
@@ -5061,7 +5237,7 @@ html, body {
         const isDinner = (idx === 5); // 18:35-19:35
         const isHinataLocked = !!lockedSlots[slot];
         const chosen = draftDatePlan[slot] || null;
-        const opts = isDinner ? [['restaurant','🍽️ 餐廳'],['home_eat','🏠 回家食']] : [['mall','🛍️ 商場'],['park','🌳 公園'],['restaurant','🍽️ 餐廳']];
+        const opts = isDinner ? [['restaurant','🍽️ 餐廳'],['home_eat','🏠 回家食']] : [['mall','🛍️ 商場'],['park','🌳 公園'],['ice_cream','🍦 雪糕店']];
         const btns = opts.map(([k, lbl]) => {
           const active = (chosen === k);
           const disabled = isHinataLocked || (chosen && !active);
@@ -5354,6 +5530,7 @@ html, body {
         { id: 'go_supermarket', emoji: '🛒', name: '去超市', sub: '19:20-23:00' },
         { id: 'eat_supper', emoji: '🌙', name: '食宵夜', sub: '23:00-24:00' },
         { id: 'konbini_trip', emoji: '🏪', name: '去便利店', sub: '24小時營業' },
+        { id: 'ice_cream_trip', emoji: '🍦', name: '去雪糕店', sub: '12:00-22:00' },
         { id: 'mall_trip', emoji: '🛍️', name: '去商場', sub: '22:00關門' },
         { id: 'park_trip', emoji: '🌳', name: '去公園', sub: '散步吹海風' },
         { id: 'rest_trip', emoji: '🍽️', name: '去餐廳', sub: '22:00關門' },
@@ -5451,7 +5628,14 @@ html, body {
           playSFX('eat'); speakAndShow('「食緊美味大餐中～要食完一個鐘先返屋企！🍽️😋」');
         } else if (id === 'go_supermarket') { triggerGoToSupermarket(false); }
         else if (id === 'eat_supper') { triggerManualSupper(); }
-        else if (id === 'konbini_trip') {
+        else if (id === 'ice_cream_trip') {
+          const infIc = getCurrentHourInfo();
+          if (infIc.totalMin < 720 || infIc.totalMin >= 1320) { playSFX('miss'); showToast('雪糕店營業時間為 12:00–22:00 呀！🍦🔒'); return; }
+          if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
+          const bothHome = !['school_class', 'school_court', 'pharmacy', 'canteen'].includes(pet.currentRoom) && !['school_class', 'school_court', 'pharmacy', 'canteen'].includes(bro.currentRoom);
+          if (!bothHome) { playSFX('miss'); showToast('哥哥仲喺醫院返工，等佢返屋企先一齊去啦！🏥'); return; }
+          startDuoOuting('ice_cream', 60, 'ice_cream', '二人一齊去雪糕店！🍦', '「同哥哥行過去雪糕店揀雪糕食！！🍦✨」');
+        } else if (id === 'konbini_trip') {
           if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
           const bothHome = !['school_class', 'school_court', 'pharmacy', 'canteen'].includes(pet.currentRoom) && !['school_class', 'school_court', 'pharmacy', 'canteen'].includes(bro.currentRoom);
           if (!bothHome) { playSFX('miss'); showToast('哥哥仲喺醫院返工，等佢返屋企先一齊去啦！🏥'); return; }
@@ -5898,6 +6082,16 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
         }
         saveState(); return;
       }
+      const icCfgBtn = e.target.closest('[data-iccfg-id]');
+      if (icCfgBtn) {
+        const { iccfgId, iccfgField, iccfgDelta } = icCfgBtn.dataset;
+        ensureIceCreamCfg();
+        const cfg = state.iceCreamCfg[iccfgId];
+        cfg[iccfgField] = Math.max(iccfgField === 'price' ? 1 : 0, (cfg[iccfgField] ?? 5) + Number(iccfgDelta));
+        const sp = document.getElementById(`iccfg-${iccfgId}-${iccfgField}`);
+        if (sp) sp.textContent = iccfgField === 'price' ? `${cfg[iccfgField]}元` : `+${cfg[iccfgField]}%`;
+        saveState(); return;
+      }
       const smiBtn = e.target.closest('[data-smi-id]');
       if (smiBtn) {
         const { smiId, smiField, smiDelta } = smiBtn.dataset;
@@ -6273,7 +6467,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v70';
+          if (el) el.textContent = '☁️ 雲端已同步 · v71';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -6312,7 +6506,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v70';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v71';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
