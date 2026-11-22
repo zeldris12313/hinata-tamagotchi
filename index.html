@@ -143,6 +143,8 @@ html, body {
           <button type="button" data-door-room="theme_park_gate" style="left:75%;top:82%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute px-2.5 py-1 rounded-xl bg-pink-100/95 hover:bg-pink-200 border-2 border-[#2d1e12] text-[10px] font-black shadow-md">🎡 落車：樂園門口</button>
         </div>
         <button id="btn-park-gate-bus" type="button" data-door-room="bus_interior" style="left:84%;top:58%;transform:translate(-50%,-50%)" class="hidden absolute px-2.5 py-1 rounded-xl bg-sky-100/95 hover:bg-sky-200 border-2 border-[#2d1e12] text-[10px] font-black shadow-md z-15">🚌 巴士站</button>
+        <button id="btn-park-ent-enter" type="button" data-door-room="park" style="left:50%;top:56%;transform:translate(-50%,-50%)" class="hidden absolute px-3 py-1.5 rounded-xl bg-emerald-100/95 hover:bg-emerald-200 border-2 border-[#2d1e12] text-xs font-black shadow-md z-15">🌳 進入公園</button>
+        <button id="btn-mall-gate-enter" type="button" data-door-room="mall" style="left:50%;top:56%;transform:translate(-50%,-50%)" class="hidden absolute px-3 py-1.5 rounded-xl bg-amber-100/95 hover:bg-amber-200 border-2 border-[#2d1e12] text-xs font-black shadow-md z-15">🛍️ 進入商場</button>
         <button id="btn-gate-class" type="button" style="left:50%;top:56%;transform:translate(-50%,-50%)" class="hidden absolute px-3 py-1.5 rounded-xl bg-amber-100/95 hover:bg-amber-200 border-2 border-[#2d1e12] text-xs font-black shadow-md z-15">🏫 課室</button>
         <button id="btn-hallway-living" type="button" style="left:36%;top:47%;transform:translate(-50%,-50%)" class="hidden absolute px-2 py-1 rounded-xl bg-amber-100/90 hover:bg-amber-200 border-2 border-[#2d1e12] text-[10px] font-black shadow-md z-15">🏠 客廳</button>
         <div id="hallway-2f-doors" class="hidden pointer-events-none absolute inset-0 z-15">
@@ -229,7 +231,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v79.4</span>
+      <span id="save-status">💾 已自動儲存 · v80</span>
       
     </div>
 
@@ -483,7 +485,13 @@ html, body {
       bg_theme_park3_night: "./assets/bg_theme_park3_night.jpg?v=79",
       bg_theme_park4: "./assets/bg_theme_park4.jpg?v=79",
       bg_theme_park4_morning: "./assets/bg_theme_park4_morning.jpg?v=79",
-      bg_theme_park4_night: "./assets/bg_theme_park4_night.jpg?v=79"
+      bg_theme_park4_night: "./assets/bg_theme_park4_night.jpg?v=79",
+      bg_park_entrance: "./assets/bg_park_entrance.jpg?v=80",
+      bg_park_entrance_morning: "./assets/bg_park_entrance_morning.jpg?v=80",
+      bg_park_entrance_night: "./assets/bg_park_entrance_night.jpg?v=80",
+      bg_mall_gate: "./assets/bg_mall_gate.jpg?v=80",
+      bg_mall_gate_morning: "./assets/bg_mall_gate_morning.jpg?v=80",
+      bg_mall_gate_night: "./assets/bg_mall_gate_night.jpg?v=80"
     };
     const sprites = {};
 
@@ -509,8 +517,10 @@ html, body {
       pharmacy:     { id: 'pharmacy',     name: '醫院藥房',        short: '藥房',     icon: '💊', gx: 3, gy: -1.5, up: 'canteen', down: 'main_street2', left: 'hospital', right: null },
       park2:        { id: 'park2',        name: '海濱公園・海邊區', short: '公園2',    icon: '🌊', gx: 1, gy: 0,  up: null, down: 'park_toilet', left: null, right: 'park' },
       park_toilet:  { id: 'park_toilet',  name: '公園公廁',        short: '公廁',     icon: '🚻', gx: 1, gy: 1,  up: 'park2', down: null, left: null, right: null },
-      park:         { id: 'park',         name: '海濱公園',        short: '公園',     icon: '🌳', gx: 2, gy: 0,  up: null, down: null, left: 'park2', right: 'main_street' },
-      main_street:  { id: 'main_street',  name: '繁華大街',        short: '大街',     icon: '🏙️', gx: 3, gy: 0,  up: 'main_street2', down: 'street', left: 'park', right: 'mall' },
+      park:         { id: 'park',         name: '海濱公園',        short: '公園',     icon: '🌳', gx: 2, gy: 0,  up: null, down: null, left: 'park2', right: 'park_entrance' },
+      park_entrance:{ id: 'park_entrance',name: '公園門口',        short: '公園門口', icon: '🌳', gx: 2.5, gy: 0, up: null, down: null, left: null, right: 'main_street', doors: ['park'] },
+      main_street:  { id: 'main_street',  name: '繁華大街',        short: '大街',     icon: '🏙️', gx: 3, gy: 0,  up: 'main_street2', down: 'street', left: 'park_entrance', right: 'mall_gate' },
+      mall_gate:    { id: 'mall_gate',    name: '商場門口',        short: '商場門口', icon: '🏬', gx: 3.5, gy: 0, up: null, down: null, left: 'main_street', right: null, doors: ['mall'] },
       main_street2: { id: 'main_street2', name: '繁華大街 2',      short: '大街2',    icon: '🏙️', gx: 3, gy: -1, up: null, down: 'main_street', left: null, right: null, doors: ['pharmacy', 'bus_interior'] },
       bus_interior: { id: 'bus_interior', name: '市區巴士車廂',    short: '巴士內',   icon: '🚌', gx: 4, gy: -1, up: null, down: null, left: null, right: null, doors: ['main_street2', 'theme_park_gate'] },
       theme_park_gate:{ id: 'theme_park_gate', name: '樂園門口排隊處', short: '樂園門口', icon: '🎟️', gx: 6, gy: 0, up: 'theme_park1', down: null, left: null, right: null, doors: ['bus_interior'] },
@@ -518,7 +528,7 @@ html, body {
       theme_park2:  { id: 'theme_park2',  name: '摩天輪廣場',      short: '摩天輪',   icon: '🎡', gx: 7, gy: -1, up: 'theme_park4', down: null, left: 'theme_park1', right: null },
       theme_park3:  { id: 'theme_park3',  name: '過山車區',        short: '過山車',   icon: '🎢', gx: 6, gy: -2, up: null, down: 'theme_park1', left: null, right: 'theme_park4' },
       theme_park4:  { id: 'theme_park4',  name: '樂園餐廳區',      short: '樂園餐廳', icon: '🍔', gx: 7, gy: -2, up: null, down: 'theme_park2', left: 'theme_park3', right: null },
-      mall:         { id: 'mall',         name: '大型商場',        short: '商場',     icon: '🛍️', gx: 4, gy: 0,  up: 'mall2', down: 'mall_toilet', left: 'main_street', right: 'restaurant' },
+      mall:         { id: 'mall',         name: '大型商場',        short: '商場',     icon: '🛍️', gx: 4, gy: 0,  up: 'mall2', down: 'mall_toilet', left: 'mall_gate', right: 'restaurant' },
       mall2:        { id: 'mall2',        name: '商場 2 樓',       short: '商場2',    icon: '🏬', gx: 4, gy: -1, up: 'mall_promenade', down: 'mall', left: 'clothing_store', right: 'toy_store' },
       clothing_store:{ id: 'clothing_store', name: '服裝店',       short: '服裝店',   icon: '👕', gx: 3, gy: -1, up: null, down: null, left: null, right: 'mall2' },
       toy_store:    { id: 'toy_store',    name: '玩具店',          short: '玩具店',   icon: '🧸', gx: 5, gy: -1, up: null, down: null, left: 'mall2', right: null },
@@ -1461,6 +1471,8 @@ html, body {
         if (fromId === 'hallway_2f' && hop === 'hallway') return 'door_1f';
         if (fromId === 'main_street2' && hop === 'pharmacy') return 'door_hospital';
         if (fromId === 'school_gate' && hop === 'school_class') return 'door_school_class';
+        if (fromId === 'park_entrance' && hop === 'park') return 'door_park';
+        if (fromId === 'mall_gate' && hop === 'mall') return 'door_mall';
         return 'left';
       }
       const t = MAP_ROOMS[toId];
@@ -1476,13 +1488,15 @@ html, body {
       if (dir === 'door_1f') return { ex: 370, ey: 420, ix: 60, iy: 440 };
       if (dir === 'door_hospital') return { ex: 320, ey: 390, ix: 300, iy: 500 };
       if (dir === 'door_school_class') return { ex: 300, ey: 390, ix: 300, iy: 460 };
+      if (dir === 'door_park') return { ex: 300, ey: 390, ix: 540, iy: 440 };
+      if (dir === 'door_mall') return { ex: 300, ey: 430, ix: 60, iy: 440 };
       if (dir === 'left')  return { ex: 60,  ey: 440, ix: 540, iy: 440 };
       if (dir === 'up')    return { ex: 300, ey: 315, ix: 300, iy: 520 };
       if (dir === 'down')  return { ex: 300, ey: 525, ix: 300, iy: 330 };
       return { ex: 540, ey: 440, ix: 60, iy: 440 };
     }
     let followTarget = null;
-    const OUTDOOR_STREET_ROOMS = new Set(['street', 'street2', 'street3', 'main_street', 'main_street2', 'park', 'park2', 'school_gate', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4']);
+    const OUTDOOR_STREET_ROOMS = new Set(['street', 'street2', 'street3', 'main_street', 'main_street2', 'park_entrance', 'park', 'park2', 'mall_gate', 'school_gate', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4']);
     function getWalkActForRoom(rm) { return OUTDOOR_STREET_ROOMS.has(rm) ? 'street' : 'walking'; }
     function startCharacterWalkTransition(pet, destRoom, destAct, px, py, followView = false) {
       if (pet.currentRoom === destRoom) { pet.currentActivity = destAct; targetX = px; targetY = py; saveState(); return; }
@@ -3238,7 +3252,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v79.4'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v80'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3292,7 +3306,7 @@ html, body {
     }
 
     const MALL_AREA_SET = new Set(['mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade']);
-    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'park', 'park2', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet']);
+    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'park_entrance', 'park', 'park2', 'mall_gate', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet']);
     function drawAnimeRoomBackground(roomId, timeInfo) {
       const h = new Date().getHours();
       const isNight = (h >= 18 || h < 6);
@@ -6610,6 +6624,10 @@ html, body {
       if (hlBtn) hlBtn.classList.toggle('hidden', viewRoomId !== 'hallway' || isZoomed);
       const gcBtn = document.getElementById('btn-gate-class');
       if (gcBtn) gcBtn.classList.toggle('hidden', viewRoomId !== 'school_gate' || isZoomed);
+      const peBtn = document.getElementById('btn-park-ent-enter');
+      if (peBtn) peBtn.classList.toggle('hidden', viewRoomId !== 'park_entrance' || isZoomed);
+      const mgBtn = document.getElementById('btn-mall-gate-enter');
+      if (mgBtn) mgBtn.classList.toggle('hidden', viewRoomId !== 'mall_gate' || isZoomed);
       const b2f1f = document.getElementById('btn-2f-to-1f');
       if (b2f1f) b2f1f.classList.toggle('hidden', viewRoomId !== 'hallway_2f' || isZoomed);
       const ms2Btns = document.getElementById('main-street2-btns');
@@ -6623,15 +6641,9 @@ html, body {
       const whDoors = document.getElementById('wash-hall-doors');
       if (whDoors) whDoors.classList.toggle('hidden', viewRoomId !== 'wash_hall' || isZoomed);
       const fpBtn = document.getElementById('btn-find-pet');
-      if (fpBtn) {
-        fpBtn.classList.toggle('is-pressed', followTarget === 'hinata');
-        fpBtn.innerHTML = followTarget === 'hinata' ? '<span>📌</span><span>監控翔陽</span>' : '<span>🧭</span><span>搵翔陽</span>';
-      }
+      if (fpBtn) fpBtn.classList.toggle('is-pressed', followTarget === 'hinata');
       const fbBtn = document.getElementById('btn-find-bro');
-      if (fbBtn) {
-        fbBtn.classList.toggle('is-pressed', followTarget === 'bro');
-        fbBtn.innerHTML = followTarget === 'bro' ? '<span>📌</span><span>監控哥哥</span>' : '<span>🧭</span><span>搵哥哥</span>';
-      }
+      if (fbBtn) fbBtn.classList.toggle('is-pressed', followTarget === 'bro');
       document.getElementById('outfit-name').textContent = outfit.name;
       document.getElementById('zoom-icon').textContent = isZoomed ? '🔎' : '🔍';
       document.getElementById('zoom-label').textContent = isZoomed ? '縮細全景' : '放大特寫';
@@ -6684,7 +6696,7 @@ html, body {
         if (viewRoomId === 'supermarket' && getCartTotalQty() > 0) {
           playSFX('miss'); showToast('購物籃仲有嘢未俾錢，唔可以離開超市呀！🧺🔒'); return;
         }
-        viewRoomId = nextId; document.getElementById('choice-overlay').classList.add('hidden'); renderDock(); playSFX('pat'); updateHUD();
+        followTarget = null; viewRoomId = nextId; document.getElementById('choice-overlay').classList.add('hidden'); renderDock(); playSFX('pat'); updateHUD();
       });
     });
 
@@ -6710,22 +6722,22 @@ html, body {
     document.getElementById('btn-toilet-cabinet')?.addEventListener('click', openToiletCabinetModal);
     document.getElementById('btn-bath-supplies')?.addEventListener('click', openBathSuppliesModal);
     document.getElementById('btn-2f-to-1f')?.addEventListener('click', () => {
-      viewRoomId = 'hallway'; document.getElementById('choice-overlay').classList.add('hidden');
+      followTarget = null; viewRoomId = 'hallway'; document.getElementById('choice-overlay').classList.add('hidden');
       renderDock(); playSFX('pat'); updateHUD();
     });
     document.getElementById('btn-gate-class')?.addEventListener('click', () => {
-      viewRoomId = 'school_class'; document.getElementById('choice-overlay').classList.add('hidden');
+      followTarget = null; viewRoomId = 'school_class'; document.getElementById('choice-overlay').classList.add('hidden');
       renderDock(); playSFX('pat'); updateHUD();
     });
     document.getElementById('btn-hallway-living')?.addEventListener('click', () => {
-      viewRoomId = 'living'; document.getElementById('choice-overlay').classList.add('hidden');
+      followTarget = null; viewRoomId = 'living'; document.getElementById('choice-overlay').classList.add('hidden');
       renderDock(); playSFX('pat'); updateHUD();
     });
     document.querySelectorAll('[data-door-room]').forEach(btn => {
       btn.addEventListener('click', () => {
         const dest = btn.dataset.doorRoom;
         if (!dest || !MAP_ROOMS[dest]) return;
-        viewRoomId = dest; document.getElementById('choice-overlay').classList.add('hidden');
+        followTarget = null; viewRoomId = dest; document.getElementById('choice-overlay').classList.add('hidden');
         renderDock(); playSFX('pat'); updateHUD();
       });
     });
@@ -7202,7 +7214,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v79.4';
+          if (el) el.textContent = '☁️ 雲端已同步 · v80';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7241,7 +7253,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v79.4';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v80';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
