@@ -231,7 +231,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v80.1</span>
+      <span id="save-status">💾 已自動儲存 · v80.2</span>
       
     </div>
 
@@ -676,9 +676,9 @@ html, body {
         { id: 'canteen_tbl', label: '醫院飯堂餐桌', hx: 300, hy: 390, hr: 110, px: 295, py: 440, act: 'canteen_lunch', line: '「醫院 Canteen 今日有豬扒飯定烏冬食呢？🍱」' }
       ],
       mall2: [
-        { id: 'm2_rail',   label: '二樓玻璃欄杆', hx: 220, hy: 370, hr: 95, px: 250, py: 445, act: 'mall2', line: '「喺商場2樓欄杆望落去中庭好開闊呀！🏬✨」' },
-        { id: 'm2_bench',  label: '二樓木長椅',   hx: 360, hy: 390, hr: 90, px: 350, py: 445, act: 'tea',   line: '「坐喺商場2樓長椅抖一陣，左邊有服裝店右邊有玩具店！🛋️」' },
-        { id: 'm2_esc',    label: '扶手電梯口',   hx: 470, hy: 330, hr: 90, px: 440, py: 445, act: 'mall2', line: '「再行上去就係海邊觀光大道啦哥哥！🌊」' }
+        { id: 'm2_rail',   label: '二樓玻璃欄杆', hx: 320, hy: 480, hr: 95, px: 330, py: 485, act: 'mall2', line: '「喺商場2樓欄杆望落去中庭好開闊呀！🏬✨」' },
+        { id: 'm2_bench',  label: '二樓木長椅',   hx: 390, hy: 445, hr: 90, px: 390, py: 450, act: 'tea',   line: '「坐喺商場2樓長椅抖一陣，左邊有服裝店右邊有玩具店！🛋️」' },
+        { id: 'm2_esc',    label: '扶手電梯口',   hx: 445, hy: 410, hr: 90, px: 445, py: 415, act: 'mall2', line: '「再行上去就係海邊觀光大道啦哥哥！🌊」' }
       ],
       clothing_store: [
         { id: 'cs_rack',   label: '衛衣外套架',   hx: 170, hy: 340, hr: 95, px: 190, py: 445, act: 'clothing_store', line: '「呢件米白衛衣好靚呀！好適合放假著！👕✨」' },
@@ -712,9 +712,10 @@ html, body {
         '「哥哥：今日陽光好舒服呢｜翔陽：同哥哥一齊嚟呢度散步真係好幸福！💛」'
       ],
       mall: [
-        { id: 'mall_atrium', label: '商場中庭', hx: 300, hy: 380, hr: 110, px: 290, py: 445, act: 'mall', line: '「同哥哥一齊行商場睇運動用品同買雪糕！🛍️🍦」' },
-        { id: 'mall_sport', label: '運動用品店', hx: 140, hy: 360, hr: 95, px: 160, py: 445, act: 'shop_snack', line: '「睇中對新排球鞋呀！好型好輕身！👟✨」' },
-        { id: 'mall_gacha', label: '精品扭蛋區', hx: 460, hy: 360, hr: 95, px: 440, py: 445, act: 'happy', line: '「嘩！呢排扭蛋機有排球吊飾呀哥哥！🎁」' }
+        { id: 'mall_sport',  label: '運動用品店', hx: 125, hy: 440, hr: 95,  px: 130, py: 455, act: 'shop_snack', line: '「睇中對新排球鞋呀！好型好輕身！👟✨」' },
+        { id: 'mall_atrium', label: '商場中庭',   hx: 275, hy: 430, hr: 110, px: 275, py: 445, act: 'mall',       line: '「同哥哥一齊行商場睇運動用品同買雪糕！🛍️🍦」' },
+        { id: 'mall_bench',  label: '商場長椅通道', hx: 460, hy: 475, hr: 95, px: 455, py: 480, act: 'tea',        line: '「沿住商場長椅走廊慢慢行好寫意～🛋️✨」' },
+        { id: 'mall_gacha',  label: '精品店走廊', hx: 445, hy: 405, hr: 95,  px: 440, py: 410, act: 'happy',      line: '「嘩！呢排精品店有排球吊飾呀哥哥！🎁」' }
       ],
       park: [
         { id: 'park_bench', label: '海邊長椅', hx: 440, hy: 380, hr: 100, px: 360, py: 445, act: 'park_breeze', line: '「坐喺海邊長椅吹下海風，好舒服呀哥哥！🌊」' },
@@ -1559,11 +1560,11 @@ html, body {
       const furn = (ROOM_FURNITURE[roomId] && ROOM_FURNITURE[roomId][0]) || { px: 280, py: 440, act: actName || 'street' };
       const dEdge = getDirEdgeCoords(getRoomMoveDir(pet.currentRoom, roomId));
       pet.currentRoom = roomId;
-      pet.currentActivity = isFinal ? (actName || furn.act) : 'street';
+      pet.currentActivity = isFinal ? (actName || furn.act) : (MALL_AREA_SET.has(roomId) ? 'mall' : 'street');
       petX = dEdge.ix; petY = dEdge.iy;
       targetX = Math.max(120, furn.px - 40); targetY = furn.py;
       bro.currentRoom = roomId;
-      bro.currentActivity = isFinal ? (actName || furn.act) : 'street';
+      bro.currentActivity = isFinal ? (actName || furn.act) : (MALL_AREA_SET.has(roomId) ? 'mall' : 'street');
       bro.px = Math.max(60, Math.min(540, dEdge.ix + (dEdge.ix > 300 ? -75 : 75))); bro.py = dEdge.iy;
       bro.tx = Math.min(465, furn.px + 55); bro.ty = furn.py;
       viewRoomId = roomId;
@@ -2203,20 +2204,22 @@ html, body {
             return;
           }
         }
-        // Auto-roam across Mall 1, Mall 2, Clothing Store, Toy Store, Promenade (persisted 4m intervals) + Promenade Cafe (1x/day, 15m, -30 coins)
+        // Auto-roam across Mall 1, Mall 2, Clothing Store, Toy Store, Promenade (persisted 90s intervals, no consecutive repeat) + Promenade Cafe (1x/day, 15m, -30 coins)
         if (state.outing.type === 'mall' && !duoWalk && !pet.toiletState) {
           if (state.mallCafeUntil) {
             if (Date.now() >= state.mallCafeUntil) {
               state.mallCafeUntil = null;
-              state.outing.lastRoamAt = Date.now() - 3.5 * 60 * 1000;
+              state.outing.lastRoamAt = Date.now() - 75000;
             }
           } else {
             if (!state.outing.lastRoamAt) state.outing.lastRoamAt = state.outing.startedAt || Date.now();
-            if (Date.now() - state.outing.lastRoamAt >= 4 * 60 * 1000) {
+            if (Date.now() - state.outing.lastRoamAt >= 90000) {
               state.outing.lastRoamAt = Date.now();
               const mallSpots = ['mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade'];
-              const cand = mallSpots.filter(r => r !== pet.currentRoom);
+              let cand = mallSpots.filter(r => r !== pet.currentRoom && r !== state.outing.prevMallRoom);
+              if (!cand.length) cand = mallSpots.filter(r => r !== pet.currentRoom);
               const nextR = cand[Math.floor(Math.random() * cand.length)];
+              state.outing.prevMallRoom = pet.currentRoom;
               const tdM = getTodayStr();
               if (nextR === 'mall_promenade' && pet.mallCafeDate !== tdM) {
                 pet.mallCafeDate = tdM;
@@ -2243,12 +2246,13 @@ html, body {
               }
             } else if (MALL_AREA_SET.has(pet.currentRoom)) {
               if (!window.__lastMallSpotAt) window.__lastMallSpotAt = Date.now();
-              if (Date.now() - window.__lastMallSpotAt >= 16000) {
+              if (Date.now() - window.__lastMallSpotAt >= 14000) {
                 window.__lastMallSpotAt = Date.now();
                 const curList = (ROOM_FURNITURE[pet.currentRoom] || []).filter(f => f.id !== 'mp_cafe');
                 if (curList.length > 1) {
-                  const altList = curList.filter(f => Math.abs(f.px - targetX) > 35);
+                  const altList = curList.filter(f => f.id !== window.__lastMallSpotId);
                   const pf = (altList.length ? altList : curList)[Math.floor(Math.random() * (altList.length ? altList.length : curList.length))];
+                  window.__lastMallSpotId = pf.id;
                   pet.currentActivity = pf.act;
                   targetX = Math.max(95, pf.px - 38); targetY = pf.py;
                   bro.currentRoom = pet.currentRoom; bro.currentActivity = pf.act;
@@ -3252,7 +3256,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v80.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v80.2'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3945,7 +3949,7 @@ html, body {
           petY = (petWalk.startY ?? petY) + (targetY - (petWalk.startY ?? petY)) * pt;
         } else if (!rally.active && !(pet.currentRoom === 'bath' && pet.currentActivity === 'bath') && pet.currentActivity !== 'sleep' && pet.currentActivity !== 'waking') {
           const dx = targetX - petX, dy = targetY - petY;
-          const _spd = (state.outing && state.outing.type === 'mall' && !state.mallCafeUntil) ? 0.022 : 0.045;
+          const _spd = (state.outing && state.outing.type === 'mall' && !state.mallCafeUntil) ? 0.015 : 0.045;
           if (Math.hypot(dx, dy) > 3) { petX += dx * _spd; petY += dy * _spd; }
         }
         if (state.brother) {
@@ -7214,7 +7218,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v80.1';
+          if (el) el.textContent = '☁️ 雲端已同步 · v80.2';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7253,7 +7257,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v80.1';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v80.2';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
