@@ -229,7 +229,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v79.2</span>
+      <span id="save-status">💾 已自動儲存 · v79.4</span>
       
     </div>
 
@@ -1163,18 +1163,41 @@ html, body {
       recordStatLog(pet, 'bladder', isDrink ? '🥤 飲飲品' : '🍙 食食物／小食', oldBl, pet.bladder);
     }
 
-    function applyTimeStatsDelta(pet, elapsedMs) {
+    function applyTimeStatsDelta(pet, elapsedMs, simAtMs = null) {
+      if (!simAtMs && elapsedMs > 60000 && !pet.fainted && !pet.recoverStage) {
+        const cappedMs = Math.min(elapsedMs, 480 * 60000);
+        const nowEnd = Date.now();
+        let curT = nowEnd - cappedMs;
+        while (curT < nowEnd) {
+          const stepMs = Math.min(60000, nowEnd - curT);
+          curT += stepMs;
+          applyTimeStatsDelta(pet, stepMs, curT);
+        }
+        return;
+      }
+      const nowEval = simAtMs || Date.now();
       const mins = Math.max(0, Math.min(480, elapsedMs / 60000));
       if (mins > 0.001 && !pet.fainted && !pet.recoverStage) {
         const bal = state.balance || { normal: { hunger: -10, energy: -10, mood: -10 }, practice: { hunger: -15, energy: -15, mood: 0 }, rest: { hunger: -4, energy: 25, mood: 0 }, meal: { hunger: 70, energy: 70, mood: 0 } };
         const hrs = mins / 60;
-        const isVolleyPractice = (pet.currentActivity === 'backyard' || pet.currentActivity === 'school_court' || pet.currentRoom === 'school_court');
-        const isSupperEatAct = (pet.currentActivity === 'supper_eat');
-        const isSleepAct = (pet.currentActivity === 'sleep');
-        const isRestAct = (!isSleepAct && (pet.recoverStage === 'rest30' || pet.currentActivity === 'bath' || pet.currentActivity === 'tea' || pet.currentActivity === 'tv' || pet.currentActivity === 'park_breeze' || pet.currentActivity === 'water_break' || pet.homeSeqStage === 'living15m'));
-        const schedMealChk = (typeof getScheduledState === 'function' && typeof getCurrentHourInfo === 'function') ? getScheduledState(getCurrentHourInfo()) : null;
-        const isRestMealAts = (pet.currentRoom === 'restaurant' || (state.outing && state.outing.type === 'restaurant'));
-        const effectiveMealAct = isRestMealAts ? 'restaurant' : (['breakfast', 'lunch', 'dinner'].includes(pet.currentActivity) ? pet.currentActivity : ((pet.currentRoom === 'kitchen' && schedMealChk && ['breakfast', 'lunch', 'dinner'].includes(schedMealChk.act)) ? schedMealChk.act : null));
+        const evalInfo = (typeof getCurrentHourInfo === 'function') ? getCurrentHourInfo(nowEval) : null;
+        const evalToday = (evalInfo && evalInfo.todayStr) || getTodayStr();
+        if (simAtMs && state.outing && state.outing.type && state.outing.returnAt && nowEval >= state.outing.returnAt) {
+          state.outing = { type: null, returnAt: null, fromMall: false };
+        }
+        if (simAtMs && state.gamingReturnAt && nowEval >= state.gamingReturnAt) {
+          state.gamingReturnAt = null;
+        }
+        const schedMealChk = (typeof getScheduledState === 'function' && evalInfo) ? getScheduledState(evalInfo) : null;
+        const effAct = (simAtMs && schedMealChk && !(state.outing && state.outing.type)) ? schedMealChk.act : pet.currentActivity;
+        const isVolleyPractice = (effAct === 'backyard' || effAct === 'school_court' || (!simAtMs && pet.currentRoom === 'school_court'));
+        const isSupperEatAct = (!simAtMs && pet.currentActivity === 'supper_eat');
+        const isSleepAct = (effAct === 'sleep');
+        const isRestAct = (!isSleepAct && (pet.recoverStage === 'rest30' || effAct === 'bath' || effAct === 'tea' || effAct === 'tv' || effAct === 'park_breeze' || effAct === 'water_break' || (!simAtMs && pet.homeSeqStage === 'living15m')));
+        const dateRestSlot = simAtMs && evalInfo && state.dates && state.dates[evalToday] && state.dates[evalToday].slots && state.dates[evalToday].slots['18:35-19:35'] === 'restaurant' && evalInfo.totalMin >= 1115 && evalInfo.totalMin < 1175;
+        if (dateRestSlot) state.skipDinnerDate = evalToday;
+        const isRestMealAts = (!simAtMs && (pet.currentRoom === 'restaurant' || (state.outing && state.outing.type === 'restaurant'))) || (simAtMs && ((state.outing && state.outing.type === 'restaurant' && (!state.outing.returnAt || nowEval <= state.outing.returnAt)) || dateRestSlot));
+        const effectiveMealAct = isRestMealAts ? 'restaurant' : (['breakfast', 'lunch', 'dinner'].includes(effAct) ? effAct : ((!simAtMs && pet.currentRoom === 'kitchen' && schedMealChk && ['breakfast', 'lunch', 'dinner'].includes(schedMealChk.act)) ? schedMealChk.act : null));
         if (isSupperEatAct) {
           const srSup = getActiveSupperRates();
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + (mins / 15) * srSup.hunger));
@@ -1186,7 +1209,7 @@ html, body {
           pet.energy = Math.max(0, Math.min(100, pet.energy + hrs * (sl.energy ?? 25)));
           pet.mood   = Math.max(0, Math.min(100, pet.mood   + hrs * (sl.mood ?? 0)));
         } else if (effectiveMealAct) {
-          const isWknd = (typeof getCurrentHourInfo === 'function') ? getCurrentHourInfo().isWeekend : false;
+          const isWknd = evalInfo ? evalInfo.isWeekend : false;
           const mealDur = (effectiveMealAct === 'restaurant') ? 60 : ((effectiveMealAct === 'breakfast') ? (isWknd ? 30 : 20) : (effectiveMealAct === 'lunch' ? (isWknd ? 35 : 60) : (isWknd ? 40 : 30)));
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + (mins / mealDur) * (bal.meal.hunger || 0)));
           pet.energy = Math.max(0, Math.min(100, pet.energy + (mins / mealDur) * (bal.meal.energy || 0)));
@@ -1213,13 +1236,60 @@ html, body {
           const srSupB = getActiveSupperRates();
           pet.bladder = Math.max(0, Math.min(100, (pet.bladder || 0) + (mins / 15) * srSupB.bladder));
         } else if (effectiveMealAct) {
-          const isWkndB = (typeof getCurrentHourInfo === 'function') ? getCurrentHourInfo().isWeekend : false;
+          const isWkndB = evalInfo ? evalInfo.isWeekend : false;
           const mealDurB = (effectiveMealAct === 'restaurant') ? 60 : ((effectiveMealAct === 'breakfast') ? (isWkndB ? 30 : 20) : (effectiveMealAct === 'lunch' ? (isWkndB ? 35 : 60) : (isWkndB ? 40 : 30)));
           const bMeal = (bal.bladderMeal ?? 25);
           pet.bladder = Math.max(0, Math.min(100, (pet.bladder || 0) + (mins / mealDurB) * bMeal));
         } else if (!['toilet_use', 'toilet_wash'].includes(pet.currentActivity)) {
           const bRate = (bal.bladderPerHour ?? 10);
           pet.bladder = Math.max(0, Math.min(100, (pet.bladder || 0) + hrs * bRate));
+        }
+        // Offline auto-toilet + TP deduction, bath supply deduction, and 23:00 supper
+        if (simAtMs) {
+          const tpThres = (bal && bal.bladderAutoThreshold) ?? 70;
+          if ((pet.bladder || 0) > tpThres && ((state.supplies && state.supplies.tpSheets) ?? 180) > 0) {
+            const useSh = (state.supplyCfg && state.supplyCfg.tpUseSheets) || 3;
+            state.supplies.tpSheets = Math.max(0, (state.supplies.tpSheets ?? 180) - useSh);
+            recordStatLog(pet, 'bladder', '🚽 離線自動去廁所', pet.bladder || 0, 0);
+            pet.bladder = 0; pet.lastToiletAt = nowEval;
+          }
+          if (schedMealChk && schedMealChk.act === 'bath' && pet.lastBathDeductKey !== (evalToday + '_' + schedMealChk.key)) {
+            const supB = state.supplies || {};
+            const scfgB = state.supplyCfg || { bathUsePerPerson: 3 };
+            if ((supB.shampooUses ?? 90) > 0 && (supB.bodywashUses ?? 90) > 0) {
+              pet.lastBathDeductKey = evalToday + '_' + schedMealChk.key;
+              const bUse = (scfgB.bathUsePerPerson || 3) * 2;
+              supB.shampooUses = Math.max(0, (supB.shampooUses ?? 90) - bUse);
+              supB.bodywashUses = Math.max(0, (supB.bodywashUses ?? 90) - bUse);
+            }
+          }
+          if (evalInfo && evalInfo.totalMin >= 1380 && evalInfo.totalMin < 1410 && pet.supperDate !== evalToday && !(state.outing && state.outing.type)) {
+            pet.supperDate = evalToday;
+            const trigProb = ((evalInfo.isWeekend ? state.weSupperProb : state.supperProb) ?? 50) / 100;
+            if (Math.random() < trigProb && state.fridge) {
+              const sProb = ((evalInfo.isWeekend ? state.weSupperSiumaiProb : state.supperSiumaiProb) ?? 50) / 100;
+              let pickId = Math.random() < sProb ? 'sm_siumai' : 'sm_fishball';
+              if ((state.fridge[pickId] || 0) <= 0) {
+                const altId = pickId === 'sm_siumai' ? 'sm_fishball' : 'sm_siumai';
+                pickId = (state.fridge[altId] || 0) > 0 ? altId : null;
+              }
+              if (pickId) {
+                state.fridge[pickId] -= 1;
+                const icS = typeof getSmItemCfg === 'function' ? getSmItemCfg(pickId) : { hunger: 20, energy: 15 };
+                const sbS = (bal && bal.supper) || { mood: 10, bladder: 10 };
+                const h0 = pet.hunger, e0 = pet.energy, m0 = pet.mood, b0 = pet.bladder || 0;
+                pet.hunger = Math.min(100, pet.hunger + (icS.hunger ?? 20));
+                pet.energy = Math.min(100, pet.energy + (icS.energy ?? 15));
+                pet.mood = Math.min(100, pet.mood + (sbS.mood ?? 10));
+                pet.bladder = Math.min(100, (pet.bladder || 0) + (sbS.bladder ?? 10));
+                const sNm = pickId === 'sm_siumai' ? '🥟 雪藏燒賣' : '🍢 雪藏魚蛋';
+                recordStatLog(pet, 'hunger', `🌙 離線宵夜 (${sNm})`, h0, pet.hunger);
+                recordStatLog(pet, 'energy', `🌙 離線宵夜 (${sNm})`, e0, pet.energy);
+                recordStatLog(pet, 'mood',   `🌙 離線宵夜 (${sNm})`, m0, pet.mood);
+                recordStatLog(pet, 'bladder',`🌙 離線宵夜 (${sNm})`, b0, pet.bladder);
+              }
+            }
+          }
         }
         // Offline living-room autonomous cleaning roll (only after school >= 17:30 or weekend free time)
         const curInfo = getCurrentHourInfo();
@@ -1233,7 +1303,7 @@ html, body {
         }
       }
       if (mins > 0.001 && !pet.fainted && !pet.recoverStage) {
-        const infoG = (typeof getCurrentHourInfo === 'function') ? getCurrentHourInfo() : { totalMin: 0, isWeekend: false };
+        const infoG = (typeof getCurrentHourInfo === 'function') ? getCurrentHourInfo(nowEval) : { totalMin: 0, isWeekend: false };
         const schedG = (typeof getScheduledState === 'function') ? getScheduledState(infoG) : { key: 'idle', label: '一般活動' };
         const outT = state.outing && state.outing.type;
         const isSupNow = (pet.currentActivity === 'supper_eat' && state.supperState && state.supperState.stage === 'eating');
@@ -1243,25 +1313,25 @@ html, body {
         if (!pet.gradualAcc || !pet.gradualAcc.startedAt || pet.gradualAcc.slotKey !== slotKey) {
           if (pet.gradualAcc && (pet.gradualAcc.startedAt || (pet.gradualAcc.accMs && pet.gradualAcc.accMs >= 60000))) {
             const g = pet.gradualAcc;
-            const mDone = Math.max(1, Math.round((g.startedAt ? (Date.now() - g.startedAt) : g.accMs) / 60000));
+            const mDone = Math.max(1, Math.round((g.startedAt ? (nowEval - g.startedAt) : g.accMs) / 60000));
             if (mDone >= 1) {
               ['hunger','mood','energy','bladder'].forEach(st => recordStatLog(pet, st, `${g.label}（${mDone}分）`, g.start[st], pet[st], true));
             }
           }
-          pet.gradualAcc = { slotKey, label: slotLabel, startedAt: Date.now() - Math.min(elapsedMs, 60000), start: { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 } };
-        } else if (!(slotKey === 'wd_sleep' || slotKey === 'we_sleep' || pet.currentActivity === 'sleep') && Date.now() - pet.gradualAcc.startedAt >= 60 * 60 * 1000) {
+          pet.gradualAcc = { slotKey, label: slotLabel, startedAt: nowEval - Math.min(elapsedMs, 60000), start: { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 } };
+        } else if (!(slotKey === 'wd_sleep' || slotKey === 'we_sleep' || pet.currentActivity === 'sleep') && nowEval - pet.gradualAcc.startedAt >= 60 * 60 * 1000) {
           const g = pet.gradualAcc;
           ['hunger','mood','energy','bladder'].forEach(st => recordStatLog(pet, st, `${g.label}（滿1小時）`, g.start[st], pet[st], true));
-          pet.gradualAcc = { slotKey, label: slotLabel, startedAt: Date.now(), start: { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 } };
+          pet.gradualAcc = { slotKey, label: slotLabel, startedAt: nowEval, start: { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 } };
         }
       }
-      pet.lastUpdated = Date.now();
+      pet.lastUpdated = nowEval;
     }
 
-    function getCurrentHourInfo() {
-      const now = new Date();
+    function getCurrentHourInfo(atMs = Date.now()) {
+      const now = new Date(atMs);
       const day = now.getDay();
-      const today = getTodayStr();
+      const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
       const isHolidayOverride = (state.holidayDate === today);
       const isWeekend = (day === 0 || day === 6) || isHolidayOverride;
       const hour = now.getHours();
@@ -1276,7 +1346,7 @@ html, body {
       else if (hour >= 16 && hour < 19) period = 'dusk';
       else if (hour >= 19 || hour < 6) period = 'evening';
 
-      return { isWeekend, isHolidayOverride, hour, min, totalMin, period, label: `${dayLabel} ${hh}:${mm}`, isLateNight: period === 'night' };
+      return { isWeekend, isHolidayOverride, hour, min, totalMin, period, todayStr: today, label: `${dayLabel} ${hh}:${mm}`, isLateNight: period === 'night' };
     }
 
     function getScheduledState(info) {
@@ -3168,7 +3238,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v79.2'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v79.4'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -7132,7 +7202,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v79.2';
+          if (el) el.textContent = '☁️ 雲端已同步 · v79.4';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7171,7 +7241,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v79.2';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v79.4';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
