@@ -242,7 +242,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v81.2</span>
+      <span id="save-status">💾 已自動儲存 · v81.3</span>
       
     </div>
 
@@ -1255,7 +1255,7 @@ html, body {
         const isSupperEatAct = (!simAtMs && pet.currentActivity === 'supper_eat');
         const isSleepAct = (effAct === 'sleep');
         const isRestAct = (!isSleepAct && (pet.recoverStage === 'rest30' || effAct === 'bath' || effAct === 'tea' || effAct === 'tv' || effAct === 'park_breeze' || effAct === 'water_break' || (!simAtMs && pet.homeSeqStage === 'living15m')));
-        const dateRestSlot = simAtMs && evalInfo && state.dates && state.dates[evalToday] && state.dates[evalToday].slots && state.dates[evalToday].slots['18:35-19:35'] === 'restaurant' && evalInfo.totalMin >= 1115 && evalInfo.totalMin < 1175;
+        const dateRestSlot = simAtMs && evalInfo && state.dates && state.dates[evalToday] && state.dates[evalToday].confirmed && state.dates[evalToday].slots && state.dates[evalToday].slots['18:35-19:35'] === 'restaurant' && evalInfo.totalMin >= 1115 && evalInfo.totalMin < 1175 && !(state.outing && state.outing.type && state.outing.type !== 'restaurant');
         if (dateRestSlot) state.skipDinnerDate = evalToday;
         const isRestMealAts = (!simAtMs && (pet.currentRoom === 'restaurant' || (state.outing && state.outing.type === 'restaurant'))) || (simAtMs && ((state.outing && state.outing.type === 'restaurant' && (!state.outing.returnAt || nowEval <= state.outing.returnAt)) || dateRestSlot));
         const effectiveMealAct = isRestMealAts ? 'restaurant' : (['breakfast', 'lunch', 'dinner'].includes(effAct) ? effAct : ((!simAtMs && pet.currentRoom === 'kitchen' && schedMealChk && ['breakfast', 'lunch', 'dinner'].includes(schedMealChk.act)) ? schedMealChk.act : null));
@@ -1766,14 +1766,15 @@ html, body {
         pushSmsMessage({ sender: 'hinata', type: 'letter', read: false, timeStr: info.label, text: pickHinataLetter() });
         }
       // Execute confirmed date slot if today is a scheduled date (13:35-21:35)
-      if (state.dates && state.dates[today] && state.dates[today].confirmed && !state.outing.type && !duoWalk) {
+      if (state.dates && state.dates[today] && state.dates[today].confirmed) {
         const slots = state.dates[today].slots || {};
         for (let i = 0; i < DATE_SLOTS.length; i++) {
           const sStart = 13 * 60 + 35 + i * 60;
           const sEnd = sStart + 60;
           if (info.totalMin >= sStart && info.totalMin < sEnd) {
             const loc = slots[DATE_SLOTS[i]];
-            if (loc && loc !== 'home_eat' && pet.lastDateSlotRun !== today + '_' + i) {
+            if (loc && loc !== 'home_eat' && pet.lastDateSlotRun !== today + '_' + i && (!state.outing.type || state.outing.type !== loc)) {
+              duoWalk = null; state.mallCafeUntil = null;
               pet.lastDateSlotRun = today + '_' + i;
               const remMin = Math.max(10, sEnd - info.totalMin);
               const dtSlotStart = new Date(); dtSlotStart.setHours(Math.floor(sStart / 60), sStart % 60, 0, 0);
@@ -3420,7 +3421,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81.2'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81.3'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -7409,7 +7410,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v81.2';
+          if (el) el.textContent = '☁️ 雲端已同步 · v81.3';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7448,7 +7449,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v81.2';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v81.3';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
