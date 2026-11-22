@@ -242,7 +242,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v81.3</span>
+      <span id="save-status">💾 已自動儲存 · v81.5</span>
       
     </div>
 
@@ -787,14 +787,7 @@ html, body {
       hospital: [
         { id: 'hosp_bed', label: '醫院病床', hx: 260, hy: 400, hr: 120, px: 255, py: 420, act: 'faint', line: '「喺醫院吊鹽水休息緊…好快回復到 10% 就可以返屋企！🏥」' }
       ],
-      street3: [
-        '「翔陽：喺街道3街邊吹住風食雪糕好爽呀！｜哥哥：小心唔好滴到件衫呀～🍦🛣️」',
-        '「哥哥：呢條街好靜好舒服呢｜翔陽：同哥哥並肩行住食甜品最幸福！💛」'
-      ],
-      ice_cream: [
-        '「翔陽：哥哥！雪糕櫃入面四隻口味都好吸引呀！！｜哥哥：慢慢睇，今日哥哥請你食！🍦✨」',
-        '「哥哥：原味、咖啡、朱古力、抹茶，你最想試邊隻？｜翔陽：好難揀呀，全部都想試！😋」'
-      ],
+
       restaurant: [
         { id: 'rest_booth', label: '餐廳卡位', hx: 300, hy: 390, hr: 110, px: 290, py: 440, act: 'restaurant', line: '「同哥哥坐卡位食大餐！漢堡扒加蛋包飯！🍽️✨」' },
         { id: 'rest_menu',  label: '睇餐牌揀嘢食', hx: 170, hy: 390, hr: 90, px: 185, py: 440, act: 'rest_menu', line: '「餐牌每樣都好想食！哥哥你幫我揀吖～📖😋」' },
@@ -1876,13 +1869,32 @@ html, body {
         if (onArrive) onArrive();
         return;
       }
-      const steps = findRoomPath(curRoom, destRoom);
-      if (steps.length <= 1) {
-        const dEdge = getDirEdgeCoords(getRoomMoveDir(curRoom, destRoom));
-        if (who === 'bro') { bro.currentRoom = destRoom; bro.currentActivity = finalAct; bro.px = dEdge.ix; bro.py = dEdge.iy; const f0 = (ROOM_FURNITURE[destRoom] && ROOM_FURNITURE[destRoom][0]) || { px: 320, py: 440 }; bro.tx = f0.px; bro.ty = f0.py; }
-        else { pet.currentRoom = destRoom; pet.currentActivity = finalAct; petX = dEdge.ix; petY = dEdge.iy; const f0 = (ROOM_FURNITURE[destRoom] && ROOM_FURNITURE[destRoom][0]) || { px: 280, py: 440 }; targetX = f0.px; targetY = f0.py; }
+      const steps = findRoomPath(curRoom, destRoom) || [destRoom];
+      if (steps.length === 0) {
+        if (who === 'bro') bro.currentActivity = finalAct;
+        else pet.currentActivity = finalAct;
         if (finalSpeech) speakAndShow(finalSpeech);
         if (onArrive) onArrive();
+        updateHUD();
+        return;
+      }
+      if (steps.length === 1) {
+        const nextR = steps[0];
+        const dEdgeIn = getDirEdgeCoords(getRoomMoveDir(curRoom, nextR));
+        const f0 = (ROOM_FURNITURE[nextR] && ROOM_FURNITURE[nextR][0]) || { px: (who === 'bro' ? 320 : 280), py: 440 };
+        const wObj = { steps: [nextR], idx: 0, stepEnteredAt: Date.now(), startX: dEdgeIn.ix, startY: dEdgeIn.iy, destRoom: nextR, finalAct, finalSpeech, onArrive, followView };
+        if (who === 'bro') {
+          broWalk = wObj;
+          bro.currentRoom = nextR; bro.currentActivity = getWalkActForRoom(nextR);
+          bro.px = dEdgeIn.ix; bro.py = dEdgeIn.iy;
+          bro.tx = f0.px; bro.ty = f0.py;
+        } else {
+          petWalk = wObj;
+          pet.currentRoom = nextR; pet.currentActivity = getWalkActForRoom(nextR);
+          petX = dEdgeIn.ix; petY = dEdgeIn.iy;
+          targetX = f0.px; targetY = f0.py;
+        }
+        if (followView) viewRoomId = nextR;
         updateHUD();
         return;
       }
@@ -2617,6 +2629,29 @@ html, body {
         if (charObj.toiletState) {
           const ts = charObj.toiletState;
           const otherBusy = (otherObj.currentRoom === 'toilet' || (otherObj.toiletState && (otherObj.toiletState.stage === 'use' || otherObj.toiletState.stage === 'wash')));
+          if (ts.stage === 'walking_to') {
+            if (isHinata ? transitionState : broWalk) return true;
+            if (otherBusy) {
+              ts.stage = 'wait';
+              if (isHinata) {
+                if (charObj.currentRoom !== 'hallway') startCharacterWalkTransition(charObj, 'hallway', 'toilet_wait', 215, 440, followTarget === 'hinata');
+                else { charObj.currentActivity = 'toilet_wait'; targetX = 215; targetY = 440; }
+                if (viewRoomId === 'hallway' || viewRoomId === 'toilet') speakAndShow('「哥哥用緊廁所，喺走廊等一下先～⏳」');
+              } else {
+                charObj.currentRoom = 'wash_hall'; charObj.currentActivity = 'toilet_wait';
+                charObj.px = 260; charObj.py = 440; charObj.tx = 260; charObj.ty = 440;
+                if (viewRoomId === 'wash_hall') speakAndShow('「（哥哥喺洗漱走廊等緊翔陽用完廁所…⏳）」');
+              }
+            } else {
+              ts.stage = 'use'; ts.stageUntil = nowT + 30000;
+              charObj.lastToiletAt = nowT;
+              charObj.currentRoom = 'toilet'; charObj.currentActivity = 'toilet_use';
+              if (isHinata) { targetX = 380; targetY = 445; if (viewRoomId === 'toilet') speakAndShow(ts.fromSleep ? '「（迷迷糊糊起身去個廁所先…🚽）」' : '「去個廁所先…🚽」'); }
+              else { charObj.tx = 380; charObj.ty = 445; }
+            }
+            updateHUD();
+            return true;
+          }
           if (ts.stage === 'wait') {
             if (!otherBusy) {
               ts.stage = 'use'; ts.stageUntil = nowT + 30000;
@@ -2652,10 +2687,18 @@ html, body {
               const TOILET_ROOM_SET = new Set(['toilet', 'park_toilet', 'mall_toilet', 'school_toilet']);
               const retR = (ts.prevRoom && !TOILET_ROOM_SET.has(ts.prevRoom)) ? ts.prevRoom : 'living', retA = (ts.prevRoom && !TOILET_ROOM_SET.has(ts.prevRoom)) ? (ts.prevAct || 'idle') : 'tv';
               const retX = ts.prevX || (isHinata ? 260 : 330), retY = ts.prevY || 435;
-              if (isHinata) { startCharacterWalkTransition(charObj, retR, retA, retX, retY, true); }
-              else { startSoloWalk('bro', retR, retA, null, null); }
-              charObj.toiletState = null;
-              charObj.scheduleSlotKey = null;
+              charObj.lastToiletAt = nowT;
+              if (isHinata) {
+                charObj.toiletState = null;
+                charObj.scheduleSlotKey = null;
+                startCharacterWalkTransition(charObj, retR, retA, retX, retY, followTarget === 'hinata');
+              } else {
+                charObj.toiletState = null;
+                const safeRetR = (retR === 'toilet' || (bSched.followHinata && pet.currentRoom === 'toilet')) ? 'living' : retR;
+                const safeRetA = (safeRetR === 'living' && retA && retA.startsWith('toilet')) ? 'tv' : retA;
+                charObj.scheduleSlotKey = bSched.key;
+                startSoloWalk('bro', safeRetR, safeRetA, null, () => { charObj.tx = retX; charObj.ty = retY; }, false);
+              }
               updateHUD();
             }
             return true;
@@ -2686,17 +2729,15 @@ html, body {
         const occupied = (bro.currentRoom === 'toilet' || (bro.toiletState && (bro.toiletState.stage === 'use' || bro.toiletState.stage === 'wash')));
         const wasSleep = (pet.currentActivity === 'sleep');
         const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: wasSleep };
+        pet.lastToiletAt = nowT;
         if (occupied) {
-          pet.toiletState = { stage: 'wait', ...prev };
-          pet.currentRoom = 'hallway'; pet.currentActivity = 'toilet_wait';
-          petX = 215; petY = 440; targetX = 215; targetY = 440;
-          if (viewRoomId === 'hallway' || viewRoomId === 'toilet') speakAndShow('「好急呀…等哥哥用完廁所先！⏳」');
+          pet.toiletState = { stage: 'walking_to', ...prev };
+          startCharacterWalkTransition(pet, 'hallway', 'toilet_wait', 215, 440, followTarget === 'hinata');
+          if (viewRoomId === pet.currentRoom) speakAndShow('「好急呀…行去走廊等哥哥用完廁所先！⏳」');
         } else {
-          pet.toiletState = { stage: 'use', stageUntil: nowT + 30000, ...prev };
-          pet.currentRoom = 'toilet'; pet.currentActivity = 'toilet_use';
-          petX = 380; petY = 445; targetX = 380; targetY = 445;
-          if (wasSleep && viewRoomId === 'room_hinata') viewRoomId = 'toilet';
-          if (viewRoomId === 'toilet') speakAndShow(wasSleep ? '「（迷迷糊糊起身去個廁所先…🚽）」' : '「忍唔住啦，去個廁所先！🚽」');
+          pet.toiletState = { stage: 'walking_to', ...prev };
+          startCharacterWalkTransition(pet, 'toilet', 'toilet_use', 380, 445, followTarget === 'hinata');
+          if (viewRoomId === pet.currentRoom) speakAndShow(wasSleep ? '「（迷迷糊糊起身行去廁所先…🚽）」' : '「忍唔住啦，行去廁所先！🚽」');
         }
         updateHUD();
         }
@@ -2704,7 +2745,7 @@ html, body {
       if (!window.__lastToiletRollAt) window.__lastToiletRollAt = nowT;
       if (nowT - window.__lastToiletRollAt > 45000) {
         window.__lastToiletRollAt = nowT;
-        const fixedToiletSkip = ['sleep', 'waking', 'bath', 'brush', 'cook', 'cook_bfast', 'prep_bfast', 'cook_lunch', 'cook_dinner', 'breakfast', 'lunch', 'dinner'];
+        const fixedToiletSkip = ['sleep', 'waking', 'bath', 'brush', 'cook', 'cook_bfast', 'prep_bfast', 'cook_lunch', 'cook_dinner', 'breakfast', 'lunch', 'dinner', 'toilet_use', 'toilet_wash', 'toilet_wait', 'toilet_urinal'];
         const aeT = (state.autoEvents && state.autoEvents.toilet) || { prob: 10, maxPerDay: 0 };
         const cntT = pet.dailyAutoCounts || { toilet: 0 };
         const toiletAllowed = (aeT.prob > 0) && (aeT.maxPerDay === 0 || cntT.toilet < aeT.maxPerDay) && ((state.supplies?.tpSheets ?? 180) > 0);
@@ -2713,16 +2754,15 @@ html, body {
             cntT.toilet = (cntT.toilet || 0) + 1;
             const occupied = (bro.currentRoom === 'toilet' || (bro.toiletState && (bro.toiletState.stage === 'use' || bro.toiletState.stage === 'wash')));
             const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY };
+            pet.lastToiletAt = nowT;
             if (occupied) {
-              pet.toiletState = { stage: 'wait', ...prev };
-              pet.currentRoom = 'hallway'; pet.currentActivity = 'toilet_wait';
-              petX = 215; petY = 440; targetX = 215; targetY = 440;
-              if (viewRoomId === 'hallway' || viewRoomId === 'toilet') speakAndShow('「哥哥用緊廁所，喺走廊等一下先～⏳」');
+              pet.toiletState = { stage: 'walking_to', ...prev };
+              startCharacterWalkTransition(pet, 'hallway', 'toilet_wait', 215, 440, followTarget === 'hinata');
+              if (viewRoomId === pet.currentRoom) speakAndShow('「哥哥用緊廁所，行去走廊等一下先～⏳」');
             } else {
-              pet.toiletState = { stage: 'use', stageUntil: nowT + 30000, ...prev };
-              pet.currentRoom = 'toilet'; pet.currentActivity = 'toilet_use';
-              petX = 380; petY = 445; targetX = 380; targetY = 445;
-              if (viewRoomId === 'toilet') speakAndShow('「去個廁所先…🚽」');
+              pet.toiletState = { stage: 'walking_to', ...prev };
+              startCharacterWalkTransition(pet, 'toilet', 'toilet_use', 380, 445, followTarget === 'hinata');
+              if (viewRoomId === pet.currentRoom) speakAndShow('「行去廁所先…🚽」');
             }
             updateHUD();
           }
@@ -2730,20 +2770,9 @@ html, body {
         if ((state.supplies?.tpSheets ?? 180) > 0 && aeT.prob > 0 && !bInToilet && !broWalk && HOME_TOILET_ROOMS.has(bro.currentRoom) && bro.currentRoom !== 'toilet' && !fixedToiletSkip.includes(bro.currentActivity) && nowT - (bro.lastToiletAt || 0) >= 30 * 60 * 1000) {
           if (Math.random() < (aeT.prob / 100)) {
             const prev = { prevRoom: bro.currentRoom, prevAct: bro.currentActivity, prevX: bro.tx, prevY: bro.ty };
-            startSoloWalk('bro', 'toilet', 'toilet_use', null, () => {
-              const occupied = (pet.currentRoom === 'toilet' || (pet.toiletState && (pet.toiletState.stage === 'use' || pet.toiletState.stage === 'wash')));
-              if (occupied) {
-                bro.toiletState = { stage: 'wait', ...prev };
-                bro.currentRoom = 'wash_hall'; bro.currentActivity = 'toilet_wait';
-                bro.px = 260; bro.py = 440; bro.tx = 260; bro.ty = 440;
-                if (viewRoomId === 'wash_hall') speakAndShow('「（哥哥喺洗漱走廊等緊翔陽用完廁所…⏳）」');
-              } else {
-                bro.toiletState = { stage: 'use', stageUntil: Date.now() + 30000, ...prev };
-                bro.currentRoom = 'toilet'; bro.currentActivity = 'toilet_use';
-                bro.px = 380; bro.py = 445; bro.tx = 380; bro.ty = 445;
-              }
-              updateHUD();
-            }, false);
+            bro.lastToiletAt = nowT;
+            bro.toiletState = { stage: 'walking_to', ...prev };
+            startSoloWalk('bro', 'toilet', 'toilet_use', null, () => { updateHUD(); }, false);
             updateHUD();
           }
         }
@@ -2872,10 +2901,14 @@ html, body {
             pet.currentRoom = nextRoom; pet.currentActivity = nextAct;
             petX = pick.px - 35; petY = pick.py; targetX = petX; targetY = petY;
           }
-          if (bSched.followHinata && !state.broSoloMode) {
-            bro.currentRoom = nextRoom; bro.currentActivity = nextAct;
-            bro.tx = Math.min(500, pick.px + 55); bro.ty = pick.py;
-            if (!animateTransition) { bro.px = bro.tx; bro.py = bro.ty; }
+          if (bSched.followHinata && !state.broSoloMode && !bro.toiletState && nextRoom !== 'toilet') {
+            if (animateTransition && bro.currentRoom !== nextRoom) {
+              startSoloWalk('bro', nextRoom, nextAct, null, () => { bro.tx = Math.min(500, pick.px + 55); bro.ty = pick.py; }, false);
+            } else {
+              bro.currentRoom = nextRoom; bro.currentActivity = nextAct;
+              bro.tx = Math.min(500, pick.px + 55); bro.ty = pick.py;
+              if (!animateTransition) { bro.px = bro.tx; bro.py = bro.ty; }
+            }
           }
           updateHUD(); saveState();
         }
@@ -2942,7 +2975,7 @@ html, body {
             if (!animateTransition) { bro.px = bSched.px; bro.py = bSched.py; }
           }
         }
-      } else if (bSched.followHinata && !state.gamingReturnAt && !transitionState) {
+      } else if (bSched.followHinata && !state.gamingReturnAt && !transitionState && pet.currentRoom !== 'toilet' && !pet.toiletState) {
         if (bro.currentRoom !== pet.currentRoom) {
           const fAct = (pet.currentActivity === 'street' && !OUTDOOR_STREET_ROOMS.has(pet.currentRoom)) ? 'idle' : pet.currentActivity;
           startSoloWalk('bro', pet.currentRoom, fAct, null, () => { bro.tx = Math.min(500, targetX + 75); bro.ty = targetY; }, false);
@@ -3421,7 +3454,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81.3'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81.5'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3634,9 +3667,10 @@ html, body {
       if (!img) return;
       const drawW = 205, drawH = 205;
       ctx.save();
-      ctx.translate(cx, cy);
+      ctx.translate(cx, cy + (isSquatRep ? 14 : 0));
       ctx.rotate(tilt);
-      ctx.scale(scale * sx, scale * sy);
+      const sqMul = isSquatRep ? 0.86 : 1;
+      ctx.scale(scale * sx * sqMul, scale * sy * sqMul);
       ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
 
       const isBlinking = (!isHoldingBladder && curPet.mood >= 40 && !isSquatRep && expr !== 'sleep' && expr !== 'waking' && expr !== 'happy' && expr !== 'faint' && expr !== 'sad_rest' && !isPetting) && ((frame % 110) > 104);
@@ -7410,7 +7444,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v81.3';
+          if (el) el.textContent = '☁️ 雲端已同步 · v81.5';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7449,7 +7483,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v81.3';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v81.5';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
