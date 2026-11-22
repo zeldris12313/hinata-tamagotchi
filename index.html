@@ -231,7 +231,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v80.2</span>
+      <span id="save-status">💾 已自動儲存 · v80.3</span>
       
     </div>
 
@@ -2204,27 +2204,28 @@ html, body {
             return;
           }
         }
-        // Auto-roam across Mall 1, Mall 2, Clothing Store, Toy Store, Promenade (persisted 90s intervals, no consecutive repeat) + Promenade Cafe (1x/day, 15m, -30 coins)
+        // Auto-roam adjacent Mall rooms only (no floor-jumping; persisted 150s intervals) + Promenade Cafe (1x/day, 15m, -30 coins)
         if (state.outing.type === 'mall' && !duoWalk && !pet.toiletState) {
           if (state.mallCafeUntil) {
             if (Date.now() >= state.mallCafeUntil) {
               state.mallCafeUntil = null;
-              state.outing.lastRoamAt = Date.now() - 75000;
+              state.outing.lastRoamAt = Date.now() - 130000;
             }
           } else {
             if (!state.outing.lastRoamAt) state.outing.lastRoamAt = state.outing.startedAt || Date.now();
-            if (Date.now() - state.outing.lastRoamAt >= 90000) {
+            if (Date.now() - state.outing.lastRoamAt >= 150000) {
               state.outing.lastRoamAt = Date.now();
-              const mallSpots = ['mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade'];
-              let cand = mallSpots.filter(r => r !== pet.currentRoom && r !== state.outing.prevMallRoom);
-              if (!cand.length) cand = mallSpots.filter(r => r !== pet.currentRoom);
+              const mr = MAP_ROOMS[pet.currentRoom];
+              const adjMall = mr ? ['up', 'down', 'left', 'right'].map(d => mr[d]).filter(r => r && MALL_AREA_SET.has(r)) : ['mall'];
+              let cand = adjMall.filter(r => r !== state.outing.prevMallRoom);
+              if (!cand.length) cand = adjMall;
+              if (!cand.length) cand = ['mall'];
               const nextR = cand[Math.floor(Math.random() * cand.length)];
               state.outing.prevMallRoom = pet.currentRoom;
               const tdM = getTodayStr();
               if (nextR === 'mall_promenade' && pet.mallCafeDate !== tdM) {
                 pet.mallCafeDate = tdM;
                 state.mallCafeUntil = Date.now() + 15 * 60 * 1000;
-                const cafeF = ROOM_FURNITURE.mall_promenade[2];
                 startDuoJourney('mall_promenade', 'promenade_cafe', '「嚟到觀光大道海邊咖啡店！哥哥飲咖啡、翔陽食布丁（-30金幣，坐15分鐘）☕🍮」', '海邊咖啡店下午茶（15分鐘・🪙-30）☕🍮', () => {
                   const payC = Math.min(pet.coins, 30);
                   pet.coins -= payC;
@@ -2241,25 +2242,8 @@ html, body {
                 });
               } else {
                 const fList = (ROOM_FURNITURE[nextR] || []).filter(f => f.id !== 'mp_cafe');
-                const pickF = fList[Math.floor(Math.random() * fList.length)] || { act: nextR, line: `「一齊行過嚟【${MAP_ROOMS[nextR]?.name}】逛下！🛍️」` };
+                const pickF = fList[Math.floor(Math.random() * fList.length)] || { act: nextR, line: `「一齊行過嚟【${MAP_ROOMS[nextR]?.name}】慢慢逛下！🛍️」` };
                 startDuoJourney(nextR, pickF.act, pickF.line, null, () => { updateHUD(); });
-              }
-            } else if (MALL_AREA_SET.has(pet.currentRoom)) {
-              if (!window.__lastMallSpotAt) window.__lastMallSpotAt = Date.now();
-              if (Date.now() - window.__lastMallSpotAt >= 14000) {
-                window.__lastMallSpotAt = Date.now();
-                const curList = (ROOM_FURNITURE[pet.currentRoom] || []).filter(f => f.id !== 'mp_cafe');
-                if (curList.length > 1) {
-                  const altList = curList.filter(f => f.id !== window.__lastMallSpotId);
-                  const pf = (altList.length ? altList : curList)[Math.floor(Math.random() * (altList.length ? altList.length : curList.length))];
-                  window.__lastMallSpotId = pf.id;
-                  pet.currentActivity = pf.act;
-                  targetX = Math.max(95, pf.px - 38); targetY = pf.py;
-                  bro.currentRoom = pet.currentRoom; bro.currentActivity = pf.act;
-                  bro.tx = Math.min(505, pf.px + 42); bro.ty = pf.py;
-                  if (viewRoomId === pet.currentRoom) speakAndShow(pf.line);
-                  updateHUD();
-                }
               }
             }
           }
@@ -3256,7 +3240,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v80.2'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v80.3'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3916,7 +3900,38 @@ html, body {
           bro.tx = mid + 50;
         }
       }
-      if (!pet.toiletState && (pet.currentRoom === 'park' || pet.currentRoom === 'park2') && (pet.currentActivity === 'park_walk' || pet.currentActivity === 'park_jog') && !transitionState && !duoWalk) {
+      const MALL_STROLL_PATHS = {
+        mall:           [{ x: 135, y: 455 }, { x: 275, y: 450 }, { x: 455, y: 480 }, { x: 445, y: 415 }, { x: 275, y: 450 }],
+        mall2:          [{ x: 330, y: 485 }, { x: 395, y: 450 }, { x: 445, y: 415 }, { x: 395, y: 450 }],
+        clothing_store: [{ x: 165, y: 455 }, { x: 300, y: 450 }, { x: 445, y: 455 }, { x: 300, y: 450 }],
+        toy_store:      [{ x: 155, y: 455 }, { x: 295, y: 450 }, { x: 435, y: 455 }, { x: 295, y: 450 }],
+        mall_promenade: [{ x: 185, y: 450 }, { x: 300, y: 450 }, { x: 425, y: 450 }, { x: 300, y: 450 }]
+      };
+      if (!pet.toiletState && MALL_AREA_SET.has(pet.currentRoom) && !state.mallCafeUntil && pet.currentActivity !== 'promenade_cafe' && !transitionState && !duoWalk) {
+        const pathPts = MALL_STROLL_PATHS[pet.currentRoom];
+        if (pathPts && pathPts.length >= 2) {
+          if (!window.__mallStroll || window.__mallStroll.room !== pet.currentRoom) {
+            window.__mallStroll = { room: pet.currentRoom, idx: 0 };
+          }
+          const wp = pathPts[window.__mallStroll.idx % pathPts.length];
+          const dx = wp.x - petX, dy = wp.y - petY;
+          const dist = Math.hypot(dx, dy);
+          if (dist < 6) {
+            window.__mallStroll.idx = (window.__mallStroll.idx + 1) % pathPts.length;
+          } else {
+            const spd = 0.38;
+            petX += (dx / dist) * spd;
+            petY += (dy / dist) * spd;
+          }
+          targetX = petX; targetY = petY;
+          if (state.brother && state.brother.currentRoom === pet.currentRoom) {
+            state.brother.tx = Math.max(85, Math.min(515, petX + 68));
+            state.brother.ty = petY;
+            const bdx = state.brother.tx - state.brother.px, bdy = state.brother.ty - state.brother.py;
+            if (Math.hypot(bdx, bdy) > 2) { state.brother.px += bdx * 0.04; state.brother.py += bdy * 0.04; }
+          }
+        }
+      } else if (!pet.toiletState && (pet.currentRoom === 'park' || pet.currentRoom === 'park2') && (pet.currentActivity === 'park_walk' || pet.currentActivity === 'park_jog') && !transitionState && !duoWalk) {
         if (!window.__parkDir) window.__parkDir = -1;
         const spd = pet.currentActivity === 'park_jog' ? 1.25 : 0.55;
         petX += window.__parkDir * spd;
@@ -7218,7 +7233,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v80.2';
+          if (el) el.textContent = '☁️ 雲端已同步 · v80.3';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7257,7 +7272,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v80.2';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v80.3';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
