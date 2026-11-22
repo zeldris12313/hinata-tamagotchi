@@ -231,7 +231,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v80.3</span>
+      <span id="save-status">💾 已自動儲存 · v80.4</span>
       
     </div>
 
@@ -3240,7 +3240,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v80.3'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v80.4'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3916,19 +3916,19 @@ html, body {
           const wp = pathPts[window.__mallStroll.idx % pathPts.length];
           const dx = wp.x - petX, dy = wp.y - petY;
           const dist = Math.hypot(dx, dy);
-          if (dist < 6) {
+          if (dist < 8) {
             window.__mallStroll.idx = (window.__mallStroll.idx + 1) % pathPts.length;
           } else {
-            const spd = 0.38;
+            const spd = 0.65;
             petX += (dx / dist) * spd;
             petY += (dy / dist) * spd;
           }
-          targetX = petX; targetY = petY;
+          targetX = wp.x; targetY = wp.y;
           if (state.brother && state.brother.currentRoom === pet.currentRoom) {
-            state.brother.tx = Math.max(85, Math.min(515, petX + 68));
+            state.brother.tx = (petX > 410) ? Math.max(80, petX - 95) : Math.min(520, petX + 95);
             state.brother.ty = petY;
             const bdx = state.brother.tx - state.brother.px, bdy = state.brother.ty - state.brother.py;
-            if (Math.hypot(bdx, bdy) > 2) { state.brother.px += bdx * 0.04; state.brother.py += bdy * 0.04; }
+            if (Math.hypot(bdx, bdy) > 2) { state.brother.px += bdx * 0.045; state.brother.py += bdy * 0.045; }
           }
         }
       } else if (!pet.toiletState && (pet.currentRoom === 'park' || pet.currentRoom === 'park2') && (pet.currentActivity === 'park_walk' || pet.currentActivity === 'park_jog') && !transitionState && !duoWalk) {
@@ -7233,7 +7233,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v80.3';
+          if (el) el.textContent = '☁️ 雲端已同步 · v80.4';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7272,7 +7272,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v80.3';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v80.4';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
