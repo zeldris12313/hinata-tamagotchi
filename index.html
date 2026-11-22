@@ -231,7 +231,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v80</span>
+      <span id="save-status">💾 已自動儲存 · v80.1</span>
       
     </div>
 
@@ -2203,17 +2203,17 @@ html, body {
             return;
           }
         }
-        // Auto-roam across Mall 1, Mall 2, Clothing Store, Toy Store, Promenade (15m intervals) + Promenade Cafe (1x/day, 15m, -30 coins)
+        // Auto-roam across Mall 1, Mall 2, Clothing Store, Toy Store, Promenade (persisted 4m intervals) + Promenade Cafe (1x/day, 15m, -30 coins)
         if (state.outing.type === 'mall' && !duoWalk && !pet.toiletState) {
           if (state.mallCafeUntil) {
             if (Date.now() >= state.mallCafeUntil) {
               state.mallCafeUntil = null;
-              window.__lastMallRoamAt = Date.now() - 14 * 60 * 1000; // ready to move on soon
+              state.outing.lastRoamAt = Date.now() - 3.5 * 60 * 1000;
             }
           } else {
-            if (!window.__lastMallRoamAt) window.__lastMallRoamAt = Date.now();
-            if (Date.now() - window.__lastMallRoamAt >= 15 * 60 * 1000) {
-              window.__lastMallRoamAt = Date.now();
+            if (!state.outing.lastRoamAt) state.outing.lastRoamAt = state.outing.startedAt || Date.now();
+            if (Date.now() - state.outing.lastRoamAt >= 4 * 60 * 1000) {
+              state.outing.lastRoamAt = Date.now();
               const mallSpots = ['mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade'];
               const cand = mallSpots.filter(r => r !== pet.currentRoom);
               const nextR = cand[Math.floor(Math.random() * cand.length)];
@@ -3252,7 +3252,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v80'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v80.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -7214,7 +7214,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v80';
+          if (el) el.textContent = '☁️ 雲端已同步 · v80.1';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7253,7 +7253,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v80';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v80.1';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
