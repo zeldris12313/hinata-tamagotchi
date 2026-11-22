@@ -231,7 +231,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v80.4</span>
+      <span id="save-status">💾 已自動儲存 · v81</span>
       
     </div>
 
@@ -491,7 +491,19 @@ html, body {
       bg_park_entrance_night: "./assets/bg_park_entrance_night.jpg?v=80",
       bg_mall_gate: "./assets/bg_mall_gate.jpg?v=80",
       bg_mall_gate_morning: "./assets/bg_mall_gate_morning.jpg?v=80",
-      bg_mall_gate_night: "./assets/bg_mall_gate_night.jpg?v=80"
+      bg_mall_gate_night: "./assets/bg_mall_gate_night.jpg?v=80",
+      bg_mall_cafe: "./assets/bg_mall_cafe.jpg?v=81",
+      bg_mall_cafe_morning: "./assets/bg_mall_cafe_morning.jpg?v=81",
+      bg_mall_cafe_night: "./assets/bg_mall_cafe_night.jpg?v=81",
+      bg_mall_park1: "./assets/bg_mall_park1.jpg?v=81",
+      bg_mall_park1_morning: "./assets/bg_mall_park1_morning.jpg?v=81",
+      bg_mall_park1_night: "./assets/bg_mall_park1_night.jpg?v=81",
+      bg_mall_park2: "./assets/bg_mall_park2.jpg?v=81",
+      bg_mall_park2_morning: "./assets/bg_mall_park2_morning.jpg?v=81",
+      bg_mall_park2_night: "./assets/bg_mall_park2_night.jpg?v=81",
+      bg_mall_park3: "./assets/bg_mall_park3.jpg?v=81",
+      bg_mall_park3_morning: "./assets/bg_mall_park3_morning.jpg?v=81",
+      bg_mall_park3_night: "./assets/bg_mall_park3_night.jpg?v=81"
     };
     const sprites = {};
 
@@ -520,7 +532,7 @@ html, body {
       park:         { id: 'park',         name: '海濱公園',        short: '公園',     icon: '🌳', gx: 2, gy: 0,  up: null, down: null, left: 'park2', right: 'park_entrance' },
       park_entrance:{ id: 'park_entrance',name: '公園門口',        short: '公園門口', icon: '🌳', gx: 2.5, gy: 0, up: null, down: null, left: null, right: 'main_street', doors: ['park'] },
       main_street:  { id: 'main_street',  name: '繁華大街',        short: '大街',     icon: '🏙️', gx: 3, gy: 0,  up: 'main_street2', down: 'street', left: 'park_entrance', right: 'mall_gate' },
-      mall_gate:    { id: 'mall_gate',    name: '商場門口',        short: '商場門口', icon: '🏬', gx: 3.5, gy: 0, up: null, down: null, left: 'main_street', right: null, doors: ['mall'] },
+      mall_gate:    { id: 'mall_gate', 'mall_park1', 'mall_park2', 'mall_park3',    name: '商場門口',        short: '商場門口', icon: '🏬', gx: 3.5, gy: 0, up: 'mall_park3', down: null, left: 'main_street', right: null, doors: ['mall'] },
       main_street2: { id: 'main_street2', name: '繁華大街 2',      short: '大街2',    icon: '🏙️', gx: 3, gy: -1, up: null, down: 'main_street', left: null, right: null, doors: ['pharmacy', 'bus_interior'] },
       bus_interior: { id: 'bus_interior', name: '市區巴士車廂',    short: '巴士內',   icon: '🚌', gx: 4, gy: -1, up: null, down: null, left: null, right: null, doors: ['main_street2', 'theme_park_gate'] },
       theme_park_gate:{ id: 'theme_park_gate', name: '樂園門口排隊處', short: '樂園門口', icon: '🎟️', gx: 6, gy: 0, up: 'theme_park1', down: null, left: null, right: null, doors: ['bus_interior'] },
@@ -532,7 +544,11 @@ html, body {
       mall2:        { id: 'mall2',        name: '商場 2 樓',       short: '商場2',    icon: '🏬', gx: 4, gy: -1, up: 'mall_promenade', down: 'mall', left: 'clothing_store', right: 'toy_store' },
       clothing_store:{ id: 'clothing_store', name: '服裝店',       short: '服裝店',   icon: '👕', gx: 3, gy: -1, up: null, down: null, left: null, right: 'mall2' },
       toy_store:    { id: 'toy_store',    name: '玩具店',          short: '玩具店',   icon: '🧸', gx: 5, gy: -1, up: null, down: null, left: 'mall2', right: null },
-      mall_promenade:{ id: 'mall_promenade', name: '商場海邊觀光大道', short: '觀光大道', icon: '🌊', gx: 4, gy: -2, up: null, down: 'mall2', left: null, right: null },
+      mall_promenade:{ id: 'mall_promenade', name: '商場海邊觀光大道', short: '觀光大道', icon: '🌊', gx: 4, gy: -2, up: 'mall_park1', down: 'mall2', left: null, right: 'mall_cafe' },
+      mall_cafe:    { id: 'mall_cafe',    name: '海邊咖啡店',      short: '咖啡店',   icon: '☕', gx: 5, gy: -2, up: null, down: null, left: 'mall_promenade', right: null },
+      mall_park1:   { id: 'mall_park1',   name: '商場湖畔公園',    short: '商場公園', icon: '🌿', gx: 4, gy: -3, up: 'mall_park2', down: 'mall_promenade', left: null, right: null },
+      mall_park2:   { id: 'mall_park2',   name: '湖畔木棧道公園2', short: '湖畔公園2',icon: '🌳', gx: 4, gy: -4, up: null, down: 'mall_park1', left: 'mall_park3', right: null },
+      mall_park3:   { id: 'mall_park3',   name: '湖畔涼亭公園3',   short: '湖畔涼亭', icon: '⛩️', gx: 3.5, gy: -4, up: null, down: 'mall_gate', left: null, right: 'mall_park2' },
       mall_toilet:  { id: 'mall_toilet',  name: '商場廁所',        short: '商場廁所', icon: '🚻', gx: 4, gy: 1,  up: 'mall', down: null, left: null, right: null },
       restaurant:   { id: 'restaurant',   name: '家庭餐廳',        short: '餐廳',     icon: '🍽️', gx: 5, gy: 0,  up: null, down: null, left: 'mall', right: null },
       room_hinata:  { id: 'room_hinata',  name: '2F 日向房',       short: '日向房',   icon: '🛏️', gx: 0, gy: 1,  up: null, down: 'hallway_2f', left: null, right: null },
@@ -692,8 +708,21 @@ html, body {
       ],
       mall_promenade: [
         { id: 'mp_rail',   label: '海邊欄杆',     hx: 160, hy: 380, hr: 95, px: 195, py: 445, act: 'park_breeze', line: '「觀光大道望出去個海好藍呀！仲有帆船添！⛵🌊」' },
-        { id: 'mp_walk',   label: '海濱大道散步', hx: 300, hy: 420, hr: 95, px: 300, py: 445, act: 'mall_promenade', line: '「喺商場海邊大道吹住海風散步真係好寫意～🌴✨」' },
-        { id: 'mp_cafe',   label: '海邊咖啡店',   hx: 480, hy: 390, hr: 100, px: 445, py: 445, act: 'promenade_cafe', line: '「聞到好香咖啡同焦糖布丁味呀！坐低飲杯嘢先～☕🍮」' }
+        { id: 'mp_walk',   label: '海濱大道散步', hx: 300, hy: 420, hr: 95, px: 300, py: 445, act: 'mall_promenade', line: '「喺商場海邊大道吹住海風散步真係好寫意～🌴✨」' }
+      ],
+      mall_cafe: [
+        { id: 'mc_counter', label: '咖啡點餐櫃枱', hx: 170, hy: 380, hr: 95, px: 185, py: 465, act: 'cafe_buy', line: '「哥哥我想食焦糖布丁同凍飲！喺櫃枱點餐先～☕🍮」' },
+        { id: 'mc_booth',   label: '海景卡位',     hx: 430, hy: 400, hr: 95, px: 425, py: 455, act: 'promenade_cafe', line: '「坐喺海景窗邊一齊歎咖啡同焦糖布丁，好幸福呀！☕🍮✨」' }
+      ],
+      mall_park1: [
+        { id: 'mp1_walk',   label: '湖畔磚路散步', hx: 260, hy: 420, hr: 100, px: 280, py: 465, act: 'park_walk', line: '「商場上面原來有個咁靚嘅湖畔公園！🌳✨」' },
+        { id: 'mp1_bench',  label: '湖邊木長椅',   hx: 460, hy: 420, hr: 95, px: 440, py: 465, act: 'park_breeze', line: '「望住閃閃發亮嘅湖面吹微風，好舒服～🌊💛」' }
+      ],
+      mall_park2: [
+        { id: 'mp2_board',  label: '柳樹湖畔木棧道', hx: 340, hy: 440, hr: 100, px: 360, py: 470, act: 'park_walk', line: '「沿住湖邊木棧道同哥哥慢慢散步 10 分鐘，柳樹好靚呀！🌿🚶‍♂️」' }
+      ],
+      mall_park3: [
+        { id: 'mp3_gazebo', label: '湖畔木涼亭',   hx: 430, hy: 360, hr: 100, px: 425, py: 435, act: 'park_breeze', line: '「入到涼亭坐低休息 15 分鐘，聽住噴水池水聲好治癒～⛩️💧」' }
       ],
       mall2: [
         '「翔陽：商場2樓好大呀哥哥！左邊係服裝店右邊係玩具店！｜哥哥：你想睇邊間先？🏬✨」',
@@ -1554,20 +1583,35 @@ html, body {
       return [endId];
     }
 
-    function stepDuoIntoRoom(roomId, actName, isFinal, customSpeech) {
+    function stepDuoIntoRoom(roomId, actName, isFinal, customSpeech, nextRoomId = null) {
       const pet = ensurePetState(state.activeCharId);
       const bro = state.brother;
       const furn = (ROOM_FURNITURE[roomId] && ROOM_FURNITURE[roomId][0]) || { px: 280, py: 440, act: actName || 'street' };
       const dEdge = getDirEdgeCoords(getRoomMoveDir(pet.currentRoom, roomId));
       pet.currentRoom = roomId;
-      pet.currentActivity = isFinal ? (actName || furn.act) : (MALL_AREA_SET.has(roomId) ? 'mall' : 'street');
+      const walkAct = MALL_AREA_SET.has(roomId) ? 'mall' : getWalkActForRoom(roomId);
+      pet.currentActivity = isFinal ? (actName || furn.act) : walkAct;
       petX = dEdge.ix; petY = dEdge.iy;
-      targetX = Math.max(120, furn.px - 40); targetY = furn.py;
+      if (!isFinal && nextRoomId) {
+        const dOut = getDirEdgeCoords(getRoomMoveDir(roomId, nextRoomId));
+        targetX = dOut.ex; targetY = dOut.ey;
+      } else {
+        targetX = Math.max(120, furn.px - 40); targetY = furn.py;
+      }
       bro.currentRoom = roomId;
-      bro.currentActivity = isFinal ? (actName || furn.act) : (MALL_AREA_SET.has(roomId) ? 'mall' : 'street');
+      bro.currentActivity = isFinal ? (actName || furn.act) : walkAct;
       bro.px = Math.max(60, Math.min(540, dEdge.ix + (dEdge.ix > 300 ? -75 : 75))); bro.py = dEdge.iy;
-      bro.tx = Math.min(465, furn.px + 55); bro.ty = furn.py;
-      viewRoomId = roomId;
+      if (!isFinal && nextRoomId) {
+        const dOutB = getDirEdgeCoords(getRoomMoveDir(roomId, nextRoomId));
+        bro.tx = Math.max(60, Math.min(540, dOutB.ex + (dOutB.ex > 300 ? -75 : 75))); bro.ty = dOutB.ey;
+      } else {
+        bro.tx = Math.min(465, furn.px + 55); bro.ty = furn.py;
+      }
+      if (duoWalk) {
+        duoWalk.startX = petX; duoWalk.startY = petY;
+        duoWalk.broStartX = bro.px; duoWalk.broStartY = bro.py;
+      }
+      if (followTarget === 'hinata' || followTarget === 'bro') viewRoomId = roomId;
       playSFX('pat');
       const tday = getTodayStr();
       if (!pet.snacks) pet.snacks = { bread: 0, drink: 0, candy: 0, soda: 0, snack: 0, nikuman: 0 };
@@ -1610,8 +1654,10 @@ html, body {
           else { pet.snacks[pickK.key] = (pet.snacks[pickK.key] || 0) + 1; customSpeech = `「自己喺便利店買咗${pickK.name}放入小背包！${pickK.emoji}🎒」`; }
         }
       }
-      if (customSpeech) speakAndShow(customSpeech);
-      else speakAndShow(`「正一齊經過【${MAP_ROOMS[roomId]?.name || roomId}】前往目的地…🚶‍♂️」`);
+      if (viewRoomId === roomId) {
+        if (customSpeech) speakAndShow(customSpeech);
+        else speakAndShow(`「正一齊經過【${MAP_ROOMS[roomId]?.name || roomId}】前往目的地…🚶‍♂️」`);
+      }
       renderDock(); updateHUD();
     }
 
@@ -1630,7 +1676,7 @@ html, body {
         steps, idx: 0, stepEnteredAt: Date.now(),
         destRoom, finalAct, finalSpeech, finalToast, onArrive
       };
-      stepDuoIntoRoom(steps[0], 'street', false, `「出發啦！經過【${MAP_ROOMS[steps[0]]?.name}】前往【${MAP_ROOMS[destRoom]?.name}】…🚶‍♂️」`);
+      stepDuoIntoRoom(steps[0], 'street', false, `「出發啦！經過【${MAP_ROOMS[steps[0]]?.name}】前往【${MAP_ROOMS[destRoom]?.name}】…🚶‍♂️」`, steps[1] || destRoom);
       saveState();
     }
 
@@ -2050,7 +2096,7 @@ html, body {
           } else {
             const nextR = duoWalk.steps[duoWalk.idx];
             duoWalk.stepEnteredAt = Date.now();
-            stepDuoIntoRoom(nextR, 'street', false, `「行經【${MAP_ROOMS[nextR]?.name}】，仲有幾步就到【${MAP_ROOMS[duoWalk.destRoom]?.name}】啦！🚶‍♂️」`);
+            stepDuoIntoRoom(nextR, 'street', false, `「行經【${MAP_ROOMS[nextR]?.name}】，仲有幾步就到【${MAP_ROOMS[duoWalk.destRoom]?.name}】啦！🚶‍♂️」`, duoWalk.steps[duoWalk.idx + 1] || duoWalk.destRoom);
             saveState();
           }
         }
@@ -2204,29 +2250,44 @@ html, body {
             return;
           }
         }
-        // Auto-roam adjacent Mall rooms only (no floor-jumping; persisted 150s intervals) + Promenade Cafe (1x/day, 15m, -30 coins)
+        // Structured Mall Tour: mall -> mall2 -> toy_store -> clothing_store -> mall_promenade -> (mall_cafe 15m 1x/day) -> mall_park1 -> mall_park2 (10m) -> mall_park3 (15m gazebo) -> mall_gate -> mall
+        const MALL_TOUR_SEQ = ['mall', 'mall2', 'toy_store', 'clothing_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3', 'mall_gate', 'mall'];
         if (state.outing.type === 'mall' && !duoWalk && !pet.toiletState) {
-          if (state.mallCafeUntil) {
-            if (Date.now() >= state.mallCafeUntil) {
-              state.mallCafeUntil = null;
-              state.outing.lastRoamAt = Date.now() - 130000;
+          const nowM = Date.now();
+          const tdM = getTodayStr();
+          if (typeof state.outing.mallTourIdx !== 'number') state.outing.mallTourIdx = 0;
+          if (!state.outing.lastRoamAt) state.outing.lastRoamAt = nowM;
+
+          // Cafe 2-step: buy coffee at counter (15s) -> sit at window booth enjoying drinks (remaining 15m)
+          if (pet.currentRoom === 'mall_cafe' && state.mallCafeUntil) {
+            if (state.mallCafeStage === 'buy' && nowM >= (state.mallCafeBuyUntil || 0)) {
+              state.mallCafeStage = 'sit';
+              pet.currentActivity = 'promenade_cafe'; targetX = 415; targetY = 455;
+              bro.currentRoom = 'mall_cafe'; bro.currentActivity = 'promenade_cafe'; bro.tx = 475; bro.ty = 455;
+              if (viewRoomId === 'mall_cafe') speakAndShow('「買好咖啡同焦糖布丁啦！坐低喺海景位一齊慢慢歎～☕🍮💛」');
+              updateHUD(); saveState();
+            } else if (nowM >= state.mallCafeUntil) {
+              state.mallCafeUntil = null; state.mallCafeStage = null;
+              state.outing.mallTourIdx = 6; // next: mall_park1
+              state.outing.lastRoamAt = nowM - 55000;
             }
           } else {
-            if (!state.outing.lastRoamAt) state.outing.lastRoamAt = state.outing.startedAt || Date.now();
-            if (Date.now() - state.outing.lastRoamAt >= 150000) {
-              state.outing.lastRoamAt = Date.now();
-              const mr = MAP_ROOMS[pet.currentRoom];
-              const adjMall = mr ? ['up', 'down', 'left', 'right'].map(d => mr[d]).filter(r => r && MALL_AREA_SET.has(r)) : ['mall'];
-              let cand = adjMall.filter(r => r !== state.outing.prevMallRoom);
-              if (!cand.length) cand = adjMall;
-              if (!cand.length) cand = ['mall'];
-              const nextR = cand[Math.floor(Math.random() * cand.length)];
-              state.outing.prevMallRoom = pet.currentRoom;
-              const tdM = getTodayStr();
-              if (nextR === 'mall_promenade' && pet.mallCafeDate !== tdM) {
+            const curR = pet.currentRoom;
+            const dwellMs = (curR === 'mall_park2') ? (10 * 60 * 1000) : ((curR === 'mall_park3') ? (15 * 60 * 1000) : 60000);
+            if (nowM - state.outing.lastRoamAt >= dwellMs) {
+              state.outing.lastRoamAt = nowM;
+              let nextIdx = (state.outing.mallTourIdx + 1) % MALL_TOUR_SEQ.length;
+              if (MALL_TOUR_SEQ[nextIdx] === 'mall_cafe' && pet.mallCafeDate === tdM) {
+                nextIdx = 6; // already visited cafe today -> go straight to mall_park1
+              }
+              state.outing.mallTourIdx = nextIdx;
+              const nextR = MALL_TOUR_SEQ[nextIdx];
+              if (nextR === 'mall_cafe') {
                 pet.mallCafeDate = tdM;
-                state.mallCafeUntil = Date.now() + 15 * 60 * 1000;
-                startDuoJourney('mall_promenade', 'promenade_cafe', '「嚟到觀光大道海邊咖啡店！哥哥飲咖啡、翔陽食布丁（-30金幣，坐15分鐘）☕🍮」', '海邊咖啡店下午茶（15分鐘・🪙-30）☕🍮', () => {
+                state.mallCafeStage = 'buy';
+                state.mallCafeBuyUntil = nowM + 15000;
+                state.mallCafeUntil = nowM + 15 * 60 * 1000;
+                startDuoJourney('mall_cafe', 'cafe_buy', '「嚟到海邊咖啡店！先去櫃枱買咖啡同焦糖布丁（-30金幣）☕🍮」', '海邊咖啡店下午茶（15分鐘・🪙-30）☕🍮', () => {
                   const payC = Math.min(pet.coins, 30);
                   pet.coins -= payC;
                   if (payC > 0) recordCoinLog(pet, '☕ 海邊咖啡店（咖啡＋布丁）', -payC, pet.coins);
@@ -2241,9 +2302,13 @@ html, body {
                   saveState();
                 });
               } else {
-                const fList = (ROOM_FURNITURE[nextR] || []).filter(f => f.id !== 'mp_cafe');
-                const pickF = fList[Math.floor(Math.random() * fList.length)] || { act: nextR, line: `「一齊行過嚟【${MAP_ROOMS[nextR]?.name}】慢慢逛下！🛍️」` };
-                startDuoJourney(nextR, pickF.act, pickF.line, null, () => { updateHUD(); });
+                const fList = ROOM_FURNITURE[nextR] || [];
+                const pickF = fList[0] || { act: nextR, line: `「一齊行去【${MAP_ROOMS[nextR]?.name}】！🛍️」` };
+                const customLine = (nextR === 'mall_park2') ? '「嚟到湖畔木棧道公園2！喺柳樹下慢慢散步 10 分鐘～🌿🚶‍♂️」' : ((nextR === 'mall_park3') ? '「嚟到湖畔涼亭！入去涼亭坐低休息 15 分鐘先～⛩️💧」' : pickF.line);
+                startDuoJourney(nextR, pickF.act, customLine, null, () => {
+                  if (nextR === 'mall_park3') { targetX = 415; targetY = 435; bro.tx = 475; bro.ty = 435; }
+                  updateHUD();
+                });
               }
             }
           }
@@ -3240,7 +3305,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v80.4'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3293,8 +3358,8 @@ html, body {
       if (stroke) { ctx.lineWidth = lw; ctx.strokeStyle = stroke; ctx.stroke(); }
     }
 
-    const MALL_AREA_SET = new Set(['mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade']);
-    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'park_entrance', 'park', 'park2', 'mall_gate', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet']);
+    const MALL_AREA_SET = new Set(['mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3']);
+    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'park_entrance', 'park', 'park2', 'mall_gate', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet']);
     function drawAnimeRoomBackground(roomId, timeInfo) {
       const h = new Date().getHours();
       const isNight = (h >= 18 || h < 6);
@@ -3571,7 +3636,7 @@ html, body {
       park_jog: '🏃 公園慢跑', park_walk: '🚶 公園散步', park_breeze: '🌊 睇海風中', toilet_use: '🚽 如廁中', toilet_urinal: '🚻 小便中', toilet_wash: '🧼 洗手中', toilet_wait: '⏳ 等緊廁所', court_run: '🏃 跑步熱身中', stretch: '🧘‍♂️ 拉筋放鬆中',
       gear_prep: '🏐 整理裝備中', window_gaze: '🌤️ 望窗外發呆', read_manga: '📚 睇排球漫畫',
       mirror_prep: '🪞 整理儀容中', tidy_bag: '🔑 檢查隨身物', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', konbini_mag: '📖 睇雜誌中', konbini_snack: '🍡 睇零食中', konbini_drink: '🥤 睇飲品中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理', supermarket: '🛒 行超市中', supermarket_checkout: '💳 自助收銀付款', supper_wait: '🍽️ 等哥哥整宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 揀緊雪糕口味', eating_ice_cream: '🍦 街邊食雪糕中', mall2: '🏬 行商場2樓中', clothing_store: '👕 睇衫中', toy_store: '🧸 睇玩具中', mall_promenade: '🌊 行海邊大道中', promenade_cafe: '🍮 食布丁休息中', kitchen_table: '🪑 餐桌休息中', squat: '🏋️ 深蹲特訓中', rest_drinkbar: '🥤 飲品吧斟嘢飲'
+      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', konbini_mag: '📖 睇雜誌中', konbini_snack: '🍡 睇零食中', konbini_drink: '🥤 睇飲品中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理', supermarket: '🛒 行超市中', supermarket_checkout: '💳 自助收銀付款', supper_wait: '🍽️ 等哥哥整宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 揀緊雪糕口味', eating_ice_cream: '🍦 街邊食雪糕中', mall2: '🏬 行商場2樓中', clothing_store: '👕 睇衫中', toy_store: '🧸 睇玩具中', mall_promenade: '🌊 行海邊大道中', cafe_buy: '☕ 買咖啡布丁中', promenade_cafe: '🍮 歎布丁飲品中', kitchen_table: '🪑 餐桌休息中', squat: '🏋️ 深蹲特訓中', rest_drinkbar: '🥤 飲品吧斟嘢飲'
     };
     const BROTHER_ACTIVITY_LABELS = {
       sleep: '😴 哥哥熟睡中', brush: '🪥 哥哥刷牙中', cook_bfast: '🍳 煮緊早餐', prep_bfast: '🥞 準備早餐中',
@@ -3585,7 +3650,7 @@ html, body {
       backyard: '🏐 陪練排球', idle: '✨ 休息中', stretch: '🧘‍♂️ 拉筋中',
       gear_prep: '🏐 幫手執裝備', window_gaze: '🌤️ 望窗外思考', read_manga: '📚 睇漫畫中',
       mirror_prep: '🪞 整理儀容', tidy_bag: '🔑 檢查鎖匙', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋', washing_dishes: '🫧 洗碗碟中', supermarket: '🛒 超市買嘢中', supermarket_checkout: '💳 自助收銀中', supper_pick: '🧊 睇上層冰格', supper_cook: '🍲 煮緊宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 陪揀雪糕中', eating_ice_cream: '🍦 陪食雪糕中', mall2: '🏬 陪行商場2樓', clothing_store: '👕 陪睇衫中', toy_store: '🧸 陪睇玩具中', mall_promenade: '🌊 陪行觀光大道', promenade_cafe: '☕ 飲咖啡陪翔陽', kitchen_table: '🪑 陪坐餐桌', kitchen_tidy: '🧼 執拾廚房中', squat: '🏋️ 陪做深蹲', rest_drinkbar: '🥤 斟飲品中'
+      shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋', washing_dishes: '🫧 洗碗碟中', supermarket: '🛒 超市買嘢中', supermarket_checkout: '💳 自助收銀中', supper_pick: '🧊 睇上層冰格', supper_cook: '🍲 煮緊宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 陪揀雪糕中', eating_ice_cream: '🍦 陪食雪糕中', mall2: '🏬 陪行商場2樓', clothing_store: '👕 陪睇衫中', toy_store: '🧸 陪睇玩具中', mall_promenade: '🌊 陪行觀光大道', cafe_buy: '☕ 買咖啡俾翔陽', promenade_cafe: '☕ 一齊歎咖啡中', kitchen_table: '🪑 陪坐餐桌', kitchen_tidy: '🧼 執拾廚房中', squat: '🏋️ 陪做深蹲', rest_drinkbar: '🥤 斟飲品中'
     };
     const IDLE_THOUGHTS = ['💭 想食玉子拌飯…', '💭 聽日要跳高啲！', '💭 哥哥幾時同我打機？', '💭 烏野一定打入全國！'];
 
@@ -3905,9 +3970,19 @@ html, body {
         mall2:          [{ x: 330, y: 485 }, { x: 395, y: 450 }, { x: 445, y: 415 }, { x: 395, y: 450 }],
         clothing_store: [{ x: 165, y: 455 }, { x: 300, y: 450 }, { x: 445, y: 455 }, { x: 300, y: 450 }],
         toy_store:      [{ x: 155, y: 455 }, { x: 295, y: 450 }, { x: 435, y: 455 }, { x: 295, y: 450 }],
-        mall_promenade: [{ x: 185, y: 450 }, { x: 300, y: 450 }, { x: 425, y: 450 }, { x: 300, y: 450 }]
+        mall_promenade: [{ x: 185, y: 450 }, { x: 300, y: 450 }, { x: 425, y: 450 }, { x: 300, y: 450 }],
+        mall_park1:     [{ x: 230, y: 480 }, { x: 310, y: 455 }, { x: 380, y: 445 }, { x: 310, y: 455 }],
+        mall_park2:     [{ x: 310, y: 495 }, { x: 390, y: 465 }, { x: 330, y: 435 }, { x: 390, y: 465 }]
       };
-      if (!pet.toiletState && MALL_AREA_SET.has(pet.currentRoom) && !state.mallCafeUntil && pet.currentActivity !== 'promenade_cafe' && !transitionState && !duoWalk) {
+      if (duoWalk && !pet.toiletState) {
+        const dt = Math.max(0, Math.min(1, (Date.now() - duoWalk.stepEnteredAt) / 5000));
+        petX = (duoWalk.startX ?? petX) + (targetX - (duoWalk.startX ?? petX)) * dt;
+        petY = (duoWalk.startY ?? petY) + (targetY - (duoWalk.startY ?? petY)) * dt;
+        if (state.brother && state.brother.currentRoom === pet.currentRoom) {
+          state.brother.px = (duoWalk.broStartX ?? state.brother.px) + (state.brother.tx - (duoWalk.broStartX ?? state.brother.px)) * dt;
+          state.brother.py = (duoWalk.broStartY ?? state.brother.py) + (state.brother.ty - (duoWalk.broStartY ?? state.brother.py)) * dt;
+        }
+      } else if (!pet.toiletState && MALL_AREA_SET.has(pet.currentRoom) && !['mall_cafe', 'mall_park3'].includes(pet.currentRoom) && !state.mallCafeUntil && pet.currentActivity !== 'promenade_cafe' && !transitionState && !duoWalk) {
         const pathPts = MALL_STROLL_PATHS[pet.currentRoom];
         if (pathPts && pathPts.length >= 2) {
           if (!window.__mallStroll || window.__mallStroll.room !== pet.currentRoom) {
@@ -7233,7 +7308,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v80.4';
+          if (el) el.textContent = '☁️ 雲端已同步 · v81';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7272,7 +7347,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v80.4';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v81';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
