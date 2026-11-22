@@ -242,7 +242,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v81.5</span>
+      <span id="save-status">💾 已自動儲存 · v81.7</span>
       
     </div>
 
@@ -2354,8 +2354,8 @@ html, body {
           if (curR === 'mall_cafe' && state.mallCafeUntil) {
             if (state.mallCafeStage === 'buy' && nowM >= (state.mallCafeBuyUntil || 0)) {
               state.mallCafeStage = 'sit';
-              pet.currentActivity = 'promenade_cafe'; targetX = 415; targetY = 455;
-              bro.currentRoom = 'mall_cafe'; bro.currentActivity = 'promenade_cafe'; bro.tx = 475; bro.ty = 455;
+              pet.currentActivity = 'promenade_cafe'; targetX = 395; targetY = 455;
+              bro.currentRoom = 'mall_cafe'; bro.currentActivity = 'promenade_cafe'; bro.tx = 495; bro.ty = 455;
               if (viewRoomId === 'mall_cafe') speakAndShow('「買好咖啡同焦糖布丁啦！坐低喺海景位一齊慢慢歎～☕🍮💛」');
               updateHUD(); saveState();
             } else if (nowM >= state.mallCafeUntil) {
@@ -2432,7 +2432,7 @@ html, body {
                 startDuoJourney(nextR, pickF.act, customLine, null, () => {
                   state.outing.lastSpotAt = Date.now(); state.outing.subSpotIdx = 0;
                   if (nextR === 'mall_park2') state.outing.lastPark2ChatAt = Date.now() - 55000;
-                  if (nextR === 'mall_park3') { targetX = 415; targetY = 435; bro.tx = 475; bro.ty = 435; }
+                  if (nextR === 'mall_park3') { targetX = 395; targetY = 435; bro.tx = 495; bro.ty = 435; }
                   updateHUD();
                 }, customStepMs);
               }
@@ -2506,29 +2506,30 @@ html, body {
             }
           }
         }
-        // Ice Cream Shop 2-person flow (5m choosing -> bro pick / offline coffee -> pay -> 5m eat on street3 -> go home)
+        // Ice Cream Shop 2-person flow (10s choosing -> bro pick / offline coffee -> pay -> 8m eat on street3 -> go home)
         if (state.outing.type === 'ice_cream' && !duoWalk) {
           if (pet.currentRoom === 'ice_cream') {
-            targetX = 435; targetY = 485;
+            targetX = 395; targetY = 485;
             if (bro.currentRoom === 'ice_cream') { bro.tx = 495; bro.ty = 485; }
           }
           if (!state.iceCreamState && pet.currentRoom === 'ice_cream') {
             const outStartEst = state.outing.startedAt || (state.outing.returnAt ? (state.outing.returnAt - 60 * 60 * 1000) : Date.now());
             const pastMs = Date.now() - outStartEst;
-            if (pastMs >= 5 * 60 * 1000 && pastMs < 60 * 60 * 1000) {
+            if (pastMs >= 10000 && pastMs < 60 * 60 * 1000) {
               const pickF = ICE_CREAM_FLAVORS[Math.floor(Math.random() * ICE_CREAM_FLAVORS.length)];
               state.iceCreamState = { stage: 'waiting_bro_choice', until: Date.now(), hinataFlavor: pickF.id, broFlavor: null };
               speakAndShow(`「哥哥！我決定要食 ${pickF.emoji}${pickF.name}味雪糕！！到哥哥你揀口味啦～🍦💛」`);
               openIceCreamChoiceModal();
               saveState();
             } else {
-              state.iceCreamState = { stage: 'choosing', until: Date.now() + 5 * 60 * 1000, hinataFlavor: null, broFlavor: null };
-              speakAndShow('「到雪糕店啦！哥哥我哋睇 5 分鐘揀下想食咩口味先～🍦✨」');
+              state.iceCreamState = { stage: 'choosing', until: Date.now() + 10000, hinataFlavor: null, broFlavor: null };
+              speakAndShow('「到雪糕店啦！哥哥我哋睇 10 秒揀下想食咩口味先～🍦✨」');
               saveState();
             }
           } else if (state.iceCreamState) {
             const ics = state.iceCreamState;
             const nowIc = Date.now();
+            if (ics.stage === 'choosing' && ics.until - nowIc > 15000) ics.until = nowIc + 10000;
             if (ics.stage === 'choosing' && nowIc >= ics.until) {
               const pickF = ICE_CREAM_FLAVORS[Math.floor(Math.random() * ICE_CREAM_FLAVORS.length)];
               ics.hinataFlavor = pickF.id;
@@ -3454,7 +3455,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81.5'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81.7'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3804,12 +3805,78 @@ html, body {
       mirror_prep: '🪞 整理儀容', tidy_bag: '🔑 檢查鎖匙', vend_drink: '🥤 買嘢飲中',
       shop_snack: '🛍️ 買少少嘢返屋企', rest_menu: '📖 揀緊菜式', court_run: '🏃 跑步中', caring_sad: '😢 擔心照顧中', aniki_hall_tidy: '🔑 放鎖匙整鞋', washing_dishes: '🫧 洗碗碟中', supermarket: '🛒 超市買嘢中', supermarket_checkout: '💳 自助收銀中', supper_pick: '🧊 睇上層冰格', supper_cook: '🍲 煮緊宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 陪揀雪糕中', eating_ice_cream: '🍦 陪食雪糕中', mall2: '🏬 陪行商場2樓', clothing_store: '👕 陪睇衫中', toy_store: '🧸 陪睇玩具中', mall_promenade: '🌊 陪行觀光大道', cafe_buy: '☕ 買咖啡俾翔陽', promenade_cafe: '☕ 一齊歎咖啡中', kitchen_table: '🪑 陪坐餐桌', kitchen_tidy: '🧼 執拾廚房中', squat: '🏋️ 陪做深蹲', rest_drinkbar: '🥤 斟飲品中'
     };
-    const IDLE_THOUGHTS = ['💭 想食玉子拌飯…', '💭 聽日要跳高啲！', '💭 哥哥幾時同我打機？', '💭 烏野一定打入全國！'];
+    const ROOM_IDLE_THOUGHTS = {
+      living: ['💭 客廳張梳化好舒服～', '💭 一陣睇下排球比賽錄影先！', '💭 哥哥陣間會唔會陪我坐客廳？'],
+      kitchen: ['💭 廚房好香呀，好想食玉子拌飯！', '💭 雪櫃唔知有冇布丁呢…', '💭 哥哥煮嘅飯永遠係世界第一！'],
+      hallway: ['💭 走廊啲鞋擺得幾整齊！', '💭 出門口前記得帶水壺！', '💭 哥哥返嚟嗰陣我第一時間衝去迎佢！'],
+      hallway_2f: ['💭 2樓走廊好安靜～', '💭 望下樓梯口有冇動靜先', '💭 隔離就係哥哥間房啦！'],
+      wash_hall: ['💭 洗漱台塊鏡抹得好乾淨！', '💭 記得勤啲洗手保持衛生～', '💭 哥哥買嘅番梘好香呀！'],
+      toilet: ['💭 快手搞掂洗手出去先～', '💭 記得睇下廁紙夠唔夠用！', '💭 哥哥提過出嚟一定要洗乾淨手！'],
+      bath: ['💭 熱水浴好舒服好放鬆呀～', '💭 浸完一陣皮膚暖笠笠！', '💭 哥哥幫我較嘅水溫啱啱好！'],
+      room_hinata: ['💭 排球海報貼喺牆度超有氣勢！', '💭 聽日要再跳高啲先得！', '💭 哥哥有時會入房陪我傾計～'],
+      room_aniki: ['💭 哥哥間房好整齊又有書香氣息～', '💭 好想玩哥哥部電腦入面隻排球Game！', '💭 哥哥做嘢辛苦，得閒要幫佢揼骨！'],
+      backyard: ['💭 後院塊草地好啱練魚躍救球！', '💭 今日對牆接波要破紀錄！', '💭 同哥哥一齊喺後院練波最開心！'],
+      street: ['💭 條街今日天氣好好呀！', '💭 踩住微風散步好寫意～', '💭 同哥哥一齊行街邊最好傾！'],
+      street2: ['💭 街角間便利店陣間可以去望下！', '💭 條街好靜好舒服呢～', '💭 哥哥行喺隔離就覺得好安心！'],
+      street3: ['💭 呢條街好靜好啱邊行邊食雪糕！', '💭 微風吹埋嚟好涼爽呀～', '💭 下次要再同哥哥嚟呢條街！'],
+      ice_cream: ['💭 四隻口味都好吸引呀！！', '💭 雪糕櫃睇到流晒口水…', '💭 唔知哥哥今日會揀邊隻口味呢？'],
+      konbini: ['💭 熱肉包櫃出緊煙好吸引！', '💭 運動飲料同零食都好想買～', '💭 哥哥成日喺便利店買好嘢請我食！'],
+      supermarket: ['💭 超市生鮮區好多新鮮食材！', '💭 睇下特價零食區有咩好買先～', '💭 幫手揀好食材返去畀哥哥煮大餐！'],
+      main_street: ['💭 繁華大街好熱鬧呀！', '💭 街上好多小店可以慢慢行～', '💭 人多嘅時候緊緊跟實哥哥！'],
+      main_street2: ['💭 隔離烤番薯檔好香呀！！', '💭 巴士站就喺前面啦～', '💭 哥哥會唔會買個熱辣辣番薯畀我？'],
+      bus_interior: ['💭 架巴士搖搖下幾舒服～', '💭 望住窗外風景就快到樂園啦！', '💭 同哥哥並肩坐巴士去玩最期待！'],
+      park_entrance: ['💭 公園門口啲樹好翠綠！', '💭 聞到陣陣海風同青草味～', '💭 同哥哥一齊入公園散步啦！'],
+      park: ['💭 公園樹蔭下面好涼爽！', '💭 好啱喺度跑步熱身練體能！', '💭 哥哥喺長椅休息緊陣間一齊吹風！'],
+      park2: ['💭 海濱公園望出去個海好藍呀！', '💭 聽住海浪聲心情即刻變好～', '💭 同哥哥一齊喺海邊睇風景好幸福！'],
+      park_toilet: ['💭 公園公廁都幾乾淨企理～', '💭 洗乾淨手出去搵返哥哥先！', '💭 哥哥喺外面公園等緊我！'],
+      mall_gate: ['💭 商場門口好氣派呀！', '💭 入面冷氣好舒服又有好多舖頭～', '💭 同哥哥一齊行商場最開心！'],
+      mall: ['💭 運動用品店擺咗新款排球鞋！', '💭 商場中庭好闊落好熱鬧～', '💭 同哥哥一齊行街慢慢睇！'],
+      mall2: ['💭 商場2樓左邊服裝店右邊玩具店！', '💭 喺欄杆望落去中庭好開闊～', '💭 問下哥哥想行左邊定右邊先！'],
+      clothing_store: ['💭 呢度啲運動衛衣同波鞋好型！', '💭 試身鏡前面襯下好唔好睇～', '💭 哥哥幫我揀衫嘅眼光最好！'],
+      toy_store: ['💭 好多排球扭蛋同限定模型呀！！', '💭 精品玩具牆好閃好吸引！', '💭 唔知哥哥會唔會准我扭一隻扭蛋呢？'],
+      mall_promenade: ['💭 觀光大道望出去個海景超靚！', '💭 吹住海風散步好寫意～', '💭 同哥哥行完街吹下海風最舒服！'],
+      mall_cafe: ['💭 咖啡店陣焦糖布丁香味好濃！', '💭 海景卡位坐得好舒服呀～', '💭 同哥哥一齊歎下午茶最幸福！'],
+      mall_park1: ['💭 商場上面原來有個咁靚嘅湖畔公園！', '💭 湖水閃閃發亮好治癒～', '💭 同哥哥沿住湖畔磚路慢慢行！'],
+      mall_park2: ['💭 柳樹下面嘅木棧道好靚呀～', '💭 湖風吹埋嚟好舒服！', '💭 拖住哥哥隻手喺度行真係好開心！'],
+      mall_park3: ['💭 湖畔木涼亭好古色古香～', '💭 聽住噴水池水聲成個人放鬆晒！', '💭 同哥哥喺涼亭坐低歇一陣先！'],
+      mall_toilet: ['💭 商場洗手間好光猛乾淨！', '💭 洗完手出去會合哥哥～', '💭 哥哥喺出面等緊我！'],
+      restaurant: ['💭 餐廳漢堡扒加蛋包飯好香呀！', '💭 飲品吧啲汽水果汁任斟好爽～', '💭 同哥哥坐卡位食大餐最滿足！'],
+      school_gate: ['💭 烏野高校門口朝早充滿朝氣！', '💭 準備入課室上堂啦～', '💭 出門口前哥哥仲幫我整理好書包！'],
+      school_class: ['💭 黑板寫滿筆記要專心抄低！', '💭 好快就落堂可以去社團練波～', '💭 放學返屋企要話畀哥哥聽今日學咗咩！'],
+      school_hall: ['💭 學校走廊好長好寬敞～', '💭 小息喺走廊行下伸展筋骨！', '💭 唔知哥哥而家喺藥房忙唔忙呢？'],
+      school_tuckshop: ['💭 小食部今日有新鮮熱麵包賣！', '💭 睇下買咩小食好呢～', '💭 哥哥比我嘅零用錢夠買個菠蘿包！'],
+      school_court: ['💭 排球場地板擦到發光！', '💭 烏野一定打入全國！！', '💭 返屋企要同哥哥對打練習接波！'],
+      school_toilet: ['💭 趁小息快手去個洗手間先～', '💭 洗乾淨手準備返課室／球場！', '💭 哥哥成日提我唔好忍尿！'],
+      school_infirmary: ['💭 醫療室好安靜，啲床單好整齊…', '💭 休息一下好快就會好返精神！', '💭 好想快啲見到哥哥接我返屋企…'],
+      hospital: ['💭 醫院病房白雪雪好靜…', '💭 乖乖休息聽醫生話早啲康復！', '💭 有哥哥喺身邊照顧我就唔驚！'],
+      pharmacy: ['💭 藥房排滿晒各種藥品好專業！', '💭 呢度環境好乾淨整齊～', '💭 哥哥着起藥師袍真係好有型好叻！'],
+      canteen: ['💭 醫院Canteen今日嘅定食好香！', '💭 午飯時間好多醫護人員嚟食飯～', '💭 哥哥返工食多啲飯先有力氣！'],
+      theme_park_gate: ['💭 樂園門口已經聽到好歡樂嘅音樂！！', '💭 排隊買飛入場好興奮呀～', '💭 多謝哥哥帶我嚟主題樂園玩！'],
+      theme_park1: ['💭 樂園商店大街兩邊好多紀念品店！', '💭 個個都戴住可愛頭箍好開心～', '💭 同哥哥一齊買返對紀念品先！'],
+      theme_park2: ['💭 摩天輪好高好壯觀呀！！', '💭 坐上去一定望到成個夜景！', '💭 想同哥哥一齊坐摩天輪睇風景！'],
+      theme_park3: ['💭 過山車衝落嚟嗰下超刺激呀！！', '💭 聽到大家尖叫聲自己都熱血起來！', '💭 哥哥一陣敢唔敢陪我坐過山車？'],
+      theme_park4: ['💭 樂園餐廳啲主題漢堡套餐好可愛！', '💭 玩到肚餓正好坐低食大餐～', '💭 同哥哥一齊食樂園美食特別開心！']
+    };
+    const IDLE_THOUGHTS_FALLBACK = ['💭 今日天氣唔錯呀～', '💭 聽日要繼續努力練排球！', '💭 唔知哥哥而家做緊咩呢？'];
 
     function drawOverheadBadge(cx, cy, act, frame) {
       if (act === 'sleep') return;
       const label = ACTIVITY_LABELS[act];
-      const text = label || IDLE_THOUGHTS[Math.floor(frame / 180) % IDLE_THOUGHTS.length];
+      let text = label;
+      if (!text) {
+        const nowB = Date.now();
+        const slot = Math.floor(nowB / 7000);
+        if ((nowB % 7000) >= 4000) return;
+        const rm = (typeof ensurePetState === 'function' ? ensurePetState(state.activeCharId)?.currentRoom : null) || viewRoomId || 'living';
+        const pool = ROOM_IDLE_THOUGHTS[rm] || IDLE_THOUGHTS_FALLBACK;
+        if (!window.__idleBubble || window.__idleBubble.slot !== slot || window.__idleBubble.room !== rm) {
+          const prevTxt = window.__idleBubble ? window.__idleBubble.text : '';
+          const cands = pool.length > 1 ? pool.filter(t => t !== prevTxt) : pool;
+          const picked = cands[Math.floor(Math.random() * cands.length)];
+          window.__idleBubble = { slot, room: rm, text: picked };
+        }
+        text = window.__idleBubble.text;
+      }
       ctx.save();
       ctx.font = 'bold 14px "Noto Sans TC", sans-serif';
       const tw = ctx.measureText(text).width + 22;
@@ -7444,7 +7511,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v81.5';
+          if (el) el.textContent = '☁️ 雲端已同步 · v81.7';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7483,7 +7550,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v81.5';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v81.7';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
