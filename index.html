@@ -10,8 +10,11 @@
   <link rel="apple-touch-icon" href="./icon.png?v=69">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <script src="https://cdn.tailwindcss.com/3.4.17" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
     input, textarea { user-select: text; -webkit-user-select: text; -webkit-touch-callout: default; }
@@ -52,9 +55,17 @@ html, body {
     .inscreen-dir:active:not(:disabled) { transform: scale(0.9); }
     .inscreen-dir:disabled { opacity: 0.22; pointer-events: none; }
     #drag-ghost { position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%) scale(1.25); font-size: 30px; }
+    #boot-splash { position: fixed; inset: 0; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at top, #fff1e6 0%, #ffd8be 55%, #ffc49b 100%); transition: opacity 0.22s ease; }
+    #boot-splash.is-done { opacity: 0; pointer-events: none; }
+    .boot-badge { background: linear-gradient(165deg, #ff8533 0%, #ff6314 55%, #e64900 100%); border: 4px solid #fff7f0; border-radius: 28px; padding: 18px 28px; color: #fff; font-weight: 900; font-size: 16px; box-shadow: 0 18px 40px rgba(217,72,15,0.28); display: flex; align-items: center; gap: 10px; }
+    .boot-ball { display: inline-block; animation: bootBounce 0.7s ease-in-out infinite alternate; font-size: 24px; }
+    @keyframes bootBounce { from { transform: translateY(0); } to { transform: translateY(-7px); } }
+    html:not(.tw-ready) .tama-shell { opacity: 0; }
+    html.tw-ready .tama-shell { opacity: 1; transition: opacity 0.18s ease; }
   </style>
 </head>
 <body class="flex flex-col items-center justify-center p-3 sm:p-5">
+  <div id="boot-splash"><div class="boot-badge"><span class="boot-ball">🏐</span><span>日向翔陽載入中…</span></div></div>
 
   <div class="tama-shell w-full max-w-md rounded-[3rem] p-4 sm:p-5 relative">
 
@@ -231,7 +242,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v81</span>
+      <span id="save-status">💾 已自動儲存 · v81.1</span>
       
     </div>
 
@@ -508,13 +519,37 @@ html, body {
     const sprites = {};
 
     let assetLoadFailed = false;
+    const _loadingAssets = new Set();
+    function ensureAsset(k) {
+      if (!k || !ASSET_URLS[k] || sprites[k] || _loadingAssets.has(k)) return;
+      _loadingAssets.add(k);
+      const im = new Image();
+      im.onload = () => { sprites[k] = im; };
+      im.onerror = () => { assetLoadFailed = true; };
+      im.src = ASSET_URLS[k];
+    }
     function loadAssets() {
-      Object.keys(ASSET_URLS).forEach(k => {
-        const im = new Image();
-        im.onload = () => { sprites[k] = im; };
-        im.onerror = () => { assetLoadFailed = true; };
-        im.src = ASSET_URLS[k];
-      });
+      const h = new Date().getHours();
+      const tod = (h >= 18 || h < 6) ? '_night' : (h >= 6 && h < 10 ? '_morning' : '');
+      const priorityKeys = [
+        'chibiJersey', 'chibiSchool', 'chibiPajama', 'chibiBrother',
+        'chibiCry', 'chibiJerseyCry', 'chibiSchoolCry',
+        'chibiSquat', 'chibiSquatPajama', 'chibiHoodie', 'chibiCasual',
+        'bg_living', 'bg_room_hinata', 'bg_hallway'
+      ];
+      if (typeof viewRoomId === 'string' && viewRoomId) {
+        priorityKeys.push('bg_' + viewRoomId);
+        if (tod) priorityKeys.push('bg_' + viewRoomId + tod);
+      }
+      priorityKeys.forEach(ensureAsset);
+      const rest = Object.keys(ASSET_URLS).filter(k => !priorityKeys.includes(k));
+      let idx = 0;
+      function loadBatch() {
+        const end = Math.min(idx + 6, rest.length);
+        for (; idx < end; idx++) ensureAsset(rest[idx]);
+        if (idx < rest.length) setTimeout(loadBatch, 90);
+      }
+      setTimeout(loadBatch, 120);
     }
 
     // =========================================================================
@@ -532,7 +567,7 @@ html, body {
       park:         { id: 'park',         name: '海濱公園',        short: '公園',     icon: '🌳', gx: 2, gy: 0,  up: null, down: null, left: 'park2', right: 'park_entrance' },
       park_entrance:{ id: 'park_entrance',name: '公園門口',        short: '公園門口', icon: '🌳', gx: 2.5, gy: 0, up: null, down: null, left: null, right: 'main_street', doors: ['park'] },
       main_street:  { id: 'main_street',  name: '繁華大街',        short: '大街',     icon: '🏙️', gx: 3, gy: 0,  up: 'main_street2', down: 'street', left: 'park_entrance', right: 'mall_gate' },
-      mall_gate:    { id: 'mall_gate', 'mall_park1', 'mall_park2', 'mall_park3',    name: '商場門口',        short: '商場門口', icon: '🏬', gx: 3.5, gy: 0, up: 'mall_park3', down: null, left: 'main_street', right: null, doors: ['mall'] },
+      mall_gate:    { id: 'mall_gate',    name: '商場門口',        short: '商場門口', icon: '🏬', gx: 3.5, gy: 0, up: 'mall_park3', down: null, left: 'main_street', right: null, doors: ['mall'] },
       main_street2: { id: 'main_street2', name: '繁華大街 2',      short: '大街2',    icon: '🏙️', gx: 3, gy: -1, up: null, down: 'main_street', left: null, right: null, doors: ['pharmacy', 'bus_interior'] },
       bus_interior: { id: 'bus_interior', name: '市區巴士車廂',    short: '巴士內',   icon: '🚌', gx: 4, gy: -1, up: null, down: null, left: null, right: null, doors: ['main_street2', 'theme_park_gate'] },
       theme_park_gate:{ id: 'theme_park_gate', name: '樂園門口排隊處', short: '樂園門口', icon: '🎟️', gx: 6, gy: 0, up: 'theme_park1', down: null, left: null, right: null, doors: ['bus_interior'] },
@@ -1526,11 +1561,11 @@ html, body {
       return { ex: 540, ey: 440, ix: 60, iy: 440 };
     }
     let followTarget = null;
-    const OUTDOOR_STREET_ROOMS = new Set(['street', 'street2', 'street3', 'main_street', 'main_street2', 'park_entrance', 'park', 'park2', 'mall_gate', 'school_gate', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4']);
+    const OUTDOOR_STREET_ROOMS = new Set(['street', 'street2', 'street3', 'main_street', 'main_street2', 'park_entrance', 'park', 'park2', 'mall_gate', 'mall_park1', 'mall_park2', 'mall_park3', 'school_gate', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4']);
     function getWalkActForRoom(rm) { return OUTDOOR_STREET_ROOMS.has(rm) ? 'street' : 'walking'; }
     function startCharacterWalkTransition(pet, destRoom, destAct, px, py, followView = false) {
       if (pet.currentRoom === destRoom) { pet.currentActivity = destAct; targetX = px; targetY = py; saveState(); return; }
-      const path = findRoomPath(pet.currentRoom, destRoom);
+      const path = findRoomPath(pet.currentRoom, destRoom) || [destRoom];
       const nextRoom = path[0] || destRoom;
       const dir = getRoomMoveDir(pet.currentRoom, nextRoom);
       const edge = getDirEdgeCoords(dir);
@@ -1663,7 +1698,7 @@ html, body {
 
     function startDuoJourney(destRoom, finalAct, finalSpeech, finalToast, onArrive) {
       const pet = ensurePetState(state.activeCharId);
-      const steps = findRoomPath(pet.currentRoom, destRoom);
+      const steps = findRoomPath(pet.currentRoom, destRoom) || [];
       if (steps.length <= 1) {
         duoWalk = null;
         stepDuoIntoRoom(destRoom, finalAct, true, finalSpeech);
@@ -2241,7 +2276,7 @@ html, body {
         // Auto-recover if state.outing.type is active but characters are not yet in that outing area (e.g. from saved state)
         if (!duoWalk && !pet.toiletState && !transitionState) {
           const ot = state.outing.type;
-          const inOutArea = (ot === 'mall' && MALL_AREA_SET.has(pet.currentRoom))
+          const inOutArea = (ot === 'mall' && (MALL_AREA_SET.has(pet.currentRoom) || (pet.currentRoom === 'mall_gate' && state.outing.mallTourIdx === 9)))
             || (ot === 'park' && (pet.currentRoom === 'park' || pet.currentRoom === 'park2'))
             || (ot === 'ice_cream' && (pet.currentRoom === 'ice_cream' || pet.currentRoom === 'street3'))
             || (pet.currentRoom === ot);
@@ -2268,7 +2303,7 @@ html, body {
               updateHUD(); saveState();
             } else if (nowM >= state.mallCafeUntil) {
               state.mallCafeUntil = null; state.mallCafeStage = null;
-              state.outing.mallTourIdx = 6; // next: mall_park1
+              state.outing.mallTourIdx = 5; // next: (5+1)=6 -> mall_park1
               state.outing.lastRoamAt = nowM - 55000;
             }
           } else {
@@ -3288,6 +3323,8 @@ html, body {
         }
       } catch (e) {}
       const pet = ensurePetState(state.activeCharId);
+      if (!MAP_ROOMS[pet.currentRoom]) pet.currentRoom = 'living';
+      if (state.brother && !MAP_ROOMS[state.brother.currentRoom]) state.brother.currentRoom = 'living';
       applyTimeStatsDelta(pet, Date.now() - (pet.lastUpdated || Date.now()));
       syncScheduleActivity(pet, false);
       updateMailboxBadge();
@@ -3305,7 +3342,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3372,6 +3409,8 @@ html, body {
       } else if (isMorning && NIGHT_BG_ROOMS.has(roomId)) {
         bgKey = 'bg_' + roomId + '_morning';
       }
+      if (!sprites[bgKey]) ensureAsset(bgKey);
+      if (!sprites['bg_' + roomId]) ensureAsset('bg_' + roomId);
       const bg = sprites[bgKey] || sprites['bg_' + roomId];
       if (bg) {
         ctx.save();
@@ -3881,6 +3920,8 @@ html, body {
     }
 
     function updateAI() {
+      if (!Number.isFinite(petX) || !Number.isFinite(petY)) { petX = 300; petY = 440; }
+      if (state.brother && (!Number.isFinite(state.brother.px) || !Number.isFinite(state.brother.py))) { state.brother.px = 360; state.brother.py = 440; }
       const char = getActiveChar(), pet = ensurePetState(char.id);
       const now = Date.now(), idleSec = (now - lastInteractAt) / 1000;
       syncScheduleActivity(pet, true);
@@ -4058,6 +4099,7 @@ html, body {
     }
 
     function gameLoop() {
+      try {
       frameCount++; updateAI();
       const char = getActiveChar(), pet = ensurePetState(char.id);
       const outfit = OUTFITS[pet.outfitIdx || 0] || OUTFITS[0];
@@ -4102,6 +4144,7 @@ html, body {
         ctx.fillStyle = pt.color; ctx.font = 'bold 26px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(pt.text, pt.x, pt.y);
         if (pt.life <= 0) particles.splice(i, 1);
       }
+      } catch (e) { console.error('gameLoop error:', e); }
       requestAnimationFrame(gameLoop);
     }
 
@@ -7272,12 +7315,23 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
     }
     updateHeaderDateTime();
     setInterval(updateHeaderDateTime, 10000);
-    loadAssets();
     loadState();
     viewRoomId = ensurePetState(state.activeCharId).currentRoom;
+    loadAssets();
     renderDock();
     updateHUD();
     gameLoop();
+    const _revealApp = () => {
+      document.documentElement.classList.add('tw-ready');
+      const sp = document.getElementById('boot-splash');
+      if (sp) { sp.classList.add('is-done'); setTimeout(() => { try { sp.remove(); } catch(_) {} }, 250); }
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(_revealApp));
+    } else {
+      requestAnimationFrame(_revealApp);
+    }
+    setTimeout(_revealApp, 1500);
   </script>
 
   <script type="module">
@@ -7308,7 +7362,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v81';
+          if (el) el.textContent = '☁️ 雲端已同步 · v81.1';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7347,7 +7401,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v81';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v81.1';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
