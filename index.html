@@ -242,7 +242,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v81.1</span>
+      <span id="save-status">💾 已自動儲存 · v81.2</span>
       
     </div>
 
@@ -754,26 +754,12 @@ html, body {
         { id: 'mp1_bench',  label: '湖邊木長椅',   hx: 460, hy: 420, hr: 95, px: 440, py: 465, act: 'park_breeze', line: '「望住閃閃發亮嘅湖面吹微風，好舒服～🌊💛」' }
       ],
       mall_park2: [
-        { id: 'mp2_board',  label: '柳樹湖畔木棧道', hx: 340, hy: 440, hr: 100, px: 360, py: 470, act: 'park_walk', line: '「沿住湖邊木棧道同哥哥慢慢散步 10 分鐘，柳樹好靚呀！🌿🚶‍♂️」' }
+        { id: 'mp2_love',   label: '與哥哥談情',     hx: 245, hy: 435, hr: 95, px: 255, py: 470, act: 'park_breeze', line: '「沿住湖邊木棧道拖住哥哥隻手慢慢行，淨係兩個人一齊就覺得好幸福～💛🌿」' },
+        { id: 'mp2_lake',   label: '看湖風景',       hx: 350, hy: 410, hr: 95, px: 350, py: 465, act: 'park_breeze', line: '「湖面閃閃發亮又有柳樹影，同哥哥一齊睇風景真係好治癒呀！🌊🌳✨」' },
+        { id: 'mp2_admire', label: '對哥哥說愛慕話', hx: 445, hy: 445, hr: 95, px: 440, py: 475, act: 'happy',       line: '「哥哥…其實每次同你出街我都好開心，最鍾意就係哥哥你啦！💓✨」' }
       ],
       mall_park3: [
         { id: 'mp3_gazebo', label: '湖畔木涼亭',   hx: 430, hy: 360, hr: 100, px: 425, py: 435, act: 'park_breeze', line: '「入到涼亭坐低休息 15 分鐘，聽住噴水池水聲好治癒～⛩️💧」' }
-      ],
-      mall2: [
-        '「翔陽：商場2樓好大呀哥哥！左邊係服裝店右邊係玩具店！｜哥哥：你想睇邊間先？🏬✨」',
-        '「哥哥：行完2樓可以再上觀光大道吹海風｜翔陽：好呀！！最鍾意同哥哥行街！💛」'
-      ],
-      clothing_store: [
-        '「翔陽：哥哥！呢件外套著起上嚟一定好型！｜哥哥：試啱碼數哥哥買畀你～👕✨」',
-        '「哥哥：揀多對襪仔同護腕好唔好？｜翔陽：多謝哥哥！！運動用最啱！🧦💛」'
-      ],
-      toy_store: [
-        '「翔陽：哥哥睇下呢個排球鎖匙扣同模型！！｜哥哥：好啦准你扭一隻扭蛋啦～🧸🎁」',
-        '「哥哥：唔好買太多擺滿間房呀｜翔陽：嘿嘿！淨係睇下都好開心！✨」'
-      ],
-      mall_promenade: [
-        '「翔陽：觀光大道個海景好靚呀！！｜哥哥：吹住海風飲杯咖啡食個布丁最寫意～🌊☕」',
-        '「哥哥：今日陽光好舒服呢｜翔陽：同哥哥一齊嚟呢度散步真係好幸福！💛」'
       ],
       mall: [
         { id: 'mall_sport',  label: '運動用品店', hx: 125, hy: 440, hr: 95,  px: 130, py: 455, act: 'shop_snack', line: '「睇中對新排球鞋呀！好型好輕身！👟✨」' },
@@ -1696,7 +1682,7 @@ html, body {
       renderDock(); updateHUD();
     }
 
-    function startDuoJourney(destRoom, finalAct, finalSpeech, finalToast, onArrive) {
+    function startDuoJourney(destRoom, finalAct, finalSpeech, finalToast, onArrive, stepMs = 5000) {
       const pet = ensurePetState(state.activeCharId);
       const steps = findRoomPath(pet.currentRoom, destRoom) || [];
       if (steps.length <= 1) {
@@ -1708,7 +1694,7 @@ html, body {
         return;
       }
       duoWalk = {
-        steps, idx: 0, stepEnteredAt: Date.now(),
+        steps, idx: 0, stepEnteredAt: Date.now(), stepMs,
         destRoom, finalAct, finalSpeech, finalToast, onArrive
       };
       stepDuoIntoRoom(steps[0], 'street', false, `「出發啦！經過【${MAP_ROOMS[steps[0]]?.name}】前往【${MAP_ROOMS[destRoom]?.name}】…🚶‍♂️」`, steps[1] || destRoom);
@@ -2119,7 +2105,8 @@ html, body {
         }
       }
       if (duoWalk) {
-        if (Date.now() - duoWalk.stepEnteredAt >= 5000) {
+        const curStepMs = Array.isArray(duoWalk.stepMs) ? (duoWalk.stepMs[duoWalk.idx] || 5000) : (duoWalk.stepMs || 5000);
+        if (Date.now() - duoWalk.stepEnteredAt >= curStepMs) {
           duoWalk.idx++;
           if (duoWalk.idx >= duoWalk.steps.length - 1) {
             const dw = duoWalk;
@@ -2285,16 +2272,73 @@ html, body {
             return;
           }
         }
-        // Structured Mall Tour: mall -> mall2 -> toy_store -> clothing_store -> mall_promenade -> (mall_cafe 15m 1x/day) -> mall_park1 -> mall_park2 (10m) -> mall_park3 (15m gazebo) -> mall_gate -> mall
-        const MALL_TOUR_SEQ = ['mall', 'mall2', 'toy_store', 'clothing_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3', 'mall_gate', 'mall'];
+        // Structured Mall Tour:
+        // mall -> mall2 -> toy_store (5m, 3 spots) -[10s+5s]-> clothing_store (5m, 3 spots) -[10s out + 20s]-> mall_promenade -> mall_park1 -[5s if 1st cafe today]-> mall_cafe -[5s out + 10s]-> mall_park2 (10m, 3 spots + 10 non-repeating love chats 1/min) -[5s]-> mall_park3 (15m gazebo) -[5s]-> mall_gate -> home
+        const MALL_TOUR_SEQ = ['mall', 'mall2', 'toy_store', 'clothing_store', 'mall_promenade', 'mall_park1', 'mall_cafe', 'mall_park2', 'mall_park3', 'mall_gate'];
+        const PARK2_ADMIRE_PAIRS = [
+          { h: '「哥哥…每次同你一齊行湖邊，個心都覺得好暖好安靜呀💛」', b: '「哥哥：傻瓜，我亦都最鍾意同翔陽一齊行街散步。」' },
+          { h: '「哥哥隻手好暖呀！可唔可以一路拖住唔放開？😳」', b: '「哥哥：好呀，今日成日都拖實你。」' },
+          { h: '「無論去邊度，只要有哥哥喺身邊就係最好嘅風景✨」', b: '「哥哥：我眼中最好睇嘅風景都係翔陽你嘅笑容。」' },
+          { h: '「哥哥你係咪好攰呀？一陣去涼亭我幫你揼下膊頭！💪」', b: '「哥哥：有翔陽喺度一啲都唔攰，反而覺得好幸福。」' },
+          { h: '「好想以後每個放假都可以好似今日咁，同哥哥兩個人慢慢行🌿」', b: '「哥哥：約定咗啦，之後每個假期我都陪住你。」' },
+          { h: '「哥哥！你笑起上嚟真係好溫柔好靚仔呀…（小聲）💓」', b: '「哥哥：喂喂，突然間講呢啲我會唔好意思㗎…不過多謝你。」' },
+          { h: '「吹住湖風聞到哥哥陣味，覺得好安心好想挨住你🥰」', b: '「哥哥：想挨就挨過嚟啦，我一直喺你身邊。」' },
+          { h: '「如果時間可以停喺呢一刻就好啦，想同哥哥傾耐啲計⏳」', b: '「哥哥：唔使停，我哋仲有好多個聽日可以一齊過。」' },
+          { h: '「哥哥係全世界對我最好嘅人！我最最最鍾意哥哥！！🧡」', b: '「哥哥：我都係，翔陽永遠係我最重視嘅人。」' },
+          { h: '「頭先喺咖啡店食嘅布丁好甜，但同哥哥一齊喺湖邊仲甜呀🍮💛」', b: '「哥哥：呢句咁識講說話邊度學返嚟㗎？真係抵錫。」' }
+        ];
         if (state.outing.type === 'mall' && !duoWalk && !pet.toiletState) {
           const nowM = Date.now();
           const tdM = getTodayStr();
           if (typeof state.outing.mallTourIdx !== 'number') state.outing.mallTourIdx = 0;
           if (!state.outing.lastRoamAt) state.outing.lastRoamAt = nowM;
+          const curR = pet.currentRoom;
 
-          // Cafe 2-step: buy coffee at counter (15s) -> sit at window booth enjoying drinks (remaining 15m)
-          if (pet.currentRoom === 'mall_cafe' && state.mallCafeUntil) {
+          // Sub-spot cycling inside toy_store (5m), clothing_store (5m), and mall_park2 (10m)
+          if (curR === 'toy_store' || curR === 'clothing_store' || curR === 'mall_park2') {
+            const fArr = ROOM_FURNITURE[curR] || [];
+            if (fArr.length > 1) {
+              const spotInterval = (curR === 'mall_park2') ? 200000 : 100000;
+              if (!state.outing.lastSpotAt) state.outing.lastSpotAt = nowM;
+              if (nowM - state.outing.lastSpotAt >= spotInterval) {
+                state.outing.lastSpotAt = nowM;
+                state.outing.subSpotIdx = ((state.outing.subSpotIdx || 0) + 1) % fArr.length;
+                const sp = fArr[state.outing.subSpotIdx];
+                if (sp && typeof sp.px === 'number') {
+                  pet.currentActivity = sp.act || curR;
+                  targetX = sp.px; targetY = sp.py;
+                  bro.currentActivity = sp.act || curR;
+                  bro.tx = sp.px > 320 ? sp.px - 95 : sp.px + 95; bro.ty = sp.py;
+                  if (viewRoomId === curR && sp.line) speakAndShow(sp.line);
+                }
+              }
+            }
+          }
+
+          // 1-minute love dialogue pairs in mall_park2 (10 non-repeating pairs)
+          if (curR === 'mall_park2') {
+            if (!state.outing.lastPark2ChatAt) state.outing.lastPark2ChatAt = nowM - 55000;
+            if (nowM - state.outing.lastPark2ChatAt >= 60000) {
+              state.outing.lastPark2ChatAt = nowM;
+              if (!Array.isArray(window.__park2UsedIdxs) || window.__park2UsedIdxs.length >= PARK2_ADMIRE_PAIRS.length) {
+                window.__park2UsedIdxs = [];
+              }
+              const avail = [];
+              for (let pi = 0; pi < PARK2_ADMIRE_PAIRS.length; pi++) {
+                if (!window.__park2UsedIdxs.includes(pi)) avail.push(pi);
+              }
+              const pickIdx = avail[Math.floor(Math.random() * avail.length)];
+              window.__park2UsedIdxs.push(pickIdx);
+              const pair = PARK2_ADMIRE_PAIRS[pickIdx];
+              if (viewRoomId === 'mall_park2') {
+                speakAndShow(pair.h);
+                setTimeout(() => { if (pet.currentRoom === 'mall_park2' && viewRoomId === 'mall_park2') speakAndShow(pair.b); }, 2800);
+              }
+            }
+          }
+
+          // Cafe 2-step: buy coffee at counter (15s) -> sit at window booth enjoying drinks (5m)
+          if (curR === 'mall_cafe' && state.mallCafeUntil) {
             if (state.mallCafeStage === 'buy' && nowM >= (state.mallCafeBuyUntil || 0)) {
               state.mallCafeStage = 'sit';
               pet.currentActivity = 'promenade_cafe'; targetX = 415; targetY = 455;
@@ -2303,17 +2347,47 @@ html, body {
               updateHUD(); saveState();
             } else if (nowM >= state.mallCafeUntil) {
               state.mallCafeUntil = null; state.mallCafeStage = null;
-              state.outing.mallTourIdx = 5; // next: (5+1)=6 -> mall_park1
-              state.outing.lastRoamAt = nowM - 55000;
+              state.outing.lastRoamAt = nowM;
+              state.outing.mallTourIdx = 7; // mall_park2
+              // 5s out of cafe -> mall_promenade, then 10s -> mall_park1 -> mall_park2 (5s + 5s)
+              startDuoJourney('mall_park2', 'park_breeze', '「飲完咖啡行出咖啡店，10秒散步去湖畔木棧道公園2！🌿🚶‍♂️」', null, () => {
+                state.outing.lastSpotAt = Date.now(); state.outing.subSpotIdx = 0;
+                state.outing.lastPark2ChatAt = Date.now() - 55000;
+                updateHUD();
+              }, [5000, 5000, 5000]);
             }
           } else {
-            const curR = pet.currentRoom;
-            const dwellMs = (curR === 'mall_park2') ? (10 * 60 * 1000) : ((curR === 'mall_park3') ? (15 * 60 * 1000) : 60000);
+            const dwellMs = (curR === 'toy_store' || curR === 'clothing_store') ? (5 * 60 * 1000)
+              : (curR === 'mall_park2') ? (10 * 60 * 1000)
+              : (curR === 'mall_park3') ? (15 * 60 * 1000)
+              : (curR === 'mall_gate') ? 5000
+              : 15000;
             if (nowM - state.outing.lastRoamAt >= dwellMs) {
               state.outing.lastRoamAt = nowM;
-              let nextIdx = (state.outing.mallTourIdx + 1) % MALL_TOUR_SEQ.length;
-              if (MALL_TOUR_SEQ[nextIdx] === 'mall_cafe' && pet.mallCafeDate === tdM) {
-                nextIdx = 6; // already visited cafe today -> go straight to mall_park1
+              // At mall_gate (final stop of tour): ignore remaining date time (<1h or >=1h) and walk home directly!
+              if (curR === 'mall_gate' && state.outing.mallTourIdx >= 9) {
+                endDuoOuting('「行完商場同湖畔公園返到門口啦！無論夠唔夠鐘都一齊慢慢行返屋企～🛍️🏠💛」');
+                return;
+              }
+              let nextIdx = state.outing.mallTourIdx + 1;
+              if (nextIdx >= MALL_TOUR_SEQ.length) {
+                endDuoOuting('「行完商場同湖畔公園啦！一齊慢慢行返屋企～🛍️🏠💛」');
+                return;
+              }
+              let customStepMs = 5000;
+              if (MALL_TOUR_SEQ[nextIdx] === 'mall_cafe') {
+                if (pet.mallCafeDate === tdM) {
+                  nextIdx = 7; // already visited cafe today -> 10s walk straight to mall_park2
+                  customStepMs = 10000;
+                } else {
+                  customStepMs = [2500, 2500]; // 5s total from mall_park1 -> mall_promenade -> mall_cafe
+                }
+              } else if (curR === 'toy_store' && MALL_TOUR_SEQ[nextIdx] === 'clothing_store') {
+                customStepMs = [10000, 5000]; // 10s exit toy_store -> mall2, then 5s -> clothing_store
+              } else if (curR === 'clothing_store' && MALL_TOUR_SEQ[nextIdx] === 'mall_promenade') {
+                customStepMs = [10000, 20000]; // 10s exit clothing_store -> mall2, then 20s -> mall_promenade
+              } else if (MALL_TOUR_SEQ[nextIdx] === 'mall_park3' || MALL_TOUR_SEQ[nextIdx] === 'mall_gate') {
+                customStepMs = 5000;
               }
               state.outing.mallTourIdx = nextIdx;
               const nextR = MALL_TOUR_SEQ[nextIdx];
@@ -2321,8 +2395,8 @@ html, body {
                 pet.mallCafeDate = tdM;
                 state.mallCafeStage = 'buy';
                 state.mallCafeBuyUntil = nowM + 15000;
-                state.mallCafeUntil = nowM + 15 * 60 * 1000;
-                startDuoJourney('mall_cafe', 'cafe_buy', '「嚟到海邊咖啡店！先去櫃枱買咖啡同焦糖布丁（-30金幣）☕🍮」', '海邊咖啡店下午茶（15分鐘・🪙-30）☕🍮', () => {
+                state.mallCafeUntil = nowM + 5 * 60 * 1000;
+                startDuoJourney('mall_cafe', 'cafe_buy', '「今日第一次到公園1！5秒行過去海邊咖啡店買咖啡同焦糖布丁（-30金幣）☕🍮」', '海邊咖啡店下午茶（🪙-30）☕🍮', () => {
                   const payC = Math.min(pet.coins, 30);
                   pet.coins -= payC;
                   if (payC > 0) recordCoinLog(pet, '☕ 海邊咖啡店（咖啡＋布丁）', -payC, pet.coins);
@@ -2335,15 +2409,19 @@ html, body {
                   recordStatLog(pet, 'energy', '🍮 咖啡店布丁', e0, pet.energy);
                   addBladderFromConsume(pet, true);
                   saveState();
-                });
+                }, customStepMs);
               } else {
                 const fList = ROOM_FURNITURE[nextR] || [];
                 const pickF = fList[0] || { act: nextR, line: `「一齊行去【${MAP_ROOMS[nextR]?.name}】！🛍️」` };
-                const customLine = (nextR === 'mall_park2') ? '「嚟到湖畔木棧道公園2！喺柳樹下慢慢散步 10 分鐘～🌿🚶‍♂️」' : ((nextR === 'mall_park3') ? '「嚟到湖畔涼亭！入去涼亭坐低休息 15 分鐘先～⛩️💧」' : pickF.line);
+                const customLine = (nextR === 'mall_park2') ? '「嚟到湖畔木棧道公園2！喺度停留 10 分鐘同哥哥談情睇風景～🌿💛」'
+                  : ((nextR === 'mall_park3') ? '「嚟到湖畔涼亭！入去涼亭坐低休息 15 分鐘先～⛩️💧」'
+                  : ((nextR === 'mall_gate') ? '「行返出商場門口啦！準備行返屋企～🏬💛」' : pickF.line));
                 startDuoJourney(nextR, pickF.act, customLine, null, () => {
+                  state.outing.lastSpotAt = Date.now(); state.outing.subSpotIdx = 0;
+                  if (nextR === 'mall_park2') state.outing.lastPark2ChatAt = Date.now() - 55000;
                   if (nextR === 'mall_park3') { targetX = 415; targetY = 435; bro.tx = 475; bro.ty = 435; }
                   updateHUD();
-                });
+                }, customStepMs);
               }
             }
           }
@@ -3342,7 +3420,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81.2'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3998,7 +4076,8 @@ html, body {
         updateHUD();
       }
 
-      if (state.brother && pet.currentRoom === state.brother.currentRoom && pet.currentRoom !== 'bath' && !['sleep','waking','breakfast','lunch','dinner'].includes(pet.currentActivity)) {
+      const _isWalkingNow = Boolean(duoWalk || petWalk || broWalk || transitionState || ['street', 'walking'].includes(pet.currentActivity) || Math.hypot(targetX - petX, targetY - petY) > 12 || (state.brother && Math.hypot(state.brother.tx - state.brother.px, state.brother.ty - state.brother.py) > 12));
+      if (!_isWalkingNow && state.brother && pet.currentRoom === state.brother.currentRoom && pet.currentRoom !== 'bath' && !['sleep','waking','breakfast','lunch','dinner'].includes(pet.currentActivity)) {
         const bro = state.brother;
         if (Math.abs(targetX - bro.tx) < 92) {
           const mid = Math.max(150, Math.min(450, (targetX + bro.tx) / 2));
@@ -4006,46 +4085,14 @@ html, body {
           bro.tx = mid + 50;
         }
       }
-      const MALL_STROLL_PATHS = {
-        mall:           [{ x: 135, y: 455 }, { x: 275, y: 450 }, { x: 455, y: 480 }, { x: 445, y: 415 }, { x: 275, y: 450 }],
-        mall2:          [{ x: 330, y: 485 }, { x: 395, y: 450 }, { x: 445, y: 415 }, { x: 395, y: 450 }],
-        clothing_store: [{ x: 165, y: 455 }, { x: 300, y: 450 }, { x: 445, y: 455 }, { x: 300, y: 450 }],
-        toy_store:      [{ x: 155, y: 455 }, { x: 295, y: 450 }, { x: 435, y: 455 }, { x: 295, y: 450 }],
-        mall_promenade: [{ x: 185, y: 450 }, { x: 300, y: 450 }, { x: 425, y: 450 }, { x: 300, y: 450 }],
-        mall_park1:     [{ x: 230, y: 480 }, { x: 310, y: 455 }, { x: 380, y: 445 }, { x: 310, y: 455 }],
-        mall_park2:     [{ x: 310, y: 495 }, { x: 390, y: 465 }, { x: 330, y: 435 }, { x: 390, y: 465 }]
-      };
       if (duoWalk && !pet.toiletState) {
-        const dt = Math.max(0, Math.min(1, (Date.now() - duoWalk.stepEnteredAt) / 5000));
+        const curStepMs = Array.isArray(duoWalk.stepMs) ? (duoWalk.stepMs[duoWalk.idx] || 5000) : (duoWalk.stepMs || 5000);
+        const dt = Math.max(0, Math.min(1, (Date.now() - duoWalk.stepEnteredAt) / curStepMs));
         petX = (duoWalk.startX ?? petX) + (targetX - (duoWalk.startX ?? petX)) * dt;
         petY = (duoWalk.startY ?? petY) + (targetY - (duoWalk.startY ?? petY)) * dt;
         if (state.brother && state.brother.currentRoom === pet.currentRoom) {
           state.brother.px = (duoWalk.broStartX ?? state.brother.px) + (state.brother.tx - (duoWalk.broStartX ?? state.brother.px)) * dt;
           state.brother.py = (duoWalk.broStartY ?? state.brother.py) + (state.brother.ty - (duoWalk.broStartY ?? state.brother.py)) * dt;
-        }
-      } else if (!pet.toiletState && MALL_AREA_SET.has(pet.currentRoom) && !['mall_cafe', 'mall_park3'].includes(pet.currentRoom) && !state.mallCafeUntil && pet.currentActivity !== 'promenade_cafe' && !transitionState && !duoWalk) {
-        const pathPts = MALL_STROLL_PATHS[pet.currentRoom];
-        if (pathPts && pathPts.length >= 2) {
-          if (!window.__mallStroll || window.__mallStroll.room !== pet.currentRoom) {
-            window.__mallStroll = { room: pet.currentRoom, idx: 0 };
-          }
-          const wp = pathPts[window.__mallStroll.idx % pathPts.length];
-          const dx = wp.x - petX, dy = wp.y - petY;
-          const dist = Math.hypot(dx, dy);
-          if (dist < 8) {
-            window.__mallStroll.idx = (window.__mallStroll.idx + 1) % pathPts.length;
-          } else {
-            const spd = 0.65;
-            petX += (dx / dist) * spd;
-            petY += (dy / dist) * spd;
-          }
-          targetX = wp.x; targetY = wp.y;
-          if (state.brother && state.brother.currentRoom === pet.currentRoom) {
-            state.brother.tx = (petX > 410) ? Math.max(80, petX - 95) : Math.min(520, petX + 95);
-            state.brother.ty = petY;
-            const bdx = state.brother.tx - state.brother.px, bdy = state.brother.ty - state.brother.py;
-            if (Math.hypot(bdx, bdy) > 2) { state.brother.px += bdx * 0.045; state.brother.py += bdy * 0.045; }
-          }
         }
       } else if (!pet.toiletState && (pet.currentRoom === 'park' || pet.currentRoom === 'park2') && (pet.currentActivity === 'park_walk' || pet.currentActivity === 'park_jog') && !transitionState && !duoWalk) {
         if (!window.__parkDir) window.__parkDir = -1;
@@ -7362,7 +7409,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v81.1';
+          if (el) el.textContent = '☁️ 雲端已同步 · v81.2';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7401,7 +7448,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v81.1';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v81.2';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
