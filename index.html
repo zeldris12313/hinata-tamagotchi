@@ -248,7 +248,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v89</span>
+      <span id="save-status">💾 已自動儲存 · v90</span>
       
     </div>
 
@@ -1804,10 +1804,11 @@ html, body {
       renderDock(); updateHUD();
     }
 
-    function startDuoJourney(destRoom, finalAct, finalSpeech, finalToast, onArrive, stepMs = 5000) {
+    function startDuoJourney(destRoom, finalAct, finalSpeech, finalToast, onArrive, stepMs = 5000, walkActOverride = null) {
       const pet = ensurePetState(state.activeCharId);
+      const bro = state.brother;
       const steps = findRoomPath(pet.currentRoom, destRoom) || [];
-      if (steps.length <= 1) {
+      if (steps.length === 0) {
         duoWalk = null;
         stepDuoIntoRoom(destRoom, finalAct, true, finalSpeech);
         if (finalToast) showToast(finalToast);
@@ -1815,11 +1816,29 @@ html, body {
         saveState();
         return;
       }
+      if (steps.length === 1) {
+        const dOut = getDirEdgeCoords(getRoomMoveDir(pet.currentRoom, destRoom));
+        const wAct = walkActOverride || getWalkActForRoom(pet.currentRoom);
+        pet.currentActivity = wAct;
+        if (bro && bro.currentRoom === pet.currentRoom) bro.currentActivity = wAct;
+        targetX = dOut.ex; targetY = dOut.ey;
+        if (bro && bro.currentRoom === pet.currentRoom) {
+          bro.tx = Math.max(60, Math.min(540, dOut.ex + (dOut.ex > 300 ? -65 : 65))); bro.ty = dOut.ey;
+        }
+        duoWalk = {
+          steps, idx: -1, stepEnteredAt: Date.now(), stepMs, walkActOverride,
+          startX: petX, startY: petY, broStartX: bro ? bro.px : 320, broStartY: bro ? bro.py : 445,
+          destRoom, finalAct, finalSpeech, finalToast, onArrive
+        };
+        if (finalSpeech && viewRoomId === pet.currentRoom) speakAndShow(finalSpeech);
+        updateHUD(); saveState();
+        return;
+      }
       duoWalk = {
-        steps, idx: 0, stepEnteredAt: Date.now(), stepMs,
+        steps, idx: 0, stepEnteredAt: Date.now(), stepMs, walkActOverride,
         destRoom, finalAct, finalSpeech, finalToast, onArrive
       };
-      stepDuoIntoRoom(steps[0], 'street', false, `「出發啦！經過【${MAP_ROOMS[steps[0]]?.name}】前往【${MAP_ROOMS[destRoom]?.name}】…🚶‍♂️」`, steps[1] || destRoom);
+      stepDuoIntoRoom(steps[0], walkActOverride || 'street', false, `「出發啦！經過【${MAP_ROOMS[steps[0]]?.name}】前往【${MAP_ROOMS[destRoom]?.name}】…🚶‍♂️」`, steps[1] || destRoom);
       saveState();
     }
 
@@ -2260,7 +2279,7 @@ html, body {
           } else {
             const nextR = duoWalk.steps[duoWalk.idx];
             duoWalk.stepEnteredAt = Date.now();
-            stepDuoIntoRoom(nextR, 'street', false, `「行經【${MAP_ROOMS[nextR]?.name}】，仲有幾步就到【${MAP_ROOMS[duoWalk.destRoom]?.name}】啦！🚶‍♂️」`, duoWalk.steps[duoWalk.idx + 1] || duoWalk.destRoom);
+            stepDuoIntoRoom(nextR, duoWalk.walkActOverride || 'street', false, `「行經【${MAP_ROOMS[nextR]?.name}】，仲有幾步就到【${MAP_ROOMS[duoWalk.destRoom]?.name}】啦！🚶‍♂️」`, duoWalk.steps[duoWalk.idx + 1] || duoWalk.destRoom);
             saveState();
           }
         }
@@ -2606,7 +2625,7 @@ html, body {
         const PARK_LOOP_SEQ = ['park', 'park3', 'park2', 'park4'];
         if (state.outing.type === 'park' && PARK_LOOP_SEQ.includes(pet.currentRoom) && !duoWalk && !pet.toiletState) {
           if (!window.__lastParkAutoAt) window.__lastParkAutoAt = Date.now();
-          if (Date.now() - window.__lastParkAutoAt > 12000) {
+          if (Date.now() - window.__lastParkAutoAt > 14000) {
             window.__lastParkAutoAt = Date.now();
             const r = Math.random();
             let nextParkAct = pet.currentActivity;
@@ -2617,12 +2636,14 @@ html, body {
               const curPIdx = PARK_LOOP_SEQ.indexOf(pet.currentRoom);
               const nextPR = PARK_LOOP_SEQ[(curPIdx + 1) % PARK_LOOP_SEQ.length];
               const pMsg = nextParkAct === 'park_jog'
-                ? `「沿住公園內循環慢跑到【${MAP_ROOMS[nextPR]?.name}】！🏃‍♂️💨」`
-                : `「同哥哥沿住內循環散步去【${MAP_ROOMS[nextPR]?.name}】～🌳✨」`;
+                ? `「一二、一二！沿住公園內循環慢跑去【${MAP_ROOMS[nextPR]?.name}】！🏃‍♂️💨」`
+                : `「同哥哥沿住內循環慢慢散步去【${MAP_ROOMS[nextPR]?.name}】～🌳✨」`;
+              const pStepMs = nextParkAct === 'park_jog' ? 5500 : 8500;
               startDuoJourney(nextPR, nextParkAct, pMsg, null, () => {
-                targetX = 280; bro.tx = 385; targetY = 445; bro.ty = 445;
+                window.__lastParkAutoAt = Date.now();
+                targetX = 270; bro.tx = 375; targetY = 445; bro.ty = 445;
                 updateHUD();
-              });
+              }, pStepMs, nextParkAct);
               return;
             } else {
               pet.currentActivity = 'park_breeze'; bro.currentActivity = 'park_breeze';
@@ -3606,7 +3627,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v89'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v90'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -7096,10 +7117,18 @@ html, body {
           playSFX('levelup'); speakAndShow('「哥哥溫柔咁向病人解釋食藥時間同注意事項～🩺💛」');
           particles.push({ x: 460, y: 350, text: '🩺 出藥畀病人', color: '#f59e0b', life: 36 }); updateHUD(); saveState();
         } else if (id === 'park_jog' || id === 'park_walk' || id === 'park_breeze') {
-          pet.currentActivity = id; bro.currentActivity = id;
-          if (id === 'park_jog') { window.__parkDir = (pet.currentRoom === 'park2') ? 1 : -1; speakAndShow('「一二、一二！同哥哥喺公園慢跑練氣好爽呀！🏃‍♂️💨」'); }
-          else if (id === 'park_walk') { window.__parkDir = (pet.currentRoom === 'park2') ? 1 : -1; speakAndShow('「同哥哥慢慢散步傾下學校趣事，好寫意～🚶‍♂️😊」'); }
-          else { const bx = (pet.currentRoom === 'park2') ? 195 : 360; targetX = bx; bro.tx = bx + 85; targetY = 445; bro.ty = 445; speakAndShow('「一齊吹住海風睇海景，成日嘅疲勞都散晒！🌊✨」'); }
+          const pSeq = ['park', 'park3', 'park2', 'park4'];
+          if (id === 'park_jog' || id === 'park_walk') {
+            const cIdx = pSeq.indexOf(pet.currentRoom);
+            const nextP = cIdx >= 0 ? pSeq[(cIdx + 1) % pSeq.length] : 'park';
+            const msgP = id === 'park_jog' ? `「一二、一二！沿住內循環慢跑去【${MAP_ROOMS[nextP]?.name}】！🏃‍♂️💨」` : `「同哥哥沿住內循環慢慢散步去【${MAP_ROOMS[nextP]?.name}】～🚶‍♂️😊」`;
+            window.__lastParkAutoAt = Date.now();
+            startDuoJourney(nextP, id, msgP, null, () => { window.__lastParkAutoAt = Date.now(); targetX = 270; bro.tx = 375; targetY = 445; bro.ty = 445; updateHUD(); }, id === 'park_jog' ? 5500 : 8500, id);
+          } else {
+            pet.currentActivity = id; bro.currentActivity = id;
+            const bx = (pet.currentRoom === 'park2' || pet.currentRoom === 'park3') ? 195 : 340; targetX = bx; bro.tx = bx + 95; targetY = 445; bro.ty = 445;
+            speakAndShow('「一齊吹住海風睇海景，成日嘅疲勞都散晒！🌊✨」');
+          }
           pet.mood = Math.min(100, pet.mood + ((state.balance && state.balance.actParkMood) ?? 6)); grantCappedRewards(pet, 4, 3);
           playSFX('pat'); updateHUD(); saveState();
         } else if (id === 'go_home') {
@@ -8096,7 +8125,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v89';
+          if (el) el.textContent = '☁️ 雲端已同步 · v90';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8135,7 +8164,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v89';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v90';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
