@@ -242,7 +242,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v83</span>
+      <span id="save-status">💾 已自動儲存 · v83.1</span>
       
     </div>
 
@@ -408,9 +408,9 @@ html, body {
       bg_park_morning: "./assets/bg_park_morning.jpg?v=69",
       bg_mall_morning: "./assets/bg_mall_morning.jpg?v=69",
       bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=83",
-      bg_rest_toilet: "./assets/bg_rest_toilet.jpg?v=83",
-      bg_rest_toilet_morning: "./assets/bg_rest_toilet_morning.jpg?v=83",
-      bg_rest_toilet_night: "./assets/bg_rest_toilet_night.jpg?v=83",
+      bg_rest_toilet: "./assets/bg_park_toilet.jpg?v=83.1",
+      bg_rest_toilet_morning: "./assets/bg_park_toilet_morning.jpg?v=83.1",
+      bg_rest_toilet_night: "./assets/bg_park_toilet_night.jpg?v=83.1",
       bg_park3: "./assets/bg_park3.jpg?v=83",
       bg_park3_morning: "./assets/bg_park3_morning.jpg?v=83",
       bg_park3_night: "./assets/bg_park3_night.jpg?v=83",
@@ -3561,7 +3561,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v83'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v83.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -7928,7 +7928,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v83';
+          if (el) el.textContent = '☁️ 雲端已同步 · v83.1';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7967,7 +7967,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v83';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v83.1';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
