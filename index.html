@@ -162,8 +162,9 @@ html, body {
         <button id="btn-park-gate-bus" type="button" data-door-room="bus_interior" style="left:84%;top:58%;transform:translate(-50%,-50%)" class="hidden absolute px-2.5 py-1 rounded-xl bg-sky-100/95 hover:bg-sky-200 border-2 border-[#2d1e12] text-[10px] font-black shadow-md z-15">🚌 巴士站</button>
         <button id="btn-park-ent-enter" type="button" data-door-room="park" style="left:50%;top:56%;transform:translate(-50%,-50%)" class="hidden absolute px-3 py-1.5 rounded-xl bg-emerald-100/95 hover:bg-emerald-200 border-2 border-[#2d1e12] text-xs font-black shadow-md z-15">🌳 進入公園</button>
         <button id="btn-mall-gate-enter" type="button" data-door-room="mall" style="left:50%;top:56%;transform:translate(-50%,-50%)" class="hidden absolute px-3 py-1.5 rounded-xl bg-amber-100/95 hover:bg-amber-200 border-2 border-[#2d1e12] text-xs font-black shadow-md z-15">🛍️ 進入商場</button>
-        <button id="btn-gate-class" type="button" style="left:50%;top:56%;transform:translate(-50%,-50%)" class="hidden absolute px-3 py-1.5 rounded-xl bg-amber-100/95 hover:bg-amber-200 border-2 border-[#2d1e12] text-xs font-black shadow-md z-15">🏫 課室</button>
+        <button id="btn-gate-class" type="button" style="left:50%;top:56%;transform:translate(-50%,-50%)" class="hidden absolute px-3 py-1.5 rounded-xl bg-amber-100/95 hover:bg-amber-200 border-2 border-[#2d1e12] text-xs font-black shadow-md z-15">🏫 進入學校</button>
         <button id="btn-hallway-living" type="button" style="left:36%;top:47%;transform:translate(-50%,-50%)" class="hidden absolute px-2 py-1 rounded-xl bg-amber-100/90 hover:bg-amber-200 border-2 border-[#2d1e12] text-[10px] font-black shadow-md z-15">🏠 客廳</button>
+        <button id="btn-vend-snack" type="button" style="left:77%;top:64%;transform:translate(-50%,-50%)" class="hidden absolute px-2 py-1 rounded-xl bg-rose-100/95 hover:bg-rose-200 border-2 border-[#2d1e12] text-[10px] font-black shadow-md z-15">🥤 汽水機小食</button>
         <div id="hallway-2f-doors" class="hidden pointer-events-none absolute inset-0 z-15">
           <button type="button" data-door-room="room_hinata" title="進入翔陽房間" style="left:11%;top:48%;width:18%;height:62%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute rounded-xl hover:bg-orange-400/15 active:bg-orange-400/25 transition"></button>
           <button type="button" data-door-room="room_aniki" title="進入哥哥房間" style="left:89%;top:48%;width:18%;height:62%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute rounded-xl hover:bg-indigo-400/15 active:bg-indigo-400/25 transition"></button>
@@ -248,7 +249,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v84</span>
+      <span id="save-status">💾 已自動儲存 · v86</span>
       
     </div>
 
@@ -467,6 +468,9 @@ html, body {
       bg_street_mid: "./assets/bg_street_mid.jpg?v=84",
       bg_street_mid_morning: "./assets/bg_street_mid_morning.jpg?v=84",
       bg_street_mid_night: "./assets/bg_street_mid_night.jpg?v=84",
+      bg_street_cross: "./assets/bg_street_cross.jpg?v=86",
+      bg_street_cross_morning: "./assets/bg_street_cross_morning.jpg?v=86",
+      bg_street_cross_night: "./assets/bg_street_cross_night.jpg?v=86",
       bg_supermarket: "./assets/bg_supermarket.jpg?v=69",
       bg_supermarket_morning: "./assets/bg_supermarket_morning.jpg?v=69",
       bg_supermarket_night: "./assets/bg_supermarket_night.jpg?v=69",
@@ -595,7 +599,7 @@ html, body {
       park4:        { id: 'park4',        name: '海濱公園・海濱廣場', short: '公園4',  icon: '⛵', gx: 2, gy: 1,  up: 'park', down: null, left: 'park2', right: 'park_entrance' },
       park_toilet:  { id: 'park_toilet',  name: '公園公廁',        short: '公廁',     icon: '🚻', gx: 1, gy: 2,  up: 'park2', down: null, left: null, right: null },
       park_entrance:{ id: 'park_entrance',name: '公園門口',        short: '公園門口', icon: '🌳', gx: 2.5, gy: 0, up: null, down: null, left: 'park', right: 'main_street', doors: ['park'] },
-      main_street:  { id: 'main_street',  name: '繁華大街',        short: '大街',     icon: '🏙️', gx: 3, gy: 0,  up: 'main_street2', down: 'street', left: 'park_entrance', right: 'mall_gate' },
+      main_street:  { id: 'main_street',  name: '繁華大街',        short: '大街',     icon: '🏙️', gx: 3, gy: 0,  up: 'main_street2', down: 'street_cross', left: 'park_entrance', right: 'mall_gate' },
       mall_gate:    { id: 'mall_gate',    name: '商場門口',        short: '商場門口', icon: '🏬', gx: 3.5, gy: 0, up: 'mall_park3', down: null, left: 'main_street', right: null, doors: ['mall'] },
       main_street2: { id: 'main_street2', name: '繁華大街 2',      short: '大街2',    icon: '🏙️', gx: 3, gy: -1, up: null, down: 'main_street', left: null, right: null, doors: ['pharmacy', 'bus_interior'] },
       bus_interior: { id: 'bus_interior', name: '市區巴士車廂',    short: '巴士內',   icon: '🚌', gx: 4, gy: -1, up: null, down: null, left: null, right: null, doors: ['main_street2', 'theme_park_gate'] },
@@ -623,10 +627,11 @@ html, body {
       toilet:       { id: 'toilet',       name: '1F 廁所',         short: '廁所',     icon: '🚽', gx: 1, gy: 1,  up: null, down: 'wash_hall', left: null, right: null },
       bath:         { id: 'bath',         name: '1F 浴室',         short: '浴室',     icon: '🛁', gx: 3, gy: 1,  up: null, down: 'wash_hall', left: null, right: null },
       living:       { id: 'living',       name: '1F 客廳',         short: '客廳',     icon: '🏠', gx: 1, gy: 2,  up: null, down: null, left: 'backyard', right: 'hallway' },
-      hallway:      { id: 'hallway',      name: '1F 走廊玄關',     short: '走廊',     icon: '🚪', gx: 2, gy: 2,  up: 'wash_hall', down: 'kitchen', left: 'hallway_2f', right: 'street', doors: ['living'] },
-      street:       { id: 'street',       name: '室外街道',        short: '街道',     icon: '🛣️', gx: 3, gy: 2,  up: 'main_street', down: 'school_gate', left: 'hallway', right: 'street_mid' },
-      street_mid:   { id: 'street_mid',   name: '室外街道中段',    short: '街道中段', icon: '🛣️', gx: 3.5, gy: 2, up: null, down: null, left: 'street', right: 'street2' },
-      school_gate:  { id: 'school_gate',  name: '烏野高校校門',    short: '校門',     icon: '⛩️', gx: 3, gy: 2.5, up: 'street', down: null, left: null, right: null, doors: ['school_class'] },
+      hallway:      { id: 'hallway',      name: '1F 走廊玄關',     short: '家',       icon: '🚪', gx: 2, gy: 2,  up: 'wash_hall', down: 'kitchen', left: 'hallway_2f', right: 'street', doors: ['living'] },
+      street:       { id: 'street',       name: '室外街道',        short: '街道',     icon: '🛣️', gx: 2.5, gy: 2, up: null, down: null, left: 'hallway', right: 'street_cross' },
+      street_cross: { id: 'street_cross', name: '十字路口',        short: '十字路',   icon: '🚦', gx: 3, gy: 2,  up: 'main_street', down: 'school_gate', left: 'street', right: 'street_mid' },
+      street_mid:   { id: 'street_mid',   name: '室外街道中段',    short: '街道中段', icon: '🛣️', gx: 3.5, gy: 2, up: null, down: null, left: 'street_cross', right: 'street2' },
+      school_gate:  { id: 'school_gate',  name: '烏野高校校門',    short: '校門',     icon: '⛩️', gx: 3, gy: 2.5, up: 'street_cross', down: 'school_hall', left: null, right: null },
       street2:      { id: 'street2',      name: '室外街道2',       short: '街道2',    icon: '🛣️', gx: 4, gy: 2,  up: 'street3', down: 'supermarket', left: 'street_mid', right: 'konbini' },
       street3:      { id: 'street3',      name: '室外街道3',       short: '街道3',    icon: '🛣️', gx: 4, gy: 1,  up: null, down: 'street2', left: null, right: 'ice_cream' },
       ice_cream:    { id: 'ice_cream',    name: '雪糕店',          short: '雪糕店',   icon: '🍦', gx: 5, gy: 1,  up: null, down: null, left: 'street3', right: null },
@@ -634,12 +639,12 @@ html, body {
       supermarket:  { id: 'supermarket',  name: '超級市場',        short: '超市',     icon: '🛒', gx: 4, gy: 3,  up: 'street2', down: null, left: null, right: null },
       kitchen:      { id: 'kitchen',      name: '1F 廚房',         short: '廚房',     icon: '🍳', gx: 2, gy: 3,  up: 'hallway', down: null, left: null, right: 'backyard' },
       backyard:     { id: 'backyard',     name: '屋後院子',        short: '後院',     icon: '🏡', gx: 0, gy: 2,  up: null, down: 'kitchen', left: null, right: 'living' },
-      school_class: { id: 'school_class', name: '學校課室',        short: '課室',     icon: '🏫', gx: 3, gy: 3,  up: null, down: 'school_gate', left: null, right: 'school_hall' },
-      school_hall:  { id: 'school_hall',  name: '學校走廊',        short: '校走廊',   icon: '🚶', gx: 4, gy: 3,  up: 'school_court', down: 'school_toilet', left: 'school_class', right: 'school_tuckshop' },
-      school_tuckshop: { id: 'school_tuckshop', name: '學校小食部', short: '小食部',   icon: '🥐', gx: 5, gy: 3,  up: null, down: null, left: 'school_hall', right: 'school_infirmary' },
+      school_class: { id: 'school_class', name: '學校課室',        short: '課室',     icon: '🏫', gx: 3, gy: 3,  up: null, down: null, left: null, right: 'school_hall' },
+      school_hall:  { id: 'school_hall',  name: '學校走廊',        short: '校走廊',   icon: '🚶', gx: 4, gy: 3,  up: 'school_gate', down: 'school_court', left: 'school_class', right: 'school_tuckshop' },
+      school_tuckshop: { id: 'school_tuckshop', name: '學校小食部', short: '小食部',   icon: '🥐', gx: 5, gy: 3,  up: null, down: 'school_toilet', left: 'school_hall', right: 'school_infirmary' },
       school_infirmary: { id: 'school_infirmary', name: '學校醫療室', short: '醫療室', icon: '🩺', gx: 6, gy: 3, up: null, down: null, left: 'school_tuckshop', right: null },
-      school_court: { id: 'school_court', name: '室內學校排球場',  short: '室內球場', icon: '🏐', gx: 4, gy: 2,  up: null, down: 'school_hall', left: null, right: null },
-      school_toilet: { id: 'school_toilet', name: '校內廁所',       short: '校廁所',   icon: '🚻', gx: 4, gy: 4,  up: 'school_hall', down: null, left: null, right: null }
+      school_court: { id: 'school_court', name: '室內學校排球場',  short: '室內球場', icon: '🏐', gx: 4, gy: 4,  up: 'school_hall', down: null, left: null, right: null },
+      school_toilet: { id: 'school_toilet', name: '校內廁所',       short: '校廁所',   icon: '🚻', gx: 5, gy: 4,  up: 'school_tuckshop', down: null, left: null, right: null }
     };
 
     const ROOM_FURNITURE = {
@@ -699,6 +704,10 @@ html, body {
       ],
       street2: [
         { id: 'walk_st2', label: '街道2漫步', hx: 280, hy: 420, hr: 95, px: 280, py: 440, act: 'street', line: '「經過室外街道2，右邊係便利店，下面係超級市場！🛣️」' }
+      ],
+      street_cross: [
+        { id: 'vend_cross', label: '十字路口自動販賣機', hx: 455, hy: 405, hr: 95, px: 390, py: 445, act: 'vend_drink', line: '「喺十字路口紅色販賣機叮一罐飲品先！🥤」' },
+        { id: 'walk_cross', label: '過斑馬線', hx: 235, hy: 445, hr: 95, px: 245, py: 450, act: 'street', line: '「過十字路口斑馬線要左右望清楚先好行！🚦🚶‍♂️」' }
       ],
       street_mid: [
         { id: 'walk_st_mid', label: '街道中段漫步', hx: 280, hy: 420, hr: 95, px: 280, py: 440, act: 'street', line: '「沿住木屋小巷行去街角小店，陣陣微風好舒服！🛣️✨」' }
@@ -1519,7 +1528,7 @@ html, body {
         if (m < 495)  return { key: 'wd_brush',  room: 'bath',         act: 'brush',        outfit: 2, px: 165, py: 440, label: '起身刷牙' };
         if (m < 515)  return { key: 'wd_bfast',  room: 'kitchen',      act: 'breakfast',    outfit: 1, px: 435, py: 455, label: '一齊食早餐' };
         if (m < 517)  return { key: 'wd_hall_go', room: 'hallway',     act: 'hallway',      outfit: 1, px: 215, py: 440, label: '玄關檢查鎖匙出門' };
-        if (m < 530)  return { key: 'wd_go',     room: 'street',       act: 'street',       outfit: 1, px: 285, py: 440, label: '一齊出門返學' };
+        if (m < 530)  return { key: 'wd_go',     room: 'street_cross', act: 'street',       outfit: 1, px: 265, py: 445, label: '一齊出門返學' };
         if (m < 660)  return { key: 'wd_class1a', room: 'school_class', act: 'school_class', outfit: 1, px: 235, py: 435, label: '上堂中' };
         if (m < 680)  return { key: 'wd_rec1',   room: 'school_hall',  act: 'recess_walk',  outfit: 1, px: 260, py: 440, label: '早堂小息', isRecess: true };
         if (m < 735)  return { key: 'wd_class1b', room: 'school_class', act: 'school_class', outfit: 1, px: 235, py: 435, label: '上堂中' };
@@ -1530,7 +1539,7 @@ html, body {
         if (m < 975)  return { key: 'wd_club1',  room: 'school_court', act: 'school_court', outfit: 0, px: 300, py: 435, label: '放學練波' };
         if (m < 990)  return { key: 'wd_water',  room: 'school_court', act: 'water_break',  outfit: 0, px: 420, py: 440, label: '練波飲水休息' };
         if (m < 1020) return { key: 'wd_club2',  room: 'school_court', act: 'school_court', outfit: 0, px: 300, py: 435, label: '放學練波' };
-        if (m < 1050) return { key: 'wd_homew',  room: 'street',       act: 'street',       outfit: 1, px: 285, py: 440, label: '同哥哥一齊返屋企' };
+        if (m < 1050) return { key: 'wd_homew',  room: 'street_cross', act: 'street',       outfit: 1, px: 265, py: 445, label: '同哥哥一齊返屋企' };
         if (m < 1095) return { key: 'wd_home_seq', room: 'hallway',   act: 'hallway',      outfit: 1, px: 215, py: 440, label: '返屋企放書包休息', isHomeSeq: true };
         if (m < 1125) {
           if (skipDinner) return { key: 'wd_bath_early', room: 'bath', act: 'bath', outfit: 2, px: 405, py: 332, label: '提前一齊浸浴' };
@@ -1572,11 +1581,11 @@ html, body {
         if (m < 495)  return { key: 'br_prep_bf',    room: 'kitchen',    act: 'prep_bfast',    px: 280, py: 435 };
         if (m < 515)  return { key: 'br_bfast',      room: 'kitchen',    act: 'breakfast',     px: 505, py: 440 };
         if (m < 517)  return { key: 'br_hall_go',    room: 'hallway',    act: 'aniki_hall_tidy', px: 345, py: 440 };
-        if (m < 530)  return { key: 'br_go',         room: 'street',     act: 'street',        px: 385, py: 440 };
+        if (m < 530)  return { key: 'br_go',         room: 'street_cross', act: 'street',        px: 375, py: 445 };
         if (m < 750)  return { key: 'br_work1',      room: 'pharmacy',   act: 'pharmacy_work', px: 260, py: 440 };
         if (m < 795)  return { key: 'br_canteen',    room: 'canteen',    act: 'canteen_lunch', px: 300, py: 440 };
         if (m < 1020) return { key: 'br_work2',      room: 'pharmacy',   act: 'pharmacy_work', px: 360, py: 440 };
-        if (m < 1050) return { key: 'br_homew',      room: 'street',     act: 'street',        px: 385, py: 440 };
+        if (m < 1050) return { key: 'br_homew',      room: 'street_cross', act: 'street',        px: 375, py: 445 };
         if (m < 1055) return { key: 'br_hall_tidy',  room: 'hallway',    act: 'aniki_hall_tidy', px: 310, py: 440 };
         if (m < 1095) return { key: 'br_cook_din',   room: 'kitchen',    act: 'cook_dinner',   px: 255, py: 435 };
         if (m < 1125) {
@@ -1652,7 +1661,7 @@ html, body {
       return { ex: 540, ey: 440, ix: 60, iy: 440 };
     }
     let followTarget = null;
-    const OUTDOOR_STREET_ROOMS = new Set(['street', 'street_mid', 'street2', 'street3', 'main_street', 'main_street2', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall_park1', 'mall_park2', 'mall_park3', 'school_gate', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4']);
+    const OUTDOOR_STREET_ROOMS = new Set(['street', 'street_cross', 'street_mid', 'street2', 'street3', 'main_street', 'main_street2', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall_park1', 'mall_park2', 'mall_park3', 'school_gate', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4']);
     function getWalkActForRoom(rm) { return OUTDOOR_STREET_ROOMS.has(rm) ? 'street' : 'walking'; }
     function startCharacterWalkTransition(pet, destRoom, destAct, px, py, followView = false) {
       if (pet.currentRoom === destRoom) { pet.currentActivity = destAct; targetX = px; targetY = py; saveState(); return; }
@@ -1741,7 +1750,7 @@ html, body {
       playSFX('pat');
       const tday = getTodayStr();
       if (!pet.snacks) pet.snacks = { bread: 0, drink: 0, candy: 0, soda: 0, snack: 0, nikuman: 0 };
-      if (roomId === 'street' || roomId === 'main_street') {
+      if (roomId === 'street' || roomId === 'street_cross' || roomId === 'main_street') {
         const aeSb = (state.autoEvents && state.autoEvents.snackBuy) || { prob: 20, maxPerDay: 2 };
         if (!pet.dailyAutoCounts || pet.dailyAutoCounts.date !== tday) pet.dailyAutoCounts = { date: tday, toilet: 0, konbiniAsk: 0, parkAsk: 0, backyardAsk: 0, schoolMail: 0, snackBuy: 0 };
         const sbCnt = pet.dailyAutoCounts.snackBuy || 0;
@@ -2828,11 +2837,9 @@ html, body {
       if ((pet.bladder || 0) > ((state.balance && state.balance.bladderAutoThreshold) ?? 70) && !hInToilet && !pet.recoverStage && !pet.fainted && !rally.active && isSchoolToiletAllowed) {
         transitionState = null;
         const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: false, sinkX: 300 };
-        pet.toiletState = { stage: 'use', stageUntil: nowT + 30000, ...prev };
-        pet.currentRoom = 'school_toilet'; pet.currentActivity = 'toilet_urinal';
-        petX = 145; petY = 445; targetX = 145; targetY = 445;
-        if (['school_class', 'school_hall', 'school_tuckshop', 'school_court'].includes(viewRoomId)) viewRoomId = 'school_toilet';
-        if (viewRoomId === 'school_toilet') speakAndShow('「好急呀！趁小息／練波空檔去校內廁所小便先！🚻💨」');
+        pet.toiletState = { stage: 'walking_to', ...prev };
+        startCharacterWalkTransition(pet, 'school_toilet', 'toilet_urinal', 145, 445, followTarget === 'hinata');
+        if (viewRoomId === pet.currentRoom) speakAndShow('「好急呀！趁小息／練波空檔行去校內廁所先！🚻💨」');
         updateHUD();
       } else if ((pet.bladder || 0) > ((state.balance && state.balance.bladderAutoThreshold) ?? 70) && !hInToilet && !pet.recoverStage && !pet.fainted && (!transitionState || pet.currentRoom === 'hallway') && !rally.active && isHomeToiletAllowed) {
         if ((state.supplies?.tpSheets ?? 180) <= 0) {
@@ -3309,7 +3316,7 @@ html, body {
       }
 
       // 6a-3. Street 17:00-17:30 walk home vending machine interaction
-      if (!info.isWeekend && sched.key === 'wd_homew' && pet.currentRoom === 'street' && pet.dailyStreetDrinkDate !== tdF && (pet.pocketMoney || 0) >= 5) {
+      if (!info.isWeekend && sched.key === 'wd_homew' && (pet.currentRoom === 'street' || pet.currentRoom === 'street_cross') && pet.dailyStreetDrinkDate !== tdF && (pet.pocketMoney || 0) >= 5) {
         if (Math.random() < 0.35) {
           pet.dailyStreetDrinkDate = tdF;
           pet.pocketMoney -= 5;
@@ -3579,7 +3586,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v84'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v86'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3633,7 +3640,7 @@ html, body {
     }
 
     const MALL_AREA_SET = new Set(['mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3']);
-    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street_mid', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet', 'rest_toilet']);
+    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street_cross', 'street_mid', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet', 'rest_toilet']);
     function drawAnimeRoomBackground(roomId, timeInfo) {
       const h = new Date().getHours();
       const isNight = (h >= 18 || h < 6);
@@ -3871,7 +3878,7 @@ html, body {
     ];
 
     const SCHOOL_LOCKED_ROOMS = new Set(['school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_infirmary', 'school_court', 'school_toilet']);
-    const LOCKED_ACTIVITY_ROOMS = new Set(['bath', 'street', 'school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_infirmary', 'school_court', 'school_toilet']);
+    const LOCKED_ACTIVITY_ROOMS = new Set(['bath', 'street', 'street_cross', 'school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_infirmary', 'school_court', 'school_toilet']);
     const LOCKED_MEAL_ACTS = new Set(['breakfast', 'lunch', 'dinner']);
     function isRoomBusyLocked(pet) {
       if (pet.fainted || pet.recoverStage) return true;
@@ -3989,6 +3996,7 @@ html, body {
       backyard: ['💭 後院塊草地好啱練魚躍救球！', '💭 今日對牆接波要破紀錄！', '💭 同哥哥一齊喺後院練波最開心！'],
       street: ['💭 條街今日天氣好好呀！', '💭 踩住微風散步好寫意～', '💭 同哥哥一齊行街邊最好傾！'],
       street2: ['💭 街角間便利店陣間可以去望下！', '💭 條街好靜好舒服呢～', '💭 哥哥行喺隔離就覺得好安心！'],
+      street_cross: ['💭 十字路口有斑馬線同紅白販賣機，返學放學必經之地！', '💭 過馬路記住左右望清楚先好行！', '💭 同哥哥喺十字路口飲返罐冰凍汽水最爽！'],
       street_mid: ['💭 木屋小巷同電線桿影落嚟好有夏日感覺～', '💭 再行前少少就到街角小店同街道2啦！', '💭 同哥哥一齊行呢條靜靜地嘅小巷好寫意！'],
       street3: ['💭 呢條街好靜好啱邊行邊食雪糕！', '💭 微風吹埋嚟好涼爽呀～', '💭 下次要再同哥哥嚟呢條街！'],
       ice_cream: ['💭 四隻口味都好吸引呀！！', '💭 雪糕櫃睇到流晒口水…', '💭 唔知哥哥今日會揀邊隻口味呢？'],
@@ -4586,6 +4594,9 @@ html, body {
       if (!isZoomed && viewRoomId === 'street' && x >= 450 && x <= 590 && y >= 300 && y <= 555) {
         openShopMenuModal('street_vend'); return;
       }
+      if (!isZoomed && viewRoomId === 'street_cross' && x >= 420 && x <= 515 && y >= 315 && y <= 435) {
+        openShopMenuModal('street_vend'); return;
+      }
       if (SCHOOL_LOCKED_ROOMS.has(pet.currentRoom) || SCHOOL_LOCKED_ROOMS.has(viewRoomId)) {
         if (isZoomed || isTouchingHinata(x, y)) { triggerPetHead(x, y); return; }
         showBusyLockedMsg(pet); return;
@@ -4719,6 +4730,10 @@ html, body {
       backyard: [
         '「翔陽：哥哥托高啲呀！我要跳起扣殺！！｜哥哥：好！接實呢球托球啦！🏐🔥」',
         '「哥哥：落地記住屈膝卸力唔好傷到膝頭｜翔陽：收到！！再嚟多五球！💪」'
+      ],
+      street_cross: [
+        '「翔陽：哥哥！十字路口斑馬線過馬路要拖實呀～｜哥哥：好！順便喺汽水機叮返罐飲品！🚦🥤」',
+        '「哥哥：行左邊返屋企定右邊去大街行下？｜翔陽：有哥哥喺度去邊都咁開心！🚶‍♂️💛」'
       ],
       street: [
         '「翔陽：哥哥！今日放學條路好似特別快行完～｜哥哥：因為兩兄弟邊行邊傾計囉 😊🚶‍♂️」',
@@ -7112,7 +7127,7 @@ html, body {
           const rh0=pet.hunger, rm0=pet.mood; pet.hunger = Math.min(100, pet.hunger + ((state.balance && state.balance.actRestHunger) ?? 30)); pet.mood = Math.min(100, pet.mood + ((state.balance && state.balance.actRestMood) ?? 12)); recordStatLog(pet,'hunger','🍽️ 餐廳大餐',rh0,pet.hunger); recordStatLog(pet,'mood','🍽️ 餐廳大餐',rm0,pet.mood); grantCappedRewards(pet, 6, 4);
         } else if (id === 'toggle_bro_follow') {
           const fixedDuoActs = ['breakfast', 'lunch', 'dinner', 'bath', 'brush', 'sleep', 'waking'];
-          const outOrWork = (state.outing && state.outing.type) || ['pharmacy', 'canteen', 'hospital', 'school_class', 'school_court', 'street', 'main_street'].includes(bro.currentRoom) || ['school_class', 'school_court', 'street', 'main_street'].includes(pet.currentRoom);
+          const outOrWork = (state.outing && state.outing.type) || ['pharmacy', 'canteen', 'hospital', 'school_class', 'school_court', 'street', 'street_cross', 'main_street'].includes(bro.currentRoom) || ['school_class', 'school_court', 'street', 'street_cross', 'main_street'].includes(pet.currentRoom);
           if (outOrWork || fixedDuoActs.includes(pet.currentActivity) || pet.fainted || pet.recoverStage) {
             playSFX('miss');
             showToast('固定一齊活動、瞓覺或外出時唔可以切換陪同狀態 🔒');
@@ -7376,7 +7391,7 @@ html, body {
       }
       const shopMenuBtn = document.getElementById('btn-shop-menu');
       if (shopMenuBtn) {
-        if (!isZoomed && (viewRoomId === 'school_tuckshop' || viewRoomId === 'street' || viewRoomId === 'ice_cream')) {
+        if (!isZoomed && (viewRoomId === 'school_tuckshop' || viewRoomId === 'street' || viewRoomId === 'street_cross' || viewRoomId === 'ice_cream')) {
           shopMenuBtn.classList.remove('hidden');
           shopMenuBtn.textContent = viewRoomId === 'school_tuckshop' ? '🥐 小食部清單' : (viewRoomId === 'ice_cream' ? '🍦 雪糕店清單' : '🥤 汽水機清單');
         } else {
@@ -7402,6 +7417,15 @@ html, body {
       if (bsBtn) bsBtn.classList.toggle('hidden', viewRoomId !== 'bath' || isZoomed);
       const hlBtn = document.getElementById('btn-hallway-living');
       if (hlBtn) hlBtn.classList.toggle('hidden', viewRoomId !== 'hallway' || isZoomed);
+      const vsBtn = document.getElementById('btn-vend-snack');
+      if (vsBtn) {
+        const showVs = !isZoomed && (viewRoomId === 'street_cross' || viewRoomId === 'street');
+        vsBtn.classList.toggle('hidden', !showVs);
+        if (showVs) {
+          vsBtn.style.left = viewRoomId === 'street' ? '86%' : '77%';
+          vsBtn.style.top = viewRoomId === 'street' ? '68%' : '64%';
+        }
+      }
       const gcBtn = document.getElementById('btn-gate-class');
       if (gcBtn) gcBtn.classList.toggle('hidden', viewRoomId !== 'school_gate' || isZoomed);
       const peBtn = document.getElementById('btn-park-ent-enter');
@@ -7506,8 +7530,11 @@ html, body {
       renderDock(); playSFX('pat'); updateHUD();
     });
     document.getElementById('btn-gate-class')?.addEventListener('click', () => {
-      followTarget = null; viewRoomId = 'school_class'; document.getElementById('choice-overlay').classList.add('hidden');
+      followTarget = null; viewRoomId = 'school_hall'; document.getElementById('choice-overlay').classList.add('hidden');
       renderDock(); playSFX('pat'); updateHUD();
+    });
+    document.getElementById('btn-vend-snack')?.addEventListener('click', () => {
+      openShopMenuModal('street_vend');
     });
     document.getElementById('btn-hallway-living')?.addEventListener('click', () => {
       followTarget = null; viewRoomId = 'living'; document.getElementById('choice-overlay').classList.add('hidden');
@@ -7570,7 +7597,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       updateHUD(); saveState(); showToast('已恢復健康數值（飽食80% / 心情85% / 精力90% / 尿意0%）🩹✨');
     });
     document.getElementById('btn-shop-menu').addEventListener('click', () => {
-      openShopMenuModal(viewRoomId === 'street' ? 'street_vend' : (viewRoomId === 'ice_cream' ? 'ice_cream' : 'school_tuckshop'));
+      openShopMenuModal((viewRoomId === 'street' || viewRoomId === 'street_cross') ? 'street_vend' : (viewRoomId === 'ice_cream' ? 'ice_cream' : 'school_tuckshop'));
     });
     document.getElementById('choice-overlay').addEventListener('change', (e) => {
       const chk = e.target.closest('[data-shop-toggle]');
@@ -8039,7 +8066,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v84';
+          if (el) el.textContent = '☁️ 雲端已同步 · v86';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8078,7 +8105,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v84';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v86';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
