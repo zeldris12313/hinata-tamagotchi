@@ -164,7 +164,6 @@ html, body {
         <button id="btn-mall-gate-enter" type="button" data-door-room="mall" style="left:50%;top:56%;transform:translate(-50%,-50%)" class="hidden absolute px-3 py-1.5 rounded-xl bg-amber-100/95 hover:bg-amber-200 border-2 border-[#2d1e12] text-xs font-black shadow-md z-15">🛍️ 進入商場</button>
         <button id="btn-gate-class" type="button" style="left:50%;top:56%;transform:translate(-50%,-50%)" class="hidden absolute px-3 py-1.5 rounded-xl bg-amber-100/95 hover:bg-amber-200 border-2 border-[#2d1e12] text-xs font-black shadow-md z-15">🏫 進入學校</button>
         <button id="btn-hallway-living" type="button" style="left:36%;top:47%;transform:translate(-50%,-50%)" class="hidden absolute px-2 py-1 rounded-xl bg-amber-100/90 hover:bg-amber-200 border-2 border-[#2d1e12] text-[10px] font-black shadow-md z-15">🏠 客廳</button>
-        <button id="btn-vend-snack" type="button" style="left:77%;top:64%;transform:translate(-50%,-50%)" class="hidden absolute px-2 py-1 rounded-xl bg-rose-100/95 hover:bg-rose-200 border-2 border-[#2d1e12] text-[10px] font-black shadow-md z-15">🥤 汽水機小食</button>
         <div id="hallway-2f-doors" class="hidden pointer-events-none absolute inset-0 z-15">
           <button type="button" data-door-room="room_hinata" title="進入翔陽房間" style="left:11%;top:48%;width:18%;height:62%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute rounded-xl hover:bg-orange-400/15 active:bg-orange-400/25 transition"></button>
           <button type="button" data-door-room="room_aniki" title="進入哥哥房間" style="left:89%;top:48%;width:18%;height:62%;transform:translate(-50%,-50%)" class="pointer-events-auto absolute rounded-xl hover:bg-indigo-400/15 active:bg-indigo-400/25 transition"></button>
@@ -249,7 +248,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v88</span>
+      <span id="save-status">💾 已自動儲存 · v89</span>
       
     </div>
 
@@ -1759,7 +1758,8 @@ html, body {
         const aeSb = (state.autoEvents && state.autoEvents.snackBuy) || { prob: 20, maxPerDay: 2 };
         if (!pet.dailyAutoCounts || pet.dailyAutoCounts.date !== tday) pet.dailyAutoCounts = { date: tday, toilet: 0, konbiniAsk: 0, parkAsk: 0, backyardAsk: 0, schoolMail: 0, snackBuy: 0 };
         const sbCnt = pet.dailyAutoCounts.snackBuy || 0;
-        const vendList = ensureShopMenus().street_vend || [];
+        const vendKey = roomId === 'street_cross' ? 'cross_vend' : 'street_vend';
+        const vendList = ensureShopMenus()[vendKey] || [];
         if (vendList.length > 0 && aeSb.prob > 0 && aeSb.maxPerDay > 0 && sbCnt < aeSb.maxPerDay && Math.random() < (aeSb.prob / 100)) {
           const vId = vendList[Math.floor(Math.random() * vendList.length)];
           const vCfg = getSnackCfg(vId);
@@ -3329,20 +3329,25 @@ html, body {
       }
 
       // 6a-3. Street 17:00-17:30 walk home vending machine interaction
-      if (!info.isWeekend && sched.key === 'wd_homew' && (pet.currentRoom === 'street' || pet.currentRoom === 'street_cross') && pet.dailyStreetDrinkDate !== tdF && (pet.pocketMoney || 0) >= 5) {
-        if (Math.random() < 0.35) {
+      if (!info.isWeekend && sched.key === 'wd_homew' && (pet.currentRoom === 'street' || pet.currentRoom === 'street_cross') && pet.dailyStreetDrinkDate !== tdF) {
+        const vKeyH = pet.currentRoom === 'street_cross' ? 'cross_vend' : 'street_vend';
+        const vAvailH = (ensureShopMenus()[vKeyH] || []).filter(id => (pet.pocketMoney || 0) >= getSnackCfg(id).price);
+        if (vAvailH.length > 0 && Math.random() < 0.35) {
+          const vIdH = vAvailH[Math.floor(Math.random() * vAvailH.length)];
+          const vCfgH = getSnackCfg(vIdH);
           pet.dailyStreetDrinkDate = tdF;
-          pet.pocketMoney -= 5;
-          recordPurchaseLog(pet, '室外街道販賣機', '🥤 罐裝汽水', 5, '翔陽零用錢');
-          targetX = 485; targetY = 440;
+          pet.pocketMoney -= vCfgH.price;
+          recordPurchaseLog(pet, (MAP_ROOMS[pet.currentRoom]?.name || '街道') + '販賣機', `${vCfgH.emoji} ${vCfgH.name}`, vCfgH.price, '翔陽零用錢');
+          targetX = pet.currentRoom === 'street_cross' ? 390 : 485; targetY = 445;
           if (pet.hunger < 30 || pet.energy < 30) {
-            const vh0=pet.hunger, ve0=pet.energy;
-            pet.hunger = Math.min(100, pet.hunger + 10); pet.energy = Math.min(100, pet.energy + 10);
-            recordStatLog(pet,'hunger','🥤 販賣機汽水',vh0,pet.hunger); recordStatLog(pet,'energy','🥤 販賣機汽水',ve0,pet.energy);
-            if (viewRoomId === 'street') speakAndShow('「行去紅色販賣機買咗罐汽水即刻飲！（零用錢 -5、+10%）🥤✨」');
+            const vh0=pet.hunger, ve0=pet.energy, vm0=pet.mood;
+            pet.hunger = Math.min(100, pet.hunger + vCfgH.hunger); pet.energy = Math.min(100, pet.energy + vCfgH.energy); pet.mood = Math.min(100, pet.mood + vCfgH.mood);
+            recordStatLog(pet,'hunger',`${vCfgH.emoji} ${vCfgH.name}`,vh0,pet.hunger); recordStatLog(pet,'energy',`${vCfgH.emoji} ${vCfgH.name}`,ve0,pet.energy); recordStatLog(pet,'mood',`${vCfgH.emoji} ${vCfgH.name}`,vm0,pet.mood);
+            addBladderFromConsume(pet, !!vCfgH.isDrink);
+            if (viewRoomId === pet.currentRoom) speakAndShow(`「行去紅色販賣機買咗 ${vCfgH.emoji}${vCfgH.name} 即刻食！（零用錢 -${vCfgH.price}）🥤✨」`);
           } else {
-            pet.snacks.drink = (pet.snacks.drink || 0) + 1;
-            if (viewRoomId === 'street') speakAndShow('「行去紅色販賣機買咗罐飲品袋好！（零用錢 -5）🥤🎒」');
+            pet.snacks[vIdH] = (pet.snacks[vIdH] || 0) + 1;
+            if (viewRoomId === pet.currentRoom) speakAndShow(`「行去紅色販賣機買咗 ${vCfgH.emoji}${vCfgH.name} 袋好！（零用錢 -${vCfgH.price}）🥤🎒」`);
           }
           updateHUD(); saveState();
         }
@@ -3601,7 +3606,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v88'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v89'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -4610,7 +4615,7 @@ html, body {
         openShopMenuModal('street_vend'); return;
       }
       if (!isZoomed && viewRoomId === 'street_cross' && x >= 420 && x <= 515 && y >= 315 && y <= 435) {
-        openShopMenuModal('street_vend'); return;
+        openShopMenuModal('cross_vend'); return;
       }
       if (SCHOOL_LOCKED_ROOMS.has(pet.currentRoom) || SCHOOL_LOCKED_ROOMS.has(viewRoomId)) {
         if (isZoomed || isTouchingHinata(x, y)) { triggerPetHead(x, y); return; }
@@ -5430,18 +5435,20 @@ html, body {
         state.shopMenus = {
           school_tuckshop: ['bread', 'drink', 'candy', 'mazemen', 'lemon_tea'],
           street_vend: ['soda', 'drink', 'lemon_tea'],
+          cross_vend: ['soda', 'drink', 'lemon_tea'],
           ice_cream: ['candy', 'lemon_tea', 'soda']
         };
       }
       if (!Array.isArray(state.shopMenus.school_tuckshop)) state.shopMenus.school_tuckshop = ['bread', 'drink', 'candy', 'mazemen', 'lemon_tea'];
       if (!Array.isArray(state.shopMenus.street_vend)) state.shopMenus.street_vend = ['soda', 'drink', 'lemon_tea'];
+      if (!Array.isArray(state.shopMenus.cross_vend)) state.shopMenus.cross_vend = ['soda', 'drink', 'lemon_tea'];
       if (!Array.isArray(state.shopMenus.ice_cream)) state.shopMenus.ice_cream = ['candy', 'lemon_tea', 'soda'];
       return state.shopMenus;
     }
     function openShopMenuModal(shopKey) {
       const menus = ensureShopMenus();
       const checked = menus[shopKey] || [];
-      const title = shopKey === 'school_tuckshop' ? '🥐 學校小食部供應清單（勾選可購買小食）' : (shopKey === 'ice_cream' ? '🍦 雪糕店小食供應清單（勾選可購買小食）' : '🥤 大街汽水機供應清單（勾選可購買飲品／小食）');
+      const title = shopKey === 'school_tuckshop' ? '🥐 學校小食部供應清單（勾選可購買小食）' : (shopKey === 'ice_cream' ? '🍦 雪糕店小食供應清單（勾選可購買小食）' : (shopKey === 'cross_vend' ? '🥤 十字路口汽水機供應清單（勾選可購買飲品／小食）' : '🥤 室外街道汽水機供應清單（勾選可購買飲品／小食）'));
       const box = document.getElementById('choice-overlay');
       const rows = SNACK_CATALOG.map(s => {
         const cfg = getSnackCfg(s.id);
@@ -7432,15 +7439,6 @@ html, body {
       if (bsBtn) bsBtn.classList.toggle('hidden', viewRoomId !== 'bath' || isZoomed);
       const hlBtn = document.getElementById('btn-hallway-living');
       if (hlBtn) hlBtn.classList.toggle('hidden', viewRoomId !== 'hallway' || isZoomed);
-      const vsBtn = document.getElementById('btn-vend-snack');
-      if (vsBtn) {
-        const showVs = !isZoomed && (viewRoomId === 'street_cross' || viewRoomId === 'street');
-        vsBtn.classList.toggle('hidden', !showVs);
-        if (showVs) {
-          vsBtn.style.left = viewRoomId === 'street' ? '86%' : '77%';
-          vsBtn.style.top = viewRoomId === 'street' ? '68%' : '64%';
-        }
-      }
       const gcBtn = document.getElementById('btn-gate-class');
       if (gcBtn) gcBtn.classList.toggle('hidden', viewRoomId !== 'school_gate' || isZoomed);
       const peBtn = document.getElementById('btn-park-ent-enter');
@@ -7548,9 +7546,6 @@ html, body {
       followTarget = null; viewRoomId = 'school_hall'; document.getElementById('choice-overlay').classList.add('hidden');
       renderDock(); playSFX('pat'); updateHUD();
     });
-    document.getElementById('btn-vend-snack')?.addEventListener('click', () => {
-      openShopMenuModal('street_vend');
-    });
     document.getElementById('btn-hallway-living')?.addEventListener('click', () => {
       followTarget = null; viewRoomId = 'living'; document.getElementById('choice-overlay').classList.add('hidden');
       renderDock(); playSFX('pat'); updateHUD();
@@ -7612,7 +7607,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       updateHUD(); saveState(); showToast('已恢復健康數值（飽食80% / 心情85% / 精力90% / 尿意0%）🩹✨');
     });
     document.getElementById('btn-shop-menu').addEventListener('click', () => {
-      openShopMenuModal((viewRoomId === 'street' || viewRoomId === 'street_cross') ? 'street_vend' : (viewRoomId === 'ice_cream' ? 'ice_cream' : 'school_tuckshop'));
+      openShopMenuModal(viewRoomId === 'street' ? 'street_vend' : (viewRoomId === 'street_cross' ? 'cross_vend' : (viewRoomId === 'ice_cream' ? 'ice_cream' : 'school_tuckshop')));
     });
     document.getElementById('choice-overlay').addEventListener('change', (e) => {
       const chk = e.target.closest('[data-shop-toggle]');
@@ -8101,7 +8096,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v88';
+          if (el) el.textContent = '☁️ 雲端已同步 · v89';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8140,7 +8135,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v88';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v89';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
