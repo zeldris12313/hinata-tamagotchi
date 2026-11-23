@@ -248,7 +248,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v90</span>
+      <span id="save-status">💾 已自動儲存 · v93</span>
       
     </div>
 
@@ -259,9 +259,13 @@ html, body {
   <!-- Modal: 每日生活作息表 -->
   <div id="schedule-modal" class="hidden fixed inset-0 bg-black/55 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl border-2 border-[#2d1e12] max-h-[82vh] flex flex-col">
-      <div class="flex justify-between items-center mb-3 shrink-0">
-        <h3 class="text-lg font-black text-orange-600">📅 翔陽每日生活作息表</h3>
+      <div class="flex justify-between items-center mb-2 shrink-0">
+        <h3 id="schedule-modal-title" class="text-lg font-black text-orange-600">📅 翔陽每日生活作息表</h3>
         <button id="close-schedule" type="button" class="text-gray-400 hover:text-gray-700 font-bold text-lg px-2">✕</button>
+      </div>
+      <div class="flex gap-2 mb-2.5 shrink-0">
+        <button id="sched-tab-hinata" type="button" onclick="openScheduleModal('hinata')" class="flex-1 py-1.5 rounded-xl border-2 border-[#2d1e12] text-xs font-black bg-orange-500 text-white">🧡 翔陽作息</button>
+        <button id="sched-tab-bro" type="button" onclick="openScheduleModal('bro')" class="flex-1 py-1.5 rounded-xl border-2 border-[#2d1e12] text-xs font-black bg-white text-[#2d1e12]">💜 哥哥作息</button>
       </div>
       <div id="schedule-list" style="touch-action: pan-y;" class="space-y-2 overflow-y-auto pr-1 text-xs"></div>
     </div>
@@ -1226,7 +1230,7 @@ html, body {
           perMin = (sl[stat] ?? 0) / 60;
         } else if (isRest) {
           perMin = ((bal.rest && bal.rest[stat]) ?? 0) / 60;
-        } else if (pet.currentRoom === 'supermarket') {
+        } else if ((state.outing && state.outing.type === 'supermarket') || (!simAtMs && pet.currentRoom === 'supermarket')) {
           perMin = ((bal.supermarket && typeof bal.supermarket[stat] === 'number') ? bal.supermarket[stat] : (stat === 'mood' ? 0 : -10)) / 60;
         } else if (isPrac) {
           perMin = ((bal.practice && bal.practice[stat]) ?? 0) / 60;
@@ -1296,10 +1300,24 @@ html, body {
         if (simAtMs && state.gamingReturnAt && nowEval >= state.gamingReturnAt) {
           state.gamingReturnAt = null;
         }
+        if (simAtMs && state.supperState) {
+          const ssOff = state.supperState;
+          if (ssOff.stage === 'cooking' && ssOff.until && nowEval >= ssOff.until) {
+            ssOff.stage = 'eating';
+            ssOff.until = ssOff.until + 15 * 60 * 1000;
+            ssOff.startStats = { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 };
+            pet.currentRoom = 'kitchen'; pet.currentActivity = 'supper_eat';
+            if (state.brother) { state.brother.currentRoom = 'kitchen'; state.brother.currentActivity = 'supper_eat'; }
+          }
+        }
         const schedMealChk = (typeof getScheduledState === 'function' && evalInfo) ? getScheduledState(evalInfo) : null;
-        const effAct = (simAtMs && schedMealChk && !(state.outing && state.outing.type)) ? schedMealChk.act : pet.currentActivity;
+        let effAct = (simAtMs && schedMealChk && !(state.outing && state.outing.type)) ? schedMealChk.act : pet.currentActivity;
+        if (simAtMs && schedMealChk && schedMealChk.key === 'wd_home_seq' && !(state.outing && state.outing.type) && evalInfo) {
+          if (evalInfo.totalMin >= 1051 && evalInfo.totalMin < 1066) effAct = 'tea';
+          else if (evalInfo.totalMin >= 1066) effAct = 'backyard';
+        }
         const isVolleyPractice = (effAct === 'backyard' || effAct === 'school_court' || (!simAtMs && pet.currentRoom === 'school_court'));
-        const isSupperEatAct = (!simAtMs && pet.currentActivity === 'supper_eat');
+        const isSupperEatAct = (state.supperState && state.supperState.stage === 'eating') || (!simAtMs && pet.currentActivity === 'supper_eat');
         const isSleepAct = (effAct === 'sleep');
         const isRestAct = (!isSleepAct && (pet.recoverStage === 'rest30' || effAct === 'bath' || effAct === 'tea' || effAct === 'tv' || effAct === 'park_breeze' || effAct === 'water_break' || (!simAtMs && pet.homeSeqStage === 'living15m')));
         const wdPromRest = !evalInfo.isWeekend && evalToday === getTodayStr() && state.msgLog && state.msgLog.date === evalToday && state.msgLog.promises && (state.msgLog.promises.dinner === 'restaurant' || state.msgLog.promises.dinner === 'done') && evalInfo.totalMin >= 1095 && evalInfo.totalMin < 1125;
@@ -1323,7 +1341,8 @@ html, body {
           pet.mood   = Math.max(0, Math.min(100, pet.mood   + hrs * (sl.mood ?? 0)));
         } else if (effectiveMealAct) {
           const isWknd = evalInfo ? evalInfo.isWeekend : false;
-          const mealDur = (effectiveMealAct === 'restaurant') ? 60 : ((effectiveMealAct === 'breakfast') ? (isWknd ? 30 : 20) : (effectiveMealAct === 'lunch' ? (isWknd ? 35 : 60) : (isWknd ? 40 : 30)));
+          const restDur = (state.outing && state.outing.type === 'restaurant' && state.outing.startedAt && state.outing.returnAt) ? Math.max(15, Math.min(60, Math.round((state.outing.returnAt - state.outing.startedAt) / 60000))) : (wdPromRest ? 30 : 60);
+          const mealDur = (effectiveMealAct === 'restaurant') ? restDur : ((effectiveMealAct === 'breakfast') ? (isWknd ? 30 : 20) : (effectiveMealAct === 'lunch' ? (isWknd ? 35 : 60) : (isWknd ? 40 : 30)));
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + (mins / mealDur) * (bal.meal.hunger || 0)));
           pet.energy = Math.max(0, Math.min(100, pet.energy + (mins / mealDur) * (bal.meal.energy || 0)));
           pet.mood   = Math.max(0, Math.min(100, pet.mood   + (mins / mealDur) * (bal.meal.mood || 0)));
@@ -1348,9 +1367,20 @@ html, body {
         if (isSupperEatAct) {
           const srSupB = getActiveSupperRates();
           pet.bladder = Math.max(0, Math.min(100, (pet.bladder || 0) + (mins / 15) * srSupB.bladder));
+          if (simAtMs && state.supperState && state.supperState.stage === 'eating' && state.supperState.until && nowEval >= state.supperState.until) {
+            const ssDone = state.supperState;
+            const s0 = ssDone.startStats || { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 };
+            recordStatLog(pet, 'hunger', `🌙 宵夜 (${ssDone.pickName})`, s0.hunger, pet.hunger);
+            recordStatLog(pet, 'mood', `🌙 宵夜 (${ssDone.pickName})`, s0.mood, pet.mood);
+            recordStatLog(pet, 'energy', `🌙 宵夜 (${ssDone.pickName})`, s0.energy, pet.energy);
+            recordStatLog(pet, 'bladder', `🌙 宵夜 (${ssDone.pickName})`, s0.bladder, pet.bladder || 0);
+            state.supperState = null;
+            pet.currentActivity = (schedMealChk && schedMealChk.act) || 'tv';
+          }
         } else if (effectiveMealAct) {
           const isWkndB = evalInfo ? evalInfo.isWeekend : false;
-          const mealDurB = (effectiveMealAct === 'restaurant') ? 60 : ((effectiveMealAct === 'breakfast') ? (isWkndB ? 30 : 20) : (effectiveMealAct === 'lunch' ? (isWkndB ? 35 : 60) : (isWkndB ? 40 : 30)));
+          const restDurB = (state.outing && state.outing.type === 'restaurant' && state.outing.startedAt && state.outing.returnAt) ? Math.max(15, Math.min(60, Math.round((state.outing.returnAt - state.outing.startedAt) / 60000))) : (wdPromRest ? 30 : 60);
+          const mealDurB = (effectiveMealAct === 'restaurant') ? restDurB : ((effectiveMealAct === 'breakfast') ? (isWkndB ? 30 : 20) : (effectiveMealAct === 'lunch' ? (isWkndB ? 35 : 60) : (isWkndB ? 40 : 30)));
           const bMeal = (bal.bladderMeal ?? 25);
           pet.bladder = Math.max(0, Math.min(100, (pet.bladder || 0) + (mins / mealDurB) * bMeal));
         } else if (!['toilet_use', 'toilet_wash'].includes(pet.currentActivity)) {
@@ -1478,8 +1508,8 @@ html, body {
         const infoG = (typeof getCurrentHourInfo === 'function') ? getCurrentHourInfo(nowEval) : { totalMin: 0, isWeekend: false };
         const schedG = (typeof getScheduledState === 'function') ? getScheduledState(infoG) : { key: 'idle', label: '一般活動' };
         const outT = state.outing && state.outing.type;
-        const isSupNow = (pet.currentActivity === 'supper_eat' && state.supperState && state.supperState.stage === 'eating');
-        const isSmNow = (pet.currentRoom === 'supermarket');
+        const isSupNow = Boolean(isSupperEatAct);
+        const isSmNow = Boolean((state.outing && state.outing.type === 'supermarket') || (!simAtMs && pet.currentRoom === 'supermarket'));
         const isOffRest = Boolean(simAtMs && typeof dateRestSlot !== 'undefined' && dateRestSlot);
         const slotKey = isSupNow ? 'supper_eat' : (isSmNow ? 'supermarket' : (isOffRest ? 'outing_restaurant' : (outT ? ('outing_' + outT) : (schedG.key || 'idle'))));
         const slotLabel = isSupNow ? (`🌙 一齊食宵夜${state.supperState.pickName ? ' ('+state.supperState.pickName+')' : ''}`) : (isSmNow ? '🛒 行超級市場' : (isOffRest ? '🍽️ 家庭餐廳食大餐' : (outT ? (`外出：${MAP_ROOMS[outT]?.name || outT}`) : (schedG.label || '一般活動'))));
@@ -3100,8 +3130,11 @@ html, body {
       if (['pharmacy', 'canteen'].includes(bSched.room) && !['pharmacy', 'canteen', 'hospital'].includes(bro.currentRoom) && !bro.toiletState && !state.outing?.type) {
         bro.currentRoom = bSched.room; bro.currentActivity = bSched.act; bro.px = bSched.px; bro.py = bSched.py; bro.tx = bSched.px; bro.ty = bSched.py;
       }
+      const isBroFreeTime = Boolean(sched.freeRoam && !(state.outing && state.outing.type));
+      if (!isBroFreeTime && state.broSoloMode) state.broSoloMode = false;
       const broFixedChore = ['cook_bfast','prep_bfast','cook_lunch','cook_dinner','washing_dishes','breakfast','lunch','dinner','bath','brush','sleep','canteen_lunch','pharmacy_work','aniki_hall_tidy'].includes(bSched.act);
-      const canBroSolo = state.broSoloMode && !broFixedChore && !state.outing?.type && !['breakfast','lunch','dinner','bath','brush','sleep','waking','gaming'].includes(pet.currentActivity) && !['pharmacy','canteen','hospital','school_class','school_court'].includes(bro.currentRoom) && !['school_class','school_court'].includes(pet.currentRoom);
+      const canBroSolo = isBroFreeTime && state.broSoloMode && !broFixedChore && !state.outing?.type && !['breakfast','lunch','dinner','bath','brush','sleep','waking','gaming'].includes(pet.currentActivity) && !['pharmacy','canteen','hospital','school_class','school_court'].includes(bro.currentRoom) && !['school_class','school_court'].includes(pet.currentRoom);
+      const needSnapBroToSched = !canBroSolo && !bSched.followHinata && !(state.outing && state.outing.type) && !state.supperState && !state.gamingReturnAt && !state.supermarketTrip && ((bSched.act === 'sleep' && (bro.currentRoom !== bSched.room || bro.currentActivity !== 'sleep')) || bro.scheduleSlotKey !== bSched.key);
       if (bro.toiletState || broWalk) { /* skip brother schedule while in toilet or walking routine */ }
       else if (canBroSolo) {
         if (!window.__lastBroSoloAt) window.__lastBroSoloAt = Date.now();
@@ -3113,7 +3146,7 @@ html, body {
           const sf = sFurns.length ? sFurns[Math.floor(Math.random() * sFurns.length)] : { px: 280, py: 435, act: 'idle' };
           startSoloWalk('bro', sr, sf.act, null, () => { bro.tx = sf.px; bro.ty = sf.py; }, false);
         }
-      } else if (bro.scheduleSlotKey !== bSched.key) {
+      } else if (needSnapBroToSched || bro.scheduleSlotKey !== bSched.key) {
         bro.scheduleSlotKey = bSched.key;
         if (bSched.followHinata) {
           const fAct = (pet.currentActivity === 'street' && !OUTDOOR_STREET_ROOMS.has(pet.currentRoom)) ? 'idle' : pet.currentActivity;
@@ -3627,7 +3660,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v90'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v93'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3937,10 +3970,58 @@ html, body {
       showToast(`${rName}進行中 🔒 唔可以插隊互動`);
     }
 
-    function openScheduleModal() {
+    const BRO_WEEKDAY_SCHEDULE_ITEMS = [
+      { start: 0,    end: 450,  time: '00:00 - 07:30', roomName: '2F 哥哥房',       label: '😴 熟睡中（07:30 起身）' },
+      { start: 450,  end: 470,  time: '07:30 - 07:50', roomName: '1F 廚房',         label: '🍳 早起煮早餐' },
+      { start: 470,  end: 480,  time: '07:50 - 08:00', roomName: '1F 浴室',         label: '🪥 刷牙洗臉' },
+      { start: 480,  end: 495,  time: '08:00 - 08:15', roomName: '1F 廚房',         label: '🍳 準備早餐擺枱' },
+      { start: 495,  end: 515,  time: '08:15 - 08:35', roomName: '1F 廚房',         label: '🍚 與翔陽一齊食早餐' },
+      { start: 515,  end: 530,  time: '08:35 - 08:50', roomName: '玄關→十字路口',   label: '🚶 送翔陽返學・出門返工' },
+      { start: 530,  end: 750,  time: '08:50 - 12:30', roomName: '醫院藥房',        label: '💊 上午藥房工作' },
+      { start: 750,  end: 795,  time: '12:30 - 13:15', roomName: '醫院 Canteen',    label: '🍱 Canteen 食午餐' },
+      { start: 795,  end: 1020, time: '13:15 - 17:00', roomName: '醫院藥房',        label: '💊 下午藥房工作' },
+      { start: 1020, end: 1050, time: '17:00 - 17:30', roomName: '十字路口',        label: '🏠 收工 (+200元) 接翔陽返屋企' },
+      { start: 1050, end: 1055, time: '17:30 - 17:35', roomName: '1F 玄關',         label: '🔑 放低鎖匙整好鞋' },
+      { start: 1055, end: 1095, time: '17:35 - 18:15', roomName: '1F 廚房',         label: '🍳 煮晚餐' },
+      { start: 1095, end: 1125, time: '18:15 - 18:45', roomName: '1F 廚房',         label: '🍽️ 與翔陽一齊食晚餐' },
+      { start: 1125, end: 1135, time: '18:45 - 18:55', roomName: '1F 廚房',         label: '🧽 洗碗收拾廚房' },
+      { start: 1135, end: 1160, time: '18:55 - 19:20', roomName: '1F 浴室',         label: '🫧 一齊沖涼浸浴' },
+      { start: 1160, end: 1215, time: '19:20 - 20:15', roomName: '2F 哥哥房',       label: '🎮 與翔陽玩樂時間' },
+      { start: 1215, end: 1260, time: '20:15 - 21:00', roomName: '屋企各處',        label: '📖 屋企自由活動・間中教功課' },
+      { start: 1260, end: 1440, time: '21:00 - 24:00', roomName: '1F 客廳',         label: '📺 睇電視・宵夜時段（00:00 睡）' }
+    ];
+    const BRO_WEEKEND_SCHEDULE_ITEMS = [
+      { start: 0,    end: 600,  time: '00:00 - 10:00', roomName: '2F 哥哥房',       label: '😴 假日熟睡中（10:00 起身）' },
+      { start: 600,  end: 620,  time: '10:00 - 10:20', roomName: '1F 浴室',         label: '🪥 起身刷牙洗臉' },
+      { start: 620,  end: 640,  time: '10:20 - 10:40', roomName: '1F 廚房',         label: '🍳 煮假日早餐' },
+      { start: 640,  end: 670,  time: '10:40 - 11:10', roomName: '1F 廚房',         label: '🍚 與翔陽一齊食早餐' },
+      { start: 670,  end: 680,  time: '11:10 - 11:20', roomName: '1F 廚房',         label: '🧽 洗碗收拾' },
+      { start: 680,  end: 750,  time: '11:20 - 12:30', roomName: '屋企／街外',      label: '🌟 假日自由陪伴（可解鎖自由行）' },
+      { start: 750,  end: 780,  time: '12:30 - 13:00', roomName: '1F 廚房',         label: '🍳 煮假日午餐' },
+      { start: 780,  end: 815,  time: '13:00 - 13:35', roomName: '1F 廚房',         label: '🍱 與翔陽一齊食午餐' },
+      { start: 815,  end: 825,  time: '13:35 - 13:45', roomName: '1F 廚房',         label: '🧽 洗碗收拾' },
+      { start: 825,  end: 1115, time: '13:45 - 18:35', roomName: '屋企／街外',      label: '🌟 假日自由陪伴（可解鎖自由行）' },
+      { start: 1115, end: 1145, time: '18:35 - 19:05', roomName: '1F 廚房',         label: '🍳 煮假日晚餐' },
+      { start: 1145, end: 1185, time: '19:05 - 19:45', roomName: '1F 廚房',         label: '🍽️ 與翔陽一齊食晚餐' },
+      { start: 1185, end: 1195, time: '19:45 - 19:55', roomName: '1F 廚房',         label: '🧽 洗碗收拾' },
+      { start: 1195, end: 1295, time: '19:55 - 21:35', roomName: '屋企／街外',      label: '🌟 夜間自由陪伴（可解鎖自由行）' },
+      { start: 1295, end: 1330, time: '21:35 - 22:10', roomName: '1F 浴室',         label: '🫧 一齊沖涼浸浴' },
+      { start: 1330, end: 1440, time: '22:10 - 24:00', roomName: '1F 客廳',         label: '🌟 睡前自由陪伴・宵夜（00:00 睡）' }
+    ];
+    function openScheduleModal(whoTab = 'hinata') {
+      if (typeof whoTab !== 'string') whoTab = 'hinata';
+      window.__schedWhoTab = whoTab;
+      const isBroTab = (whoTab === 'bro');
+      const titleEl = document.getElementById('schedule-modal-title');
+      if (titleEl) titleEl.textContent = isBroTab ? '📅 哥哥每日生活作息表' : '📅 翔陽每日生活作息表';
+      const tH = document.getElementById('sched-tab-hinata'), tB = document.getElementById('sched-tab-bro');
+      if (tH && tB) {
+        tH.className = `flex-1 py-1.5 rounded-xl border-2 border-[#2d1e12] text-xs font-black ${!isBroTab ? 'bg-orange-500 text-white' : 'bg-white text-[#2d1e12]'}`;
+        tB.className = `flex-1 py-1.5 rounded-xl border-2 border-[#2d1e12] text-xs font-black ${isBroTab ? 'bg-indigo-600 text-white' : 'bg-white text-[#2d1e12]'}`;
+      }
       const info = getCurrentHourInfo();
       const isWeekend = info.isWeekend;
-      const items = isWeekend ? WEEKEND_SCHEDULE_ITEMS : WEEKDAY_SCHEDULE_ITEMS;
+      const items = isBroTab ? (isWeekend ? BRO_WEEKEND_SCHEDULE_ITEMS : BRO_WEEKDAY_SCHEDULE_ITEMS) : (isWeekend ? WEEKEND_SCHEDULE_ITEMS : WEEKDAY_SCHEDULE_ITEMS);
       const mins = info.totalMin;
       const todayS = getTodayStr();
       const promises = (!isWeekend && state.msgLog && state.msgLog.date === todayS && state.msgLog.promises) ? state.msgLog.promises : {};
@@ -7029,7 +7110,15 @@ html, body {
       }
 
       actions.push(
-        { id: 'toggle_bro_follow', emoji: state.broSoloMode ? '🚶' : '🫂', name: state.broSoloMode ? '陪同：自由中' : '陪同：陪伴中', sub: state.broSoloMode ? '按此鎖定陪翔陽' : '按此暫離自由行', highlight: !state.broSoloMode },
+        (() => {
+          const curSc = getScheduledState(getCurrentHourInfo());
+          const isMealL = ['breakfast', 'lunch', 'dinner', 'restaurant'].includes(pet.currentActivity) || (state.outing && state.outing.type === 'restaurant');
+          const isOutL = Boolean((state.outing && state.outing.type) || OUTDOOR_STREET_ROOMS.has(pet.currentRoom));
+          const isFreeL = Boolean(curSc.freeRoam && !isMealL && !isOutL);
+          if (isMealL || isOutL) return { id: 'toggle_bro_follow', emoji: '🫂', name: '陪同：陪伴中', sub: isMealL ? '一齊食飯鎖定中 🔒' : '外出約會鎖定中 🔒', highlight: true };
+          if (isFreeL) return { id: 'toggle_bro_follow', emoji: state.broSoloMode ? '🚶' : '🫂', name: state.broSoloMode ? '陪同：自由中' : '陪同：陪伴中', sub: state.broSoloMode ? '自由時間・按此鎖定' : '自由時間・按此解鎖', highlight: !state.broSoloMode };
+          return { id: 'toggle_bro_follow', emoji: '📅', name: '陪同：跟作息表', sub: bro.currentActivity === 'sleep' ? '哥哥瞓覺中' : (['pharmacy','canteen'].includes(bro.currentRoom) ? '哥哥返工中' : '自由時間先可切換'), highlight: false };
+        })(),
         { id: 'urge_toilet', emoji: '🚽', name: '快去廁所', sub: '催翔陽去廁所' },
         { id: 'play',  emoji: '🏐', name: '雙人對打', sub: '輪流接波' },
         { id: 'practice', emoji: '🔥', name: '練球', sub: '去後院練習' },
@@ -7177,11 +7266,17 @@ html, body {
           startDuoOuting('restaurant', 60, 'restaurant', '二人一齊去餐廳食飯（停留 1 小時）🍽️', '「同哥哥去家庭餐廳食大餐！好香呀～🍽️✨」');
           const rh0=pet.hunger, rm0=pet.mood; pet.hunger = Math.min(100, pet.hunger + ((state.balance && state.balance.actRestHunger) ?? 30)); pet.mood = Math.min(100, pet.mood + ((state.balance && state.balance.actRestMood) ?? 12)); recordStatLog(pet,'hunger','🍽️ 餐廳大餐',rh0,pet.hunger); recordStatLog(pet,'mood','🍽️ 餐廳大餐',rm0,pet.mood); grantCappedRewards(pet, 6, 4);
         } else if (id === 'toggle_bro_follow') {
-          const fixedDuoActs = ['breakfast', 'lunch', 'dinner', 'bath', 'brush', 'sleep', 'waking'];
-          const outOrWork = (state.outing && state.outing.type) || ['pharmacy', 'canteen', 'hospital', 'school_class', 'school_court', 'street', 'street_cross', 'main_street'].includes(bro.currentRoom) || ['school_class', 'school_court', 'street', 'street_cross', 'main_street'].includes(pet.currentRoom);
-          if (outOrWork || fixedDuoActs.includes(pet.currentActivity) || pet.fainted || pet.recoverStage) {
+          const curScT = getScheduledState(getCurrentHourInfo());
+          const isMealT = ['breakfast', 'lunch', 'dinner', 'restaurant'].includes(pet.currentActivity) || (state.outing && state.outing.type === 'restaurant');
+          const isOutT = Boolean((state.outing && state.outing.type) || OUTDOOR_STREET_ROOMS.has(pet.currentRoom));
+          if (isMealT || isOutT) {
             playSFX('miss');
-            showToast('固定一齊活動、瞓覺或外出時唔可以切換陪同狀態 🔒');
+            showToast('一齊食飯或外出期間「陪伴中」已鎖定，唔可以解鎖 🔒');
+            return;
+          }
+          if (!curScT.freeRoam || pet.fainted || pet.recoverStage) {
+            playSFX('miss');
+            showToast('只有自由時間先可以解鎖／切換陪同狀態 📅');
             return;
           }
           state.broSoloMode = !state.broSoloMode;
@@ -8125,7 +8220,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v90';
+          if (el) el.textContent = '☁️ 雲端已同步 · v93';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8164,7 +8259,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v90';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v93';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
