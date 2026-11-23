@@ -242,7 +242,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v81.8</span>
+      <span id="save-status">💾 已自動儲存 · v81.9</span>
       
     </div>
 
@@ -1341,6 +1341,65 @@ html, body {
                 recordStatLog(pet, 'energy', `🌙 離線宵夜 (${sNm})`, e0, pet.energy);
                 recordStatLog(pet, 'mood',   `🌙 離線宵夜 (${sNm})`, m0, pet.mood);
                 recordStatLog(pet, 'bladder',`🌙 離線宵夜 (${sNm})`, b0, pet.bladder);
+              }
+            }
+          }
+          // Offline salary (09:00-17:00)
+          if (evalInfo && evalInfo.hour >= 9 && evalInfo.hour < 17) {
+            const salHO = Math.max(1, (state.balance && typeof state.balance.salaryIntervalHours === 'number') ? state.balance.salaryIntervalHours : 1);
+            const salCO = Math.max(0, (state.balance && typeof state.balance.salaryIntervalCoins === 'number') ? state.balance.salaryIntervalCoins : 25);
+            if (salCO > 0) {
+              const sIdxO = Math.floor((evalInfo.hour - 9) / salHO);
+              const sKeyO = `${evalToday}_${sIdxO}`;
+              if (pet.lastSalarySlotKey !== sKeyO) {
+                pet.lastSalarySlotKey = sKeyO;
+                pet.coins += salCO;
+              }
+            }
+          }
+          // Offline confirmed date slots (13:35-21:35)
+          if (evalInfo && state.dates && state.dates[evalToday] && state.dates[evalToday].confirmed && typeof DATE_SLOTS !== 'undefined') {
+            const dSlotsO = state.dates[evalToday].slots || {};
+            for (let di = 0; di < DATE_SLOTS.length; di++) {
+              const dsStart = 13 * 60 + 35 + di * 60;
+              const dsEnd = dsStart + 60;
+              if (evalInfo.totalMin >= dsStart && evalInfo.totalMin < dsEnd) {
+                const dLoc = dSlotsO[DATE_SLOTS[di]];
+                if (dLoc && dLoc !== 'home_eat' && pet.lastDateSlotRun !== evalToday + '_' + di) {
+                  pet.lastDateSlotRun = evalToday + '_' + di;
+                  const dtS = new Date(nowEval); dtS.setHours(Math.floor(dsStart / 60), dsStart % 60, 0, 0);
+                  state.outing = { type: dLoc, returnAt: dtS.getTime() + 60 * 60 * 1000, startedAt: dtS.getTime(), fromMall: false };
+                  if (dLoc === 'restaurant') state.skipDinnerDate = evalToday;
+                  if (dLoc === 'ice_cream' && typeof ICE_CREAM_FLAVORS !== 'undefined') {
+                    const hf = ICE_CREAM_FLAVORS[Math.floor(Math.random() * ICE_CREAM_FLAVORS.length)];
+                    const bf = ICE_CREAM_FLAVORS[1];
+                    const paid = Math.min(pet.coins, getIcCfg(hf.id).price + getIcCfg(bf.id).price);
+                    pet.coins -= paid;
+                    if (paid > 0) recordCoinLog(pet, '🍦 雪糕店（離線自動）', -paid, pet.coins);
+                    const hcfg = getIcCfg(hf.id);
+                    const h0 = pet.hunger, m0 = pet.mood, e0 = pet.energy;
+                    pet.hunger = Math.min(100, pet.hunger + hcfg.hunger);
+                    pet.mood = Math.min(100, pet.mood + hcfg.mood);
+                    pet.energy = Math.min(100, pet.energy + hcfg.energy);
+                    recordStatLog(pet, 'hunger', `🍦 ${hf.name}雪糕`, h0, pet.hunger);
+                    recordStatLog(pet, 'mood', `🍦 ${hf.name}雪糕`, m0, pet.mood);
+                    recordStatLog(pet, 'energy', `🍦 ${hf.name}雪糕`, e0, pet.energy);
+                    addBladderFromConsume(pet, false);
+                  } else if (dLoc === 'mall' && pet.mallCafeDate !== evalToday) {
+                    pet.mallCafeDate = evalToday;
+                    const payC = Math.min(pet.coins, 30); pet.coins -= payC;
+                    if (payC > 0) recordCoinLog(pet, '☕ 海邊咖啡店（離線）', -payC, pet.coins);
+                    const h0 = pet.hunger, m0 = pet.mood, e0 = pet.energy;
+                    pet.hunger = Math.min(100, pet.hunger + 12);
+                    pet.mood = Math.min(100, pet.mood + 15);
+                    pet.energy = Math.min(100, pet.energy + 12);
+                    recordStatLog(pet, 'hunger', '🍮 咖啡店布丁', h0, pet.hunger);
+                    recordStatLog(pet, 'mood', '🍮 咖啡店布丁', m0, pet.mood);
+                    recordStatLog(pet, 'energy', '🍮 咖啡店布丁', e0, pet.energy);
+                    addBladderFromConsume(pet, true);
+                  }
+                }
+                break;
               }
             }
           }
@@ -3455,7 +3514,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81.8'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81.9'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -7437,16 +7496,25 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       updateHUD(); saveState(); showToast(`已重置 ${char.name} 嘅進度`);
     });
 
-    // 每 3 秒即時結算一次精力／飽食／心情變化
-    setInterval(() => {
+    // 即時＋後台恢復結算精力／飽食／心情變化（改用真實經過時間，避免放後台跳過早餐等行程）
+    function catchUpElapsedStats() {
       const pet = ensurePetState(state.activeCharId);
-      applyTimeStatsDelta(pet, 3000);
+      const nowC = Date.now();
+      const elapsed = Math.max(0, nowC - (pet.lastUpdated || nowC));
+      if (elapsed < 500) return;
+      applyTimeStatsDelta(pet, elapsed);
+      if (elapsed > 15000 && typeof syncScheduleActivity === 'function') {
+        syncScheduleActivity(pet, false);
+      }
       updateHUD(); saveState();
       const co = document.getElementById('choice-overlay');
       if (co && !co.classList.contains('hidden') && window.__openStatLogStat && co.innerHTML.includes('最近 10 次變化紀錄')) {
         openStatLogModal(window.__openStatLogStat);
       }
-    }, 3000);
+    }
+    setInterval(catchUpElapsedStats, 3000);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') catchUpElapsedStats(); });
+    window.addEventListener('pageshow', () => catchUpElapsedStats());
 
     window.addEventListener('error', (ev) => {
       try { showToast('JS Error: ' + (ev.message || ev.error)); } catch (_) {}
@@ -7511,7 +7579,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v81.8';
+          if (el) el.textContent = '☁️ 雲端已同步 · v81.9';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7550,7 +7618,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v81.8';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v81.9';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
