@@ -122,14 +122,18 @@ html, body {
         </div>
 
         <!-- In-Screen 4-Way Navigation Arrows -->
-        <button id="dir-up" type="button" class="inscreen-dir absolute top-1.5 left-1/2 -translate-x-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full px-3 py-0.5 text-xs font-black z-20 flex items-center gap-1" title="向上">
-          <span>▲</span><span id="lbl-up" class="text-[9px] hidden sm:inline"></span>
+        <button id="dir-up" type="button" class="inscreen-dir absolute top-1.5 left-1/2 -translate-x-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full px-2.5 py-0.5 text-[11px] font-black z-20 flex items-center gap-1 whitespace-nowrap" title="向上">
+          <span>▲</span><span id="lbl-up" class="text-[10px]"></span>
         </button>
-        <button id="dir-down" type="button" class="inscreen-dir absolute bottom-1.5 left-1/2 -translate-x-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full px-3 py-0.5 text-xs font-black z-20 flex items-center gap-1" title="向下">
-          <span>▼</span><span id="lbl-down" class="text-[9px] hidden sm:inline"></span>
+        <button id="dir-down" type="button" class="inscreen-dir absolute bottom-1.5 left-1/2 -translate-x-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full px-2.5 py-0.5 text-[11px] font-black z-20 flex items-center gap-1 whitespace-nowrap" title="向下">
+          <span>▼</span><span id="lbl-down" class="text-[10px]"></span>
         </button>
-        <button id="dir-left" type="button" class="inscreen-dir absolute left-1.5 top-1/2 -translate-y-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full w-8 h-8 text-xs font-black z-20 flex items-center justify-center" title="向左">◀</button>
-        <button id="dir-right" type="button" class="inscreen-dir absolute right-1.5 top-1/2 -translate-y-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full w-8 h-8 text-xs font-black z-20 flex items-center justify-center" title="向右">▶</button>
+        <button id="dir-left" type="button" class="inscreen-dir absolute left-1.5 top-1/2 -translate-y-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full px-2 py-1 text-[11px] font-black z-20 flex items-center gap-0.5 whitespace-nowrap" title="向左">
+          <span>◀</span><span id="lbl-left" class="text-[10px]"></span>
+        </button>
+        <button id="dir-right" type="button" class="inscreen-dir absolute right-1.5 top-1/2 -translate-y-1/2 bg-white/85 hover:bg-orange-100 text-[#2d1e12] rounded-full px-2 py-1 text-[11px] font-black z-20 flex items-center gap-0.5 whitespace-nowrap" title="向右">
+          <span id="lbl-right" class="text-[10px]"></span><span>▶</span>
+        </button>
 
         <!-- Supermarket 6 Interactive Zones + Basket -->
         <div id="supermarket-zones" class="hidden pointer-events-none absolute inset-0 z-15">
@@ -244,7 +248,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v83.2</span>
+      <span id="save-status">💾 已自動儲存 · v84</span>
       
     </div>
 
@@ -460,6 +464,9 @@ html, body {
       bg_street2: "./assets/bg_street2.jpg?v=69",
       bg_street2_morning: "./assets/bg_street2_morning.jpg?v=69",
       bg_street2_night: "./assets/bg_street2_night.jpg?v=69",
+      bg_street_mid: "./assets/bg_street_mid.jpg?v=84",
+      bg_street_mid_morning: "./assets/bg_street_mid_morning.jpg?v=84",
+      bg_street_mid_night: "./assets/bg_street_mid_night.jpg?v=84",
       bg_supermarket: "./assets/bg_supermarket.jpg?v=69",
       bg_supermarket_morning: "./assets/bg_supermarket_morning.jpg?v=69",
       bg_supermarket_night: "./assets/bg_supermarket_night.jpg?v=69",
@@ -587,7 +594,7 @@ html, body {
       park2:        { id: 'park2',        name: '海濱公園・海邊區', short: '公園2',    icon: '🌊', gx: 1, gy: 1,  up: 'park3', down: 'park_toilet', left: null, right: 'park4' },
       park4:        { id: 'park4',        name: '海濱公園・海濱廣場', short: '公園4',  icon: '⛵', gx: 2, gy: 1,  up: 'park', down: null, left: 'park2', right: 'park_entrance' },
       park_toilet:  { id: 'park_toilet',  name: '公園公廁',        short: '公廁',     icon: '🚻', gx: 1, gy: 2,  up: 'park2', down: null, left: null, right: null },
-      park_entrance:{ id: 'park_entrance',name: '公園門口',        short: '公園門口', icon: '🌳', gx: 2.5, gy: 0, up: null, down: null, left: null, right: 'main_street', doors: ['park'] },
+      park_entrance:{ id: 'park_entrance',name: '公園門口',        short: '公園門口', icon: '🌳', gx: 2.5, gy: 0, up: null, down: null, left: 'park', right: 'main_street', doors: ['park'] },
       main_street:  { id: 'main_street',  name: '繁華大街',        short: '大街',     icon: '🏙️', gx: 3, gy: 0,  up: 'main_street2', down: 'street', left: 'park_entrance', right: 'mall_gate' },
       mall_gate:    { id: 'mall_gate',    name: '商場門口',        short: '商場門口', icon: '🏬', gx: 3.5, gy: 0, up: 'mall_park3', down: null, left: 'main_street', right: null, doors: ['mall'] },
       main_street2: { id: 'main_street2', name: '繁華大街 2',      short: '大街2',    icon: '🏙️', gx: 3, gy: -1, up: null, down: 'main_street', left: null, right: null, doors: ['pharmacy', 'bus_interior'] },
@@ -617,9 +624,10 @@ html, body {
       bath:         { id: 'bath',         name: '1F 浴室',         short: '浴室',     icon: '🛁', gx: 3, gy: 1,  up: null, down: 'wash_hall', left: null, right: null },
       living:       { id: 'living',       name: '1F 客廳',         short: '客廳',     icon: '🏠', gx: 1, gy: 2,  up: null, down: null, left: 'backyard', right: 'hallway' },
       hallway:      { id: 'hallway',      name: '1F 走廊玄關',     short: '走廊',     icon: '🚪', gx: 2, gy: 2,  up: 'wash_hall', down: 'kitchen', left: 'hallway_2f', right: 'street', doors: ['living'] },
-      street:       { id: 'street',       name: '室外街道',        short: '街道',     icon: '🛣️', gx: 3, gy: 2,  up: 'main_street', down: 'school_gate', left: 'hallway', right: 'street2' },
+      street:       { id: 'street',       name: '室外街道',        short: '街道',     icon: '🛣️', gx: 3, gy: 2,  up: 'main_street', down: 'school_gate', left: 'hallway', right: 'street_mid' },
+      street_mid:   { id: 'street_mid',   name: '室外街道中段',    short: '街道中段', icon: '🛣️', gx: 3.5, gy: 2, up: null, down: null, left: 'street', right: 'street2' },
       school_gate:  { id: 'school_gate',  name: '烏野高校校門',    short: '校門',     icon: '⛩️', gx: 3, gy: 2.5, up: 'street', down: null, left: null, right: null, doors: ['school_class'] },
-      street2:      { id: 'street2',      name: '室外街道2',       short: '街道2',    icon: '🛣️', gx: 4, gy: 2,  up: 'street3', down: 'supermarket', left: 'street', right: 'konbini' },
+      street2:      { id: 'street2',      name: '室外街道2',       short: '街道2',    icon: '🛣️', gx: 4, gy: 2,  up: 'street3', down: 'supermarket', left: 'street_mid', right: 'konbini' },
       street3:      { id: 'street3',      name: '室外街道3',       short: '街道3',    icon: '🛣️', gx: 4, gy: 1,  up: null, down: 'street2', left: null, right: 'ice_cream' },
       ice_cream:    { id: 'ice_cream',    name: '雪糕店',          short: '雪糕店',   icon: '🍦', gx: 5, gy: 1,  up: null, down: null, left: 'street3', right: null },
       konbini:      { id: 'konbini',      name: '日式便利店',      short: '便利店',   icon: '🏪', gx: 5, gy: 2,  up: null, down: null, left: 'street2', right: null },
@@ -691,6 +699,9 @@ html, body {
       ],
       street2: [
         { id: 'walk_st2', label: '街道2漫步', hx: 280, hy: 420, hr: 95, px: 280, py: 440, act: 'street', line: '「經過室外街道2，右邊係便利店，下面係超級市場！🛣️」' }
+      ],
+      street_mid: [
+        { id: 'walk_st_mid', label: '街道中段漫步', hx: 280, hy: 420, hr: 95, px: 280, py: 440, act: 'street', line: '「沿住木屋小巷行去街角小店，陣陣微風好舒服！🛣️✨」' }
       ],
       supermarket: [
         { id: 'sm_dry',      label: '乾糧部',     hx: 90,  hy: 270, hr: 75, px: 110, py: 440, act: 'supermarket', line: '「睇下乾糧部有咩麵包同三文治先！🍞🥪」' },
@@ -1641,7 +1652,7 @@ html, body {
       return { ex: 540, ey: 440, ix: 60, iy: 440 };
     }
     let followTarget = null;
-    const OUTDOOR_STREET_ROOMS = new Set(['street', 'street2', 'street3', 'main_street', 'main_street2', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall_park1', 'mall_park2', 'mall_park3', 'school_gate', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4']);
+    const OUTDOOR_STREET_ROOMS = new Set(['street', 'street_mid', 'street2', 'street3', 'main_street', 'main_street2', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall_park1', 'mall_park2', 'mall_park3', 'school_gate', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4']);
     function getWalkActForRoom(rm) { return OUTDOOR_STREET_ROOMS.has(rm) ? 'street' : 'walking'; }
     function startCharacterWalkTransition(pet, destRoom, destAct, px, py, followView = false) {
       if (pet.currentRoom === destRoom) { pet.currentActivity = destAct; targetX = px; targetY = py; saveState(); return; }
@@ -2041,7 +2052,7 @@ html, body {
         playSFX('miss');
         showToast('📞 哥哥收到學校電話：翔陽暈倒送咗去醫療室（🪙-50）！10秒後出發去接佢');
         speakAndShow('「📞 喂？！咩話翔陽喺學校暈倒送咗去醫療室？！我即刻請假趕過嚟！！😰」');
-      } else if (['street', 'street2', 'street3', 'supermarket', 'ice_cream', 'main_street', 'konbini', 'mall', 'park', 'restaurant', 'pharmacy', 'canteen'].includes(room)) {
+      } else if (['street', 'street_mid', 'street2', 'street3', 'supermarket', 'ice_cream', 'main_street', 'konbini', 'mall', 'park', 'restaurant', 'pharmacy', 'canteen'].includes(room)) {
         pet.coins = Math.max(0, pet.coins - 50); recordCoinLog(pet, '🏥 醫療室／醫院費用', -50, pet.coins);
         pet.recoverStage = 'phone_alert';
         pet.rescueRoom = 'hospital';
@@ -2577,37 +2588,33 @@ html, body {
           if (viewRoomId === tRoom) speakAndShow(isPark ? '「好急呀！去公園公廁小便先再繼續～🚻💨」' : (isRest ? '「好急呀！去餐廳右邊洗手間先返埋位～🚻💨」' : '「好急呀！去商場廁所小便先～🚻💨」'));
           updateHUD(); return;
         }
-        // Auto-trigger park activities (散步 / 慢跑 / 睇海風) while at park / park2
-        if (state.outing.type === 'park' && ['park', 'park2', 'park3', 'park4'].includes(pet.currentRoom) && !duoWalk) {
+        // Park 2x2 inner loop (park -> park3 -> park2 -> park4 -> park) for park_walk / park_jog / park_breeze
+        const PARK_LOOP_SEQ = ['park', 'park3', 'park2', 'park4'];
+        if (state.outing.type === 'park' && PARK_LOOP_SEQ.includes(pet.currentRoom) && !duoWalk && !pet.toiletState) {
           if (!window.__lastParkAutoAt) window.__lastParkAutoAt = Date.now();
-          if (Date.now() - window.__lastParkAutoAt > 15000) {
+          if (Date.now() - window.__lastParkAutoAt > 12000) {
             window.__lastParkAutoAt = Date.now();
             const r = Math.random();
-            let nextParkAct = 'park_walk';
-            if (r < 0.42) nextParkAct = 'park_walk';
-            else if (r < 0.76) nextParkAct = 'park_jog';
+            let nextParkAct = pet.currentActivity;
+            if (r < 0.45) nextParkAct = 'park_walk';
+            else if (r < 0.80) nextParkAct = 'park_jog';
             else nextParkAct = 'park_breeze';
-            if (nextParkAct !== pet.currentActivity) {
-              if (nextParkAct === 'park_breeze' && Math.random() < 0.5) {
-                const parkCands = ['park', 'park2', 'park3', 'park4'].filter(r => r !== pet.currentRoom);
-                const otherPark = parkCands[Math.floor(Math.random() * parkCands.length)] || 'park2';
-                const bx = (otherPark === 'park2' || otherPark === 'park3') ? 195 : 360;
-                startDuoJourney(otherPark, 'park_breeze', `「行過嚟【${MAP_ROOMS[otherPark]?.name}】坐長椅吹海風！🌊✨」`, null, () => {
-                  targetX = bx; bro.tx = bx + 85; targetY = 445; bro.ty = 445;
-                });
-                return;
-              }
-              pet.currentActivity = nextParkAct;
-              bro.currentActivity = nextParkAct;
-              if (nextParkAct === 'park_breeze') {
-                const bx = (pet.currentRoom === 'park2') ? 195 : 360;
-                targetX = bx; bro.tx = bx + 85; targetY = 445; bro.ty = 445;
-                if (viewRoomId === pet.currentRoom) speakAndShow('「同哥哥停低坐喺海邊長椅睇下海風先～🌊✨」');
-              } else if (nextParkAct === 'park_jog') {
-                if (viewRoomId === pet.currentRoom) speakAndShow('「同哥哥沿住海濱緩跑徑慢跑熱身！🏃‍♂️💨」');
-              } else {
-                if (viewRoomId === pet.currentRoom) speakAndShow('「同哥哥喺公園一邊散步一邊傾計～🌳😊」');
-              }
+            if (nextParkAct === 'park_walk' || nextParkAct === 'park_jog') {
+              const curPIdx = PARK_LOOP_SEQ.indexOf(pet.currentRoom);
+              const nextPR = PARK_LOOP_SEQ[(curPIdx + 1) % PARK_LOOP_SEQ.length];
+              const pMsg = nextParkAct === 'park_jog'
+                ? `「沿住公園內循環慢跑到【${MAP_ROOMS[nextPR]?.name}】！🏃‍♂️💨」`
+                : `「同哥哥沿住內循環散步去【${MAP_ROOMS[nextPR]?.name}】～🌳✨」`;
+              startDuoJourney(nextPR, nextParkAct, pMsg, null, () => {
+                targetX = 280; bro.tx = 385; targetY = 445; bro.ty = 445;
+                updateHUD();
+              });
+              return;
+            } else {
+              pet.currentActivity = 'park_breeze'; bro.currentActivity = 'park_breeze';
+              const bx = (pet.currentRoom === 'park2' || pet.currentRoom === 'park3') ? 195 : 340;
+              targetX = bx; bro.tx = bx + 95; targetY = 445; bro.ty = 445;
+              if (viewRoomId === pet.currentRoom) speakAndShow('「同哥哥停低坐喺海邊長椅吹下海風先～🌊✨」');
               updateHUD();
             }
           }
@@ -3572,7 +3579,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v83.2'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v84'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3626,7 +3633,7 @@ html, body {
     }
 
     const MALL_AREA_SET = new Set(['mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3']);
-    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet', 'rest_toilet']);
+    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street_mid', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet', 'rest_toilet']);
     function drawAnimeRoomBackground(roomId, timeInfo) {
       const h = new Date().getHours();
       const isNight = (h >= 18 || h < 6);
@@ -3982,6 +3989,7 @@ html, body {
       backyard: ['💭 後院塊草地好啱練魚躍救球！', '💭 今日對牆接波要破紀錄！', '💭 同哥哥一齊喺後院練波最開心！'],
       street: ['💭 條街今日天氣好好呀！', '💭 踩住微風散步好寫意～', '💭 同哥哥一齊行街邊最好傾！'],
       street2: ['💭 街角間便利店陣間可以去望下！', '💭 條街好靜好舒服呢～', '💭 哥哥行喺隔離就覺得好安心！'],
+      street_mid: ['💭 木屋小巷同電線桿影落嚟好有夏日感覺～', '💭 再行前少少就到街角小店同街道2啦！', '💭 同哥哥一齊行呢條靜靜地嘅小巷好寫意！'],
       street3: ['💭 呢條街好靜好啱邊行邊食雪糕！', '💭 微風吹埋嚟好涼爽呀～', '💭 下次要再同哥哥嚟呢條街！'],
       ice_cream: ['💭 四隻口味都好吸引呀！！', '💭 雪糕櫃睇到流晒口水…', '💭 唔知哥哥今日會揀邊隻口味呢？'],
       konbini: ['💭 熱肉包櫃出緊煙好吸引！', '💭 運動飲料同零食都好想買～', '💭 哥哥成日喺便利店買好嘢請我食！'],
@@ -4362,32 +4370,6 @@ html, body {
         if (state.brother && state.brother.currentRoom === pet.currentRoom) {
           state.brother.px = (duoWalk.broStartX ?? state.brother.px) + (state.brother.tx - (duoWalk.broStartX ?? state.brother.px)) * dt;
           state.brother.py = (duoWalk.broStartY ?? state.brother.py) + (state.brother.ty - (duoWalk.broStartY ?? state.brother.py)) * dt;
-        }
-      } else if (!pet.toiletState && (pet.currentRoom === 'park' || pet.currentRoom === 'park2') && (pet.currentActivity === 'park_walk' || pet.currentActivity === 'park_jog') && !transitionState && !duoWalk) {
-        if (!window.__parkDir) window.__parkDir = -1;
-        const spd = pet.currentActivity === 'park_jog' ? 1.25 : 0.55;
-        petX += window.__parkDir * spd;
-        petY = 445; targetX = petX; targetY = 445;
-        if (state.brother && (state.brother.currentRoom === 'park' || state.brother.currentRoom === 'park2')) {
-          state.brother.currentRoom = pet.currentRoom;
-          state.brother.currentActivity = pet.currentActivity;
-          state.brother.px = Math.max(85, Math.min(515, petX + 85));
-          state.brother.py = 445; state.brother.tx = state.brother.px; state.brother.ty = 445;
-        }
-        if (pet.currentRoom === 'park' && petX <= 92 && window.__parkDir === -1) {
-          pet.currentRoom = 'park2'; petX = 505; targetX = 505;
-          if (state.brother) { state.brother.currentRoom = 'park2'; state.brother.px = 535; state.brother.tx = 535; }
-          if (viewRoomId === 'park') viewRoomId = 'park2';
-          updateHUD();
-        } else if (pet.currentRoom === 'park2' && petX <= 115 && window.__parkDir === -1) {
-          window.__parkDir = 1;
-        } else if (pet.currentRoom === 'park2' && petX >= 505 && window.__parkDir === 1) {
-          pet.currentRoom = 'park'; petX = 95; targetX = 95;
-          if (state.brother) { state.brother.currentRoom = 'park'; state.brother.px = 145; state.brother.tx = 145; }
-          if (viewRoomId === 'park2') viewRoomId = 'park';
-          updateHUD();
-        } else if (pet.currentRoom === 'park' && petX >= 490 && window.__parkDir === 1) {
-          window.__parkDir = -1;
         }
       } else {
         if (petWalk && !pet.recoverStage) {
@@ -5417,17 +5399,19 @@ html, body {
       if (!state.shopMenus) {
         state.shopMenus = {
           school_tuckshop: ['bread', 'drink', 'candy', 'mazemen', 'lemon_tea'],
-          street_vend: ['soda', 'drink', 'lemon_tea']
+          street_vend: ['soda', 'drink', 'lemon_tea'],
+          ice_cream: ['candy', 'lemon_tea', 'soda']
         };
       }
       if (!Array.isArray(state.shopMenus.school_tuckshop)) state.shopMenus.school_tuckshop = ['bread', 'drink', 'candy', 'mazemen', 'lemon_tea'];
       if (!Array.isArray(state.shopMenus.street_vend)) state.shopMenus.street_vend = ['soda', 'drink', 'lemon_tea'];
+      if (!Array.isArray(state.shopMenus.ice_cream)) state.shopMenus.ice_cream = ['candy', 'lemon_tea', 'soda'];
       return state.shopMenus;
     }
     function openShopMenuModal(shopKey) {
       const menus = ensureShopMenus();
       const checked = menus[shopKey] || [];
-      const title = shopKey === 'school_tuckshop' ? '🥐 學校小食部供應清單（勾選可購買小食）' : '🥤 大街汽水機供應清單（勾選可購買飲品／小食）';
+      const title = shopKey === 'school_tuckshop' ? '🥐 學校小食部供應清單（勾選可購買小食）' : (shopKey === 'ice_cream' ? '🍦 雪糕店小食供應清單（勾選可購買小食）' : '🥤 大街汽水機供應清單（勾選可購買飲品／小食）');
       const box = document.getElementById('choice-overlay');
       const rows = SNACK_CATALOG.map(s => {
         const cfg = getSnackCfg(s.id);
@@ -7392,9 +7376,9 @@ html, body {
       }
       const shopMenuBtn = document.getElementById('btn-shop-menu');
       if (shopMenuBtn) {
-        if (!isZoomed && (viewRoomId === 'school_tuckshop' || viewRoomId === 'street')) {
+        if (!isZoomed && (viewRoomId === 'school_tuckshop' || viewRoomId === 'street' || viewRoomId === 'ice_cream')) {
           shopMenuBtn.classList.remove('hidden');
-          shopMenuBtn.textContent = viewRoomId === 'school_tuckshop' ? '🥐 小食部清單' : '🥤 汽水機清單';
+          shopMenuBtn.textContent = viewRoomId === 'school_tuckshop' ? '🥐 小食部清單' : (viewRoomId === 'ice_cream' ? '🍦 雪糕店清單' : '🥤 汽水機清單');
         } else {
           shopMenuBtn.classList.add('hidden');
         }
@@ -7586,7 +7570,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       updateHUD(); saveState(); showToast('已恢復健康數值（飽食80% / 心情85% / 精力90% / 尿意0%）🩹✨');
     });
     document.getElementById('btn-shop-menu').addEventListener('click', () => {
-      openShopMenuModal(viewRoomId === 'street' ? 'street_vend' : 'school_tuckshop');
+      openShopMenuModal(viewRoomId === 'street' ? 'street_vend' : (viewRoomId === 'ice_cream' ? 'ice_cream' : 'school_tuckshop'));
     });
     document.getElementById('choice-overlay').addEventListener('change', (e) => {
       const chk = e.target.closest('[data-shop-toggle]');
@@ -8055,7 +8039,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v83.2';
+          if (el) el.textContent = '☁️ 雲端已同步 · v84';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8094,7 +8078,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v83.2';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v84';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
