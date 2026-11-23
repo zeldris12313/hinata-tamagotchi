@@ -242,7 +242,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v82.5</span>
+      <span id="save-status">💾 已自動儲存 · v82.6</span>
       
     </div>
 
@@ -520,12 +520,21 @@ html, body {
 
     let assetLoadFailed = false;
     const _loadingAssets = new Set();
+    const _assetRetries = {};
     function ensureAsset(k) {
       if (!k || !ASSET_URLS[k] || sprites[k] || _loadingAssets.has(k)) return;
       _loadingAssets.add(k);
       const im = new Image();
-      im.onload = () => { sprites[k] = im; };
-      im.onerror = () => { assetLoadFailed = true; };
+      im.onload = () => { _loadingAssets.delete(k); sprites[k] = im; };
+      im.onerror = () => {
+        _loadingAssets.delete(k);
+        _assetRetries[k] = (_assetRetries[k] || 0) + 1;
+        if (_assetRetries[k] <= 2) {
+          setTimeout(() => ensureAsset(k), 500 * _assetRetries[k]);
+        } else {
+          assetLoadFailed = true;
+        }
+      };
       im.src = ASSET_URLS[k];
     }
     function loadAssets() {
@@ -535,7 +544,7 @@ html, body {
         'chibiJersey', 'chibiSchool', 'chibiPajama', 'chibiBrother',
         'chibiCry', 'chibiJerseyCry', 'chibiSchoolCry',
         'chibiSquat', 'chibiSquatPajama', 'chibiHoodie', 'chibiCasual',
-        'bg_living', 'bg_room_hinata', 'bg_hallway'
+        'bg_living', 'bg_room_hinata', 'bg_hallway', 'bg_school_class'
       ];
       if (typeof viewRoomId === 'string' && viewRoomId) {
         priorityKeys.push('bg_' + viewRoomId);
@@ -545,11 +554,11 @@ html, body {
       const rest = Object.keys(ASSET_URLS).filter(k => !priorityKeys.includes(k));
       let idx = 0;
       function loadBatch() {
-        const end = Math.min(idx + 6, rest.length);
+        const end = Math.min(idx + 10, rest.length);
         for (; idx < end; idx++) ensureAsset(rest[idx]);
-        if (idx < rest.length) setTimeout(loadBatch, 90);
+        if (idx < rest.length) setTimeout(loadBatch, 50);
       }
-      setTimeout(loadBatch, 120);
+      setTimeout(loadBatch, 80);
     }
 
     // =========================================================================
@@ -3527,7 +3536,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v82.5'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v82.6'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3736,6 +3745,7 @@ html, body {
       else if (expr === 'sad_rest' || (curPet.mood < 40 && expr !== 'sleep' && expr !== 'waking' && expr !== 'happy' && !isPetting)) {
         spriteKey = outfit.sadKey || 'chibiPajamaSad';
       }
+      if (!sprites[spriteKey]) ensureAsset(spriteKey);
       const img = sprites[spriteKey] || sprites.chibiJersey;
       if (!img) return;
       const drawW = 205, drawH = 205;
@@ -7889,7 +7899,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v82.5';
+          if (el) el.textContent = '☁️ 雲端已同步 · v82.6';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7928,7 +7938,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v82.5';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v82.6';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
