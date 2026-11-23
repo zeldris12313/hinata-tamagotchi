@@ -108,6 +108,8 @@ html, body {
       <div class="relative w-full aspect-square bg-sky-100 overflow-hidden">
         <canvas id="game-canvas" width="600" height="600" class="hd-canvas w-full h-full block cursor-pointer"></canvas>
 
+        <!-- Top-Right Shop Menu Button (tuckshop / street vending) -->
+        <button id="btn-shop-menu" type="button" class="hidden absolute top-2.5 right-2.5 bg-white/95 hover:bg-amber-50 border-2 border-[#2d1e12] rounded-xl px-2 py-1 text-[11px] font-black text-[#2d1e12] shadow-md z-30 flex items-center gap-1" title="查看供應小食">🛒 小食清單</button>
         <!-- Top-Left Mailbox Button -->
         <button id="btn-mailbox" type="button" class="absolute top-2.5 left-2.5 bg-white/95 hover:bg-amber-50 border-2 border-[#2d1e12] rounded-xl px-2 py-1 text-base shadow-md z-30 flex items-center justify-center" title="信箱">
           <span>✉️</span>
@@ -242,7 +244,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v83.1</span>
+      <span id="save-status">💾 已自動儲存 · v83.2</span>
       
     </div>
 
@@ -1732,19 +1734,22 @@ html, body {
         const aeSb = (state.autoEvents && state.autoEvents.snackBuy) || { prob: 20, maxPerDay: 2 };
         if (!pet.dailyAutoCounts || pet.dailyAutoCounts.date !== tday) pet.dailyAutoCounts = { date: tday, toilet: 0, konbiniAsk: 0, parkAsk: 0, backyardAsk: 0, schoolMail: 0, snackBuy: 0 };
         const sbCnt = pet.dailyAutoCounts.snackBuy || 0;
-        if (aeSb.prob > 0 && aeSb.maxPerDay > 0 && sbCnt < aeSb.maxPerDay && Math.random() < (aeSb.prob / 100)) {
+        const vendList = ensureShopMenus().street_vend || [];
+        if (vendList.length > 0 && aeSb.prob > 0 && aeSb.maxPerDay > 0 && sbCnt < aeSb.maxPerDay && Math.random() < (aeSb.prob / 100)) {
+          const vId = vendList[Math.floor(Math.random() * vendList.length)];
+          const vCfg = getSnackCfg(vId);
           pet.dailyAutoCounts.snackBuy = sbCnt + 1;
           const broWith = (state.brother && state.brother.currentRoom === roomId);
-          if (broWith && pet.coins >= 5) {
-            pet.coins -= 5; recordCoinLog(pet, '🥤 街上代買凍飲', -5, pet.coins);
-            recordPurchaseLog(pet, MAP_ROOMS[roomId]?.name || '街道', '🥤 冰凍飲品', 5, '哥哥代付');
-            if (pet.hunger < 30) { const h0=pet.hunger, e0=pet.energy; pet.hunger = Math.min(100, pet.hunger + 10); pet.energy = Math.min(100, pet.energy + 10); recordStatLog(pet,'hunger','🥤 街上凍飲',h0,pet.hunger); recordStatLog(pet,'energy','🥤 街上凍飲',e0,pet.energy); addBladderFromConsume(pet, true); customSpeech = '「多謝哥哥喺街買罐凍飲畀我即刻飲！（哥哥 -5 元、+10%）🥤💛」'; }
-            else { pet.snacks.soda = (pet.snacks.soda || 0) + 1; customSpeech = '「多謝哥哥喺街買咗罐凍飲畀我！放落小背包先！🥤🎒💛」'; }
-          } else if (!broWith && pet.pocketMoney >= 5) {
-            pet.pocketMoney -= 5;
-            recordPurchaseLog(pet, MAP_ROOMS[roomId]?.name || '街道', '🥤 冰凍飲品', 5, '翔陽零用錢');
-            if (pet.hunger < 30) { const h0=pet.hunger, e0=pet.energy; pet.hunger = Math.min(100, pet.hunger + 10); pet.energy = Math.min(100, pet.energy + 10); recordStatLog(pet,'hunger','🥤 街上凍飲',h0,pet.hunger); recordStatLog(pet,'energy','🥤 街上凍飲',e0,pet.energy); addBladderFromConsume(pet, true); customSpeech = '「自己喺街買咗罐凍飲即刻飲！（零用錢 -5 元、+10%）🥤✨」'; }
-            else { pet.snacks.soda = (pet.snacks.soda || 0) + 1; customSpeech = '「自己喺街買咗罐凍飲放入小背包！（零用錢 -5 元）🥤🎒」'; }
+          if (broWith && pet.coins >= vCfg.price) {
+            pet.coins -= vCfg.price; recordCoinLog(pet, `🥤 汽水機代買${vCfg.name}`, -vCfg.price, pet.coins);
+            recordPurchaseLog(pet, MAP_ROOMS[roomId]?.name || '街道', `${vCfg.emoji} ${vCfg.name}`, vCfg.price, '哥哥代付');
+            if (pet.hunger < 30) { const h0=pet.hunger, m0=pet.mood, e0=pet.energy; pet.hunger = Math.min(100, pet.hunger + vCfg.hunger); pet.mood = Math.min(100, pet.mood + vCfg.mood); pet.energy = Math.min(100, pet.energy + vCfg.energy); recordStatLog(pet,'hunger',`${vCfg.emoji} ${vCfg.name}`,h0,pet.hunger); recordStatLog(pet,'mood',`${vCfg.emoji} ${vCfg.name}`,m0,pet.mood); recordStatLog(pet,'energy',`${vCfg.emoji} ${vCfg.name}`,e0,pet.energy); addBladderFromConsume(pet, !!vCfg.isDrink); customSpeech = `「多謝哥哥喺汽水機買 ${vCfg.emoji}${vCfg.name} 畀我即刻食！（哥哥 -${vCfg.price} 元）💛」`; }
+            else { pet.snacks[vId] = (pet.snacks[vId] || 0) + 1; customSpeech = `「多謝哥哥喺汽水機買咗 ${vCfg.emoji}${vCfg.name} 畀我！放落小背包先！🎒💛」`; }
+          } else if (!broWith && pet.pocketMoney >= vCfg.price) {
+            pet.pocketMoney -= vCfg.price;
+            recordPurchaseLog(pet, MAP_ROOMS[roomId]?.name || '街道', `${vCfg.emoji} ${vCfg.name}`, vCfg.price, '翔陽零用錢');
+            if (pet.hunger < 30) { const h0=pet.hunger, m0=pet.mood, e0=pet.energy; pet.hunger = Math.min(100, pet.hunger + vCfg.hunger); pet.mood = Math.min(100, pet.mood + vCfg.mood); pet.energy = Math.min(100, pet.energy + vCfg.energy); recordStatLog(pet,'hunger',`${vCfg.emoji} ${vCfg.name}`,h0,pet.hunger); recordStatLog(pet,'mood',`${vCfg.emoji} ${vCfg.name}`,m0,pet.mood); recordStatLog(pet,'energy',`${vCfg.emoji} ${vCfg.name}`,e0,pet.energy); addBladderFromConsume(pet, !!vCfg.isDrink); customSpeech = `「自己喺汽水機買咗 ${vCfg.emoji}${vCfg.name} 即刻食！（零用錢 -${vCfg.price} 元）✨」`; }
+            else { pet.snacks[vId] = (pet.snacks[vId] || 0) + 1; customSpeech = `「自己喺汽水機買咗 ${vCfg.emoji}${vCfg.name} 放入小背包！（零用錢 -${vCfg.price} 元）🎒」`; }
           }
         }
       } else if (roomId === 'konbini' && isFinal) {
@@ -3317,27 +3322,21 @@ html, body {
       }
 
       // 6b. Recess roaming (11:00-11:20 / 14:30-14:50), Tuckshop buying, Auto snack eating, Classroom sneak-eating & detention
-      const SNACK_META = {
-        bread: { name: '麵包', emoji: '🥐', cost: 8, val: 16 },
-        drink: { name: '紙包飲品', emoji: '🧃', cost: 7, val: 14 },
-        candy: { name: '糖果', emoji: '🍬', cost: 3, val: 6 },
-        soda: { name: '汽水', emoji: '🥤', cost: 5, val: 10 },
-        snack: { name: '街頭小食', emoji: '🍡', cost: 10, val: 16 },
-        nikuman: { name: '熱肉包', emoji: '🥟', cost: 10, val: 20 }
-      };
       function tryEatOwnedSnack(reasonMsg) {
-        const keys = ['bread', 'drink', 'candy', 'soda', 'snack', 'nikuman'].filter(k => (pet.snacks[k] || 0) > 0);
+        const keys = SNACK_CATALOG.map(s => s.id).filter(k => (pet.snacks[k] || 0) > 0);
         if (!keys.length) return false;
         const k = keys[Math.floor(Math.random() * keys.length)];
         pet.snacks[k] -= 1;
-        const m = SNACK_META[k];
-        const sh0=pet.hunger, se0=pet.energy;
-        pet.hunger = Math.min(100, pet.hunger + m.val);
-        pet.energy = Math.min(100, pet.energy + m.val);
+        const m = getSnackCfg(k);
+        const sh0=pet.hunger, sm0=pet.mood, se0=pet.energy;
+        pet.hunger = Math.min(100, pet.hunger + m.hunger);
+        pet.mood   = Math.min(100, pet.mood   + m.mood);
+        pet.energy = Math.min(100, pet.energy + m.energy);
         recordStatLog(pet,'hunger',`🎒 ${m.name}`,sh0,pet.hunger);
+        recordStatLog(pet,'mood',  `🎒 ${m.name}`,sm0,pet.mood);
         recordStatLog(pet,'energy',`🎒 ${m.name}`,se0,pet.energy);
-        addBladderFromConsume(pet, k === 'drink' || k === 'soda');
-        if (viewRoomId === pet.currentRoom) speakAndShow(reasonMsg.replace('{item}', m.emoji + m.name).replace('{val}', m.val));
+        addBladderFromConsume(pet, !!m.isDrink);
+        if (viewRoomId === pet.currentRoom) speakAndShow(reasonMsg.replace('{item}', m.emoji + m.name).replace('{val}', m.hunger));
         return true;
       }
 
@@ -3359,45 +3358,57 @@ html, body {
         tryEatOwnedSnack('「好餓／好攰呀！即刻食返自己身上嘅 {item} 補返 +{val}% 飽食同精力！😋」');
       }
 
-      // Recess (11:00-11:20 & 14:30-14:50): roam class / school_hall / school_tuckshop, buy snack if pocketMoney >= 10
-      if (sched.isRecess && !pet.toiletState && !transitionState && Date.now() - lastRecessActAt > 14000) {
-        lastRecessActAt = Date.now();
+      // Recess (11:00-11:20 & 14:30-14:50): GUARANTEED 1 visit to school_tuckshop, stay 1 min, then buy 1 checked item!
+      if (sched.isRecess && !pet.toiletState && !transitionState) {
         const tdayR = getTodayStr();
-        if (!pet.dailyAutoCounts || pet.dailyAutoCounts.date !== tdayR) pet.dailyAutoCounts = { date: tdayR, toilet: 0, konbiniAsk: 0, parkAsk: 0, backyardAsk: 0, schoolMail: 0, snackBuy: 0 };
-        const aeSbR = (state.autoEvents && state.autoEvents.snackBuy) || { prob: 20, maxPerDay: 2 };
-        const aeSeR = (state.autoEvents && state.autoEvents.snackEat) || { prob: 35 };
-        const skR = pet.snacks || {};
-        const totSnR = (skR.bread||0)+(skR.drink||0)+(skR.candy||0)+(skR.soda||0)+(skR.snack||0)+(skR.nikuman||0);
-        const sbCntR = pet.dailyAutoCounts.snackBuy || 0;
-        const canGoTuck = (pet.hunger < 70 || totSnR === 0) && sbCntR < aeSbR.maxPerDay && aeSbR.prob > 0;
-        const rRooms = canGoTuck ? ['school_class', 'school_hall', 'school_tuckshop'] : ['school_class', 'school_hall'];
-        const pickR = rRooms[Math.floor(Math.random() * rRooms.length)];
-        const nextActR = pickR === 'school_tuckshop' ? 'tuckshop_buy' : 'recess_walk';
-        startCharacterWalkTransition(pet, pickR, nextActR, 255, 440);
-        if (pickR === 'school_tuckshop' && canGoTuck) {
-          if ((pet.pocketMoney || 0) >= 10 && Math.random() < (aeSbR.prob / 100)) {
-            pet.dailyAutoCounts.snackBuy = sbCntR + 1;
-            const choices = ['bread', 'drink', 'candy'];
-            const c = choices[Math.floor(Math.random() * choices.length)];
-            const m = SNACK_META[c];
-            pet.pocketMoney -= m.cost;
-            recordPurchaseLog(pet, '學校小食部', `${m.emoji} ${m.name}`, m.cost, '翔陽零用錢');
-            if (pet.hunger < 30 || pet.energy < 30) {
-              const th0=pet.hunger, te0=pet.energy;
-              pet.hunger = Math.min(100, pet.hunger + m.val); pet.energy = Math.min(100, pet.energy + m.val);
-              recordStatLog(pet,'hunger',`🥐 小食部 ${m.name}`,th0,pet.hunger);
-              recordStatLog(pet,'energy',`🥐 小食部 ${m.name}`,te0,pet.energy);
-              addBladderFromConsume(pet, c === 'drink');
-              if (viewRoomId === 'school_tuckshop') speakAndShow(`「小息喺小食部買咗 ${m.emoji}${m.name}（-${m.cost}元）即刻食咗補 +${m.val}%！😋」`);
-            } else {
-              pet.snacks[c] = (pet.snacks[c] || 0) + 1;
-              if (viewRoomId === 'school_tuckshop') speakAndShow(`「小息喺小食部買咗 ${m.emoji}${m.name}（-${m.cost}元）放好喺書包一陣食！🎒」`);
+        const recKey = `${tdayR}_${sched.key}`;
+        const nowR = Date.now();
+        if (pet.recessTuckshopUntil) {
+          if (pet.currentRoom !== 'school_tuckshop') {
+            startCharacterWalkTransition(pet, 'school_tuckshop', 'tuckshop_buy', 245, 440, followTarget === 'hinata');
+          } else if (nowR >= pet.recessTuckshopUntil) {
+            pet.recessTuckshopUntil = null;
+            const menusR = ensureShopMenus();
+            const availIds = (menusR.school_tuckshop || []).filter(id => (pet.pocketMoney || 0) >= getSnackCfg(id).price);
+            if (availIds.length > 0) {
+              const cid = availIds[Math.floor(Math.random() * availIds.length)];
+              const m = getSnackCfg(cid);
+              pet.pocketMoney -= m.price;
+              recordPurchaseLog(pet, '學校小食部', `${m.emoji} ${m.name}`, m.price, '翔陽零用錢');
+              if (pet.hunger < 30 || pet.energy < 30) {
+                const th0=pet.hunger, tm0=pet.mood, te0=pet.energy;
+                pet.hunger = Math.min(100, pet.hunger + m.hunger);
+                pet.mood   = Math.min(100, pet.mood   + m.mood);
+                pet.energy = Math.min(100, pet.energy + m.energy);
+                recordStatLog(pet,'hunger',`🥐 小食部 ${m.name}`,th0,pet.hunger);
+                recordStatLog(pet,'mood',  `🥐 小食部 ${m.name}`,tm0,pet.mood);
+                recordStatLog(pet,'energy',`🥐 小食部 ${m.name}`,te0,pet.energy);
+                addBladderFromConsume(pet, !!m.isDrink);
+                if (viewRoomId === 'school_tuckshop') speakAndShow(`「小息喺小食部買咗 ${m.emoji}${m.name}（-${m.price}元）即刻食咗補飽食+${m.hunger}%！😋」`);
+              } else {
+                pet.snacks[cid] = (pet.snacks[cid] || 0) + 1;
+                if (viewRoomId === 'school_tuckshop') speakAndShow(`「小息喺小食部買咗 ${m.emoji}${m.name}（-${m.price}元）放好喺書包一陣食！🎒」`);
+              }
+            } else if (viewRoomId === 'school_tuckshop') {
+              speakAndShow('「小食部冇夠零用錢買已勾選嘅小食…返走廊行下先！😳」');
             }
-          } else if ((pet.pocketMoney || 0) < 10 && viewRoomId === 'school_tuckshop') {
-            speakAndShow('「零用錢少過 10 元…今日小息唔買小食住，返屋企先問哥哥攞…😳」');
+            updateHUD(); saveState();
+            startCharacterWalkTransition(pet, 'school_hall', 'recess_walk', 260, 440, followTarget === 'hinata');
           }
-        } else if ((pet.hunger < 30 || pet.energy < 30 || Math.random() < ((aeSeR.prob ?? 35) / 100))) {
-          tryEatOwnedSnack('「趁小息時間食返身上嘅 {item} 補返 +{val}% 飽食同精力！✨」');
+        } else if (pet.recessBuySlot !== recKey) {
+          pet.recessBuySlot = recKey;
+          pet.recessTuckshopUntil = nowR + 60000;
+          startCharacterWalkTransition(pet, 'school_tuckshop', 'tuckshop_buy', 245, 440, followTarget === 'hinata');
+          if (viewRoomId === pet.currentRoom) speakAndShow('「小息啦！去學校小食部睇下買咩小食先～🥐✨」');
+        } else if (nowR - lastRecessActAt > 14000) {
+          lastRecessActAt = nowR;
+          const aeSeR = (state.autoEvents && state.autoEvents.snackEat) || { prob: 35 };
+          const rRooms = ['school_class', 'school_hall'];
+          const pickR = rRooms[Math.floor(Math.random() * rRooms.length)];
+          startCharacterWalkTransition(pet, pickR, 'recess_walk', 255, 440);
+          if ((pet.hunger < 30 || pet.energy < 30 || Math.random() < ((aeSeR.prob ?? 35) / 100))) {
+            tryEatOwnedSnack('「趁小息時間食返身上嘅 {item} 補返 +{val}% 飽食！✨」');
+          }
         }
       }
 
@@ -3561,7 +3572,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v83.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v83.2'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -4587,8 +4598,14 @@ html, body {
       if (!isZoomed && LOCKED_MEAL_ACTS.has(pet.currentActivity) && pet.currentRoom === 'kitchen') {
         playSFX('miss'); showToast('食緊正餐中 🔒 食完先可以互動呀！'); return;
       }
+      if (!isZoomed && viewRoomId === 'school_tuckshop' && x >= 95 && x <= 320 && y >= 260 && y <= 445) {
+        openShopMenuModal('school_tuckshop'); return;
+      }
+      if (!isZoomed && viewRoomId === 'street' && x >= 450 && x <= 590 && y >= 300 && y <= 555) {
+        openShopMenuModal('street_vend'); return;
+      }
       if (SCHOOL_LOCKED_ROOMS.has(pet.currentRoom) || SCHOOL_LOCKED_ROOMS.has(viewRoomId)) {
-        if (isZoomed) { triggerPetHead(x, y); return; }
+        if (isZoomed || isTouchingHinata(x, y)) { triggerPetHead(x, y); return; }
         showBusyLockedMsg(pet); return;
       }
       if (isTouchingHinata(x, y)) {
@@ -4622,7 +4639,7 @@ html, body {
       }
     });
     canvas.addEventListener('pointermove', (e) => {
-      if ((e.buttons === 0 && e.pointerType === 'mouse') || rally.active || (!isZoomed && SCHOOL_LOCKED_ROOMS.has(ensurePetState(state.activeCharId).currentRoom))) return;
+      if ((e.buttons === 0 && e.pointerType === 'mouse') || rally.active) return;
       const { x, y } = getCanvasCoords(e.clientX, e.clientY); triggerPetHead(x, y);
     });
     window.addEventListener('pointerup', () => { isPetting = false; petTickAcc = 0; });
@@ -5379,19 +5396,66 @@ html, body {
       { id: 'tea_soda',  name: '汽水/茶',  emoji: '🥤', cost: 8,  val: 24 }
     ];
     let lastShopBuyAt = 0;
+    const SNACK_CATALOG = [
+      { id: 'bread',     name: '麵包',     emoji: '🥐', price: 8,  hunger: 16, mood: 5,  energy: 16, isDrink: false },
+      { id: 'drink',     name: '紙包飲品', emoji: '🧃', price: 7,  hunger: 14, mood: 6,  energy: 14, isDrink: true  },
+      { id: 'candy',     name: '糖果',     emoji: '🍬', price: 3,  hunger: 6,  mood: 10, energy: 6,  isDrink: false },
+      { id: 'soda',      name: '汽水',     emoji: '🥤', price: 5,  hunger: 10, mood: 8,  energy: 10, isDrink: true  },
+      { id: 'snack',     name: '街頭小食', emoji: '🍡', price: 10, hunger: 16, mood: 10, energy: 16, isDrink: false },
+      { id: 'nikuman',   name: '熱肉包',   emoji: '🥟', price: 10, hunger: 20, mood: 10, energy: 20, isDrink: false },
+      { id: 'mazemen',   name: '撈麵',     emoji: '🍜', price: 18, hunger: 26, mood: 12, energy: 18, isDrink: false },
+      { id: 'lemon_tea', name: '檸檬茶',   emoji: '🍋', price: 8,  hunger: 4,  mood: 12, energy: 10, isDrink: true  }
+    ];
+    function getSnackCfg(id) {
+      const def = SNACK_CATALOG.find(x => x.id === id) || SNACK_CATALOG[0];
+      if (!state.snackCfg) state.snackCfg = {};
+      if (!state.snackCfg[id]) state.snackCfg[id] = { price: def.price, hunger: def.hunger, mood: def.mood, energy: def.energy };
+      const c = state.snackCfg[id];
+      return { ...def, price: c.price ?? def.price, hunger: c.hunger ?? def.hunger, mood: c.mood ?? def.mood, energy: c.energy ?? def.energy };
+    }
+    function ensureShopMenus() {
+      if (!state.shopMenus) {
+        state.shopMenus = {
+          school_tuckshop: ['bread', 'drink', 'candy', 'mazemen', 'lemon_tea'],
+          street_vend: ['soda', 'drink', 'lemon_tea']
+        };
+      }
+      if (!Array.isArray(state.shopMenus.school_tuckshop)) state.shopMenus.school_tuckshop = ['bread', 'drink', 'candy', 'mazemen', 'lemon_tea'];
+      if (!Array.isArray(state.shopMenus.street_vend)) state.shopMenus.street_vend = ['soda', 'drink', 'lemon_tea'];
+      return state.shopMenus;
+    }
+    function openShopMenuModal(shopKey) {
+      const menus = ensureShopMenus();
+      const checked = menus[shopKey] || [];
+      const title = shopKey === 'school_tuckshop' ? '🥐 學校小食部供應清單（勾選可購買小食）' : '🥤 大街汽水機供應清單（勾選可購買飲品／小食）';
+      const box = document.getElementById('choice-overlay');
+      const rows = SNACK_CATALOG.map(s => {
+        const cfg = getSnackCfg(s.id);
+        const isChk = checked.includes(s.id);
+        return `<label class="flex items-center justify-between px-2.5 py-1.5 rounded-xl border-2 ${isChk ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200 bg-white'} text-[11px] font-bold cursor-pointer">
+          <div class="flex items-center gap-2 min-w-0">
+            <input type="checkbox" data-shop-toggle="${shopKey}" data-snack-id="${s.id}" ${isChk ? 'checked' : ''} class="w-4 h-4 accent-emerald-600 shrink-0" />
+            <span class="truncate">${cfg.emoji} <b>${cfg.name}</b> <span class="text-[10px] text-slate-500">(飽+${cfg.hunger}% 心+${cfg.mood}% 精+${cfg.energy}%)</span></span>
+          </div>
+          <span class="font-black text-amber-700 shrink-0 ml-2">🪙${cfg.price}元</span>
+        </label>`;
+      }).join('');
+      box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12] mb-1">${title}</div>
+        <div class="text-[10px] text-center text-slate-600 mb-1">角色嚟到呢個地點時只會買已勾選嘅食物</div>
+        <div class="flex flex-col gap-1">${rows}</div>
+        <button type="button" data-sms-close="1" class="mt-1.5 self-center px-4 py-1 rounded-xl bg-orange-500 text-white border-2 border-[#2d1e12] text-[11px] font-black">完成</button>`;
+      box.classList.remove('hidden'); box.scrollTop = 0;
+    }
     function openSnackBagModal() {
       const pet = ensurePetState(state.activeCharId);
       const sk = pet.snacks || {};
-      const items = [
-        ['bread', '🥐 麵包 (+16%)'], ['drink', '🧃 紙包飲品 (+14%)'], ['candy', '🍬 糖果 (+6%)'],
-        ['soda', '🥤 汽水 (+10%)'], ['snack', '🍡 街頭小食 (+16%)'], ['nikuman', '🥟 熱肉包 (+20%)']
-      ];
       const box = document.getElementById('choice-overlay');
-      const rows = items.map(([k, lbl]) => {
-        const cnt = sk[k] || 0;
-        return `<div class="flex items-center justify-between px-2.5 py-1 rounded-lg border border-amber-300 bg-amber-50/70 text-[11px] font-bold"><span>${lbl}</span><span class="${cnt > 0 ? 'text-emerald-700 font-black' : 'text-slate-400'}">x${cnt}</span></div>`;
+      const rows = SNACK_CATALOG.map(s => {
+        const cfg = getSnackCfg(s.id);
+        const cnt = sk[s.id] || 0;
+        return `<div class="flex items-center justify-between px-2.5 py-1 rounded-lg border border-amber-300 bg-amber-50/70 text-[11px] font-bold"><span>${cfg.emoji} ${cfg.name} <span class="text-[9px] text-slate-500">(飽+${cfg.hunger}% 心+${cfg.mood}% 精+${cfg.energy}%)</span></span><span class="${cnt > 0 ? 'text-emerald-700 font-black' : 'text-slate-400'}">x${cnt}</span></div>`;
       }).join('');
-      box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12] mb-1">🎒 翔陽小背包（低於30%或小息時會自己食，食完歸0）</div><div class="grid grid-cols-2 gap-1">${rows}</div><button type="button" data-sms-close="1" class="mt-1 self-center px-3 py-1 rounded-xl bg-white text-[#2d1e12] border-2 border-[#2d1e12] text-[10px] font-black">關上背包</button>`;
+      box.innerHTML = `<div class="text-center text-xs font-black text-[#2d1e12] mb-1">🎒 翔陽小背包（低於30%或小息時會自己食，食完歸0）</div><div class="grid grid-cols-1 gap-1">${rows}</div><button type="button" data-sms-close="1" class="mt-1 self-center px-3 py-1 rounded-xl bg-white text-[#2d1e12] border-2 border-[#2d1e12] text-[10px] font-black">關上背包</button>`;
       box.classList.remove('hidden'); box.scrollTop = 0;
     }
 
@@ -5886,8 +5950,8 @@ html, body {
       const box = document.getElementById('settings-modal-body');
       const prevScroll = preserveScroll ? box.scrollTop : 0;
 
-      const tabsHtml = `<div class="grid grid-cols-5 gap-1 sticky top-0 bg-[#fff7ed] pb-1.5 z-10 border-b border-amber-200">
-        ${[['stats','📊 數值'],['probs','🎲 平日機率'],['weekend','🏖️ 假日設定'],['rewards','⏱️ 時間獎勵'],['bladder','🚽 尿意摸頭']].map(([tid, tlbl]) => `
+      const tabsHtml = `<div class="grid grid-cols-3 gap-1 sticky top-0 bg-[#fff7ed] pb-1.5 z-10 border-b border-amber-200">
+        ${[['stats','📊 數值'],['snacks','🎒 小食設定'],['probs','🎲 平日機率'],['weekend','🏖️ 假日設定'],['rewards','⏱️ 時間獎勵'],['bladder','🚽 尿意摸頭']].map(([tid, tlbl]) => `
           <button type="button" data-set-tab="${tid}" class="py-1 px-1 rounded-xl text-[10px] font-black border-2 border-[#2d1e12] ${settingsTab === tid ? 'bg-orange-500 text-white' : 'bg-white text-[#2d1e12]'}">${tlbl}</button>
         `).join('')}
       </div>`;
@@ -5964,6 +6028,35 @@ html, body {
           </div>
         </div>`;
         bodyHtml = catHtml + actHtml + icSetHtml;
+      } else if (settingsTab === 'snacks') {
+        bodyHtml = `<div class="bg-amber-50/90 border border-amber-300 rounded-xl p-2 space-y-1.5">
+          <div class="text-[11px] font-black text-[#2d1e12]">🎒 全遊戲小食價錢與回復設定（包含撈麵、檸檬茶）</div>
+          ${SNACK_CATALOG.map(s => {
+            const sc = getSnackCfg(s.id);
+            return `<div class="bg-white border border-amber-300 rounded-xl p-1.5 space-y-1">
+              <div class="flex items-center justify-between text-xs font-black text-[#2d1e12]">
+                <span>${sc.emoji} ${sc.name}</span>
+                <div class="flex items-center gap-1 text-[10px]">
+                  <span class="text-amber-700">價錢</span>
+                  <button type="button" data-snk-id="${s.id}" data-snk-field="price" data-snk-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="snk-val-${s.id}-price" class="min-w-[28px] text-center">🪙${sc.price}</span>
+                  <button type="button" data-snk-id="${s.id}" data-snk-field="price" data-snk-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-1 text-[10px] font-bold">
+                ${[['hunger','飽食'],['mood','心情'],['energy','精力']].map(([sf, sl]) => `
+                  <div class="flex items-center justify-between bg-amber-50/60 border border-amber-200 rounded px-1 py-0.5">
+                    <span>${sl}</span>
+                    <div class="flex items-center gap-0.5">
+                      <button type="button" data-snk-id="${s.id}" data-snk-field="${sf}" data-snk-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                      <span id="snk-val-${s.id}-${sf}" class="min-w-[24px] text-center">+${sc[sf]}</span>
+                      <button type="button" data-snk-id="${s.id}" data-snk-field="${sf}" data-snk-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
+                    </div>
+                  </div>`).join('')}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>`;
       } else if (settingsTab === 'probs') {
         const aeRows = [
           ['toilet','🚽 自行如廁',true,false],
@@ -7297,6 +7390,15 @@ html, body {
         hBtn.textContent = isTomHol ? '🏖️ 聽日已設假期 ✓' : '🏖️ 設明日假期';
         hBtn.className = `whitespace-nowrap px-2 py-0.5 rounded-full font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm transition ${isTomHol ? 'bg-emerald-500 text-white' : 'bg-white text-emerald-700 hover:bg-emerald-50'}`;
       }
+      const shopMenuBtn = document.getElementById('btn-shop-menu');
+      if (shopMenuBtn) {
+        if (!isZoomed && (viewRoomId === 'school_tuckshop' || viewRoomId === 'street')) {
+          shopMenuBtn.classList.remove('hidden');
+          shopMenuBtn.textContent = viewRoomId === 'school_tuckshop' ? '🥐 小食部清單' : '🥤 汽水機清單';
+        } else {
+          shopMenuBtn.classList.add('hidden');
+        }
+      }
       document.getElementById('room-title-badge').textContent = `${viewRoom.icon} ${viewRoom.name}`;
       const smZones = document.getElementById('supermarket-zones');
       const inSmReal = (pet.currentRoom === 'supermarket') || (state.brother && state.brother.currentRoom === 'supermarket');
@@ -7483,7 +7585,32 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       pet.hunger = 80; pet.mood = 85; pet.energy = 90; pet.bladder = 0; pet.fainted = false; pet.recoverStage = null;
       updateHUD(); saveState(); showToast('已恢復健康數值（飽食80% / 心情85% / 精力90% / 尿意0%）🩹✨');
     });
+    document.getElementById('btn-shop-menu').addEventListener('click', () => {
+      openShopMenuModal(viewRoomId === 'street' ? 'street_vend' : 'school_tuckshop');
+    });
+    document.getElementById('choice-overlay').addEventListener('change', (e) => {
+      const chk = e.target.closest('[data-shop-toggle]');
+      if (!chk) return;
+      const skey = chk.dataset.shopToggle, sid = chk.dataset.snackId;
+      const menus = ensureShopMenus();
+      const arr = menus[skey] || [];
+      if (chk.checked) { if (!arr.includes(sid)) arr.push(sid); }
+      else { menus[skey] = arr.filter(x => x !== sid); }
+      saveState();
+      openShopMenuModal(skey);
+    });
     document.getElementById('settings-modal-body').addEventListener('click', (e) => {
+      const snkBtn = e.target.closest('[data-snk-id]');
+      if (snkBtn) {
+        const sid = snkBtn.dataset.snkId, sf = snkBtn.dataset.snkField, sd = Number(snkBtn.dataset.snkDelta);
+        getSnackCfg(sid);
+        const curV = state.snackCfg[sid][sf] ?? 0;
+        const nv = Math.max(sf === 'price' ? 1 : 0, Math.min(100, curV + sd));
+        state.snackCfg[sid][sf] = nv;
+        const el = document.getElementById(`snk-val-${sid}-${sf}`);
+        if (el) el.textContent = sf === 'price' ? `🪙${nv}` : `+${nv}`;
+        saveState(); return;
+      }
       const sTab = e.target.closest('[data-set-tab]');
       if (sTab) { settingsTab = sTab.dataset.setTab; openSettingsModal(false); return; }
       const smCfgBtn = e.target.closest('[data-smcfg-key]');
@@ -7928,7 +8055,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v83.1';
+          if (el) el.textContent = '☁️ 雲端已同步 · v83.2';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7967,7 +8094,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v83.1';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v83.2';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
