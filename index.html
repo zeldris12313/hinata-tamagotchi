@@ -249,7 +249,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v87</span>
+      <span id="save-status">💾 已自動儲存 · v88</span>
       
     </div>
 
@@ -1274,7 +1274,7 @@ html, body {
 
     function applyTimeStatsDelta(pet, elapsedMs, simAtMs = null) {
       if (!simAtMs && elapsedMs > 60000 && !pet.fainted && !pet.recoverStage) {
-        const cappedMs = Math.min(elapsedMs, 480 * 60000);
+        const cappedMs = Math.min(elapsedMs, 1440 * 60000);
         const nowEnd = Date.now();
         let curT = nowEnd - cappedMs;
         while (curT < nowEnd) {
@@ -3008,7 +3008,15 @@ html, body {
       }
 
       // 4. Sync Hinata
-      if (pet.toiletState) { /* skip normal schedule while in toilet routine */ } else if (pet.scheduleSlotKey === sched.key) {
+      if (pet.toiletState) { /* skip normal schedule while in toilet routine */ } else if (!animateTransition && !(state.outing && state.outing.type) && !pet.recoverStage && !pet.fainted && !sched.freeRoam && pet.currentRoom !== sched.room) {
+        pet.scheduleSlotKey = sched.key; pet.currentRoom = sched.room; pet.currentActivity = sched.act;
+        pet.outfitIdx = sched.outfit ?? pet.outfitIdx; petX = sched.px; petY = sched.py; targetX = sched.px; targetY = sched.py;
+        if (followTarget === 'hinata') viewRoomId = sched.room;
+        if (!state.broSoloMode && bro) {
+          bro.scheduleSlotKey = bSched.key; bro.currentRoom = bSched.room; bro.currentActivity = bSched.act;
+          bro.px = bSched.px; bro.py = bSched.py; bro.tx = bSched.px; bro.ty = bSched.py;
+        }
+      } else if (pet.scheduleSlotKey === sched.key) {
         if (pet.currentRoom === 'school_class' && sched.act === 'school_class' && !['school_class', 'window_gaze'].includes(pet.currentActivity)) {
           pet.currentActivity = 'school_class';
         }
@@ -3576,6 +3584,7 @@ html, body {
       if (!MAP_ROOMS[pet.currentRoom]) pet.currentRoom = 'living';
       if (state.brother && !MAP_ROOMS[state.brother.currentRoom]) state.brother.currentRoom = 'living';
       applyTimeStatsDelta(pet, Date.now() - (pet.lastUpdated || Date.now()));
+      if (typeof cleanupExpiredOutingAndPromises === 'function') cleanupExpiredOutingAndPromises(Date.now());
       syncScheduleActivity(pet, false);
       updateMailboxBadge();
       if (pet.pendingCleanReward) setTimeout(() => openCleanRewardModal(), 600);
@@ -3592,7 +3601,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v87'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v88'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -7990,6 +7999,24 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
     });
 
     // 即時＋後台恢復結算精力／飽食／心情變化（改用真實經過時間，避免放後台跳過早餐等行程）
+    function cleanupExpiredOutingAndPromises(nowC) {
+      const curInf = getCurrentHourInfo(nowC);
+      const td = curInf.todayStr || getTodayStr();
+      if (state.outing && state.outing.type) {
+        const isExpired = !state.outing.returnAt || nowC >= state.outing.returnAt;
+        const isConfirmedDateRest = Boolean(state.dates && state.dates[td] && state.dates[td].confirmed && state.dates[td].slots && state.dates[td].slots['18:35-19:35'] === 'restaurant');
+        const isStaleWdDinnerRest = (!curInf.isWeekend && curInf.totalMin >= 1125 && state.outing.type === 'restaurant' && !isConfirmedDateRest && state.msgLog && state.msgLog.date === td && state.msgLog.promises && (state.msgLog.promises.dinner === 'restaurant' || state.msgLog.promises.dinner === 'done'));
+        if (isExpired || isStaleWdDinnerRest) {
+          state.outing = { type: null, returnAt: null, fromMall: false };
+        }
+      }
+      if (!curInf.isWeekend && curInf.totalMin >= 1125 && state.msgLog && state.msgLog.date === td && state.msgLog.promises && state.msgLog.promises.dinner === 'restaurant') {
+        state.msgLog.promises.dinner = 'done';
+      }
+      if (!curInf.isWeekend && curInf.totalMin >= 1215 && state.msgLog && state.msgLog.date === td && state.msgLog.promises && state.msgLog.promises.play_mode === 'study') {
+        state.msgLog.promises.play_mode = 'done';
+      }
+    }
     function catchUpElapsedStats() {
       const pet = ensurePetState(state.activeCharId);
       const nowC = Date.now();
@@ -7997,14 +8024,8 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       if (elapsed < 500) return;
       applyTimeStatsDelta(pet, elapsed);
       if (elapsed > 15000) {
-        if (state.outing && state.outing.type && (!state.outing.returnAt || nowC >= state.outing.returnAt)) {
-          state.outing = { type: null, returnAt: null, fromMall: false };
-        }
+        cleanupExpiredOutingAndPromises(nowC);
         duoWalk = null; petWalk = null; broWalk = null; transitionState = null;
-        const curInf = getCurrentHourInfo(nowC);
-        if (!curInf.isWeekend && curInf.totalMin >= 1125 && state.msgLog && state.msgLog.date === getTodayStr() && state.msgLog.promises && state.msgLog.promises.dinner === 'restaurant') {
-          state.msgLog.promises.dinner = 'done';
-        }
         if (typeof syncScheduleActivity === 'function') syncScheduleActivity(pet, false);
       }
       updateHUD(); saveState();
@@ -8080,7 +8101,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v87';
+          if (el) el.textContent = '☁️ 雲端已同步 · v88';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8119,7 +8140,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v87';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v88';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
