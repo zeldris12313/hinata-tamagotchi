@@ -242,7 +242,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v82.3</span>
+      <span id="save-status">💾 已自動儲存 · v82.5</span>
       
     </div>
 
@@ -1249,7 +1249,8 @@ html, body {
         const isSupperEatAct = (!simAtMs && pet.currentActivity === 'supper_eat');
         const isSleepAct = (effAct === 'sleep');
         const isRestAct = (!isSleepAct && (pet.recoverStage === 'rest30' || effAct === 'bath' || effAct === 'tea' || effAct === 'tv' || effAct === 'park_breeze' || effAct === 'water_break' || (!simAtMs && pet.homeSeqStage === 'living15m')));
-        const dateRestSlot = simAtMs && evalInfo && state.dates && state.dates[evalToday] && state.dates[evalToday].confirmed && state.dates[evalToday].slots && state.dates[evalToday].slots['18:35-19:35'] === 'restaurant' && evalInfo.totalMin >= 1115 && evalInfo.totalMin < 1175 && !(state.outing && state.outing.type && state.outing.type !== 'restaurant');
+        const wdPromRest = !evalInfo.isWeekend && evalToday === getTodayStr() && state.msgLog && state.msgLog.date === evalToday && state.msgLog.promises && (state.msgLog.promises.dinner === 'restaurant' || state.msgLog.promises.dinner === 'done') && evalInfo.totalMin >= 1095 && evalInfo.totalMin < 1155;
+        const dateRestSlot = (simAtMs && evalInfo && state.dates && state.dates[evalToday] && state.dates[evalToday].confirmed && state.dates[evalToday].slots && state.dates[evalToday].slots['18:35-19:35'] === 'restaurant' && evalInfo.totalMin >= 1115 && evalInfo.totalMin < 1175 && !(state.outing && state.outing.type && state.outing.type !== 'restaurant')) || (simAtMs && wdPromRest);
         if (dateRestSlot) state.skipDinnerDate = evalToday;
         const isRestMealAts = (!simAtMs && (pet.currentRoom === 'restaurant' || (state.outing && state.outing.type === 'restaurant'))) || (simAtMs && ((state.outing && state.outing.type === 'restaurant' && (!state.outing.returnAt || nowEval <= state.outing.returnAt)) || dateRestSlot));
         const effectiveMealAct = isRestMealAts ? 'restaurant' : ((['breakfast', 'lunch', 'dinner'].includes(effAct) && (!schedMealChk || schedMealChk.act === effAct || pet.currentRoom === 'kitchen')) ? effAct : ((!simAtMs && pet.currentRoom === 'kitchen' && schedMealChk && ['breakfast', 'lunch', 'dinner'].includes(schedMealChk.act)) ? schedMealChk.act : null));
@@ -1491,7 +1492,10 @@ html, body {
           return { key: 'wd_dinner', room: 'kitchen', act: 'dinner', outfit: 0, px: 435, py: 455, label: '一齊食晚餐' };
         }
         if (m < 1160) return { key: 'wd_bath',   room: 'bath',         act: 'bath',         outfit: 2, px: 405, py: 332, label: '一齊沖涼浸浴' };
-        if (m < 1215) return { key: 'wd_aniki_play', room: 'room_aniki', act: 'gaming',     outfit: 2, px: 190, py: 435, label: '與哥哥玩樂時間' };
+        if (m < 1215) {
+          if (promises.play_mode === 'study' || promises.play_mode === 'done') return { key: 'wd_study_promise', room: 'room_hinata', act: 'homework', outfit: 2, px: 165, py: 430, label: '今晚約定：一齊溫書' };
+          return { key: 'wd_aniki_play', room: 'room_aniki', act: 'gaming',     outfit: 2, px: 190, py: 435, label: '與哥哥玩樂時間' };
+        }
         if (m < 1260) return { key: 'wd_hw',     room: 'room_hinata',  act: 'homework',     outfit: 2, px: 165, py: 430, label: '溫書做功課' };
         return               { key: 'wd_living', room: 'living',       act: 'tv',           outfit: 2, px: 330, py: 420, label: '客廳睇電視' };
       } else {
@@ -1536,7 +1540,10 @@ html, body {
         }
         if (m < 1135) return { key: 'br_wash_din',   room: 'kitchen',    act: 'washing_dishes',px: 280, py: 400 };
         if (m < 1160) return { key: 'br_bath',       room: 'bath',       act: 'bath',          px: 475, py: 332 };
-        if (m < 1215) return { key: 'br_play',       room: 'room_aniki', act: 'gaming',        px: 295, py: 435 };
+        if (m < 1215) {
+          if (promises.play_mode === 'study' || promises.play_mode === 'done') return { key: 'br_study_promise', room: 'room_hinata', act: 'tutoring', px: 255, py: 430 };
+          return { key: 'br_play',       room: 'room_aniki', act: 'gaming',        px: 295, py: 435 };
+        }
         if (m < 1260) return { key: 'br_free_home',  room: 'living',     act: 'tea',           px: 360, py: 440, homeRoam: true };
         return               { key: 'br_tv',         room: 'living',     act: 'tv',            px: 445, py: 420 };
       } else {
@@ -3158,8 +3165,9 @@ html, body {
       // 6a. 17:30-18:15 Home Arrival Sequence (15s hallway -> 30s room unpack -> 15m living rest +30 energy -> backyard)
       if (!sched.isHomeSeq && pet.homeSeqStage) pet.homeSeqStage = null;
       if (['breakfast', 'lunch', 'dinner'].includes(sched.act) && !pet.toiletState && !pet.recoverStage && !pet.fainted && !state.outing?.type && !transitionState) {
-        if (pet.currentRoom !== 'kitchen') {
-          startCharacterWalkTransition(pet, 'kitchen', sched.act, sched.px, sched.py);
+        const mealTargetRoom = sched.room || 'kitchen';
+        if (pet.currentRoom !== mealTargetRoom) {
+          startCharacterWalkTransition(pet, mealTargetRoom, sched.act, sched.px, sched.py);
         } else if (pet.currentActivity !== sched.act) {
           pet.currentActivity = sched.act;
         }
@@ -3437,27 +3445,28 @@ html, body {
         }
       }
 
-      // 8. Execute Daily SMS Promises at their scheduled times
+      // 8. Execute Daily SMS Promises at their scheduled times (guaranteed execution on weekdays)
       const promises = (state.msgLog && state.msgLog.date === getTodayStr() && state.msgLog.promises) ? state.msgLog.promises : {};
-      if (!state.outing.type && !state.gamingReturnAt && !transitionState) {
-        if (!info.isWeekend && info.totalMin >= 1095 && info.totalMin < 1125 && promises.dinner === 'restaurant') {
+      if (!state.outing.type && !state.gamingReturnAt && !duoWalk && !pet.toiletState) {
+        if (!info.isWeekend && info.totalMin >= 1095 && info.totalMin < 1155 && promises.dinner === 'restaurant') {
+          transitionState = null;
           promises.dinner = 'done';
           startDuoOuting('restaurant', 60, 'restaurant', '照今朝訊息約定，一齊去餐廳食晚餐！🍽️', '「哥哥！我記得我哋今日約咗去餐廳食大餐㗎！好期待呀～🍽️❤️」');
-        } else if (info.totalMin >= 1160 && info.totalMin < 1215 && promises.play_mode === 'study') {
+        } else if (!info.isWeekend && info.totalMin >= 1160 && info.totalMin < 1215 && promises.play_mode === 'study') {
           promises.play_mode = 'done';
-          pet.currentRoom = 'room_hinata'; pet.currentActivity = 'homework'; targetX = 165; targetY = 430;
-          bro.currentRoom = 'room_hinata'; bro.currentActivity = 'tutoring'; bro.tx = 255; bro.ty = 430;
+          startCharacterWalkTransition(pet, 'room_hinata', 'homework', 165, 430, followTarget === 'hinata');
+          startSoloWalk('bro', 'room_hinata', 'tutoring', null, () => { bro.tx = 255; bro.ty = 430; }, false);
           if (viewRoomId === 'room_aniki' || viewRoomId === 'room_hinata') {
-            viewRoomId = 'room_hinata';
             speakAndShow('「哥哥！照今朝訊息講好咗一齊溫英文小測呀！📖❤️❤️」');
           }
-        } else if (info.totalMin >= 1260 && info.totalMin < 1440) {
+        } else if (!info.isWeekend && info.totalMin >= 1260 && info.totalMin < 1440 && !pet.backyardUntil && !transitionState) {
           if (promises.practice === true) {
             promises.practice = 'done';
-            pet.currentRoom = 'backyard'; pet.currentActivity = 'backyard'; targetX = 245; targetY = 435;
-            bro.currentRoom = 'backyard'; bro.currentActivity = 'backyard'; bro.tx = 370; bro.ty = 435;
-            viewRoomId = 'backyard';
-            speakAndShow('「哥哥！照約定一齊嚟後院加練排球啦！🏐🔥」');
+            pet.backyardUntil = Date.now() + 15 * 60 * 1000;
+            startDuoJourney('backyard', 'backyard', '「哥哥！照約定一齊嚟後院加練排球 15 分鐘啦！🏐🔥」', '照約定去後院加練排球（15分鐘）🏐', () => {
+              targetX = 245; targetY = 435; bro.tx = 370; bro.ty = 435;
+              updateHUD();
+            });
           } else if (promises.konbini === true) {
             promises.konbini = 'done';
             startDuoOuting('konbini', 10, 'konbini', '照今朝訊息約定，一齊去便利店買宵夜（10分鐘）🏪', '「哥哥！我哋照約定落便利店買熱辣辣肉包啦！🏪🥟」');
@@ -3518,7 +3527,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v82.3'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v82.5'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3832,12 +3841,56 @@ html, body {
       const isWeekend = info.isWeekend;
       const items = isWeekend ? WEEKEND_SCHEDULE_ITEMS : WEEKDAY_SCHEDULE_ITEMS;
       const mins = info.totalMin;
+      const todayS = getTodayStr();
+      const promises = (!isWeekend && state.msgLog && state.msgLog.date === todayS && state.msgLog.promises) ? state.msgLog.promises : {};
+      const goItems = [];
+      const stayItems = [];
+      if (promises.dinner === 'restaurant' || promises.dinner === 'done') goItems.push('🍽️ <b>18:15</b> 去家庭餐廳食大餐（1小時）');
+      else if (promises.dinner === 'home') stayItems.push('🏠 18:15 喺屋企食哥哥煮晚餐');
+      if (promises.play_mode === 'study' || promises.play_mode === 'done') goItems.push('📖 <b>19:20</b> 一齊入日向房溫書');
+      else if (promises.play_mode === 'gaming') stayItems.push('🎮 19:20 照舊喺哥哥房打機');
+      if (promises.practice === true || promises.practice === 'done') goItems.push('🏐 <b>21:00</b> 去後院加練排球（15分鐘）');
+      else if (promises.practice === false) stayItems.push('🏠 21:00 唔加練，留喺屋企陪哥哥');
+      if (promises.konbini === true || promises.konbini === 'done') goItems.push('🏪 <b>21:00</b> 去便利店買熱肉包／宵夜（10分鐘）');
+      else if (promises.konbini === false) stayItems.push('🏠 21:00 唔去便利店');
+      if (promises.park === true || promises.park === 'done') goItems.push('🌳 <b>21:00</b> 去海濱公園散步吹海風（30分鐘）');
+      else if (promises.park === false) stayItems.push('🏠 21:00 唔去公園，留喺屋企');
+
+      let bannerHtml = '';
+      if (goItems.length || stayItems.length) {
+        bannerHtml = `<div class="rounded-2xl border-2 border-emerald-500 bg-gradient-to-r from-emerald-50 via-amber-50 to-rose-50 px-3 py-2.5 shadow-sm space-y-1">
+          <div class="text-xs font-black text-emerald-800 flex items-center gap-1"><span>🌟 今晚已約定行程（必定前往）</span></div>
+          ${goItems.length ? `<div class="space-y-0.5 text-[11px] font-bold text-[#2d1e12]">${goItems.map(g => `<div class="flex items-center gap-1"><span class="px-1.5 py-0.2 rounded bg-emerald-600 text-white text-[9px] font-black shrink-0">今晚會去</span><span>${g}</span></div>`).join('')}</div>` : '<div class="text-[11px] font-bold text-slate-600">今晚暫時未有特別外出約定，照正常屋企行程～</div>'}
+          ${stayItems.length ? `<div class="text-[10px] text-slate-600 pt-0.5 border-t border-emerald-200/70">${stayItems.join(' ・ ')}</div>` : ''}
+        </div>`;
+      }
+
       const list = document.getElementById('schedule-list');
-      list.innerHTML = items.map(item => {
+      list.innerHTML = bannerHtml + items.map(item => {
         const isCurrent = mins >= item.start && mins < item.end;
-        return `<div class="flex items-center justify-between px-3 py-2 rounded-xl border-2 ${isCurrent ? 'bg-orange-100 border-orange-500 font-black' : 'bg-white border-amber-200'}">
-          <div><div class="text-xs text-[#2d1e12]">${item.time}</div><div class="text-[10px] text-amber-800 flex items-center gap-1 flex-wrap"><span>${item.roomName}</span>${isCurrent ? '<span class="whitespace-nowrap px-1.5 py-0.5 rounded bg-orange-500 text-white text-[9px] font-black">進行中</span>' : ''}</div></div>
-          <div class="text-xs text-[#2d1e12]">${item.label}</div>
+        let rName = item.roomName, rLabel = item.label, promiseTag = '';
+        if (!isWeekend) {
+          if (item.start === 1095 && (promises.dinner === 'restaurant' || promises.dinner === 'done')) {
+            rName = '家庭餐廳'; rLabel = '🍽️ 已約定：去家庭餐廳食大餐！';
+            promiseTag = '<span class="whitespace-nowrap px-1.5 py-0.5 rounded bg-emerald-600 text-white text-[9px] font-black">🌟 今晚會去</span>';
+          } else if (item.start === 1160 && (promises.play_mode === 'study' || promises.play_mode === 'done')) {
+            rName = '日向房'; rLabel = '📖 已約定：一齊溫書預習';
+            promiseTag = '<span class="whitespace-nowrap px-1.5 py-0.5 rounded bg-emerald-600 text-white text-[9px] font-black">🌟 今晚會去</span>';
+          } else if (item.start === 1260) {
+            const p21 = [];
+            if (promises.practice === true || promises.practice === 'done') p21.push('🏐 後院加練');
+            if (promises.konbini === true || promises.konbini === 'done') p21.push('🏪 便利店');
+            if (promises.park === true || promises.park === 'done') p21.push('🌳 公園散步');
+            if (p21.length) {
+              rName = '屋企 / 外出'; rLabel = '✨ 今晚約定：' + p21.join(' ＋ ');
+              promiseTag = '<span class="whitespace-nowrap px-1.5 py-0.5 rounded bg-emerald-600 text-white text-[9px] font-black">🌟 今晚會去</span>';
+            }
+          }
+        }
+        const rowCls = isCurrent ? 'bg-orange-100 border-orange-500 font-black' : (promiseTag ? 'bg-emerald-50 border-emerald-500 font-bold' : 'bg-white border-amber-200');
+        return `<div class="flex items-center justify-between px-3 py-2 rounded-xl border-2 ${rowCls}">
+          <div><div class="text-xs text-[#2d1e12]">${item.time}</div><div class="text-[10px] text-amber-800 flex items-center gap-1 flex-wrap"><span>${rName}</span>${isCurrent ? '<span class="whitespace-nowrap px-1.5 py-0.5 rounded bg-orange-500 text-white text-[9px] font-black">進行中</span>' : ''}${promiseTag}</div></div>
+          <div class="text-xs text-[#2d1e12] text-right">${rLabel}</div>
         </div>`;
       }).join('');
       document.getElementById('schedule-modal').classList.remove('hidden');
@@ -7836,7 +7889,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v82.3';
+          if (el) el.textContent = '☁️ 雲端已同步 · v82.5';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7875,7 +7928,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v82.3';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v82.5';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
