@@ -242,7 +242,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v81.9</span>
+      <span id="save-status">💾 已自動儲存 · v82.1</span>
       
     </div>
 
@@ -366,7 +366,7 @@ html, body {
       bg_konbini_night: "./assets/bg_konbini_night.jpg?v=69",
       chibiBrother: "./assets/chibiBrother.png?v=69",
       bg_main_street: "./assets/bg_main_street.jpg?v=69",
-      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=69",
+      bg_pharmacy: "./assets/bg_pharmacy.jpg?v=82.1",
       bg_canteen: "./assets/bg_canteen.jpg?v=69",
       bg_mall: "./assets/bg_mall.jpg?v=69",
       bg_park: "./assets/bg_park.jpg?v=69",
@@ -434,8 +434,8 @@ html, body {
       bg_school_class_night: "./assets/bg_school_class_night.jpg?v=69",
       bg_school_court_morning: "./assets/bg_school_court_morning.jpg?v=69",
       bg_school_court_night: "./assets/bg_school_court_night.jpg?v=69",
-      bg_pharmacy_morning: "./assets/bg_pharmacy_morning.jpg?v=69",
-      bg_pharmacy_night: "./assets/bg_pharmacy_night.jpg?v=69",
+      bg_pharmacy_morning: "./assets/bg_pharmacy_morning.jpg?v=82.1",
+      bg_pharmacy_night: "./assets/bg_pharmacy_night.jpg?v=82.1",
       bg_hospital_morning: "./assets/bg_hospital_morning.jpg?v=69",
       bg_hospital_night: "./assets/bg_hospital_night.jpg?v=69",
       bg_canteen_morning: "./assets/bg_canteen_morning.jpg?v=69",
@@ -603,10 +603,10 @@ html, body {
       supermarket:  { id: 'supermarket',  name: '超級市場',        short: '超市',     icon: '🛒', gx: 4, gy: 3,  up: 'street2', down: null, left: null, right: null },
       kitchen:      { id: 'kitchen',      name: '1F 廚房',         short: '廚房',     icon: '🍳', gx: 2, gy: 3,  up: 'hallway', down: null, left: null, right: 'backyard' },
       backyard:     { id: 'backyard',     name: '屋後院子',        short: '後院',     icon: '🏡', gx: 0, gy: 2,  up: null, down: 'kitchen', left: null, right: 'living' },
-      school_class: { id: 'school_class', name: '學校課室',        short: '課室',     icon: '🏫', gx: 3, gy: 3,  up: 'school_gate', down: 'school_infirmary', left: null, right: 'school_hall' },
+      school_class: { id: 'school_class', name: '學校課室',        short: '課室',     icon: '🏫', gx: 3, gy: 3,  up: null, down: 'school_gate', left: null, right: 'school_hall' },
       school_hall:  { id: 'school_hall',  name: '學校走廊',        short: '校走廊',   icon: '🚶', gx: 4, gy: 3,  up: 'school_court', down: 'school_toilet', left: 'school_class', right: 'school_tuckshop' },
-      school_tuckshop: { id: 'school_tuckshop', name: '學校小食部', short: '小食部',   icon: '🥐', gx: 5, gy: 3,  up: null, down: null, left: 'school_hall', right: null },
-      school_infirmary: { id: 'school_infirmary', name: '學校醫療室', short: '醫療室', icon: '🩺', gx: 3, gy: 4, up: 'school_class', down: null, left: null, right: null },
+      school_tuckshop: { id: 'school_tuckshop', name: '學校小食部', short: '小食部',   icon: '🥐', gx: 5, gy: 3,  up: null, down: null, left: 'school_hall', right: 'school_infirmary' },
+      school_infirmary: { id: 'school_infirmary', name: '學校醫療室', short: '醫療室', icon: '🩺', gx: 6, gy: 3, up: null, down: null, left: 'school_tuckshop', right: null },
       school_court: { id: 'school_court', name: '室內學校排球場',  short: '室內球場', icon: '🏐', gx: 4, gy: 2,  up: null, down: 'school_hall', left: null, right: null },
       school_toilet: { id: 'school_toilet', name: '校內廁所',       short: '校廁所',   icon: '🚻', gx: 4, gy: 4,  up: 'school_hall', down: null, left: null, right: null }
     };
@@ -655,9 +655,10 @@ html, body {
       ],
       school_class: [
         { id: 'sdesk', label: '課室書枱', hx: 225, hy: 400, hr: 90, px: 235, py: 435, act: 'school_class', line: '「認真上堂抄筆記中…📚」' },
+        { id: 'c_window', label: '看著窗外發呆', hx: 135, hy: 310, hr: 95, px: 165, py: 435, act: 'window_gaze', line: '「望住課室窗外發呆…好快又可以放學見哥哥啦～🌤️」' },
         { id: 'lunch', label: '食午餐便當', hx: 425, hy: 400, hr: 90, px: 390, py: 435, act: 'lunch', line: '「午休時間食香噴噴便當！🍱」' },
         { id: 'class_chat', label: '小息傾排球', hx: 330, hy: 340, hr: 90, px: 325, py: 435, act: 'class_break', line: '「小息同隔離位同學講起今朝個快攻！💬🏐」' },
-        { id: 'blackboard', label: '望黑板舉手', hx: 150, hy: 300, hr: 90, px: 165, py: 430, act: 'school_class', line: '「老師呢題我識答！舉手！🙋‍♂️📝」' }
+        { id: 'blackboard', label: '望黑板舉手', hx: 195, hy: 290, hr: 90, px: 205, py: 430, act: 'school_class', line: '「老師呢題我識答！舉手！🙋‍♂️📝」' }
       ],
       street3: [
         { id: 'walk_st3', label: '街邊食雪糕位', hx: 260, hy: 440, hr: 95, px: 260, py: 455, act: 'eating_ice_cream', line: '「企喺街道3吹住微風食雪糕，特別好味！🍦🛣️」' }
@@ -3392,7 +3393,7 @@ html, body {
       const petFixed = ['sleep', 'waking', 'breakfast', 'lunch', 'dinner', 'cook', 'bath', 'brush'];
       if (!transitionState && !rally.active && sched.key !== 'wd_hw' && !petFixed.includes(pet.currentActivity) && !['bath', 'canteen', 'hallway'].includes(pet.currentRoom) && nowMs - lastPetAutoActAt > 18000) {
         lastPetAutoActAt = nowMs;
-        const furns = (['hallway', 'hallway_2f', 'wash_hall'].includes(pet.currentRoom)) ? [] : (ROOM_FURNITURE[pet.currentRoom] || []).filter(f => f.act !== 'sleep' && f.act !== 'cook' && f.act !== 'breakfast' && f.act !== 'lunch' && f.act !== 'dinner');
+        const furns = (['hallway', 'hallway_2f', 'wash_hall'].includes(pet.currentRoom)) ? [] : (ROOM_FURNITURE[pet.currentRoom] || []).filter(f => f.act !== 'sleep' && f.act !== 'cook' && f.act !== 'breakfast' && f.act !== 'lunch' && f.act !== 'dinner' && !(pet.currentRoom === 'school_class' && sched.act === 'school_class' && f.act === 'class_break'));
         if (furns.length > 1) {
           const pick = furns[Math.floor(Math.random() * furns.length)];
           pet.currentActivity = pick.act;
@@ -3514,7 +3515,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v81.9'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v82.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3804,11 +3805,13 @@ html, body {
       { start: 1380, end: 1440, time: '23:00 - 24:00', roomName: '客廳 / 廚房',     label: '🌙 自由活動・宵夜時段（00:00 睡）' }
     ];
 
-    const LOCKED_ACTIVITY_ROOMS = new Set(['bath', 'street', 'school_class', 'school_court']);
+    const SCHOOL_LOCKED_ROOMS = new Set(['school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_infirmary', 'school_court', 'school_toilet']);
+    const LOCKED_ACTIVITY_ROOMS = new Set(['bath', 'street', 'school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_infirmary', 'school_court', 'school_toilet']);
     const LOCKED_MEAL_ACTS = new Set(['breakfast', 'lunch', 'dinner']);
     function isRoomBusyLocked(pet) {
       if (pet.fainted || pet.recoverStage) return true;
       if (pet.currentActivity === 'sleep' || pet.currentActivity === 'waking') return true;
+      if (SCHOOL_LOCKED_ROOMS.has(pet.currentRoom)) return true;
       if (LOCKED_ACTIVITY_ROOMS.has(pet.currentRoom) && pet.currentActivity !== 'idle') return true;
       if (LOCKED_MEAL_ACTS.has(pet.currentActivity)) return true;
       return false;
@@ -3901,7 +3904,7 @@ html, body {
       mall_toilet: ['💭 商場洗手間好光猛乾淨！', '💭 洗完手出去會合哥哥～', '💭 哥哥喺出面等緊我！'],
       restaurant: ['💭 餐廳漢堡扒加蛋包飯好香呀！', '💭 飲品吧啲汽水果汁任斟好爽～', '💭 同哥哥坐卡位食大餐最滿足！'],
       school_gate: ['💭 烏野高校門口朝早充滿朝氣！', '💭 準備入課室上堂啦～', '💭 出門口前哥哥仲幫我整理好書包！'],
-      school_class: ['💭 黑板寫滿筆記要專心抄低！', '💭 好快就落堂可以去社團練波～', '💭 放學返屋企要話畀哥哥聽今日學咗咩！'],
+      school_class: ['💭 在想哥哥❤️', '💭 一陣食咩好😗', '💭 黑板寫滿筆記要專心抄低！', '💭 放學返屋企要話畀哥哥聽今日學咗咩！'],
       school_hall: ['💭 學校走廊好長好寬敞～', '💭 小息喺走廊行下伸展筋骨！', '💭 唔知哥哥而家喺藥房忙唔忙呢？'],
       school_tuckshop: ['💭 小食部今日有新鮮熱麵包賣！', '💭 睇下買咩小食好呢～', '💭 哥哥比我嘅零用錢夠買個菠蘿包！'],
       school_court: ['💭 排球場地板擦到發光！', '💭 烏野一定打入全國！！', '💭 返屋企要同哥哥對打練習接波！'],
@@ -7579,7 +7582,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v81.9';
+          if (el) el.textContent = '☁️ 雲端已同步 · v82.1';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7618,7 +7621,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v81.9';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v82.1';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
