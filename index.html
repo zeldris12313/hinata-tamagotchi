@@ -242,7 +242,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v82.1</span>
+      <span id="save-status">💾 已自動儲存 · v82.2</span>
       
     </div>
 
@@ -1144,7 +1144,7 @@ html, body {
       const act = pet.currentActivity;
       const schedOsl = getScheduledState(getCurrentHourInfo());
       const isRestMeal = (pet.currentRoom === 'restaurant' || (state.outing && state.outing.type === 'restaurant'));
-      const mealActOsl = isRestMeal ? 'restaurant' : (['breakfast', 'lunch', 'dinner'].includes(act) ? act : ((['breakfast', 'lunch', 'dinner'].includes(schedOsl.act) && (pet.currentRoom === 'kitchen' || (pet.gradualAcc && pet.gradualAcc.slotKey === schedOsl.key))) ? schedOsl.act : null));
+      const mealActOsl = isRestMeal ? 'restaurant' : ((['breakfast', 'lunch', 'dinner'].includes(act) && (schedOsl.act === act || pet.currentRoom === 'kitchen')) ? act : ((['breakfast', 'lunch', 'dinner'].includes(schedOsl.act) && (pet.currentRoom === 'kitchen' || (pet.gradualAcc && pet.gradualAcc.slotKey === schedOsl.key))) ? schedOsl.act : null));
       const isSupperEat = (act === 'supper_eat');
       const isMeal = !!mealActOsl;
       const isSleep = (act === 'sleep');
@@ -1252,7 +1252,7 @@ html, body {
         const dateRestSlot = simAtMs && evalInfo && state.dates && state.dates[evalToday] && state.dates[evalToday].confirmed && state.dates[evalToday].slots && state.dates[evalToday].slots['18:35-19:35'] === 'restaurant' && evalInfo.totalMin >= 1115 && evalInfo.totalMin < 1175 && !(state.outing && state.outing.type && state.outing.type !== 'restaurant');
         if (dateRestSlot) state.skipDinnerDate = evalToday;
         const isRestMealAts = (!simAtMs && (pet.currentRoom === 'restaurant' || (state.outing && state.outing.type === 'restaurant'))) || (simAtMs && ((state.outing && state.outing.type === 'restaurant' && (!state.outing.returnAt || nowEval <= state.outing.returnAt)) || dateRestSlot));
-        const effectiveMealAct = isRestMealAts ? 'restaurant' : (['breakfast', 'lunch', 'dinner'].includes(effAct) ? effAct : ((!simAtMs && pet.currentRoom === 'kitchen' && schedMealChk && ['breakfast', 'lunch', 'dinner'].includes(schedMealChk.act)) ? schedMealChk.act : null));
+        const effectiveMealAct = isRestMealAts ? 'restaurant' : ((['breakfast', 'lunch', 'dinner'].includes(effAct) && (!schedMealChk || schedMealChk.act === effAct || pet.currentRoom === 'kitchen')) ? effAct : ((!simAtMs && pet.currentRoom === 'kitchen' && schedMealChk && ['breakfast', 'lunch', 'dinner'].includes(schedMealChk.act)) ? schedMealChk.act : null));
         if (isSupperEatAct) {
           const srSup = getActiveSupperRates();
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + (mins / 15) * srSup.hunger));
@@ -2944,6 +2944,9 @@ html, body {
 
       // 4. Sync Hinata
       if (pet.toiletState) { /* skip normal schedule while in toilet routine */ } else if (pet.scheduleSlotKey === sched.key) {
+        if (pet.currentRoom === 'school_class' && sched.act === 'school_class' && !['school_class', 'window_gaze'].includes(pet.currentActivity)) {
+          pet.currentActivity = 'school_class';
+        }
         if (!sched.freeRoam && !sched.isRecess && !pet.toiletState && !pet.backyardUntil && !state.outing?.type && !duoWalk && !transitionState && !pet.homeSeqStage && !pet.detentionUntil && !pet.fridgeStage && ['street', 'main_street', 'konbini', 'mall', 'park', 'park2', 'restaurant'].includes(pet.currentRoom) && !['street', 'main_street'].includes(sched.room)) {
           startSoloWalk('pet', sched.room, sched.act, '「返到嚟啦！🏠✨」', null);
         }
@@ -3515,7 +3518,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v82.1'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v82.2'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -4493,6 +4496,9 @@ html, body {
       if (!isZoomed && LOCKED_MEAL_ACTS.has(pet.currentActivity) && pet.currentRoom === 'kitchen') {
         playSFX('miss'); showToast('食緊正餐中 🔒 食完先可以互動呀！'); return;
       }
+      if (SCHOOL_LOCKED_ROOMS.has(pet.currentRoom) || SCHOOL_LOCKED_ROOMS.has(viewRoomId)) {
+        showBusyLockedMsg(pet); return;
+      }
       if (isTouchingHinata(x, y)) {
         if (pet.currentActivity === 'sleep') {
           playSFX('pat');
@@ -4524,7 +4530,7 @@ html, body {
       }
     });
     canvas.addEventListener('pointermove', (e) => {
-      if ((e.buttons === 0 && e.pointerType === 'mouse') || rally.active) return;
+      if ((e.buttons === 0 && e.pointerType === 'mouse') || rally.active || SCHOOL_LOCKED_ROOMS.has(ensurePetState(state.activeCharId).currentRoom)) return;
       const { x, y } = getCanvasCoords(e.clientX, e.clientY); triggerPetHead(x, y);
     });
     window.addEventListener('pointerup', () => { isPetting = false; petTickAcc = 0; });
@@ -6765,6 +6771,7 @@ html, body {
         else if (id === 'view_dates') { openDateCalendar(true); }
         else if (id === 'chat') { openInteractiveChat(); }
         else if (id === 'furn') {
+          if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
           if (!isZoomed && pet.currentRoom !== viewRoomId) { viewRoomId = pet.currentRoom; updateHUD(); }
           const furns = ROOM_FURNITURE[pet.currentRoom] || [];
           if (furns.length > 0) {
@@ -6847,7 +6854,7 @@ html, body {
       if (actBtn) {
         const id = actBtn.dataset.actId, pet = ensurePetState(state.activeCharId);
         lastInteractAt = Date.now();
-        if (id === 'play') startVolleyballRally();
+        if (id === 'play') { if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; } startVolleyballRally(); }
         else if (id === 'jump') { if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; } if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; } startJumpTraining(); }
         else if (id === 'stop_gaming') {
           state.gamingReturnAt = null;
@@ -7582,7 +7589,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v82.1';
+          if (el) el.textContent = '☁️ 雲端已同步 · v82.2';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -7621,7 +7628,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v82.1';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v82.2';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
