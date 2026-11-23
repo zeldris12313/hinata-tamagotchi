@@ -248,7 +248,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v94</span>
+      <span id="save-status">💾 已自動儲存 · v95</span>
       
     </div>
 
@@ -1508,11 +1508,11 @@ html, body {
         const infoG = (typeof getCurrentHourInfo === 'function') ? getCurrentHourInfo(nowEval) : { totalMin: 0, isWeekend: false };
         const schedG = (typeof getScheduledState === 'function') ? getScheduledState(infoG) : { key: 'idle', label: '一般活動' };
         const outT = state.outing && state.outing.type;
-        const isSupNow = Boolean(isSupperEatAct);
+        const isSupNow = Boolean((state.supperState && state.supperState.stage === 'eating') || (!simAtMs && pet.currentActivity === 'supper_eat'));
         const isSmNow = Boolean((state.outing && state.outing.type === 'supermarket') || (!simAtMs && pet.currentRoom === 'supermarket'));
         const isOffRest = Boolean(simAtMs && typeof dateRestSlot !== 'undefined' && dateRestSlot);
         const slotKey = isSupNow ? 'supper_eat' : (isSmNow ? 'supermarket' : (isOffRest ? 'outing_restaurant' : (outT ? ('outing_' + outT) : (schedG.key || 'idle'))));
-        const slotLabel = isSupNow ? (`🌙 一齊食宵夜${state.supperState.pickName ? ' ('+state.supperState.pickName+')' : ''}`) : (isSmNow ? '🛒 行超級市場' : (isOffRest ? '🍽️ 家庭餐廳食大餐' : (outT ? (`外出：${MAP_ROOMS[outT]?.name || outT}`) : (schedG.label || '一般活動'))));
+        const slotLabel = isSupNow ? (`🌙 一齊食宵夜${(state.supperState && state.supperState.pickName) ? ' ('+state.supperState.pickName+')' : ''}`) : (isSmNow ? '🛒 行超級市場' : (isOffRest ? '🍽️ 家庭餐廳食大餐' : (outT ? (`外出：${MAP_ROOMS[outT]?.name || outT}`) : (schedG.label || '一般活動'))));
         if (!pet.gradualAcc || !pet.gradualAcc.startedAt || pet.gradualAcc.slotKey !== slotKey) {
           if (pet.gradualAcc && (pet.gradualAcc.startedAt || (pet.gradualAcc.accMs && pet.gradualAcc.accMs >= 60000))) {
             const g = pet.gradualAcc;
@@ -3660,7 +3660,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v94'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v95'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -8224,7 +8224,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v94';
+          if (el) el.textContent = '☁️ 雲端已同步 · v95';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8263,7 +8263,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v94';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v95';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
