@@ -248,7 +248,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v93</span>
+      <span id="save-status">💾 已自動儲存 · v94</span>
       
     </div>
 
@@ -3660,7 +3660,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v93'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v94'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -7111,13 +7111,15 @@ html, body {
 
       actions.push(
         (() => {
+          const petD = ensurePetState(state.activeCharId);
+          const broD = state.brother || {};
           const curSc = getScheduledState(getCurrentHourInfo());
-          const isMealL = ['breakfast', 'lunch', 'dinner', 'restaurant'].includes(pet.currentActivity) || (state.outing && state.outing.type === 'restaurant');
-          const isOutL = Boolean((state.outing && state.outing.type) || OUTDOOR_STREET_ROOMS.has(pet.currentRoom));
+          const isMealL = ['breakfast', 'lunch', 'dinner', 'restaurant'].includes(petD.currentActivity) || (state.outing && state.outing.type === 'restaurant');
+          const isOutL = Boolean((state.outing && state.outing.type) || OUTDOOR_STREET_ROOMS.has(petD.currentRoom));
           const isFreeL = Boolean(curSc.freeRoam && !isMealL && !isOutL);
           if (isMealL || isOutL) return { id: 'toggle_bro_follow', emoji: '🫂', name: '陪同：陪伴中', sub: isMealL ? '一齊食飯鎖定中 🔒' : '外出約會鎖定中 🔒', highlight: true };
           if (isFreeL) return { id: 'toggle_bro_follow', emoji: state.broSoloMode ? '🚶' : '🫂', name: state.broSoloMode ? '陪同：自由中' : '陪同：陪伴中', sub: state.broSoloMode ? '自由時間・按此鎖定' : '自由時間・按此解鎖', highlight: !state.broSoloMode };
-          return { id: 'toggle_bro_follow', emoji: '📅', name: '陪同：跟作息表', sub: bro.currentActivity === 'sleep' ? '哥哥瞓覺中' : (['pharmacy','canteen'].includes(bro.currentRoom) ? '哥哥返工中' : '自由時間先可切換'), highlight: false };
+          return { id: 'toggle_bro_follow', emoji: '📅', name: '陪同：跟作息表', sub: broD.currentActivity === 'sleep' ? '哥哥瞓覺中' : (['pharmacy','canteen'].includes(broD.currentRoom) ? '哥哥返工中' : '自由時間先可切換'), highlight: false };
         })(),
         { id: 'urge_toilet', emoji: '🚽', name: '快去廁所', sub: '催翔陽去廁所' },
         { id: 'play',  emoji: '🏐', name: '雙人對打', sub: '輪流接波' },
@@ -8173,23 +8175,25 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
     }
     updateHeaderDateTime();
     setInterval(updateHeaderDateTime, 10000);
-    loadState();
-    viewRoomId = ensurePetState(state.activeCharId).currentRoom;
-    loadAssets();
-    renderDock();
-    updateHUD();
-    gameLoop();
     const _revealApp = () => {
       document.documentElement.classList.add('tw-ready');
       const sp = document.getElementById('boot-splash');
       if (sp) { sp.classList.add('is-done'); setTimeout(() => { try { sp.remove(); } catch(_) {} }, 250); }
     };
+    setTimeout(_revealApp, 1500);
+    try {
+      loadState();
+      viewRoomId = ensurePetState(state.activeCharId).currentRoom;
+      loadAssets();
+      renderDock();
+      updateHUD();
+      gameLoop();
+    } catch (bootErr) { console.error('Boot error:', bootErr); }
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(_revealApp));
     } else {
       requestAnimationFrame(_revealApp);
     }
-    setTimeout(_revealApp, 1500);
   </script>
 
   <script type="module">
@@ -8220,7 +8224,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v93';
+          if (el) el.textContent = '☁️ 雲端已同步 · v94';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8259,7 +8263,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v93';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v94';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
