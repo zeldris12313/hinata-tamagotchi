@@ -249,7 +249,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v104</span>
+      <span id="save-status">💾 已自動儲存 · v105</span>
       
     </div>
 
@@ -3181,8 +3181,9 @@ html, body {
           if (sched.act === 'water_break') {
             if (viewRoomId === 'school_court' || viewRoomId === 'school_water') speakAndShow('「練波中場休息 15 分鐘！行去飲水處飲大啖水慢慢回氣（精力+30%）💧✨」');
           } else if (sched.isHomeSeq) {
-            pet.homeSeqStage = 'hall5s';
-            pet.homeSeqUntil = Date.now() + 5000;
+            pet.homeSeqDate = getTodayStr();
+            pet.homeSeqStage = 'hall15s';
+            pet.homeSeqUntil = Date.now() + 15000;
           }
           petX = sched.px; petY = sched.py; targetX = sched.px; targetY = sched.py;
           const pool = getActiveChar().dialogues[sched.act] || getActiveChar().dialogues.tea;
@@ -3364,12 +3365,14 @@ html, body {
       if (!info.isWeekend && sched.isHomeSeq) {
         const nowHms = Date.now();
         const tdH = getTodayStr();
-        if (pet.homeSeqDate !== tdH || !pet.homeSeqStage) {
+        if (pet.homeSeqDate !== tdH || !pet.homeSeqStage || pet.homeSeqStage === 'hall5s') {
+          transitionState = null;
           pet.homeSeqDate = tdH;
           pet.homeSeqStage = 'hall15s';
           pet.homeSeqUntil = nowHms + 15000;
           pet.currentRoom = 'hallway'; pet.currentActivity = 'hallway'; targetX = 215; targetY = 440;
         } else if (pet.homeSeqStage === 'hall15s' && nowHms >= (pet.homeSeqUntil || 0)) {
+          transitionState = null;
           pet.homeSeqStage = 'room30s'; pet.homeSeqUntil = nowHms + 30000;
           pet.currentRoom = 'room_hinata'; pet.currentActivity = 'unpack_bag'; targetX = 200; targetY = 435;
           if (viewRoomId === 'hallway' || viewRoomId === 'room_hinata') { viewRoomId = 'room_hinata'; speakAndShow('「返入房放低書包同整理好裝備先～🎒」'); }
@@ -3739,7 +3742,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v104'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v105'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -6210,29 +6213,36 @@ html, body {
             </div>
           </div>`;
         }).join('');
-        const actItems = [
-          ['actStudyMood','📖 溫書心情',5],['actStudyEnergy','📖 溫書精力',-5],['actStudyHunger','📖 溫書飽食',-3],
-          ['actCleanMood','🧹 執屋心情',6],['actCleanEnergy','🧹 執屋精力',-5],['actCleanHunger','🧹 執屋飽食',-3],
-          ['actParkMood','🌳 公園心情',6],['actGamingMood','🎮 打機心情',12],['actMallMood','🛍️ 商場心情',10],
-          ['actRestHunger','🍽️ 餐廳飽食',30],['actRestMood','🍽️ 餐廳心情',12]
+        const actGroups = [
+          { title: '📖 溫書', rows: [['飽食','actStudyHunger',-3],['精力','actStudyEnergy',-5],['心情','actStudyMood',5]] },
+          { title: '🧹 執屋', rows: [['飽食','actCleanHunger',-3],['精力','actCleanEnergy',-5],['心情','actCleanMood',6]] },
+          { title: '🍽️ 餐廳大餐', rows: [['飽食','actRestHunger',30],['心情','actRestMood',12]] },
+          { title: '🌳 公園活動', rows: [['心情','actParkMood',6]] },
+          { title: '🎮 打機休息', rows: [['心情','actGamingMood',12]] },
+          { title: '🛍️ 行商場', rows: [['心情','actMallMood',10]] }
         ];
-        const actHtml = `<div class="bg-orange-50/90 border border-orange-300 rounded-xl p-1.5">
-          <div class="text-[11px] font-black text-[#2d1e12] mb-1">✨ 互動按鈕單次影響（%）</div>
-          <div class="grid grid-cols-2 gap-1 text-[10px] font-bold">
-            ${actItems.map(([ak, albl, adef]) => {
-              const av = bal[ak] ?? adef;
-              return `<div class="flex items-center justify-between bg-white border border-orange-300 rounded px-1.5 py-0.5">
-                <span class="truncate">${albl}</span>
-                <div class="flex items-center gap-0.5 shrink-0">
-                  <button type="button" data-num-key="${ak}" data-num-delta="-1" data-num-min="-50" data-num-suf="%" data-num-sign="1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
-                  <span id="num-val-${ak}" class="min-w-[28px] text-center">${av > 0 ? '+'+av : av}%</span>
-                  <button type="button" data-num-key="${ak}" data-num-delta="1" data-num-min="-50" data-num-suf="%" data-num-sign="1" class="w-4 h-4 rounded bg-orange-300 font-black">+</button>
-                </div>
-              </div>`;
-            }).join('')}
-          </div>
+        const actHtml = `<div class="bg-orange-50/90 border border-orange-300 rounded-xl p-1.5 space-y-1">
+          <div class="text-[11px] font-black text-[#2d1e12]">✨ 互動按鈕單次影響（%）</div>
+          ${actGroups.map(ag => `<div class="bg-white border border-orange-300 rounded-lg p-1.5 space-y-1">
+            <div class="text-[10px] font-black text-[#2d1e12]">${ag.title}</div>
+            <div class="grid grid-cols-3 gap-1 text-[10px] font-bold">
+              ${ag.rows.map(([slbl, ak, adef]) => {
+                const av = bal[ak] ?? adef;
+                return `<div class="flex items-center justify-between bg-orange-50/60 border border-orange-200 rounded px-1 py-0.5">
+                  <span>${slbl}</span>
+                  <div class="flex items-center gap-0.5 shrink-0">
+                    <button type="button" data-num-key="${ak}" data-num-delta="-1" data-num-min="-50" data-num-suf="%" data-num-sign="1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                    <span id="num-val-${ak}" class="min-w-[26px] text-center">${av > 0 ? '+'+av : av}%</span>
+                    <button type="button" data-num-key="${ak}" data-num-delta="1" data-num-min="-50" data-num-suf="%" data-num-sign="1" class="w-4 h-4 rounded bg-orange-300 font-black">+</button>
+                  </div>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>`).join('')}
         </div>`;
-        const icSetHtml = `<div class="bg-pink-50 border border-pink-300 rounded-xl p-1.5 mt-1.5">
+        bodyHtml = catHtml + actHtml;
+      } else if (settingsTab === 'snacks') {
+        const icSetHtml = `<div class="bg-pink-50 border border-pink-300 rounded-xl p-1.5 mt-2">
           <div class="text-[11px] font-black text-[#2d1e12] mb-1">🍦 雪糕店 4 種口味價錢與回復設定</div>
           <div class="space-y-1 text-[10px] font-bold">
             ${ICE_CREAM_FLAVORS.map(f => {
@@ -6249,8 +6259,31 @@ html, body {
             }).join('')}
           </div>
         </div>`;
-        bodyHtml = catHtml + actHtml + icSetHtml;
-      } else if (settingsTab === 'snacks') {
+        const smSetHtml = `<div class="bg-amber-50 border border-amber-300 rounded-xl p-1.5 mt-2">
+          <div class="text-[11px] font-black text-[#2d1e12] mb-1">🛒 超市商品價錢與回復（預設 3元 / +3%）</div>
+          <div class="space-y-1 text-[10px] font-bold">
+            ${SUPERMARKET_ITEMS.map(it => {
+              const ic = getSmItemCfg(it.id);
+              return `<div class="flex flex-wrap items-center justify-between bg-white border border-amber-300 rounded px-1.5 py-0.5 gap-1">
+                <span>${it.emoji} ${it.name}</span>
+                <div class="flex items-center gap-1">
+                  <span>🪙</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="price" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="smi-${it.id}-price">${ic.price}元</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="price" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
+                  ${!it.isSupply ? `<span>🍙</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="hunger" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="smi-${it.id}-hunger">+${ic.hunger}%</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="hunger" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
+                  <span>⚡</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="energy" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="smi-${it.id}-energy">+${ic.energy}%</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="energy" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>` : ''}
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
         bodyHtml = `<div class="bg-amber-50/90 border border-amber-300 rounded-xl p-2 space-y-1.5">
           <div class="text-[11px] font-black text-[#2d1e12]">🎒 全遊戲小食價錢與回復設定（包含撈麵、檸檬茶）</div>
           ${SNACK_CATALOG.map(s => {
@@ -6278,7 +6311,7 @@ html, body {
               </div>
             </div>`;
           }).join('')}
-        </div>`;
+        </div>` + icSetHtml + smSetHtml;
       } else if (settingsTab === 'probs') {
         const aeRows = [
           ['toilet','🚽 自行如廁',true,false],
@@ -6363,31 +6396,7 @@ html, body {
             </div>
           </div>
         </div>
-        <div class="bg-amber-50 border border-amber-300 rounded-xl p-1.5 mt-1.5">
-          <div class="text-[11px] font-black text-[#2d1e12] mb-1">🛒 超市商品價錢與回復（預設 3元 / +3%）</div>
-          <div class="space-y-1 text-[10px] font-bold">
-            ${SUPERMARKET_ITEMS.map(it => {
-              const ic = getSmItemCfg(it.id);
-              return `<div class="flex flex-wrap items-center justify-between bg-white border border-amber-300 rounded px-1.5 py-0.5 gap-1">
-                <span>${it.emoji} ${it.name}</span>
-                <div class="flex items-center gap-1">
-                  <span>🪙</span>
-                  <button type="button" data-smi-id="${it.id}" data-smi-field="price" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
-                  <span id="smi-${it.id}-price">${ic.price}元</span>
-                  <button type="button" data-smi-id="${it.id}" data-smi-field="price" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
-                  ${!it.isSupply ? `<span>🍙</span>
-                  <button type="button" data-smi-id="${it.id}" data-smi-field="hunger" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
-                  <span id="smi-${it.id}-hunger">+${ic.hunger}%</span>
-                  <button type="button" data-smi-id="${it.id}" data-smi-field="hunger" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
-                  <span>⚡</span>
-                  <button type="button" data-smi-id="${it.id}" data-smi-field="energy" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
-                  <span id="smi-${it.id}-energy">+${ic.energy}%</span>
-                  <button type="button" data-smi-id="${it.id}" data-smi-field="energy" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>` : ''}
-                </div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>`;
+        `;
         const _dummy = [
         ];
         const aeHtml = `<div class="bg-purple-50 border border-purple-300 rounded-xl p-1.5">
@@ -8336,7 +8345,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v104';
+          if (el) el.textContent = '☁️ 雲端已同步 · v105';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8375,7 +8384,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v104';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v105';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
