@@ -249,7 +249,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v105</span>
+      <span id="save-status">💾 已自動儲存 · v106</span>
       
     </div>
 
@@ -3196,7 +3196,7 @@ html, body {
       if (['pharmacy', 'canteen'].includes(bSched.room) && !['pharmacy', 'canteen', 'hospital'].includes(bro.currentRoom) && !bro.toiletState && !state.outing?.type) {
         bro.currentRoom = bSched.room; bro.currentActivity = bSched.act; bro.px = bSched.px; bro.py = bSched.py; bro.tx = bSched.px; bro.ty = bSched.py;
       }
-      const isBroFreeTime = Boolean(sched.freeRoam && !(state.outing && state.outing.type));
+      const isBroFreeTime = Boolean((sched.freeRoam || bSched.homeRoam) && !(state.outing && state.outing.type));
       if (!isBroFreeTime && state.broSoloMode) state.broSoloMode = false;
       const broFixedChore = ['cook_bfast','prep_bfast','cook_lunch','cook_dinner','washing_dishes','breakfast','lunch','dinner','bath','brush','sleep','canteen_lunch','pharmacy_work','aniki_hall_tidy'].includes(bSched.act);
       const canBroSolo = isBroFreeTime && state.broSoloMode && !broFixedChore && !state.outing?.type && !['breakfast','lunch','dinner','bath','brush','sleep','waking','gaming'].includes(pet.currentActivity) && !['pharmacy','canteen','hospital','school_class','school_court'].includes(bro.currentRoom) && !['school_class','school_court'].includes(pet.currentRoom);
@@ -3237,24 +3237,16 @@ html, body {
           const fAct = (pet.currentActivity === 'street' && !OUTDOOR_STREET_ROOMS.has(pet.currentRoom)) ? 'idle' : pet.currentActivity;
           startSoloWalk('bro', pet.currentRoom, fAct, null, () => { bro.tx = Math.min(500, targetX + 75); bro.ty = targetY; }, false);
         }
-      } else if (bSched.homeRoam && Date.now() - lastBrotherRoamAt > 35000) {
-        // 20:15-21:00: Brother roams home, occasionally enters Hinata's room to tutor; Hinata occasionally asks homework
-        lastBrotherRoamAt = Date.now();
-        const r = Math.random();
-        if (r < 0.35) {
-          startSoloWalk('bro', 'room_hinata', 'tutoring', null, () => {
-            bro.tx = 255; bro.ty = 430;
-            if (viewRoomId === 'room_hinata') speakAndShow('「哥哥入房睇下我啲功課：呢條英文文法應該咁寫～📖✨」');
-          }, false);
-        } else if (r < 0.60 && !transitionState) {
-          const bRoom = BROTHER_HOME_ROAM[Math.floor(Math.random() * BROTHER_HOME_ROAM.length)];
-          startSoloWalk('bro', bRoom, 'idle', null, () => { bro.tx = 320; bro.ty = 435; }, false);
-          startCharacterWalkTransition(pet, bRoom, 'asking_hw', 225, 435);
-          if (viewRoomId === bRoom) speakAndShow('「哥哥！呢條數學題我唔識計呀，可唔可以教我？🙋‍♂️📝」');
-        } else {
-          const bRoom = BROTHER_HOME_ROAM[Math.floor(Math.random() * BROTHER_HOME_ROAM.length)];
-          startSoloWalk('bro', bRoom, 'idle', null, () => { bro.tx = 320; bro.ty = 435; }, false);
-          if (pet.currentRoom !== 'room_hinata') startCharacterWalkTransition(pet, 'room_hinata', 'homework', 165, 430);
+      } else if (bSched.homeRoam) {
+        if (pet.currentRoom !== 'room_hinata' && !transitionState && !pet.toiletState) {
+          startCharacterWalkTransition(pet, 'room_hinata', 'homework', 165, 430);
+        }
+        if (!state.broSoloMode) {
+          if (bro.currentRoom !== 'room_hinata') {
+            startSoloWalk('bro', 'room_hinata', 'tutoring', null, () => { bro.tx = 255; bro.ty = 430; }, false);
+          } else if (bro.currentActivity !== 'tutoring') {
+            bro.currentActivity = 'tutoring'; bro.tx = 255; bro.ty = 430;
+          }
         }
       }
 
@@ -3742,7 +3734,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v105'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v106'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -7221,10 +7213,12 @@ html, body {
         (() => {
           const petD = ensurePetState(state.activeCharId);
           const broD = state.brother || {};
-          const curSc = getScheduledState(getCurrentHourInfo());
+          const infD = getCurrentHourInfo();
+          const curSc = getScheduledState(infD);
+          const curBSc = getBrotherScheduledState(infD);
           const isMealL = ['breakfast', 'lunch', 'dinner', 'restaurant'].includes(petD.currentActivity) || (state.outing && state.outing.type === 'restaurant');
           const isOutL = Boolean((state.outing && state.outing.type) || OUTDOOR_STREET_ROOMS.has(petD.currentRoom));
-          const isFreeL = Boolean(curSc.freeRoam && !isMealL && !isOutL);
+          const isFreeL = Boolean((curSc.freeRoam || curBSc.homeRoam) && !isMealL && !isOutL);
           if (isMealL || isOutL) return { id: 'toggle_bro_follow', emoji: '🫂', name: '陪同：陪伴中', sub: isMealL ? '一齊食飯鎖定中 🔒' : '外出約會鎖定中 🔒', highlight: true };
           if (isFreeL) return { id: 'toggle_bro_follow', emoji: state.broSoloMode ? '🚶' : '🫂', name: state.broSoloMode ? '陪同：自由中' : '陪同：陪伴中', sub: state.broSoloMode ? '自由時間・按此鎖定' : '自由時間・按此解鎖', highlight: !state.broSoloMode };
           return { id: 'toggle_bro_follow', emoji: '📅', name: '陪同：跟作息表', sub: broD.currentActivity === 'sleep' ? '哥哥瞓覺中' : (['pharmacy','canteen'].includes(broD.currentRoom) ? '哥哥返工中' : '自由時間先可切換'), highlight: false };
@@ -7376,7 +7370,9 @@ html, body {
           startDuoOuting('restaurant', 60, 'restaurant', '二人一齊去餐廳食飯（停留 1 小時）🍽️', '「同哥哥去家庭餐廳食大餐！好香呀～🍽️✨」');
           const rh0=pet.hunger, rm0=pet.mood; pet.hunger = Math.min(100, pet.hunger + ((state.balance && state.balance.actRestHunger) ?? 30)); pet.mood = Math.min(100, pet.mood + ((state.balance && state.balance.actRestMood) ?? 12)); recordStatLog(pet,'hunger','🍽️ 餐廳大餐',rh0,pet.hunger); recordStatLog(pet,'mood','🍽️ 餐廳大餐',rm0,pet.mood); grantCappedRewards(pet, 6, 4);
         } else if (id === 'toggle_bro_follow') {
-          const curScT = getScheduledState(getCurrentHourInfo());
+          const infT = getCurrentHourInfo();
+          const curScT = getScheduledState(infT);
+          const curBScT = getBrotherScheduledState(infT);
           const isMealT = ['breakfast', 'lunch', 'dinner', 'restaurant'].includes(pet.currentActivity) || (state.outing && state.outing.type === 'restaurant');
           const isOutT = Boolean((state.outing && state.outing.type) || OUTDOOR_STREET_ROOMS.has(pet.currentRoom));
           if (isMealT || isOutT) {
@@ -7384,7 +7380,7 @@ html, body {
             showToast('一齊食飯或外出期間「陪伴中」已鎖定，唔可以解鎖 🔒');
             return;
           }
-          if (!curScT.freeRoam || pet.fainted || pet.recoverStage) {
+          if ((!curScT.freeRoam && !curBScT.homeRoam) || pet.fainted || pet.recoverStage) {
             playSFX('miss');
             showToast('只有自由時間先可以解鎖／切換陪同狀態 📅');
             return;
@@ -8345,7 +8341,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v105';
+          if (el) el.textContent = '☁️ 雲端已同步 · v106';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8384,7 +8380,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v105';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v106';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
