@@ -249,7 +249,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v102</span>
+      <span id="save-status">💾 已自動儲存 · v103</span>
       
     </div>
 
@@ -454,6 +454,9 @@ html, body {
       bg_school_class_night: "./assets/bg_school_class_night.jpg?v=69",
       bg_school_court_morning: "./assets/bg_school_court_morning.jpg?v=69",
       bg_school_court_night: "./assets/bg_school_court_night.jpg?v=69",
+      bg_school_water: "./assets/bg_school_water.jpg?v=103",
+      bg_school_water_morning: "./assets/bg_school_water_morning.jpg?v=103",
+      bg_school_water_night: "./assets/bg_school_water_night.jpg?v=103",
       bg_pharmacy_morning: "./assets/bg_pharmacy_morning.jpg?v=82.1",
       bg_pharmacy_night: "./assets/bg_pharmacy_night.jpg?v=82.1",
       bg_hospital_morning: "./assets/bg_hospital_morning.jpg?v=69",
@@ -651,7 +654,8 @@ html, body {
       school_hall:  { id: 'school_hall',  name: '學校走廊',        short: '校走廊',   icon: '🚶', gx: 4, gy: 3,  up: 'school_gate', down: 'school_court', left: 'school_class', right: 'school_tuckshop' },
       school_tuckshop: { id: 'school_tuckshop', name: '學校小食部', short: '小食部',   icon: '🥐', gx: 5, gy: 3,  up: null, down: 'school_toilet', left: 'school_hall', right: 'school_infirmary' },
       school_infirmary: { id: 'school_infirmary', name: '學校醫療室', short: '醫療室', icon: '🩺', gx: 6, gy: 3, up: null, down: null, left: 'school_tuckshop', right: null },
-      school_court: { id: 'school_court', name: '室內學校排球場',  short: '室內球場', icon: '🏐', gx: 4, gy: 4,  up: 'school_hall', down: null, left: null, right: null },
+      school_court: { id: 'school_court', name: '室內學校排球場',  short: '室內球場', icon: '🏐', gx: 4, gy: 4,  up: 'school_hall', down: null, left: null, right: 'school_water' },
+      school_water: { id: 'school_water', name: '學校飲水處',      short: '飲水處',   icon: '💧', gx: 4.5, gy: 4, up: null, down: null, left: 'school_court', right: null },
       school_toilet: { id: 'school_toilet', name: '校內廁所',       short: '校廁所',   icon: '🚻', gx: 5, gy: 4,  up: 'school_tuckshop', down: null, left: null, right: null }
     };
 
@@ -761,6 +765,9 @@ html, body {
         { id: 'ts_counter', label: '小食部櫃檯', hx: 230, hy: 360, hr: 100, px: 245, py: 440, act: 'tuckshop_buy', line: '「小食部好多好嘢食！買麵包定紙包飲品好呢？🥐🧃」' },
         { id: 'ts_drinks',  label: '飲品架',     hx: 430, hy: 390, hr: 90,  px: 410, py: 440, act: 'vend_drink', line: '「睇下小食部有咩紙包飲品同糖果先！🍬」' },
         { id: 'ts_menu',    label: '睇餐牌',     hx: 150, hy: 260, hr: 90,  px: 190, py: 440, act: 'rest_menu', line: '「麵包 8 元、飲品 7 元、糖果 3 元～🥐🧃🍬」' }
+      ],
+      school_water: [
+        { id: 'water_trough', label: '不鏽鋼飲水處', hx: 420, hy: 375, hr: 110, px: 390, py: 445, act: 'water_break', line: '「咕嚕咕嚕飲大啖水！練波飲水休息精力+30%！！💧✨」' }
       ],
       school_court: [
         { id: 'cnet', label: '球場排球網', hx: 360, hy: 320, hr: 120, px: 300, py: 435, act: 'school_court', line: '「放學社團練習！跳到最高點扣殺！！🏐🔥」' },
@@ -1219,6 +1226,8 @@ html, body {
       if (stat === 'bladder') {
         if (isSupperEat) {
           perMin = getActiveSupperRates().bladder / 15;
+        } else if (act === 'water_break') {
+          perMin = 15 / 15;
         } else if (isMeal) {
           const isWk = getCurrentHourInfo().isWeekend;
           const md = mealActOsl === 'restaurant' ? 60 : (mealActOsl === 'breakfast' ? (isWk?30:20) : (mealActOsl === 'lunch' ? (isWk?35:60) : (isWk?40:30)));
@@ -1233,6 +1242,8 @@ html, body {
           const isWk = getCurrentHourInfo().isWeekend;
           const md = mealActOsl === 'restaurant' ? 60 : (mealActOsl === 'breakfast' ? (isWk?30:20) : (mealActOsl === 'lunch' ? (isWk?35:60) : (isWk?40:30)));
           perMin = ((bal.meal && bal.meal[stat]) ?? 0) / md;
+        } else if (act === 'water_break') {
+          perMin = (stat === 'energy' ? 30 : (stat === 'mood' ? 10 : (stat === 'hunger' ? -2 : 0))) / 15;
         } else if (isSleep) {
           const sl = bal.sleep || { hunger: -4, energy: 25, mood: 0 };
           perMin = (sl[stat] ?? 0) / 60;
@@ -1326,6 +1337,7 @@ html, body {
         }
         const isVolleyPractice = (effAct === 'backyard' || effAct === 'school_court' || (!simAtMs && pet.currentRoom === 'school_court'));
         const isSupperEatAct = (state.supperState && state.supperState.stage === 'eating') || (!simAtMs && pet.currentActivity === 'supper_eat');
+        const isWaterBreakAct = (effAct === 'water_break') || (!simAtMs && pet.currentRoom === 'school_water');
         const isSleepAct = (effAct === 'sleep');
         const isRestAct = (!isSleepAct && (pet.recoverStage === 'rest30' || effAct === 'bath' || effAct === 'tea' || effAct === 'tv' || effAct === 'park_breeze' || effAct === 'water_break' || (!simAtMs && pet.homeSeqStage === 'living15m')));
         const wdPromRest = !evalInfo.isWeekend && evalToday === getTodayStr() && state.msgLog && state.msgLog.date === evalToday && state.msgLog.promises && (state.msgLog.promises.dinner === 'restaurant' || state.msgLog.promises.dinner === 'done') && evalInfo.totalMin >= 1095 && evalInfo.totalMin < 1125;
@@ -1342,6 +1354,10 @@ html, body {
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + (mins / 15) * srSup.hunger));
           pet.energy = Math.max(0, Math.min(100, pet.energy + (mins / 15) * srSup.energy));
           pet.mood   = Math.max(0, Math.min(100, pet.mood   + (mins / 15) * srSup.mood));
+        } else if (isWaterBreakAct) {
+          pet.hunger = Math.max(0, Math.min(100, pet.hunger - (mins / 15) * 2));
+          pet.energy = Math.max(0, Math.min(100, pet.energy + (mins / 15) * 30));
+          pet.mood   = Math.max(0, Math.min(100, pet.mood   + (mins / 15) * 10));
         } else if (isSleepAct) {
           const sl = bal.sleep || { hunger: -4, energy: 25, mood: 0 };
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + hrs * (sl.hunger ?? -4)));
@@ -1372,7 +1388,9 @@ html, body {
           pet.energy = Math.max(0, Math.min(100, pet.energy + hrs * (bal.normal.energy || 0)));
           pet.mood   = Math.max(0, Math.min(100, pet.mood   + hrs * (bal.normal.mood || 0)));
         }
-        if (isSupperEatAct) {
+        if (isWaterBreakAct) {
+          pet.bladder = Math.max(0, Math.min(100, (pet.bladder || 0) + (mins / 15) * 15));
+        } else if (isSupperEatAct) {
           const srSupB = getActiveSupperRates();
           pet.bladder = Math.max(0, Math.min(100, (pet.bladder || 0) + (mins / 15) * srSupB.bladder));
           if (simAtMs && state.supperState && state.supperState.stage === 'eating' && state.supperState.until && nowEval >= state.supperState.until) {
@@ -1586,7 +1604,7 @@ html, body {
         if (m < 890)  return { key: 'wd_rec2',   room: 'school_hall',  act: 'recess_walk',  outfit: 1, px: 260, py: 440, label: '午堂小息', isRecess: true };
         if (m < 945)  return { key: 'wd_class2b', room: 'school_class', act: 'school_class', outfit: 1, px: 235, py: 435, label: '下午上堂' };
         if (m < 975)  return { key: 'wd_club1',  room: 'school_court', act: 'school_court', outfit: 0, px: 300, py: 435, label: '放學練波' };
-        if (m < 990)  return { key: 'wd_water',  room: 'school_court', act: 'water_break',  outfit: 0, px: 420, py: 440, label: '練波飲水休息' };
+        if (m < 990)  return { key: 'wd_water',  room: 'school_water', act: 'water_break',  outfit: 0, px: 390, py: 445, label: '練波飲水休息' };
         if (m < 1020) return { key: 'wd_club2',  room: 'school_court', act: 'school_court', outfit: 0, px: 300, py: 435, label: '放學練波' };
         if (m < 1025) return { key: 'wd_meet_cr', room: 'street_cross', act: 'street',      outfit: 1, px: 265, py: 445, label: '放學行去十字路口會合' };
         if (m < 1033) return { key: 'wd_hw_cr',   room: 'street_cross', act: 'street',      outfit: 1, px: 265, py: 445, label: '十字路口會合哥哥' };
@@ -2127,7 +2145,7 @@ html, body {
       duoWalk = null; petWalk = null; broWalk = null;
       if (rally.active) rally.active = false;
       const room = pet.currentRoom;
-      if (['school_class', 'school_court', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen'].includes(room)) {
+      if (['school_class', 'school_court', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'school_gate', 'school_class', 'school_court', 'school_water', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen'].includes(room)) {
         pet.coins = Math.max(0, pet.coins - 50); recordCoinLog(pet, '🏥 醫療室／醫院費用', -50, pet.coins);
         pet.recoverStage = 'phone_alert';
         pet.rescueRoom = 'school_infirmary';
@@ -2920,7 +2938,7 @@ html, body {
       const bInToilet = stepToilet(bro, pet, false);
 
       const isHomeToiletAllowed = HOME_TOILET_ROOMS.has(pet.currentRoom) && pet.currentRoom !== 'toilet';
-      const isSchoolToiletAllowed = (sched.isRecess || sched.key === 'wd_lunch' || sched.act === 'school_court' || sched.act === 'water_break') && ['school_class', 'school_hall', 'school_tuckshop', 'school_court'].includes(pet.currentRoom);
+      const isSchoolToiletAllowed = (sched.isRecess || sched.key === 'wd_lunch' || sched.act === 'school_court' || sched.act === 'water_break') && ['school_class', 'school_hall', 'school_tuckshop', 'school_court', 'school_water'].includes(pet.currentRoom);
       if ((pet.bladder || 0) > ((state.balance && state.balance.bladderAutoThreshold) ?? 70) && !hInToilet && !pet.recoverStage && !pet.fainted && !rally.active && isSchoolToiletAllowed) {
         transitionState = null;
         const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: false, sinkX: 300, targetToilet: 'school_toilet' };
@@ -3145,7 +3163,7 @@ html, body {
           pet.currentRoom = sched.room; pet.currentActivity = sched.act;
           // Meals restore +70% hunger & +70% energy gradually during the meal
           if (sched.act === 'water_break') {
-            if (viewRoomId === 'school_court') speakAndShow('「練波中場休息 15 分鐘！咕嚕咕嚕飲大啖水慢慢回氣～💧✨」');
+            if (viewRoomId === 'school_court' || viewRoomId === 'school_water') speakAndShow('「練波中場休息 15 分鐘！行去飲水處飲大啖水慢慢回氣（精力+30%）💧✨」');
           } else if (sched.isHomeSeq) {
             pet.homeSeqStage = 'hall5s';
             pet.homeSeqUntil = Date.now() + 5000;
@@ -3691,7 +3709,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v102'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v103'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3954,7 +3972,7 @@ html, body {
       { start: 870,  end: 890,  time: '14:30 - 14:50', roomName: '走廊 / 小食部',   label: '🔔 午堂小息（可買小食）' },
       { start: 890,  end: 945,  time: '14:50 - 15:45', roomName: '課室 / 醫院藥房', label: '📚 放學前最後一堂' },
       { start: 945,  end: 975,  time: '15:45 - 16:15', roomName: '室內排球場',      label: '🏐 放學社團練波（上半節）' },
-      { start: 975,  end: 990,  time: '16:15 - 16:30', roomName: '室內排球場',      label: '💧 練波飲水休息（精力+30）' },
+      { start: 975,  end: 990,  time: '16:15 - 16:30', roomName: '學校飲水處',      label: '💧 練波飲水休息（精力+30）' },
       { start: 990,  end: 1020, time: '16:30 - 17:00', roomName: '室內排球場',      label: '🏐 放學社團練波（下半節）' },
       { start: 1020, end: 1050, time: '17:00 - 17:30', roomName: '十字路→小巷→街道', label: '🏠 17:05 十字路口會合・17:30 到家' },
       { start: 1050, end: 1095, time: '17:30 - 18:15', roomName: '玄關→房→客廳→後院', label: '🎒 放書包・客廳休15分・後院練球' },
@@ -3982,8 +4000,8 @@ html, body {
       { start: 1380, end: 1440, time: '23:00 - 24:00', roomName: '客廳 / 廚房',     label: '🌙 自由活動・宵夜時段（00:00 睡）' }
     ];
 
-    const SCHOOL_LOCKED_ROOMS = new Set(['school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_infirmary', 'school_court', 'school_toilet']);
-    const LOCKED_ACTIVITY_ROOMS = new Set(['bath', 'street', 'street_cross', 'school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_infirmary', 'school_court', 'school_toilet']);
+    const SCHOOL_LOCKED_ROOMS = new Set(['school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_infirmary', 'school_court', 'school_water', 'school_toilet']);
+    const LOCKED_ACTIVITY_ROOMS = new Set(['bath', 'street', 'street_cross', 'school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_infirmary', 'school_court', 'school_water', 'school_toilet']);
     const LOCKED_MEAL_ACTS = new Set(['breakfast', 'lunch', 'dinner']);
     function isRoomBusyLocked(pet) {
       if (pet.fainted || pet.recoverStage) return true;
@@ -4182,6 +4200,7 @@ html, body {
       school_class: ['💭 在想哥哥❤️', '💭 一陣食咩好😗', '💭 黑板寫滿筆記要專心抄低！', '💭 放學返屋企要話畀哥哥聽今日學咗咩！'],
       school_hall: ['💭 學校走廊好長好寬敞～', '💭 小息喺走廊行下伸展筋骨！', '💭 唔知哥哥而家喺藥房忙唔忙呢？'],
       school_tuckshop: ['💭 小食部今日有新鮮熱麵包賣！', '💭 睇下買咩小食好呢～', '💭 哥哥比我嘅零用錢夠買個菠蘿包！'],
+      school_water: ['💭 練波練到出晒汗，飲啖冰涼嘅水最舒服！💧', '💭 喺飲水處抖一陣回返氣，一陣再繼續扣殺！', '💭 飲完水記得唔好飲太急親～'],
       school_court: ['💭 排球場地板擦到發光！', '💭 烏野一定打入全國！！', '💭 返屋企要同哥哥對打練習接波！'],
       school_toilet: ['💭 趁小息快手去個洗手間先～', '💭 洗乾淨手準備返課室／球場！', '💭 哥哥成日提我唔好忍尿！'],
       school_infirmary: ['💭 醫療室好安靜，啲床單好整齊…', '💭 休息一下好快就會好返精神！', '💭 好想快啲見到哥哥接我返屋企…'],
@@ -8269,7 +8288,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v102';
+          if (el) el.textContent = '☁️ 雲端已同步 · v103';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8308,7 +8327,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v102';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v103';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
