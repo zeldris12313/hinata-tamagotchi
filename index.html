@@ -248,7 +248,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v95</span>
+      <span id="save-status">💾 已自動儲存 · v96</span>
       
     </div>
 
@@ -1230,7 +1230,7 @@ html, body {
           perMin = (sl[stat] ?? 0) / 60;
         } else if (isRest) {
           perMin = ((bal.rest && bal.rest[stat]) ?? 0) / 60;
-        } else if ((state.outing && state.outing.type === 'supermarket') || (!simAtMs && pet.currentRoom === 'supermarket')) {
+        } else if (pet.currentRoom === 'supermarket') {
           perMin = ((bal.supermarket && typeof bal.supermarket[stat] === 'number') ? bal.supermarket[stat] : (stat === 'mood' ? 0 : -10)) / 60;
         } else if (isPrac) {
           perMin = ((bal.practice && bal.practice[stat]) ?? 0) / 60;
@@ -1350,7 +1350,7 @@ html, body {
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + hrs * (bal.rest.hunger || 0)));
           pet.energy = Math.max(0, Math.min(100, pet.energy + hrs * (bal.rest.energy || 0)));
           pet.mood   = Math.max(0, Math.min(100, pet.mood   + hrs * (bal.rest.mood || 0)));
-        } else if (pet.currentRoom === 'supermarket') {
+        } else if ((state.outing && state.outing.type === 'supermarket') || (!simAtMs && pet.currentRoom === 'supermarket')) {
           const smB = bal.supermarket || { hunger: -10, energy: -10, mood: 0 };
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + hrs * (smB.hunger ?? -10)));
           pet.energy = Math.max(0, Math.min(100, pet.energy + hrs * (smB.energy ?? -10)));
@@ -3660,7 +3660,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v95'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v96'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -8224,7 +8224,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v95';
+          if (el) el.textContent = '☁️ 雲端已同步 · v96';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8263,7 +8263,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v95';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v96';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
