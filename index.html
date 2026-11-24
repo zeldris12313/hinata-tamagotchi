@@ -249,7 +249,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v101</span>
+      <span id="save-status">💾 已自動儲存 · v102</span>
       
     </div>
 
@@ -419,9 +419,9 @@ html, body {
       bg_park_morning: "./assets/bg_park_morning.jpg?v=69",
       bg_mall_morning: "./assets/bg_mall_morning.jpg?v=69",
       bg_restaurant_morning: "./assets/bg_restaurant_morning.jpg?v=83",
-      bg_rest_toilet: "./assets/bg_park_toilet.jpg?v=83.1",
-      bg_rest_toilet_morning: "./assets/bg_park_toilet_morning.jpg?v=83.1",
-      bg_rest_toilet_night: "./assets/bg_park_toilet_night.jpg?v=83.1",
+      bg_rest_toilet: "./assets/bg_mall_toilet.jpg?v=102",
+      bg_rest_toilet_morning: "./assets/bg_mall_toilet_morning.jpg?v=102",
+      bg_rest_toilet_night: "./assets/bg_mall_toilet_night.jpg?v=102",
       bg_park3: "./assets/bg_park3.jpg?v=83",
       bg_park3_morning: "./assets/bg_park3_morning.jpg?v=83",
       bg_park3_night: "./assets/bg_park3_night.jpg?v=83",
@@ -1398,10 +1398,15 @@ html, body {
         // Offline auto-toilet + TP deduction, bath supply deduction, and 23:00 supper
         if (simAtMs) {
           const tpThres = (bal && bal.bladderAutoThreshold) ?? 70;
-          if ((pet.bladder || 0) > tpThres && ((state.supplies && state.supplies.tpSheets) ?? 180) > 0) {
-            const useSh = (state.supplyCfg && state.supplyCfg.tpUseSheets) || 3;
-            state.supplies.tpSheets = Math.max(0, (state.supplies.tpSheets ?? 180) - useSh);
-            recordStatLog(pet, 'bladder', '🚽 離線自動去廁所', pet.bladder || 0, 0);
+          const canOfflineToilet = !schedMealChk || (!['school_class', 'sleep', 'street', 'brush', 'breakfast', 'lunch', 'dinner'].includes(schedMealChk.act) && !schedMealChk.isHomeSeq);
+          const isAtHomeOff = schedMealChk && ['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'bath', 'backyard'].includes(schedMealChk.room);
+          const hasTpOff = !isAtHomeOff || (((state.supplies && state.supplies.tpSheets) ?? 180) > 0);
+          if (canOfflineToilet && (pet.bladder || 0) > tpThres && hasTpOff) {
+            if (isAtHomeOff) {
+              const useSh = (state.supplyCfg && state.supplyCfg.tpUseSheets) || 3;
+              state.supplies.tpSheets = Math.max(0, (state.supplies.tpSheets ?? 180) - useSh);
+            }
+            recordStatLog(pet, 'bladder', isAtHomeOff ? '🚽 離線自動去廁所' : '🚻 離線去公廁／校廁', pet.bladder || 0, 0);
             pet.bladder = 0; pet.lastToiletAt = nowEval;
           }
           if (schedMealChk && schedMealChk.act === 'bath' && pet.lastBathDeductKey !== (evalToday + '_' + schedMealChk.key)) {
@@ -1570,7 +1575,9 @@ html, body {
         if (m < 495)  return { key: 'wd_brush',  room: 'bath',         act: 'brush',        outfit: 2, px: 165, py: 440, label: '起身刷牙' };
         if (m < 515)  return { key: 'wd_bfast',  room: 'kitchen',      act: 'breakfast',    outfit: 1, px: 435, py: 455, label: '一齊食早餐' };
         if (m < 517)  return { key: 'wd_hall_go', room: 'hallway',     act: 'hallway',      outfit: 1, px: 215, py: 440, label: '玄關檢查鎖匙出門' };
-        if (m < 530)  return { key: 'wd_go',     room: 'street_cross', act: 'street',       outfit: 1, px: 265, py: 445, label: '一齊出門返學' };
+        if (m < 521)  return { key: 'wd_go_st',  room: 'street',       act: 'street',       outfit: 1, px: 270, py: 445, label: '一齊出門・室外街道' };
+        if (m < 525)  return { key: 'wd_go_ln',  room: 'street_lane',  act: 'street',       outfit: 1, px: 270, py: 445, label: '一齊出門・街道小巷' };
+        if (m < 530)  return { key: 'wd_go_cr',  room: 'street_cross', act: 'street',       outfit: 1, px: 265, py: 445, label: '十字路口道別返學' };
         if (m < 660)  return { key: 'wd_class1a', room: 'school_class', act: 'school_class', outfit: 1, px: 235, py: 435, label: '上堂中' };
         if (m < 680)  return { key: 'wd_rec1',   room: 'school_hall',  act: 'recess_walk',  outfit: 1, px: 260, py: 440, label: '早堂小息', isRecess: true };
         if (m < 735)  return { key: 'wd_class1b', room: 'school_class', act: 'school_class', outfit: 1, px: 235, py: 435, label: '上堂中' };
@@ -1581,7 +1588,10 @@ html, body {
         if (m < 975)  return { key: 'wd_club1',  room: 'school_court', act: 'school_court', outfit: 0, px: 300, py: 435, label: '放學練波' };
         if (m < 990)  return { key: 'wd_water',  room: 'school_court', act: 'water_break',  outfit: 0, px: 420, py: 440, label: '練波飲水休息' };
         if (m < 1020) return { key: 'wd_club2',  room: 'school_court', act: 'school_court', outfit: 0, px: 300, py: 435, label: '放學練波' };
-        if (m < 1050) return { key: 'wd_homew',  room: 'street_cross', act: 'street',       outfit: 1, px: 265, py: 445, label: '同哥哥一齊返屋企' };
+        if (m < 1025) return { key: 'wd_meet_cr', room: 'street_cross', act: 'street',      outfit: 1, px: 265, py: 445, label: '放學行去十字路口會合' };
+        if (m < 1033) return { key: 'wd_hw_cr',   room: 'street_cross', act: 'street',      outfit: 1, px: 265, py: 445, label: '十字路口會合哥哥' };
+        if (m < 1041) return { key: 'wd_hw_ln',   room: 'street_lane',  act: 'street',      outfit: 1, px: 270, py: 445, label: '同哥哥行小巷返屋企' };
+        if (m < 1050) return { key: 'wd_hw_st',   room: 'street',       act: 'street',      outfit: 1, px: 270, py: 445, label: '行經室外街道就到家' };
         if (m < 1095) return { key: 'wd_home_seq', room: 'hallway',   act: 'hallway',      outfit: 1, px: 215, py: 440, label: '返屋企放書包休息', isHomeSeq: true };
         if (m < 1125) {
           if (skipDinner) return { key: 'wd_bath_early', room: 'bath', act: 'bath', outfit: 2, px: 405, py: 332, label: '提前一齊浸浴' };
@@ -1623,11 +1633,16 @@ html, body {
         if (m < 495)  return { key: 'br_prep_bf',    room: 'kitchen',    act: 'prep_bfast',    px: 280, py: 435 };
         if (m < 515)  return { key: 'br_bfast',      room: 'kitchen',    act: 'breakfast',     px: 505, py: 440 };
         if (m < 517)  return { key: 'br_hall_go',    room: 'hallway',    act: 'aniki_hall_tidy', px: 345, py: 440 };
-        if (m < 530)  return { key: 'br_go',         room: 'street_cross', act: 'street',        px: 375, py: 445 };
+        if (m < 521)  return { key: 'br_go_st',      room: 'street',       act: 'street',        px: 375, py: 445 };
+        if (m < 525)  return { key: 'br_go_ln',      room: 'street_lane',  act: 'street',        px: 375, py: 445 };
+        if (m < 530)  return { key: 'br_go_cr',      room: 'street_cross', act: 'street',        px: 375, py: 445 };
         if (m < 750)  return { key: 'br_work1',      room: 'pharmacy',   act: 'pharmacy_work', px: 260, py: 440 };
         if (m < 795)  return { key: 'br_canteen',    room: 'canteen',    act: 'canteen_lunch', px: 300, py: 440 };
         if (m < 1020) return { key: 'br_work2',      room: 'pharmacy',   act: 'pharmacy_work', px: 360, py: 440 };
-        if (m < 1050) return { key: 'br_homew',      room: 'street_cross', act: 'street',        px: 375, py: 445 };
+        if (m < 1025) return { key: 'br_meet_cr',    room: 'street_cross', act: 'street',        px: 375, py: 445 };
+        if (m < 1033) return { key: 'br_hw_cr',      room: 'street_cross', act: 'street',        px: 375, py: 445 };
+        if (m < 1041) return { key: 'br_hw_ln',      room: 'street_lane',  act: 'street',        px: 375, py: 445 };
+        if (m < 1050) return { key: 'br_hw_st',      room: 'street',       act: 'street',        px: 375, py: 445 };
         if (m < 1055) return { key: 'br_hall_tidy',  room: 'hallway',    act: 'aniki_hall_tidy', px: 310, py: 440 };
         if (m < 1095) return { key: 'br_cook_din',   room: 'kitchen',    act: 'cook_dinner',   px: 255, py: 435 };
         if (m < 1125) {
@@ -3174,7 +3189,7 @@ html, body {
             if (!animateTransition) { bro.px = bro.tx; bro.py = bro.ty; }
           }
         } else {
-          if (animateTransition && bro.currentRoom !== bSched.room && HOME_TOILET_ROOMS.has(bro.currentRoom) && HOME_TOILET_ROOMS.has(bSched.room)) {
+          if (animateTransition && bro.currentRoom !== bSched.room && (HOME_TOILET_ROOMS.has(bro.currentRoom) || OUTDOOR_STREET_ROOMS.has(bro.currentRoom) || bro.currentRoom === 'pharmacy') && (HOME_TOILET_ROOMS.has(bSched.room) || OUTDOOR_STREET_ROOMS.has(bSched.room))) {
             startSoloWalk('bro', bSched.room, bSched.act, null, () => { bro.tx = bSched.px; bro.ty = bSched.py; }, false);
           } else {
             bro.currentRoom = bSched.room; bro.currentActivity = bSched.act;
@@ -3399,7 +3414,7 @@ html, body {
       }
 
       // 6a-3. Street 17:00-17:30 walk home vending machine interaction
-      if (!info.isWeekend && sched.key === 'wd_homew' && (pet.currentRoom === 'street' || pet.currentRoom === 'street_cross') && pet.dailyStreetDrinkDate !== tdF) {
+      if (!info.isWeekend && (sched.key === 'wd_hw_cr' || sched.key === 'wd_hw_st') && (pet.currentRoom === 'street' || pet.currentRoom === 'street_cross') && pet.dailyStreetDrinkDate !== tdF) {
         const vKeyH = pet.currentRoom === 'street_cross' ? 'cross_vend' : 'street_vend';
         const vAvailH = (ensureShopMenus()[vKeyH] || []).filter(id => (pet.pocketMoney || 0) >= getSnackCfg(id).price);
         if (vAvailH.length > 0 && Math.random() < 0.35) {
@@ -3676,7 +3691,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v101'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v102'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3930,7 +3945,7 @@ html, body {
       { start: 470,  end: 480,  time: '07:50 - 08:00', roomName: '1F 浴室',         label: '🪥 哥哥刷牙洗臉' },
       { start: 480,  end: 495,  time: '08:00 - 08:15', roomName: '浴室 / 廚房',     label: '🪥 翔陽刷牙・哥哥準備早餐' },
       { start: 495,  end: 515,  time: '08:15 - 08:35', roomName: '1F 廚房',         label: '🍚 二人一齊食早餐' },
-      { start: 515,  end: 530,  time: '08:35 - 08:50', roomName: '室外街道',        label: '🎒 二人一齊出門' },
+      { start: 515,  end: 530,  time: '08:35 - 08:50', roomName: '街道→小巷→十字路', label: '🎒 一齊行去十字路口 (08:50 分別)' },
       { start: 530,  end: 660,  time: '08:50 - 11:00', roomName: '課室 / 醫院藥房', label: '📚 上午上堂・哥哥藥房工作' },
       { start: 660,  end: 680,  time: '11:00 - 11:20', roomName: '走廊 / 小食部',   label: '🔔 早堂小息（可買小食）' },
       { start: 680,  end: 750,  time: '11:20 - 12:30', roomName: '課室 / 醫院藥房', label: '📚 午間上堂・哥哥藥房工作' },
@@ -3941,7 +3956,7 @@ html, body {
       { start: 945,  end: 975,  time: '15:45 - 16:15', roomName: '室內排球場',      label: '🏐 放學社團練波（上半節）' },
       { start: 975,  end: 990,  time: '16:15 - 16:30', roomName: '室內排球場',      label: '💧 練波飲水休息（精力+30）' },
       { start: 990,  end: 1020, time: '16:30 - 17:00', roomName: '室內排球場',      label: '🏐 放學社團練波（下半節）' },
-      { start: 1020, end: 1050, time: '17:00 - 17:30', roomName: '室外街道',        label: '🏠 放學・哥哥收工(+200)一齊返屋企' },
+      { start: 1020, end: 1050, time: '17:00 - 17:30', roomName: '十字路→小巷→街道', label: '🏠 17:05 十字路口會合・17:30 到家' },
       { start: 1050, end: 1095, time: '17:30 - 18:15', roomName: '玄關→房→客廳→後院', label: '🎒 放書包・客廳休15分・後院練球' },
       { start: 1095, end: 1125, time: '18:15 - 18:45', roomName: '1F 廚房',         label: '🍽️ 二人一齊食晚餐' },
       { start: 1125, end: 1160, time: '18:45 - 19:20', roomName: '1F 廁所浴室',     label: '🫧 二人一齊浸浴' },
@@ -3992,11 +4007,11 @@ html, body {
       { start: 470,  end: 480,  time: '07:50 - 08:00', roomName: '1F 浴室',         label: '🪥 刷牙洗臉' },
       { start: 480,  end: 495,  time: '08:00 - 08:15', roomName: '1F 廚房',         label: '🍳 準備早餐擺枱' },
       { start: 495,  end: 515,  time: '08:15 - 08:35', roomName: '1F 廚房',         label: '🍚 與翔陽一齊食早餐' },
-      { start: 515,  end: 530,  time: '08:35 - 08:50', roomName: '玄關→十字路口',   label: '🚶 送翔陽返學・出門返工' },
+      { start: 515,  end: 530,  time: '08:35 - 08:50', roomName: '街道→小巷→十字路', label: '🚶 陪翔陽行去十字路 (08:50 返工)' },
       { start: 530,  end: 750,  time: '08:50 - 12:30', roomName: '醫院藥房',        label: '💊 上午藥房工作' },
       { start: 750,  end: 795,  time: '12:30 - 13:15', roomName: '醫院 Canteen',    label: '🍱 Canteen 食午餐' },
       { start: 795,  end: 1020, time: '13:15 - 17:00', roomName: '醫院藥房',        label: '💊 下午藥房工作' },
-      { start: 1020, end: 1050, time: '17:00 - 17:30', roomName: '十字路口',        label: '🏠 收工 (+200元) 接翔陽返屋企' },
+      { start: 1020, end: 1050, time: '17:00 - 17:30', roomName: '十字路→小巷→街道', label: '🏠 收工 (+200元) 17:05 會合・17:30 到家' },
       { start: 1050, end: 1055, time: '17:30 - 17:35', roomName: '1F 玄關',         label: '🔑 放低鎖匙整好鞋' },
       { start: 1055, end: 1095, time: '17:35 - 18:15', roomName: '1F 廚房',         label: '🍳 煮晚餐' },
       { start: 1095, end: 1125, time: '18:15 - 18:45', roomName: '1F 廚房',         label: '🍽️ 與翔陽一齊食晚餐' },
@@ -8254,7 +8269,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v101';
+          if (el) el.textContent = '☁️ 雲端已同步 · v102';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8293,7 +8308,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v101';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v102';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
