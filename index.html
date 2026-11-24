@@ -249,7 +249,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v103</span>
+      <span id="save-status">💾 已自動儲存 · v104</span>
       
     </div>
 
@@ -1695,6 +1695,22 @@ html, body {
       }
     }
 
+    function getCommutePose(schedKey, nowMs = Date.now()) {
+      const d = new Date(nowMs);
+      const sec = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+      const lerp = (a, b, t) => a + (b - a) * Math.max(0, Math.min(1, t));
+      const seg = (s0, s1, x0, y0, sc0, x1, y1, sc1) => {
+        const t = Math.max(0, Math.min(1, (sec - s0) / Math.max(1, s1 - s0)));
+        return { x: lerp(x0, x1, t), y: lerp(y0, y1, t), scale: lerp(sc0, sc1, t), broDx: 72 };
+      };
+      if (schedKey === 'wd_go_st' || schedKey === 'br_go_st') return seg(517*60, 521*60, 110, 455, 1.00, 440, 415, 0.86);
+      if (schedKey === 'wd_go_ln' || schedKey === 'br_go_ln') return seg(521*60, 525*60, 295, 368, 0.80, 475, 445, 1.00);
+      if (schedKey === 'wd_go_cr' || schedKey === 'br_go_cr') return seg(525*60, 530*60, 110, 445, 0.96, 265, 445, 0.98);
+      if (schedKey === 'wd_hw_cr' || schedKey === 'br_hw_cr') return seg(1025*60, 1033*60, 455, 445, 0.98, 105, 445, 0.96);
+      if (schedKey === 'wd_hw_ln' || schedKey === 'br_hw_ln') return seg(1033*60, 1041*60, 475, 445, 1.00, 295, 368, 0.80);
+      if (schedKey === 'wd_hw_st' || schedKey === 'br_hw_st') return seg(1041*60, 1050*60, 440, 415, 0.86, 105, 455, 1.00);
+      return null;
+    }
     function getRoomMoveDir(fromId, toId) {
       const steps = findRoomPath(fromId, toId);
       const hop = steps[0] || toId;
@@ -3431,28 +3447,42 @@ html, body {
         if (viewRoomId === 'living' || viewRoomId === 'kitchen') { viewRoomId = 'kitchen'; speakAndShow('「有啲肚餓…去雪櫃睇下有咩食先！（揀緊食物 30 秒）🧊」'); }
       }
 
-      // 6a-3. Street 17:00-17:30 walk home vending machine interaction
-      if (!info.isWeekend && (sched.key === 'wd_hw_cr' || sched.key === 'wd_hw_st') && (pet.currentRoom === 'street' || pet.currentRoom === 'street_cross') && pet.dailyStreetDrinkDate !== tdF) {
-        const vKeyH = pet.currentRoom === 'street_cross' ? 'cross_vend' : 'street_vend';
-        const vAvailH = (ensureShopMenus()[vKeyH] || []).filter(id => (pet.pocketMoney || 0) >= getSnackCfg(id).price);
-        if (vAvailH.length > 0 && Math.random() < 0.35) {
-          const vIdH = vAvailH[Math.floor(Math.random() * vAvailH.length)];
-          const vCfgH = getSnackCfg(vIdH);
-          pet.dailyStreetDrinkDate = tdF;
-          pet.pocketMoney -= vCfgH.price;
-          recordPurchaseLog(pet, (MAP_ROOMS[pet.currentRoom]?.name || '街道') + '販賣機', `${vCfgH.emoji} ${vCfgH.name}`, vCfgH.price, '翔陽零用錢');
-          targetX = pet.currentRoom === 'street_cross' ? 390 : 485; targetY = 445;
-          if (pet.hunger < 30 || pet.energy < 30) {
-            const vh0=pet.hunger, ve0=pet.energy, vm0=pet.mood;
-            pet.hunger = Math.min(100, pet.hunger + vCfgH.hunger); pet.energy = Math.min(100, pet.energy + vCfgH.energy); pet.mood = Math.min(100, pet.mood + vCfgH.mood);
-            recordStatLog(pet,'hunger',`${vCfgH.emoji} ${vCfgH.name}`,vh0,pet.hunger); recordStatLog(pet,'energy',`${vCfgH.emoji} ${vCfgH.name}`,ve0,pet.energy); recordStatLog(pet,'mood',`${vCfgH.emoji} ${vCfgH.name}`,vm0,pet.mood);
-            addBladderFromConsume(pet, !!vCfgH.isDrink);
-            if (viewRoomId === pet.currentRoom) speakAndShow(`「行去紅色販賣機買咗 ${vCfgH.emoji}${vCfgH.name} 即刻食！（零用錢 -${vCfgH.price}）🥤✨」`);
-          } else {
-            pet.snacks[vIdH] = (pet.snacks[vIdH] || 0) + 1;
-            if (viewRoomId === pet.currentRoom) speakAndShow(`「行去紅色販賣機買咗 ${vCfgH.emoji}${vCfgH.name} 袋好！（零用錢 -${vCfgH.price}）🥤🎒」`);
+      // 6a-3. Street 17:00-17:30 walk home vending machine interaction (pause 15s to buy then resume walking)
+      if (pet.vendPauseUntil && Date.now() >= pet.vendPauseUntil) {
+        pet.vendPauseUntil = null;
+        if (pet.currentActivity === 'vend_drink') pet.currentActivity = 'street';
+        if (bro && bro.currentActivity === 'vend_drink') bro.currentActivity = 'street';
+        if (viewRoomId === pet.currentRoom) speakAndShow('「買完飲品啦，繼續同哥哥慢慢行返屋企！🚶‍♂️💛」');
+        updateHUD();
+      }
+      if (!info.isWeekend && (sched.key === 'wd_hw_cr' || sched.key === 'wd_hw_st') && (pet.currentRoom === 'street' || pet.currentRoom === 'street_cross') && pet.dailyStreetDrinkDate !== tdF && !pet.vendPauseUntil) {
+        if (!window.__lastVendRollAt || Date.now() - window.__lastVendRollAt > 20000) {
+          window.__lastVendRollAt = Date.now();
+          const vKeyH = pet.currentRoom === 'street_cross' ? 'cross_vend' : 'street_vend';
+          const vAvailH = (ensureShopMenus()[vKeyH] || []).filter(id => (pet.pocketMoney || 0) >= getSnackCfg(id).price);
+          if (vAvailH.length > 0 && Math.random() < 0.35) {
+            const vIdH = vAvailH[Math.floor(Math.random() * vAvailH.length)];
+            const vCfgH = getSnackCfg(vIdH);
+            pet.dailyStreetDrinkDate = tdF;
+            pet.pocketMoney -= vCfgH.price;
+            pet.vendPauseUntil = Date.now() + 15000;
+            pet.currentActivity = 'vend_drink';
+            if (bro && bro.currentRoom === pet.currentRoom) bro.currentActivity = 'vend_drink';
+            recordPurchaseLog(pet, (MAP_ROOMS[pet.currentRoom]?.name || '街道') + '販賣機', `${vCfgH.emoji} ${vCfgH.name}`, vCfgH.price, '翔陽零用錢');
+            targetX = pet.currentRoom === 'street_cross' ? 390 : 475; targetY = 445;
+            if (bro && bro.currentRoom === pet.currentRoom) { bro.tx = targetX - 65; bro.ty = 445; }
+            if (pet.hunger < 30 || pet.energy < 30) {
+              const vh0=pet.hunger, ve0=pet.energy, vm0=pet.mood;
+              pet.hunger = Math.min(100, pet.hunger + vCfgH.hunger); pet.energy = Math.min(100, pet.energy + vCfgH.energy); pet.mood = Math.min(100, pet.mood + vCfgH.mood);
+              recordStatLog(pet,'hunger',`${vCfgH.emoji} ${vCfgH.name}`,vh0,pet.hunger); recordStatLog(pet,'energy',`${vCfgH.emoji} ${vCfgH.name}`,ve0,pet.energy); recordStatLog(pet,'mood',`${vCfgH.emoji} ${vCfgH.name}`,vm0,pet.mood);
+              addBladderFromConsume(pet, !!vCfgH.isDrink);
+              if (viewRoomId === pet.currentRoom) speakAndShow(`「停低喺紅色販賣機買咗 ${vCfgH.emoji}${vCfgH.name} 即刻飲！（零用錢 -${vCfgH.price}）🥤✨」`);
+            } else {
+              pet.snacks[vIdH] = (pet.snacks[vIdH] || 0) + 1;
+              if (viewRoomId === pet.currentRoom) speakAndShow(`「停低喺紅色販賣機買咗 ${vCfgH.emoji}${vCfgH.name} 袋好！（零用錢 -${vCfgH.price}）🥤🎒」`);
+            }
+            updateHUD(); saveState();
           }
-          updateHUD(); saveState();
         }
       }
 
@@ -3709,7 +3739,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v103'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v104'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -4283,17 +4313,21 @@ html, body {
       }
 
       const bx = bro.px, by = bro.py;
-      const isWalking = Math.hypot(bro.tx - bro.px, bro.ty - bro.py) > 5;
+      const isCommuteB = (act === 'street' && !(pet.vendPauseUntil && Date.now() < pet.vendPauseUntil));
+      const isWalking = isCommuteB || Math.hypot(bro.tx - bro.px, bro.ty - bro.py) > 5;
       const isEating = ['canteen_lunch','breakfast','lunch','dinner','restaurant','supper_eat','eating_ice_cream','promenade_cafe','rest_drinkbar'].includes(act);
-      const bounce = isWalking ? -Math.abs(Math.sin(frame * 0.22)) * 8 : (act === 'park_jog' ? -Math.abs(Math.sin(frame * 0.2)) * 14 : (isEating ? Math.sin(frame * 0.16) * 2.5 : 0));
-      const breathSy = 1 + Math.sin(frame * 0.065 + 1) * 0.02;
-      const breathSx = 1 - Math.sin(frame * 0.065 + 1) * 0.012;
+      const bounce = isWalking ? -Math.abs(Math.sin(frame * 0.20 + 0.8)) * 9 : (act === 'park_jog' ? -Math.abs(Math.sin(frame * 0.2)) * 14 : (isEating ? Math.sin(frame * 0.16) * 2.5 : 0));
+      const broTilt = isWalking ? Math.sin(frame * 0.20 + 0.8) * 0.075 : 0;
+      const cScaleB = (isCommuteB && window.__commuteScale) ? window.__commuteScale : 1;
+      const breathSy = (1 + Math.sin(frame * 0.065 + 1) * 0.02) * cScaleB;
+      const breathSx = (1 - Math.sin(frame * 0.065 + 1) * 0.012) * cScaleB;
       const drawW = 162, drawH = 246;
 
       ctx.save();
       ctx.fillStyle = 'rgba(0,0,0,0.20)';
       ctx.beginPath(); ctx.ellipse(bx, by + 96, 50, 13, 0, 0, Math.PI * 2); ctx.fill();
       ctx.translate(bx, by + bounce);
+      ctx.rotate(broTilt);
       ctx.scale(breathSx, breathSy);
       ctx.drawImage(img, -drawW / 2, -drawH / 2 - 22, drawW, drawH);
       if (isEating && !isWalking) {
@@ -4355,18 +4389,20 @@ html, body {
       }
 
       const cx = petX, cy = petY;
-      const isWalking = transitionState !== null || (Math.hypot(targetX - petX, targetY - petY) > 5);
+      const isCommuteW = (act === 'street' && !(pet.vendPauseUntil && Date.now() < pet.vendPauseUntil));
+      const isWalking = isCommuteW || transitionState !== null || (Math.hypot(targetX - petX, targetY - petY) > 5);
       const isJumping = (act === 'school_court' || act === 'backyard' || act === 'jump') && !isWalking && !rally.active;
-      const jumpY = isJumping ? -Math.abs(Math.sin(frame * 0.16)) * 55 : (act === 'squat' && !isWalking ? (Math.floor(frame / 36) % 2 === 1 ? 10 : 0) : (act === 'happy' || isPetting ? -Math.abs(Math.sin(frame * 0.18)) * 16 : ((isWalking || act === 'park_jog' || act === 'court_run') ? -Math.abs(Math.sin(frame * 0.24)) * 11 : 0)));
+      const jumpY = isJumping ? -Math.abs(Math.sin(frame * 0.16)) * 55 : (act === 'squat' && !isWalking ? (Math.floor(frame / 36) % 2 === 1 ? 10 : 0) : (act === 'happy' || isPetting ? -Math.abs(Math.sin(frame * 0.18)) * 16 : ((isWalking || act === 'park_jog' || act === 'court_run') ? -Math.abs(Math.sin(frame * 0.20)) * 9.5 : 0)));
+      const cScaleH = (isCommuteW && window.__commuteScale) ? window.__commuteScale : 1;
       const breathSy = 1 + Math.sin(frame * 0.07) * 0.024;
       const breathSx = 1 - Math.sin(frame * 0.07) * 0.014;
-      const tilt = isWalking ? Math.sin(frame * 0.24) * 0.08 : (isPetting ? Math.sin(frame * 0.15) * 0.07 : Math.sin(frame * 0.04) * 0.02);
+      const tilt = isWalking ? Math.sin(frame * 0.20) * 0.085 : (isPetting ? Math.sin(frame * 0.15) * 0.07 : Math.sin(frame * 0.04) * 0.02);
 
       ctx.save();
       if (transitionState) ctx.globalAlpha = transitionState.alpha;
       ctx.fillStyle = 'rgba(0,0,0,0.22)';
-      ctx.beginPath(); ctx.ellipse(cx, cy + 96, 52, 13, 0, 0, Math.PI * 2); ctx.fill();
-      drawFullChibiSprite(cx, cy - 14 + jumpY, tilt, act, outfit, frame, 1.55, breathSx, breathSy);
+      ctx.beginPath(); ctx.ellipse(cx, cy + 96 * cScaleH, 52 * cScaleH, 13 * cScaleH, 0, 0, Math.PI * 2); ctx.fill();
+      drawFullChibiSprite(cx, cy - 14 * cScaleH + jumpY, tilt, act, outfit, frame, 1.55 * cScaleH, breathSx, breathSy);
       if (act === 'tea' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🍵', cx + 42, cy + 28); }
       if (act === 'water_break' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('💧', cx + 40, cy + 16); }
       if (act === 'brush' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🪥', cx + 38, cy + 10); }
@@ -4380,7 +4416,7 @@ html, body {
       }
       if (act === 'gaming' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🎮', cx + 42, cy + 25); }
       ctx.restore();
-      drawOverheadBadge(cx, cy - 28 + jumpY, isWalking ? 'idle' : act, frame);
+      drawOverheadBadge(cx, cy - 28 + jumpY, (isWalking && act !== 'street') ? 'idle' : act, frame);
     }
 
     // 放大特寫：使用當前房間動畫背景＋去背立繪，摸摸時直接切換成開心笑面立繪（唔再疊假紅暈）！
@@ -4573,6 +4609,18 @@ html, body {
             if (Math.hypot(bdx, bdy) > 3) { bro.px += bdx * 0.05; bro.py += bdy * 0.05; }
           }
         }
+      }
+      const _cSched = getScheduledState(getCurrentHourInfo());
+      const _cPose = (!pet.vendPauseUntil && !pet.toiletState && !transitionState && !duoWalk && pet.currentRoom === _cSched.room) ? getCommutePose(_cSched.key) : null;
+      if (_cPose) {
+        targetX = _cPose.x; targetY = _cPose.y;
+        window.__commuteScale = _cPose.scale;
+        if (state.brother && state.brother.currentRoom === pet.currentRoom) {
+          state.brother.tx = Math.min(535, _cPose.x + _cPose.broDx);
+          state.brother.ty = _cPose.y;
+        }
+      } else {
+        window.__commuteScale = 1;
       }
       if (frameCount % 240 === 0) dreamIdx++;
     }
@@ -8288,7 +8336,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v103';
+          if (el) el.textContent = '☁️ 雲端已同步 · v104';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8327,7 +8375,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v103';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v104';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
