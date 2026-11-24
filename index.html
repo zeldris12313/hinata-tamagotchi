@@ -248,7 +248,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v96</span>
+      <span id="save-status">💾 已自動儲存 · v97</span>
       
     </div>
 
@@ -2810,6 +2810,14 @@ html, body {
           const otherBusy = (otherObj.currentRoom === 'toilet' || (otherObj.toiletState && (otherObj.toiletState.stage === 'use' || otherObj.toiletState.stage === 'wash')));
           if (ts.stage === 'walking_to') {
             if (isHinata ? transitionState : broWalk) return true;
+            if (ts.targetToilet === 'school_toilet' || charObj.currentRoom === 'school_toilet') {
+              ts.stage = 'use'; ts.stageUntil = nowT + 30000;
+              charObj.lastToiletAt = nowT;
+              charObj.currentRoom = 'school_toilet'; charObj.currentActivity = 'toilet_urinal';
+              if (isHinata) { targetX = 145; targetY = 445; if (viewRoomId === 'school_toilet') speakAndShow('「嚟到校內廁所解決一下先！🚻💨」'); }
+              updateHUD();
+              return true;
+            }
             if (otherBusy) {
               ts.stage = 'wait';
               if (isHinata) {
@@ -2892,7 +2900,7 @@ html, body {
       const isSchoolToiletAllowed = (sched.isRecess || sched.key === 'wd_lunch' || sched.act === 'school_court' || sched.act === 'water_break') && ['school_class', 'school_hall', 'school_tuckshop', 'school_court'].includes(pet.currentRoom);
       if ((pet.bladder || 0) > ((state.balance && state.balance.bladderAutoThreshold) ?? 70) && !hInToilet && !pet.recoverStage && !pet.fainted && !rally.active && isSchoolToiletAllowed) {
         transitionState = null;
-        const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: false, sinkX: 300 };
+        const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: false, sinkX: 300, targetToilet: 'school_toilet' };
         pet.toiletState = { stage: 'walking_to', ...prev };
         startCharacterWalkTransition(pet, 'school_toilet', 'toilet_urinal', 145, 445, followTarget === 'hinata');
         if (viewRoomId === pet.currentRoom) speakAndShow('「好急呀！趁小息／練波空檔行去校內廁所先！🚻💨」');
@@ -3660,7 +3668,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v96'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v97'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -8224,7 +8232,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v96';
+          if (el) el.textContent = '☁️ 雲端已同步 · v97';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8263,7 +8271,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v96';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v97';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
