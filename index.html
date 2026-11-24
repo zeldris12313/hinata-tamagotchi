@@ -249,7 +249,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v107</span>
+      <span id="save-status">💾 已自動儲存 · v108</span>
       
     </div>
 
@@ -1671,10 +1671,10 @@ html, body {
         if (m < 1160) return { key: 'br_bath',       room: 'bath',       act: 'bath',          px: 475, py: 332 };
         if (m < 1215) {
           if (promises.play_mode === 'study' || promises.play_mode === 'done') return { key: 'br_study_promise', room: 'room_hinata', act: 'tutoring', px: 255, py: 430 };
-          return { key: 'br_play',       room: 'room_aniki', act: 'gaming',        px: 295, py: 435 };
+          return { key: 'br_play',       room: 'room_aniki', act: 'gaming',        px: 295, py: 435, broFree: true };
         }
         if (m < 1260) return { key: 'br_free_home',  room: 'living',     act: 'tea',           px: 360, py: 440, homeRoam: true };
-        return               { key: 'br_tv',         room: 'living',     act: 'tv',            px: 445, py: 420 };
+        return               { key: 'br_tv',         room: 'living',     act: 'tv',            px: 445, py: 420, broFree: true };
       } else {
         if (m < 600)            return { key: 'br_we_sleep', room: 'room_aniki', act: 'sleep',       px: 440, py: 365 };
         if (m < 620)            return { key: 'br_we_brush', room: 'bath',       act: 'brush',       px: 235, py: 440 };
@@ -3121,6 +3121,7 @@ html, body {
       }
 
       // 4. Sync Hinata
+      if (!transitionState && !petWalk && !duoWalk && !pet.toiletState && !pet.recoverStage && pet.currentActivity === 'walking') { pet.currentActivity = sched.act; }
       if (pet.toiletState) { /* skip normal schedule while in toilet routine */ } else if (!animateTransition && !(state.outing && state.outing.type) && !pet.recoverStage && !pet.fainted && !sched.freeRoam && pet.currentRoom !== sched.room) {
         pet.scheduleSlotKey = sched.key; pet.currentRoom = sched.room; pet.currentActivity = sched.act;
         pet.outfitIdx = sched.outfit ?? pet.outfitIdx; petX = sched.px; petY = sched.py; targetX = sched.px; targetY = sched.py;
@@ -3193,15 +3194,16 @@ html, body {
       if (['pharmacy', 'canteen'].includes(bSched.room) && !['pharmacy', 'canteen', 'hospital'].includes(bro.currentRoom) && !bro.toiletState && !broWalk && !state.outing?.type) {
         bro.currentRoom = bSched.room; bro.currentActivity = bSched.act; bro.px = bSched.px; bro.py = bSched.py; bro.tx = bSched.px; bro.ty = bSched.py;
       }
-      const isBroFreeTime = Boolean((sched.freeRoam || bSched.homeRoam) && !(state.outing && state.outing.type));
+      const isBroFreeTime = Boolean((sched.freeRoam || bSched.homeRoam || bSched.broFree) && !(state.outing && state.outing.type));
       if (!isBroFreeTime && state.broSoloMode) state.broSoloMode = false;
       const broFixedChore = ['cook_bfast','prep_bfast','cook_lunch','cook_dinner','washing_dishes','breakfast','lunch','dinner','bath','brush','sleep','canteen_lunch','pharmacy_work','aniki_hall_tidy'].includes(bSched.act);
       const canBroSolo = isBroFreeTime && state.broSoloMode && !broFixedChore && !state.outing?.type && !['breakfast','lunch','dinner','bath','brush','sleep','waking','gaming'].includes(pet.currentActivity) && !['pharmacy','canteen','hospital','school_class','school_court'].includes(bro.currentRoom) && !['school_class','school_court'].includes(pet.currentRoom);
-      const needSnapBroToSched = !canBroSolo && !bSched.followHinata && !(state.outing && state.outing.type) && !state.supperState && !state.gamingReturnAt && !state.supermarketTrip && ((bSched.act === 'sleep' && (bro.currentRoom !== bSched.room || bro.currentActivity !== 'sleep')) || bro.scheduleSlotKey !== bSched.key);
+      const broStuckWalking = !broWalk && !duoWalk && !bro.toiletState && (bro.currentActivity === 'walking' || (bro.currentRoom === 'wash_hall' && bSched.room !== 'wash_hall') || (bro.currentRoom === 'toilet' && bSched.room !== 'toilet'));
+      const needSnapBroToSched = !canBroSolo && !bSched.followHinata && !(state.outing && state.outing.type) && !state.supperState && !state.gamingReturnAt && !state.supermarketTrip && ((bSched.act === 'sleep' && (bro.currentRoom !== bSched.room || bro.currentActivity !== 'sleep')) || bro.scheduleSlotKey !== bSched.key || broStuckWalking);
       if (bro.toiletState || broWalk) { /* skip brother schedule while in toilet or walking routine */ }
       else if (canBroSolo) {
         if (!window.__lastBroSoloAt) window.__lastBroSoloAt = Date.now();
-        if (Date.now() - window.__lastBroSoloAt > 35000) {
+        if (broStuckWalking || Date.now() - window.__lastBroSoloAt > 35000) {
           window.__lastBroSoloAt = Date.now();
           const soloRooms = ['room_aniki', 'room_hinata', 'living', 'kitchen'].filter(r => r !== bro.currentRoom);
           const sr = soloRooms[Math.floor(Math.random() * soloRooms.length)] || 'living';
@@ -3731,7 +3733,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v107'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v108'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -7217,7 +7219,7 @@ html, body {
           const curBSc = getBrotherScheduledState(infD);
           const isMealL = ['breakfast', 'lunch', 'dinner', 'restaurant'].includes(petD.currentActivity) || (state.outing && state.outing.type === 'restaurant');
           const isOutL = Boolean((state.outing && state.outing.type) || OUTDOOR_STREET_ROOMS.has(petD.currentRoom));
-          const isFreeL = Boolean((curSc.freeRoam || curBSc.homeRoam) && !isMealL && !isOutL);
+          const isFreeL = Boolean((curSc.freeRoam || curBSc.homeRoam || curBSc.broFree) && !isMealL && !isOutL);
           if (isMealL || isOutL) return { id: 'toggle_bro_follow', emoji: '🫂', name: '陪同：陪伴中', sub: isMealL ? '一齊食飯鎖定中 🔒' : '外出約會鎖定中 🔒', highlight: true };
           if (isFreeL) return { id: 'toggle_bro_follow', emoji: state.broSoloMode ? '🚶' : '🫂', name: state.broSoloMode ? '陪同：自由中' : '陪同：陪伴中', sub: state.broSoloMode ? '自由時間・按此鎖定' : '自由時間・按此解鎖', highlight: !state.broSoloMode };
           return { id: 'toggle_bro_follow', emoji: '📅', name: '陪同：跟作息表', sub: broD.currentActivity === 'sleep' ? '哥哥瞓覺中' : (['pharmacy','canteen'].includes(broD.currentRoom) ? '哥哥返工中' : '自由時間先可切換'), highlight: false };
@@ -7379,7 +7381,7 @@ html, body {
             showToast('一齊食飯或外出期間「陪伴中」已鎖定，唔可以解鎖 🔒');
             return;
           }
-          if ((!curScT.freeRoam && !curBScT.homeRoam) || pet.fainted || pet.recoverStage) {
+          if ((!curScT.freeRoam && !curBScT.homeRoam && !curBScT.broFree) || pet.fainted || pet.recoverStage) {
             playSFX('miss');
             showToast('只有自由時間先可以解鎖／切換陪同狀態 📅');
             return;
@@ -8267,7 +8269,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v107';
+          if (el) el.textContent = '☁️ 雲端已同步 · v108';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8306,7 +8308,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v107';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v108';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
