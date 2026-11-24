@@ -83,6 +83,7 @@ html, body {
         <button id="btn-settings" type="button" class="whitespace-nowrap px-2 py-0.5 rounded-full bg-white text-[#2d1e12] font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-amber-50 transition">⚙️ 數值</button>
         <button id="btn-holiday" type="button" class="whitespace-nowrap px-2 py-0.5 rounded-full bg-white text-emerald-700 font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-emerald-50 transition">🏖️ 設明日假期</button>
         <button id="btn-schedule" type="button" class="whitespace-nowrap px-2 py-0.5 rounded-full bg-white text-orange-600 font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-orange-50 transition">📅 生活作息</button>
+        <button id="btn-force-refresh" type="button" class="whitespace-nowrap px-2 py-0.5 rounded-full bg-amber-100 text-[#2d1e12] font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-amber-200 transition" title="儲存並強制載入最新版本">🔄 更新重整</button>
       </div>
     </div>
 
@@ -248,7 +249,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v97</span>
+      <span id="save-status">💾 已自動儲存 · v101</span>
       
     </div>
 
@@ -474,6 +475,9 @@ html, body {
       bg_street_cross: "./assets/bg_street_cross.jpg?v=86",
       bg_street_cross_morning: "./assets/bg_street_cross_morning.jpg?v=86",
       bg_street_cross_night: "./assets/bg_street_cross_night.jpg?v=86",
+      bg_street_lane: "./assets/bg_street_lane.jpg?v=101",
+      bg_street_lane_morning: "./assets/bg_street_lane_morning.jpg?v=101",
+      bg_street_lane_night: "./assets/bg_street_lane_night.jpg?v=101",
       bg_supermarket: "./assets/bg_supermarket.jpg?v=69",
       bg_supermarket_morning: "./assets/bg_supermarket_morning.jpg?v=69",
       bg_supermarket_night: "./assets/bg_supermarket_night.jpg?v=69",
@@ -631,8 +635,9 @@ html, body {
       bath:         { id: 'bath',         name: '1F 浴室',         short: '浴室',     icon: '🛁', gx: 3, gy: 1,  up: null, down: 'wash_hall', left: null, right: null },
       living:       { id: 'living',       name: '1F 客廳',         short: '客廳',     icon: '🏠', gx: 1, gy: 2,  up: null, down: null, left: 'backyard', right: 'hallway' },
       hallway:      { id: 'hallway',      name: '1F 走廊玄關',     short: '家',       icon: '🚪', gx: 2, gy: 2,  up: 'wash_hall', down: 'kitchen', left: 'hallway_2f', right: 'street', doors: ['living'] },
-      street:       { id: 'street',       name: '室外街道',        short: '街道',     icon: '🛣️', gx: 2.5, gy: 2, up: null, down: null, left: 'hallway', right: 'street_cross' },
-      street_cross: { id: 'street_cross', name: '十字路口',        short: '十字路',   icon: '🚦', gx: 3, gy: 2,  up: 'main_street', down: 'school_gate', left: 'street', right: 'street_mid' },
+      street:       { id: 'street',       name: '室外街道',        short: '街道',     icon: '🛣️', gx: 2.5, gy: 1.5, up: null, down: 'street_lane', left: 'hallway', right: null },
+      street_lane:  { id: 'street_lane',  name: '街道小巷',        short: '小巷',     icon: '🛣️', gx: 2.5, gy: 2, up: 'street', down: null, left: null, right: 'street_cross' },
+      street_cross: { id: 'street_cross', name: '十字路口',        short: '十字路',   icon: '🚦', gx: 3, gy: 2,  up: 'main_street', down: 'school_gate', left: 'street_lane', right: 'street_mid' },
       street_mid:   { id: 'street_mid',   name: '室外街道中段',    short: '街道中段', icon: '🛣️', gx: 3.5, gy: 2, up: null, down: null, left: 'street_cross', right: 'street2' },
       school_gate:  { id: 'school_gate',  name: '烏野高校校門',    short: '校門',     icon: '⛩️', gx: 3, gy: 2.5, up: 'street_cross', down: 'school_hall', left: null, right: null },
       street2:      { id: 'street2',      name: '室外街道2',       short: '街道2',    icon: '🛣️', gx: 4, gy: 2,  up: 'street3', down: 'supermarket', left: 'street_mid', right: 'konbini' },
@@ -707,6 +712,9 @@ html, body {
       ],
       street2: [
         { id: 'walk_st2', label: '街道2漫步', hx: 280, hy: 420, hr: 95, px: 280, py: 440, act: 'street', line: '「經過室外街道2，右邊係便利店，下面係超級市場！🛣️」' }
+      ],
+      street_lane: [
+        { id: 'walk_lane', label: '小巷漫步', hx: 300, hy: 430, hr: 95, px: 300, py: 445, act: 'street', line: '「沿住木屋小巷行過去十字路口，陣陣微風好舒服！🚶‍♂️✨」' }
       ],
       street_cross: [
         { id: 'vend_cross', label: '十字路口自動販賣機', hx: 455, hy: 405, hr: 95, px: 390, py: 445, act: 'vend_drink', line: '「喺十字路口紅色販賣機叮一罐飲品先！🥤」' },
@@ -1695,7 +1703,7 @@ html, body {
       return { ex: 540, ey: 440, ix: 60, iy: 440 };
     }
     let followTarget = null;
-    const OUTDOOR_STREET_ROOMS = new Set(['street', 'street_cross', 'street_mid', 'street2', 'street3', 'main_street', 'main_street2', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall_park1', 'mall_park2', 'mall_park3', 'school_gate', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4']);
+    const OUTDOOR_STREET_ROOMS = new Set(['street', 'street_lane', 'street_cross', 'street_mid', 'street2', 'street3', 'main_street', 'main_street2', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall_park1', 'mall_park2', 'mall_park3', 'school_gate', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4']);
     function getWalkActForRoom(rm) { return OUTDOOR_STREET_ROOMS.has(rm) ? 'street' : 'walking'; }
     function startCharacterWalkTransition(pet, destRoom, destAct, px, py, followView = false) {
       if (pet.currentRoom === destRoom) { pet.currentActivity = destAct; targetX = px; targetY = py; saveState(); return; }
@@ -3668,7 +3676,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v97'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v101'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3722,7 +3730,7 @@ html, body {
     }
 
     const MALL_AREA_SET = new Set(['mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3']);
-    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street_cross', 'street_mid', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet', 'rest_toilet']);
+    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street_lane', 'street_cross', 'street_mid', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet', 'rest_toilet']);
     function drawAnimeRoomBackground(roomId, timeInfo) {
       const h = new Date().getHours();
       const isNight = (h >= 18 || h < 6);
@@ -4126,6 +4134,7 @@ html, body {
       backyard: ['💭 後院塊草地好啱練魚躍救球！', '💭 今日對牆接波要破紀錄！', '💭 同哥哥一齊喺後院練波最開心！'],
       street: ['💭 條街今日天氣好好呀！', '💭 踩住微風散步好寫意～', '💭 同哥哥一齊行街邊最好傾！'],
       street2: ['💭 街角間便利店陣間可以去望下！', '💭 條街好靜好舒服呢～', '💭 哥哥行喺隔離就覺得好安心！'],
+      street_lane: ['💭 呢條木屋小巷連接住屋企門口同十字路口！', '💭 單車同盆栽擺得好整齊好有生活感～', '💭 行多幾步就到十字路口過馬路返學！'],
       street_cross: ['💭 十字路口有斑馬線同紅白販賣機，返學放學必經之地！', '💭 過馬路記住左右望清楚先好行！', '💭 同哥哥喺十字路口飲返罐冰凍汽水最爽！'],
       street_mid: ['💭 木屋小巷同電線桿影落嚟好有夏日感覺～', '💭 再行前少少就到街角小店同街道2啦！', '💭 同哥哥一齊行呢條靜靜地嘅小巷好寫意！'],
       street3: ['💭 呢條街好靜好啱邊行邊食雪糕！', '💭 微風吹埋嚟好涼爽呀～', '💭 下次要再同哥哥嚟呢條街！'],
@@ -7731,6 +7740,19 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       if (state.soundEnabled) playSFX('pat');
     });
 
+    document.getElementById('btn-force-refresh')?.addEventListener('click', async () => {
+      try { saveState(); } catch(_) {}
+      showToast('正在保存並載入最新版本…🔄');
+      try {
+        if ('caches' in window) {
+          const ks = await caches.keys();
+          await Promise.all(ks.map(k => caches.delete(k)));
+        }
+      } catch(_) {}
+      setTimeout(() => {
+        window.location.replace(window.location.pathname + '?v=' + Date.now());
+      }, 250);
+    });
     document.getElementById('btn-schedule').addEventListener('click', openScheduleModal);
     document.getElementById('btn-settings').addEventListener('click', () => openSettingsModal(false));
     document.getElementById('close-settings-modal').addEventListener('click', () => document.getElementById('settings-modal').classList.add('hidden'));
@@ -8232,7 +8254,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v97';
+          if (el) el.textContent = '☁️ 雲端已同步 · v101';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8271,7 +8293,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v97';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v101';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
