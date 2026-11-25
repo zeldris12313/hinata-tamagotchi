@@ -254,7 +254,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v116</span>
+      <span id="save-status">💾 已自動儲存 · v117</span>
       
     </div>
 
@@ -592,28 +592,44 @@ html, body {
       };
       im.src = ASSET_URLS[k];
     }
-    function loadAssets() {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js?v=117').catch(() => {});
+      });
+    }
+    let _lastPreloadedRoom = null;
+    function preloadRoomAndNeighbors(roomId) {
+      if (!roomId || _lastPreloadedRoom === roomId) return;
+      _lastPreloadedRoom = roomId;
       const h = new Date().getHours();
       const tod = (h >= 18 || h < 6) ? '_night' : (h >= 6 && h < 10 ? '_morning' : '');
-      const priorityKeys = [
+      const loadRoomBg = (rId) => {
+        if (!rId) return;
+        if (rId === 'konbini') {
+          const kTod = (h >= 6 && h < 12) ? 'bg_konbini_morning' : (h >= 12 && h < 18 ? 'bg_konbini_afternoon' : 'bg_konbini_night');
+          ensureAsset(kTod);
+          return;
+        }
+        if (tod && ASSET_URLS['bg_' + rId + tod]) ensureAsset('bg_' + rId + tod);
+        ensureAsset('bg_' + rId);
+        if (rId === 'subway_platform' || rId === 'ikebukuro_platform') ensureAsset('train_yamanote');
+      };
+      loadRoomBg(roomId);
+      const rm = (typeof MAP_ROOMS !== 'undefined') ? MAP_ROOMS[roomId] : null;
+      if (rm) {
+        ['up', 'down', 'left', 'right'].forEach(d => { if (rm[d]) loadRoomBg(rm[d]); });
+        if (Array.isArray(rm.doors)) rm.doors.forEach(loadRoomBg);
+      }
+    }
+    function loadAssets() {
+      // Smart lightweight boot: load ONLY active character sprites + current room & its direct neighbors (saves ~85% RAM on iOS!)
+      const coreSprites = [
         'chibiJersey', 'chibiSchool', 'chibiPajama', 'chibiBrother',
         'chibiCry', 'chibiJerseyCry', 'chibiSchoolCry',
-        'chibiSquat', 'chibiSquatPajama', 'chibiHoodie', 'chibiCasual',
-        'bg_living', 'bg_room_hinata', 'bg_hallway', 'bg_school_class'
+        'chibiBrotherSad', 'chibiBrotherSleep'
       ];
-      if (typeof viewRoomId === 'string' && viewRoomId) {
-        priorityKeys.push('bg_' + viewRoomId);
-        if (tod) priorityKeys.push('bg_' + viewRoomId + tod);
-      }
-      priorityKeys.forEach(ensureAsset);
-      const rest = Object.keys(ASSET_URLS).filter(k => !priorityKeys.includes(k));
-      let idx = 0;
-      function loadBatch() {
-        const end = Math.min(idx + 10, rest.length);
-        for (; idx < end; idx++) ensureAsset(rest[idx]);
-        if (idx < rest.length) setTimeout(loadBatch, 50);
-      }
-      setTimeout(loadBatch, 80);
+      coreSprites.forEach(ensureAsset);
+      if (typeof viewRoomId === 'string' && viewRoomId) preloadRoomAndNeighbors(viewRoomId);
     }
 
     // =========================================================================
@@ -3917,7 +3933,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v116'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v117'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3987,12 +4003,14 @@ html, body {
       if (!sprites[bgKey]) ensureAsset(bgKey);
       if (!sprites['bg_' + roomId]) ensureAsset('bg_' + roomId);
       const bg = sprites[bgKey] || sprites['bg_' + roomId];
-      if (bg) {
+      if (bg) window.__lastRenderedBg = bg;
+      const drawBg = bg || window.__lastRenderedBg;
+      if (drawBg) {
         ctx.save();
         if (roomId === 'bus_interior') {
           ctx.translate(Math.sin(frameCount * 0.35) * 0.8, Math.sin(frameCount * 0.88) * 1.8);
         }
-        ctx.drawImage(bg, -3, -3, 606, 606);
+        ctx.drawImage(drawBg, -3, -3, 606, 606);
         ctx.restore();
         const isAlwaysLitIndoor = (roomId === 'subway_gate' || roomId === 'ikebukuro_gate');
         const hasDedicatedNight = isAlwaysLitIndoor || ((roomId === 'konbini' || NIGHT_BG_ROOMS.has(roomId)) && Boolean(sprites[bgKey]));
@@ -7954,6 +7972,7 @@ html, body {
     });
 
     function updateHUD() {
+      if (typeof preloadRoomAndNeighbors === 'function' && typeof viewRoomId === 'string') preloadRoomAndNeighbors(viewRoomId);
       const char = getActiveChar(), pet = ensurePetState(char.id), timeInfo = getCurrentHourInfo();
       const sched = getScheduledState(timeInfo);
       const outfit = OUTFITS[pet.outfitIdx || 0] || OUTFITS[0];
@@ -8218,7 +8237,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       try {
         if ('caches' in window) {
           const ks = await caches.keys();
-          await Promise.all(ks.map(k => caches.delete(k)));
+          await Promise.all(ks.filter(k => k !== 'hinata-assets-v1').map(k => caches.delete(k)));
         }
       } catch(_) {}
       setTimeout(() => {
@@ -8757,7 +8776,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v116';
+          if (el) el.textContent = '☁️ 雲端已同步 · v117';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8796,7 +8815,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v116';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v117';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
