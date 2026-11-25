@@ -249,7 +249,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v108</span>
+      <span id="save-status">💾 已自動儲存 · v109</span>
       
     </div>
 
@@ -1416,10 +1416,12 @@ html, body {
         // Offline auto-toilet + TP deduction, bath supply deduction, and 23:00 supper
         if (simAtMs) {
           const tpThres = (bal && bal.bladderAutoThreshold) ?? 70;
-          const canOfflineToilet = !schedMealChk || (!['school_class', 'sleep', 'street', 'brush', 'breakfast', 'lunch', 'dinner'].includes(schedMealChk.act) && !schedMealChk.isHomeSeq);
+          const isSchoolBreakOff = Boolean(schedMealChk && (schedMealChk.isRecess || schedMealChk.key === 'wd_lunch' || schedMealChk.act === 'water_break'));
+          const canOfflineToilet = !schedMealChk || isSchoolBreakOff || (!['school_class', 'sleep', 'street', 'brush', 'breakfast', 'lunch', 'dinner'].includes(schedMealChk.act) && !schedMealChk.isHomeSeq);
           const isAtHomeOff = schedMealChk && ['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'bath', 'backyard'].includes(schedMealChk.room);
           const hasTpOff = !isAtHomeOff || (((state.supplies && state.supplies.tpSheets) ?? 180) > 0);
-          if (canOfflineToilet && (pet.bladder || 0) > tpThres && hasTpOff) {
+          const effTpThres = (schedMealChk && schedMealChk.isRecess) ? Math.min(tpThres, 55) : tpThres;
+          if (canOfflineToilet && (pet.bladder || 0) >= effTpThres && hasTpOff) {
             if (isAtHomeOff) {
               const useSh = (state.supplyCfg && state.supplyCfg.tpUseSheets) || 3;
               state.supplies.tpSheets = Math.max(0, (state.supplies.tpSheets ?? 180) - useSh);
@@ -2841,7 +2843,36 @@ html, body {
 
       // 3b. Autonomous Toilet Routine (10% chance at home, 30m cooldown, 1m use -> 10s wash -> return; wait in hallway if occupied)
       const HOME_TOILET_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'backyard', 'toilet']);
+      const SCHOOL_ROOMS_SET = new Set(['school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_court', 'school_water', 'school_toilet', 'school_infirmary']);
       const nowT = Date.now();
+      // Auto-finish stale toiletState after background/reload (>45s elapsed) so neither character gets stuck in toilet
+      const autoFinishStaleToilet = (cObj, isH) => {
+        if (!cObj || !cObj.toiletState) return;
+        const ts = cObj.toiletState;
+        const staleByStart = ts.startedAt && (nowT - ts.startedAt >= 45000);
+        const staleByStage = ts.stageUntil && (nowT >= ts.stageUntil + 10000);
+        if (!animateTransition && (staleByStart || staleByStage || ts.stage === 'walking_to')) {
+          if (cObj.currentRoom === 'toilet') {
+            const useSh = (state.supplyCfg && state.supplyCfg.tpUseSheets) || 3;
+            state.supplies.tpSheets = Math.max(0, (state.supplies.tpSheets ?? 180) - useSh);
+          }
+          if (isH) {
+            if ((cObj.bladder || 0) > 0) recordStatLog(cObj, 'bladder', (ts.targetToilet === 'school_toilet' || cObj.currentRoom === 'school_toilet') ? '🚻 校廁去完廁所' : '🚽 去完廁所', cObj.bladder || 0, 0);
+            cObj.bladder = 0;
+          }
+          cObj.lastToiletAt = nowT;
+          cObj.toiletState = null;
+          cObj.scheduleSlotKey = null;
+        }
+      };
+      autoFinishStaleToilet(pet, true);
+      autoFinishStaleToilet(bro, false);
+      // On load / background resume (!animateTransition), sync Hinata's room to current schedule BEFORE checking toilet so school hours never trigger home toilet
+      if (!animateTransition && !pet.toiletState && !(state.outing && state.outing.type) && !pet.recoverStage && !pet.fainted && !sched.freeRoam && pet.currentRoom !== sched.room) {
+        pet.scheduleSlotKey = sched.key; pet.currentRoom = sched.room; pet.currentActivity = sched.act;
+        pet.outfitIdx = sched.outfit ?? pet.outfitIdx; petX = sched.px; petY = sched.py; targetX = sched.px; targetY = sched.py;
+        if (followTarget === 'hinata') viewRoomId = sched.room;
+      }
       const stepToilet = (charObj, otherObj, isHinata) => {
         if (charObj.toiletState) {
           const ts = charObj.toiletState;
@@ -2900,14 +2931,19 @@ html, body {
           }
           if (ts.stage === 'use') {
             if (nowT >= ts.stageUntil) {
-              ts.stage = 'wash'; ts.stageUntil = nowT + 10000;
+              const skippedWash = (nowT >= ts.stageUntil + 10000);
+              ts.stage = 'wash'; ts.stageUntil = skippedWash ? nowT : (nowT + 10000);
               charObj.currentActivity = 'toilet_wash';
               const sx = ts.sinkX || 205;
-              if (isHinata) { targetX = sx; targetY = 445; if (viewRoomId === charObj.currentRoom) speakAndShow('「去完廁所，用梘液洗乾淨雙手！🧼✨」'); }
-              else { charObj.tx = sx; charObj.ty = 445; }
-              updateHUD();
+              if (!skippedWash) {
+                if (isHinata) { targetX = sx; targetY = 445; if (viewRoomId === charObj.currentRoom) speakAndShow('「去完廁所，用梘液洗乾淨雙手！🧼✨」'); }
+                else { charObj.tx = sx; charObj.ty = 445; }
+                updateHUD();
+                return true;
+              }
+            } else {
+              return true;
             }
-            return true;
           }
           if (ts.stage === 'wash') {
             if (nowT >= ts.stageUntil) {
@@ -2945,16 +2981,18 @@ html, body {
       const hInToilet = stepToilet(pet, bro, true);
       const bInToilet = stepToilet(bro, pet, false);
 
-      const isHomeToiletAllowed = HOME_TOILET_ROOMS.has(pet.currentRoom) && pet.currentRoom !== 'toilet';
+      const isHomeToiletAllowed = HOME_TOILET_ROOMS.has(pet.currentRoom) && pet.currentRoom !== 'toilet' && !SCHOOL_ROOMS_SET.has(sched.room);
       const isSchoolToiletAllowed = (sched.isRecess || sched.key === 'wd_lunch' || sched.act === 'school_court' || sched.act === 'water_break') && ['school_class', 'school_hall', 'school_tuckshop', 'school_court', 'school_water'].includes(pet.currentRoom);
-      if ((pet.bladder || 0) > ((state.balance && state.balance.bladderAutoThreshold) ?? 70) && !hInToilet && !pet.recoverStage && !pet.fainted && !rally.active && isSchoolToiletAllowed) {
+      const baseBladderThres = (state.balance && state.balance.bladderAutoThreshold) ?? 70;
+      const schoolBladderThres = sched.isRecess ? Math.min(baseBladderThres, 55) : baseBladderThres;
+      if ((pet.bladder || 0) >= schoolBladderThres && !hInToilet && !pet.recoverStage && !pet.fainted && !rally.active && isSchoolToiletAllowed) {
         transitionState = null;
-        const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: false, sinkX: 300, targetToilet: 'school_toilet' };
+        const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: false, sinkX: 300, targetToilet: 'school_toilet', startedAt: nowT };
         pet.toiletState = { stage: 'walking_to', ...prev };
         startCharacterWalkTransition(pet, 'school_toilet', 'toilet_urinal', 145, 445, followTarget === 'hinata');
-        if (viewRoomId === pet.currentRoom) speakAndShow('「好急呀！趁小息／練波空檔行去校內廁所先！🚻💨」');
+        if (viewRoomId === pet.currentRoom) speakAndShow('「好急呀！趁小息／午飯空檔行去校內廁所先！🚻💨」');
         updateHUD();
-      } else if ((pet.bladder || 0) > ((state.balance && state.balance.bladderAutoThreshold) ?? 70) && !hInToilet && !pet.recoverStage && !pet.fainted && (!transitionState || pet.currentRoom === 'hallway') && !rally.active && isHomeToiletAllowed) {
+      } else if ((pet.bladder || 0) > baseBladderThres && !hInToilet && !pet.recoverStage && !pet.fainted && (!transitionState || pet.currentRoom === 'hallway') && !rally.active && isHomeToiletAllowed) {
         if ((state.supplies?.tpSheets ?? 180) <= 0) {
           pet.tpBlockedPending = true;
           showDepletionAlert('tp', '🧻 廁紙已經全部用晒！翔陽去唔到廁所，請盡快去超市買廁紙！');
@@ -2962,7 +3000,7 @@ html, body {
         transitionState = null; pet.homeSeqStage = null;
         const occupied = (bro.currentRoom === 'toilet' || (bro.toiletState && (bro.toiletState.stage === 'use' || bro.toiletState.stage === 'wash')));
         const wasSleep = (pet.currentActivity === 'sleep');
-        const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: wasSleep };
+        const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: wasSleep, startedAt: nowT };
         pet.lastToiletAt = nowT;
         if (occupied) {
           pet.toiletState = { stage: 'walking_to', ...prev };
@@ -2983,11 +3021,11 @@ html, body {
         const aeT = (state.autoEvents && state.autoEvents.toilet) || { prob: 10, maxPerDay: 0 };
         const cntT = pet.dailyAutoCounts || { toilet: 0 };
         const toiletAllowed = (aeT.prob > 0) && (aeT.maxPerDay === 0 || cntT.toilet < aeT.maxPerDay) && ((state.supplies?.tpSheets ?? 180) > 0);
-        if (toiletAllowed && !hInToilet && !pet.recoverStage && !pet.fainted && !pet.homeSeqStage && !transitionState && !rally.active && HOME_TOILET_ROOMS.has(pet.currentRoom) && pet.currentRoom !== 'toilet' && !fixedToiletSkip.includes(pet.currentActivity) && nowT - (pet.lastToiletAt || 0) >= 30 * 60 * 1000) {
+        if (toiletAllowed && !hInToilet && !pet.recoverStage && !pet.fainted && !pet.homeSeqStage && !transitionState && !rally.active && HOME_TOILET_ROOMS.has(pet.currentRoom) && pet.currentRoom !== 'toilet' && !SCHOOL_ROOMS_SET.has(sched.room) && !fixedToiletSkip.includes(pet.currentActivity) && nowT - (pet.lastToiletAt || 0) >= 30 * 60 * 1000) {
           if (Math.random() < (aeT.prob / 100)) {
             cntT.toilet = (cntT.toilet || 0) + 1;
             const occupied = (bro.currentRoom === 'toilet' || (bro.toiletState && (bro.toiletState.stage === 'use' || bro.toiletState.stage === 'wash')));
-            const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY };
+            const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, startedAt: nowT };
             pet.lastToiletAt = nowT;
             if (occupied) {
               pet.toiletState = { stage: 'walking_to', ...prev };
@@ -3733,7 +3771,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v108'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v109'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -8269,7 +8307,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v108';
+          if (el) el.textContent = '☁️ 雲端已同步 · v109';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8308,7 +8346,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v108';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v109';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
