@@ -249,7 +249,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v109</span>
+      <span id="save-status">💾 已自動儲存 · v102</span>
       
     </div>
 
@@ -454,9 +454,6 @@ html, body {
       bg_school_class_night: "./assets/bg_school_class_night.jpg?v=69",
       bg_school_court_morning: "./assets/bg_school_court_morning.jpg?v=69",
       bg_school_court_night: "./assets/bg_school_court_night.jpg?v=69",
-      bg_school_water: "./assets/bg_school_water.jpg?v=103",
-      bg_school_water_morning: "./assets/bg_school_water_morning.jpg?v=103",
-      bg_school_water_night: "./assets/bg_school_water_night.jpg?v=103",
       bg_pharmacy_morning: "./assets/bg_pharmacy_morning.jpg?v=82.1",
       bg_pharmacy_night: "./assets/bg_pharmacy_night.jpg?v=82.1",
       bg_hospital_morning: "./assets/bg_hospital_morning.jpg?v=69",
@@ -654,8 +651,7 @@ html, body {
       school_hall:  { id: 'school_hall',  name: '學校走廊',        short: '校走廊',   icon: '🚶', gx: 4, gy: 3,  up: 'school_gate', down: 'school_court', left: 'school_class', right: 'school_tuckshop' },
       school_tuckshop: { id: 'school_tuckshop', name: '學校小食部', short: '小食部',   icon: '🥐', gx: 5, gy: 3,  up: null, down: 'school_toilet', left: 'school_hall', right: 'school_infirmary' },
       school_infirmary: { id: 'school_infirmary', name: '學校醫療室', short: '醫療室', icon: '🩺', gx: 6, gy: 3, up: null, down: null, left: 'school_tuckshop', right: null },
-      school_court: { id: 'school_court', name: '室內學校排球場',  short: '室內球場', icon: '🏐', gx: 4, gy: 4,  up: 'school_hall', down: null, left: null, right: 'school_water' },
-      school_water: { id: 'school_water', name: '學校飲水處',      short: '飲水處',   icon: '💧', gx: 4.5, gy: 4, up: null, down: null, left: 'school_court', right: null },
+      school_court: { id: 'school_court', name: '室內學校排球場',  short: '室內球場', icon: '🏐', gx: 4, gy: 4,  up: 'school_hall', down: null, left: null, right: null },
       school_toilet: { id: 'school_toilet', name: '校內廁所',       short: '校廁所',   icon: '🚻', gx: 5, gy: 4,  up: 'school_tuckshop', down: null, left: null, right: null }
     };
 
@@ -765,9 +761,6 @@ html, body {
         { id: 'ts_counter', label: '小食部櫃檯', hx: 230, hy: 360, hr: 100, px: 245, py: 440, act: 'tuckshop_buy', line: '「小食部好多好嘢食！買麵包定紙包飲品好呢？🥐🧃」' },
         { id: 'ts_drinks',  label: '飲品架',     hx: 430, hy: 390, hr: 90,  px: 410, py: 440, act: 'vend_drink', line: '「睇下小食部有咩紙包飲品同糖果先！🍬」' },
         { id: 'ts_menu',    label: '睇餐牌',     hx: 150, hy: 260, hr: 90,  px: 190, py: 440, act: 'rest_menu', line: '「麵包 8 元、飲品 7 元、糖果 3 元～🥐🧃🍬」' }
-      ],
-      school_water: [
-        { id: 'water_trough', label: '不鏽鋼飲水處', hx: 420, hy: 375, hr: 110, px: 390, py: 445, act: 'water_break', line: '「咕嚕咕嚕飲大啖水！練波飲水休息精力+30%！！💧✨」' }
       ],
       school_court: [
         { id: 'cnet', label: '球場排球網', hx: 360, hy: 320, hr: 120, px: 300, py: 435, act: 'school_court', line: '「放學社團練習！跳到最高點扣殺！！🏐🔥」' },
@@ -1226,8 +1219,6 @@ html, body {
       if (stat === 'bladder') {
         if (isSupperEat) {
           perMin = getActiveSupperRates().bladder / 15;
-        } else if (act === 'water_break') {
-          perMin = 15 / 15;
         } else if (isMeal) {
           const isWk = getCurrentHourInfo().isWeekend;
           const md = mealActOsl === 'restaurant' ? 60 : (mealActOsl === 'breakfast' ? (isWk?30:20) : (mealActOsl === 'lunch' ? (isWk?35:60) : (isWk?40:30)));
@@ -1242,8 +1233,6 @@ html, body {
           const isWk = getCurrentHourInfo().isWeekend;
           const md = mealActOsl === 'restaurant' ? 60 : (mealActOsl === 'breakfast' ? (isWk?30:20) : (mealActOsl === 'lunch' ? (isWk?35:60) : (isWk?40:30)));
           perMin = ((bal.meal && bal.meal[stat]) ?? 0) / md;
-        } else if (act === 'water_break') {
-          perMin = (stat === 'energy' ? 30 : (stat === 'mood' ? 10 : (stat === 'hunger' ? -2 : 0))) / 15;
         } else if (isSleep) {
           const sl = bal.sleep || { hunger: -4, energy: 25, mood: 0 };
           perMin = (sl[stat] ?? 0) / 60;
@@ -1337,7 +1326,6 @@ html, body {
         }
         const isVolleyPractice = (effAct === 'backyard' || effAct === 'school_court' || (!simAtMs && pet.currentRoom === 'school_court'));
         const isSupperEatAct = (state.supperState && state.supperState.stage === 'eating') || (!simAtMs && pet.currentActivity === 'supper_eat');
-        const isWaterBreakAct = (effAct === 'water_break') || (!simAtMs && pet.currentRoom === 'school_water');
         const isSleepAct = (effAct === 'sleep');
         const isRestAct = (!isSleepAct && (pet.recoverStage === 'rest30' || effAct === 'bath' || effAct === 'tea' || effAct === 'tv' || effAct === 'park_breeze' || effAct === 'water_break' || (!simAtMs && pet.homeSeqStage === 'living15m')));
         const wdPromRest = !evalInfo.isWeekend && evalToday === getTodayStr() && state.msgLog && state.msgLog.date === evalToday && state.msgLog.promises && (state.msgLog.promises.dinner === 'restaurant' || state.msgLog.promises.dinner === 'done') && evalInfo.totalMin >= 1095 && evalInfo.totalMin < 1125;
@@ -1354,10 +1342,6 @@ html, body {
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + (mins / 15) * srSup.hunger));
           pet.energy = Math.max(0, Math.min(100, pet.energy + (mins / 15) * srSup.energy));
           pet.mood   = Math.max(0, Math.min(100, pet.mood   + (mins / 15) * srSup.mood));
-        } else if (isWaterBreakAct) {
-          pet.hunger = Math.max(0, Math.min(100, pet.hunger - (mins / 15) * 2));
-          pet.energy = Math.max(0, Math.min(100, pet.energy + (mins / 15) * 30));
-          pet.mood   = Math.max(0, Math.min(100, pet.mood   + (mins / 15) * 10));
         } else if (isSleepAct) {
           const sl = bal.sleep || { hunger: -4, energy: 25, mood: 0 };
           pet.hunger = Math.max(0, Math.min(100, pet.hunger + hrs * (sl.hunger ?? -4)));
@@ -1388,9 +1372,7 @@ html, body {
           pet.energy = Math.max(0, Math.min(100, pet.energy + hrs * (bal.normal.energy || 0)));
           pet.mood   = Math.max(0, Math.min(100, pet.mood   + hrs * (bal.normal.mood || 0)));
         }
-        if (isWaterBreakAct) {
-          pet.bladder = Math.max(0, Math.min(100, (pet.bladder || 0) + (mins / 15) * 15));
-        } else if (isSupperEatAct) {
+        if (isSupperEatAct) {
           const srSupB = getActiveSupperRates();
           pet.bladder = Math.max(0, Math.min(100, (pet.bladder || 0) + (mins / 15) * srSupB.bladder));
           if (simAtMs && state.supperState && state.supperState.stage === 'eating' && state.supperState.until && nowEval >= state.supperState.until) {
@@ -1416,12 +1398,10 @@ html, body {
         // Offline auto-toilet + TP deduction, bath supply deduction, and 23:00 supper
         if (simAtMs) {
           const tpThres = (bal && bal.bladderAutoThreshold) ?? 70;
-          const isSchoolBreakOff = Boolean(schedMealChk && (schedMealChk.isRecess || schedMealChk.key === 'wd_lunch' || schedMealChk.act === 'water_break'));
-          const canOfflineToilet = !schedMealChk || isSchoolBreakOff || (!['school_class', 'sleep', 'street', 'brush', 'breakfast', 'lunch', 'dinner'].includes(schedMealChk.act) && !schedMealChk.isHomeSeq);
+          const canOfflineToilet = !schedMealChk || (!['school_class', 'sleep', 'street', 'brush', 'breakfast', 'lunch', 'dinner'].includes(schedMealChk.act) && !schedMealChk.isHomeSeq);
           const isAtHomeOff = schedMealChk && ['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'bath', 'backyard'].includes(schedMealChk.room);
           const hasTpOff = !isAtHomeOff || (((state.supplies && state.supplies.tpSheets) ?? 180) > 0);
-          const effTpThres = (schedMealChk && schedMealChk.isRecess) ? Math.min(tpThres, 55) : tpThres;
-          if (canOfflineToilet && (pet.bladder || 0) >= effTpThres && hasTpOff) {
+          if (canOfflineToilet && (pet.bladder || 0) > tpThres && hasTpOff) {
             if (isAtHomeOff) {
               const useSh = (state.supplyCfg && state.supplyCfg.tpUseSheets) || 3;
               state.supplies.tpSheets = Math.max(0, (state.supplies.tpSheets ?? 180) - useSh);
@@ -1606,7 +1586,7 @@ html, body {
         if (m < 890)  return { key: 'wd_rec2',   room: 'school_hall',  act: 'recess_walk',  outfit: 1, px: 260, py: 440, label: '午堂小息', isRecess: true };
         if (m < 945)  return { key: 'wd_class2b', room: 'school_class', act: 'school_class', outfit: 1, px: 235, py: 435, label: '下午上堂' };
         if (m < 975)  return { key: 'wd_club1',  room: 'school_court', act: 'school_court', outfit: 0, px: 300, py: 435, label: '放學練波' };
-        if (m < 990)  return { key: 'wd_water',  room: 'school_water', act: 'water_break',  outfit: 0, px: 390, py: 445, label: '練波飲水休息' };
+        if (m < 990)  return { key: 'wd_water',  room: 'school_court', act: 'water_break',  outfit: 0, px: 420, py: 440, label: '練波飲水休息' };
         if (m < 1020) return { key: 'wd_club2',  room: 'school_court', act: 'school_court', outfit: 0, px: 300, py: 435, label: '放學練波' };
         if (m < 1025) return { key: 'wd_meet_cr', room: 'street_cross', act: 'street',      outfit: 1, px: 265, py: 445, label: '放學行去十字路口會合' };
         if (m < 1033) return { key: 'wd_hw_cr',   room: 'street_cross', act: 'street',      outfit: 1, px: 265, py: 445, label: '十字路口會合哥哥' };
@@ -1673,10 +1653,10 @@ html, body {
         if (m < 1160) return { key: 'br_bath',       room: 'bath',       act: 'bath',          px: 475, py: 332 };
         if (m < 1215) {
           if (promises.play_mode === 'study' || promises.play_mode === 'done') return { key: 'br_study_promise', room: 'room_hinata', act: 'tutoring', px: 255, py: 430 };
-          return { key: 'br_play',       room: 'room_aniki', act: 'gaming',        px: 295, py: 435, broFree: true };
+          return { key: 'br_play',       room: 'room_aniki', act: 'gaming',        px: 295, py: 435 };
         }
         if (m < 1260) return { key: 'br_free_home',  room: 'living',     act: 'tea',           px: 360, py: 440, homeRoam: true };
-        return               { key: 'br_tv',         room: 'living',     act: 'tv',            px: 445, py: 420, broFree: true };
+        return               { key: 'br_tv',         room: 'living',     act: 'tv',            px: 445, py: 420 };
       } else {
         if (m < 600)            return { key: 'br_we_sleep', room: 'room_aniki', act: 'sleep',       px: 440, py: 365 };
         if (m < 620)            return { key: 'br_we_brush', room: 'bath',       act: 'brush',       px: 235, py: 440 };
@@ -1697,22 +1677,6 @@ html, body {
       }
     }
 
-    function getCommutePose(schedKey, nowMs = Date.now()) {
-      const d = new Date(nowMs);
-      const sec = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
-      const lerp = (a, b, t) => a + (b - a) * Math.max(0, Math.min(1, t));
-      const seg = (s0, s1, x0, y0, sc0, x1, y1, sc1) => {
-        const t = Math.max(0, Math.min(1, (sec - s0) / Math.max(1, s1 - s0)));
-        return { x: lerp(x0, x1, t), y: lerp(y0, y1, t), scale: lerp(sc0, sc1, t), broDx: 72 };
-      };
-      if (schedKey === 'wd_go_st' || schedKey === 'br_go_st') return seg(517*60, 521*60, 110, 455, 1.00, 440, 415, 0.86);
-      if (schedKey === 'wd_go_ln' || schedKey === 'br_go_ln') return seg(521*60, 525*60, 295, 368, 0.80, 475, 445, 1.00);
-      if (schedKey === 'wd_go_cr' || schedKey === 'br_go_cr') return seg(525*60, 530*60, 110, 445, 0.96, 265, 445, 0.98);
-      if (schedKey === 'wd_hw_cr' || schedKey === 'br_hw_cr') return seg(1025*60, 1033*60, 455, 445, 0.98, 105, 445, 0.96);
-      if (schedKey === 'wd_hw_ln' || schedKey === 'br_hw_ln') return seg(1033*60, 1041*60, 475, 445, 1.00, 295, 368, 0.80);
-      if (schedKey === 'wd_hw_st' || schedKey === 'br_hw_st') return seg(1041*60, 1050*60, 440, 415, 0.86, 105, 455, 1.00);
-      return null;
-    }
     function getRoomMoveDir(fromId, toId) {
       const steps = findRoomPath(fromId, toId);
       const hop = steps[0] || toId;
@@ -2115,20 +2079,41 @@ html, body {
         updateHUD();
         return;
       }
-      const dEdgeOut = getDirEdgeCoords(getRoomMoveDir(curRoom, steps[0]));
-      const curStartX = (who === 'bro') ? (bro.px ?? 320) : (petX ?? 280);
-      const curStartY = (who === 'bro') ? (bro.py ?? 440) : (petY ?? 440);
-      const wObj = { steps, idx: -1, stepMs: 2800, stepEnteredAt: Date.now(), startX: curStartX, startY: curStartY, destRoom, finalAct, finalSpeech, onArrive, followView };
+      if (steps.length === 1) {
+        const nextR = steps[0];
+        const dEdgeIn = getDirEdgeCoords(getRoomMoveDir(curRoom, nextR));
+        const f0 = (ROOM_FURNITURE[nextR] && ROOM_FURNITURE[nextR][0]) || { px: (who === 'bro' ? 320 : 280), py: 440 };
+        const wObj = { steps: [nextR], idx: 0, stepEnteredAt: Date.now(), startX: dEdgeIn.ix, startY: dEdgeIn.iy, destRoom: nextR, finalAct, finalSpeech, onArrive, followView };
+        if (who === 'bro') {
+          broWalk = wObj;
+          bro.currentRoom = nextR; bro.currentActivity = getWalkActForRoom(nextR);
+          bro.px = dEdgeIn.ix; bro.py = dEdgeIn.iy;
+          bro.tx = f0.px; bro.ty = f0.py;
+        } else {
+          petWalk = wObj;
+          pet.currentRoom = nextR; pet.currentActivity = getWalkActForRoom(nextR);
+          petX = dEdgeIn.ix; petY = dEdgeIn.iy;
+          targetX = f0.px; targetY = f0.py;
+        }
+        if (followView) viewRoomId = nextR;
+        updateHUD();
+        return;
+      }
+      const dEdgeIn = getDirEdgeCoords(getRoomMoveDir(curRoom, steps[0]));
+      const dEdgeOut = getDirEdgeCoords(getRoomMoveDir(steps[0], steps[1]));
+      const wObj = { steps, idx: 0, stepEnteredAt: Date.now(), startX: dEdgeIn.ix, startY: dEdgeIn.iy, destRoom, finalAct, finalSpeech, onArrive, followView };
       if (who === 'bro') {
         broWalk = wObj;
-        bro.currentActivity = getWalkActForRoom(curRoom);
+        bro.currentRoom = steps[0]; bro.currentActivity = getWalkActForRoom(steps[0]);
+        bro.px = dEdgeIn.ix; bro.py = dEdgeIn.iy;
         bro.tx = dEdgeOut.ex; bro.ty = dEdgeOut.ey;
       } else {
         petWalk = wObj;
-        pet.currentActivity = getWalkActForRoom(curRoom);
+        pet.currentRoom = steps[0]; pet.currentActivity = getWalkActForRoom(steps[0]);
+        petX = dEdgeIn.ix; petY = dEdgeIn.iy;
         targetX = dEdgeOut.ex; targetY = dEdgeOut.ey;
       }
-      if (followView) viewRoomId = curRoom;
+      if (followView) viewRoomId = steps[0];
       updateHUD();
     }
 
@@ -2142,7 +2127,7 @@ html, body {
       duoWalk = null; petWalk = null; broWalk = null;
       if (rally.active) rally.active = false;
       const room = pet.currentRoom;
-      if (['school_class', 'school_court', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'school_gate', 'school_class', 'school_court', 'school_water', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen'].includes(room)) {
+      if (['school_class', 'school_court', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen'].includes(room)) {
         pet.coins = Math.max(0, pet.coins - 50); recordCoinLog(pet, '🏥 醫療室／醫院費用', -50, pet.coins);
         pet.recoverStage = 'phone_alert';
         pet.rescueRoom = 'school_infirmary';
@@ -2278,8 +2263,7 @@ html, body {
       if (handleRecoveryTick(pet)) { duoWalk = null; return; }
       // General solo walk stepping for Brother & Hinata (non-recovery)
       if (broWalk && !pet.recoverStage) {
-        const bStepDur = (broWalk.idx === -1) ? (broWalk.stepMs || 2800) : 5000;
-        if (Date.now() - broWalk.stepEnteredAt >= bStepDur) {
+        if (Date.now() - broWalk.stepEnteredAt >= 5000) {
           broWalk.idx++;
           const bw = broWalk;
           if (bw.idx >= bw.steps.length - 1) {
@@ -2299,7 +2283,7 @@ html, body {
             const dEdge = getDirEdgeCoords(getRoomMoveDir(bro.currentRoom, nr));
             const dOut = getDirEdgeCoords(getRoomMoveDir(nr, nextNr));
             bw.stepEnteredAt = Date.now(); bw.startX = dEdge.ix; bw.startY = dEdge.iy;
-            bro.currentRoom = nr; bro.currentActivity = getWalkActForRoom(nr);
+            bro.currentRoom = nr; bro.currentActivity = 'street';
             bro.px = dEdge.ix; bro.py = dEdge.iy; bro.tx = dOut.ex; bro.ty = dOut.ey;
             if (bw.followView) viewRoomId = nr;
             updateHUD();
@@ -2307,8 +2291,7 @@ html, body {
         }
       }
       if (petWalk && !pet.recoverStage) {
-        const pStepDur = (petWalk.idx === -1) ? (petWalk.stepMs || 2800) : 5000;
-        if (Date.now() - petWalk.stepEnteredAt >= pStepDur) {
+        if (Date.now() - petWalk.stepEnteredAt >= 5000) {
           petWalk.idx++;
           const pw = petWalk;
           if (pw.idx >= pw.steps.length - 1) {
@@ -2843,36 +2826,7 @@ html, body {
 
       // 3b. Autonomous Toilet Routine (10% chance at home, 30m cooldown, 1m use -> 10s wash -> return; wait in hallway if occupied)
       const HOME_TOILET_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'backyard', 'toilet']);
-      const SCHOOL_ROOMS_SET = new Set(['school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_court', 'school_water', 'school_toilet', 'school_infirmary']);
       const nowT = Date.now();
-      // Auto-finish stale toiletState after background/reload (>45s elapsed) so neither character gets stuck in toilet
-      const autoFinishStaleToilet = (cObj, isH) => {
-        if (!cObj || !cObj.toiletState) return;
-        const ts = cObj.toiletState;
-        const staleByStart = ts.startedAt && (nowT - ts.startedAt >= 45000);
-        const staleByStage = ts.stageUntil && (nowT >= ts.stageUntil + 10000);
-        if (!animateTransition && (staleByStart || staleByStage || ts.stage === 'walking_to')) {
-          if (cObj.currentRoom === 'toilet') {
-            const useSh = (state.supplyCfg && state.supplyCfg.tpUseSheets) || 3;
-            state.supplies.tpSheets = Math.max(0, (state.supplies.tpSheets ?? 180) - useSh);
-          }
-          if (isH) {
-            if ((cObj.bladder || 0) > 0) recordStatLog(cObj, 'bladder', (ts.targetToilet === 'school_toilet' || cObj.currentRoom === 'school_toilet') ? '🚻 校廁去完廁所' : '🚽 去完廁所', cObj.bladder || 0, 0);
-            cObj.bladder = 0;
-          }
-          cObj.lastToiletAt = nowT;
-          cObj.toiletState = null;
-          cObj.scheduleSlotKey = null;
-        }
-      };
-      autoFinishStaleToilet(pet, true);
-      autoFinishStaleToilet(bro, false);
-      // On load / background resume (!animateTransition), sync Hinata's room to current schedule BEFORE checking toilet so school hours never trigger home toilet
-      if (!animateTransition && !pet.toiletState && !(state.outing && state.outing.type) && !pet.recoverStage && !pet.fainted && !sched.freeRoam && pet.currentRoom !== sched.room) {
-        pet.scheduleSlotKey = sched.key; pet.currentRoom = sched.room; pet.currentActivity = sched.act;
-        pet.outfitIdx = sched.outfit ?? pet.outfitIdx; petX = sched.px; petY = sched.py; targetX = sched.px; targetY = sched.py;
-        if (followTarget === 'hinata') viewRoomId = sched.room;
-      }
       const stepToilet = (charObj, otherObj, isHinata) => {
         if (charObj.toiletState) {
           const ts = charObj.toiletState;
@@ -2894,20 +2848,14 @@ html, body {
                 else { charObj.currentActivity = 'toilet_wait'; targetX = 215; targetY = 440; }
                 if (viewRoomId === 'hallway' || viewRoomId === 'toilet') speakAndShow('「哥哥用緊廁所，喺走廊等一下先～⏳」');
               } else {
-                if (charObj.currentRoom !== 'wash_hall') startSoloWalk('bro', 'wash_hall', 'toilet_wait', null, () => { charObj.tx = 260; charObj.ty = 440; updateHUD(); }, false);
-                else { charObj.currentActivity = 'toilet_wait'; charObj.tx = 260; charObj.ty = 440; }
+                charObj.currentRoom = 'wash_hall'; charObj.currentActivity = 'toilet_wait';
+                charObj.px = 260; charObj.py = 440; charObj.tx = 260; charObj.ty = 440;
                 if (viewRoomId === 'wash_hall') speakAndShow('「（哥哥喺洗漱走廊等緊翔陽用完廁所…⏳）」');
               }
             } else {
-              if (charObj.currentRoom !== 'toilet') {
-                if (isHinata) startCharacterWalkTransition(charObj, 'toilet', 'toilet_use', 380, 445, followTarget === 'hinata');
-                else startSoloWalk('bro', 'toilet', 'toilet_use', null, () => { charObj.tx = 380; charObj.ty = 445; updateHUD(); }, false);
-                updateHUD();
-                return true;
-              }
               ts.stage = 'use'; ts.stageUntil = nowT + 30000;
               charObj.lastToiletAt = nowT;
-              charObj.currentActivity = 'toilet_use';
+              charObj.currentRoom = 'toilet'; charObj.currentActivity = 'toilet_use';
               if (isHinata) { targetX = 380; targetY = 445; if (viewRoomId === 'toilet') speakAndShow(ts.fromSleep ? '「（迷迷糊糊起身去個廁所先…🚽）」' : '「去個廁所先…🚽」'); }
               else { charObj.tx = 380; charObj.ty = 445; }
             }
@@ -2915,35 +2863,25 @@ html, body {
             return true;
           }
           if (ts.stage === 'wait') {
-            if (isHinata ? transitionState : broWalk) return true;
             if (!otherBusy) {
-              ts.stage = 'walking_to';
-              if (isHinata) {
-                startCharacterWalkTransition(charObj, 'toilet', 'toilet_use', 380, 445, followTarget === 'hinata');
-                if (viewRoomId === 'hallway' || viewRoomId === 'toilet') speakAndShow('「哥哥用完啦！行入去用廁所先～🚽」');
-              } else {
-                startSoloWalk('bro', 'toilet', 'toilet_use', null, () => { charObj.tx = 380; charObj.ty = 445; updateHUD(); }, false);
-                if (viewRoomId === 'wash_hall' || viewRoomId === 'toilet') speakAndShow('「（翔陽用完啦，哥哥行入去用廁所…🚽）」');
-              }
+              ts.stage = 'use'; ts.stageUntil = nowT + 30000;
+              charObj.currentRoom = 'toilet'; charObj.currentActivity = 'toilet_use';
+              if (isHinata) { petX = 380; petY = 445; targetX = 380; targetY = 445; if (viewRoomId === 'hallway') viewRoomId = 'toilet'; if (viewRoomId === 'toilet') speakAndShow('「哥哥用完啦！輪到我去廁所～🚽」'); }
+              else { charObj.px = 380; charObj.py = 445; charObj.tx = 380; charObj.ty = 445; if (viewRoomId === 'toilet') speakAndShow('「（哥哥入去用廁所…🚽）」'); }
               updateHUD();
             }
             return true;
           }
           if (ts.stage === 'use') {
             if (nowT >= ts.stageUntil) {
-              const skippedWash = (nowT >= ts.stageUntil + 10000);
-              ts.stage = 'wash'; ts.stageUntil = skippedWash ? nowT : (nowT + 10000);
+              ts.stage = 'wash'; ts.stageUntil = nowT + 10000;
               charObj.currentActivity = 'toilet_wash';
               const sx = ts.sinkX || 205;
-              if (!skippedWash) {
-                if (isHinata) { targetX = sx; targetY = 445; if (viewRoomId === charObj.currentRoom) speakAndShow('「去完廁所，用梘液洗乾淨雙手！🧼✨」'); }
-                else { charObj.tx = sx; charObj.ty = 445; }
-                updateHUD();
-                return true;
-              }
-            } else {
-              return true;
+              if (isHinata) { targetX = sx; targetY = 445; if (viewRoomId === charObj.currentRoom) speakAndShow('「去完廁所，用梘液洗乾淨雙手！🧼✨」'); }
+              else { charObj.tx = sx; charObj.ty = 445; }
+              updateHUD();
             }
+            return true;
           }
           if (ts.stage === 'wash') {
             if (nowT >= ts.stageUntil) {
@@ -2981,18 +2919,16 @@ html, body {
       const hInToilet = stepToilet(pet, bro, true);
       const bInToilet = stepToilet(bro, pet, false);
 
-      const isHomeToiletAllowed = HOME_TOILET_ROOMS.has(pet.currentRoom) && pet.currentRoom !== 'toilet' && !SCHOOL_ROOMS_SET.has(sched.room);
-      const isSchoolToiletAllowed = (sched.isRecess || sched.key === 'wd_lunch' || sched.act === 'school_court' || sched.act === 'water_break') && ['school_class', 'school_hall', 'school_tuckshop', 'school_court', 'school_water'].includes(pet.currentRoom);
-      const baseBladderThres = (state.balance && state.balance.bladderAutoThreshold) ?? 70;
-      const schoolBladderThres = sched.isRecess ? Math.min(baseBladderThres, 55) : baseBladderThres;
-      if ((pet.bladder || 0) >= schoolBladderThres && !hInToilet && !pet.recoverStage && !pet.fainted && !rally.active && isSchoolToiletAllowed) {
+      const isHomeToiletAllowed = HOME_TOILET_ROOMS.has(pet.currentRoom) && pet.currentRoom !== 'toilet';
+      const isSchoolToiletAllowed = (sched.isRecess || sched.key === 'wd_lunch' || sched.act === 'school_court' || sched.act === 'water_break') && ['school_class', 'school_hall', 'school_tuckshop', 'school_court'].includes(pet.currentRoom);
+      if ((pet.bladder || 0) > ((state.balance && state.balance.bladderAutoThreshold) ?? 70) && !hInToilet && !pet.recoverStage && !pet.fainted && !rally.active && isSchoolToiletAllowed) {
         transitionState = null;
-        const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: false, sinkX: 300, targetToilet: 'school_toilet', startedAt: nowT };
+        const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: false, sinkX: 300, targetToilet: 'school_toilet' };
         pet.toiletState = { stage: 'walking_to', ...prev };
         startCharacterWalkTransition(pet, 'school_toilet', 'toilet_urinal', 145, 445, followTarget === 'hinata');
-        if (viewRoomId === pet.currentRoom) speakAndShow('「好急呀！趁小息／午飯空檔行去校內廁所先！🚻💨」');
+        if (viewRoomId === pet.currentRoom) speakAndShow('「好急呀！趁小息／練波空檔行去校內廁所先！🚻💨」');
         updateHUD();
-      } else if ((pet.bladder || 0) > baseBladderThres && !hInToilet && !pet.recoverStage && !pet.fainted && (!transitionState || pet.currentRoom === 'hallway') && !rally.active && isHomeToiletAllowed) {
+      } else if ((pet.bladder || 0) > ((state.balance && state.balance.bladderAutoThreshold) ?? 70) && !hInToilet && !pet.recoverStage && !pet.fainted && (!transitionState || pet.currentRoom === 'hallway') && !rally.active && isHomeToiletAllowed) {
         if ((state.supplies?.tpSheets ?? 180) <= 0) {
           pet.tpBlockedPending = true;
           showDepletionAlert('tp', '🧻 廁紙已經全部用晒！翔陽去唔到廁所，請盡快去超市買廁紙！');
@@ -3000,7 +2936,7 @@ html, body {
         transitionState = null; pet.homeSeqStage = null;
         const occupied = (bro.currentRoom === 'toilet' || (bro.toiletState && (bro.toiletState.stage === 'use' || bro.toiletState.stage === 'wash')));
         const wasSleep = (pet.currentActivity === 'sleep');
-        const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: wasSleep, startedAt: nowT };
+        const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, fromSleep: wasSleep };
         pet.lastToiletAt = nowT;
         if (occupied) {
           pet.toiletState = { stage: 'walking_to', ...prev };
@@ -3021,11 +2957,11 @@ html, body {
         const aeT = (state.autoEvents && state.autoEvents.toilet) || { prob: 10, maxPerDay: 0 };
         const cntT = pet.dailyAutoCounts || { toilet: 0 };
         const toiletAllowed = (aeT.prob > 0) && (aeT.maxPerDay === 0 || cntT.toilet < aeT.maxPerDay) && ((state.supplies?.tpSheets ?? 180) > 0);
-        if (toiletAllowed && !hInToilet && !pet.recoverStage && !pet.fainted && !pet.homeSeqStage && !transitionState && !rally.active && HOME_TOILET_ROOMS.has(pet.currentRoom) && pet.currentRoom !== 'toilet' && !SCHOOL_ROOMS_SET.has(sched.room) && !fixedToiletSkip.includes(pet.currentActivity) && nowT - (pet.lastToiletAt || 0) >= 30 * 60 * 1000) {
+        if (toiletAllowed && !hInToilet && !pet.recoverStage && !pet.fainted && !pet.homeSeqStage && !transitionState && !rally.active && HOME_TOILET_ROOMS.has(pet.currentRoom) && pet.currentRoom !== 'toilet' && !fixedToiletSkip.includes(pet.currentActivity) && nowT - (pet.lastToiletAt || 0) >= 30 * 60 * 1000) {
           if (Math.random() < (aeT.prob / 100)) {
             cntT.toilet = (cntT.toilet || 0) + 1;
             const occupied = (bro.currentRoom === 'toilet' || (bro.toiletState && (bro.toiletState.stage === 'use' || bro.toiletState.stage === 'wash')));
-            const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY, startedAt: nowT };
+            const prev = { prevRoom: pet.currentRoom, prevAct: pet.currentActivity, prevX: targetX, prevY: targetY };
             pet.lastToiletAt = nowT;
             if (occupied) {
               pet.toiletState = { stage: 'walking_to', ...prev };
@@ -3041,15 +2977,10 @@ html, body {
         }
         if ((state.supplies?.tpSheets ?? 180) > 0 && aeT.prob > 0 && !bInToilet && !broWalk && HOME_TOILET_ROOMS.has(bro.currentRoom) && bro.currentRoom !== 'toilet' && !fixedToiletSkip.includes(bro.currentActivity) && nowT - (bro.lastToiletAt || 0) >= 30 * 60 * 1000) {
           if (Math.random() < (aeT.prob / 100)) {
-            const occupied = (pet.currentRoom === 'toilet' || (pet.toiletState && (pet.toiletState.stage === 'use' || pet.toiletState.stage === 'wash')));
             const prev = { prevRoom: bro.currentRoom, prevAct: bro.currentActivity, prevX: bro.tx, prevY: bro.ty };
             bro.lastToiletAt = nowT;
             bro.toiletState = { stage: 'walking_to', ...prev };
-            if (occupied) {
-              startSoloWalk('bro', 'wash_hall', 'toilet_wait', null, () => { bro.tx = 260; bro.ty = 440; updateHUD(); }, false);
-            } else {
-              startSoloWalk('bro', 'toilet', 'toilet_use', null, () => { bro.tx = 380; bro.ty = 445; updateHUD(); }, false);
-            }
+            startSoloWalk('bro', 'toilet', 'toilet_use', null, () => { updateHUD(); }, false);
             updateHUD();
           }
         }
@@ -3065,7 +2996,7 @@ html, body {
             startCharacterWalkTransition(pet, 'living', 'tv', 330, 420, true);
           }
           if (bro.currentRoom === 'bath') {
-            startSoloWalk('bro', 'living', 'tv', null, () => { bro.tx = 445; bro.ty = 420; }, false);
+            bro.currentRoom = 'living'; bro.currentActivity = 'tv'; bro.tx = 445; bro.ty = 420;
           }
         } else if (pet.currentRoom === 'bath' && pet.lastBathDeductKey !== (getTodayStr() + '_' + sched.key)) {
           pet.lastBathDeductKey = getTodayStr() + '_' + sched.key;
@@ -3159,7 +3090,6 @@ html, body {
       }
 
       // 4. Sync Hinata
-      if (!transitionState && !petWalk && !duoWalk && !pet.toiletState && !pet.recoverStage && pet.currentActivity === 'walking') { pet.currentActivity = sched.act; }
       if (pet.toiletState) { /* skip normal schedule while in toilet routine */ } else if (!animateTransition && !(state.outing && state.outing.type) && !pet.recoverStage && !pet.fainted && !sched.freeRoam && pet.currentRoom !== sched.room) {
         pet.scheduleSlotKey = sched.key; pet.currentRoom = sched.room; pet.currentActivity = sched.act;
         pet.outfitIdx = sched.outfit ?? pet.outfitIdx; petX = sched.px; petY = sched.py; targetX = sched.px; targetY = sched.py;
@@ -3215,11 +3145,10 @@ html, body {
           pet.currentRoom = sched.room; pet.currentActivity = sched.act;
           // Meals restore +70% hunger & +70% energy gradually during the meal
           if (sched.act === 'water_break') {
-            if (viewRoomId === 'school_court' || viewRoomId === 'school_water') speakAndShow('「練波中場休息 15 分鐘！行去飲水處飲大啖水慢慢回氣（精力+30%）💧✨」');
+            if (viewRoomId === 'school_court') speakAndShow('「練波中場休息 15 分鐘！咕嚕咕嚕飲大啖水慢慢回氣～💧✨」');
           } else if (sched.isHomeSeq) {
-            pet.homeSeqDate = getTodayStr();
-            pet.homeSeqStage = 'hall15s';
-            pet.homeSeqUntil = Date.now() + 15000;
+            pet.homeSeqStage = 'hall5s';
+            pet.homeSeqUntil = Date.now() + 5000;
           }
           petX = sched.px; petY = sched.py; targetX = sched.px; targetY = sched.py;
           const pool = getActiveChar().dialogues[sched.act] || getActiveChar().dialogues.tea;
@@ -3229,19 +3158,18 @@ html, body {
 
       // 5. Sync Brother
       if (state.supermarketTrip && !state.supermarketTrip.withHinata) { /* Brother solo at supermarket */ } else {
-      if (['pharmacy', 'canteen'].includes(bSched.room) && !['pharmacy', 'canteen', 'hospital'].includes(bro.currentRoom) && !bro.toiletState && !broWalk && !state.outing?.type) {
+      if (['pharmacy', 'canteen'].includes(bSched.room) && !['pharmacy', 'canteen', 'hospital'].includes(bro.currentRoom) && !bro.toiletState && !state.outing?.type) {
         bro.currentRoom = bSched.room; bro.currentActivity = bSched.act; bro.px = bSched.px; bro.py = bSched.py; bro.tx = bSched.px; bro.ty = bSched.py;
       }
-      const isBroFreeTime = Boolean((sched.freeRoam || bSched.homeRoam || bSched.broFree) && !(state.outing && state.outing.type));
+      const isBroFreeTime = Boolean(sched.freeRoam && !(state.outing && state.outing.type));
       if (!isBroFreeTime && state.broSoloMode) state.broSoloMode = false;
       const broFixedChore = ['cook_bfast','prep_bfast','cook_lunch','cook_dinner','washing_dishes','breakfast','lunch','dinner','bath','brush','sleep','canteen_lunch','pharmacy_work','aniki_hall_tidy'].includes(bSched.act);
       const canBroSolo = isBroFreeTime && state.broSoloMode && !broFixedChore && !state.outing?.type && !['breakfast','lunch','dinner','bath','brush','sleep','waking','gaming'].includes(pet.currentActivity) && !['pharmacy','canteen','hospital','school_class','school_court'].includes(bro.currentRoom) && !['school_class','school_court'].includes(pet.currentRoom);
-      const broStuckWalking = !broWalk && !duoWalk && !bro.toiletState && (bro.currentActivity === 'walking' || (bro.currentRoom === 'wash_hall' && bSched.room !== 'wash_hall') || (bro.currentRoom === 'toilet' && bSched.room !== 'toilet'));
-      const needSnapBroToSched = !canBroSolo && !bSched.followHinata && !(state.outing && state.outing.type) && !state.supperState && !state.gamingReturnAt && !state.supermarketTrip && ((bSched.act === 'sleep' && (bro.currentRoom !== bSched.room || bro.currentActivity !== 'sleep')) || bro.scheduleSlotKey !== bSched.key || broStuckWalking);
+      const needSnapBroToSched = !canBroSolo && !bSched.followHinata && !(state.outing && state.outing.type) && !state.supperState && !state.gamingReturnAt && !state.supermarketTrip && ((bSched.act === 'sleep' && (bro.currentRoom !== bSched.room || bro.currentActivity !== 'sleep')) || bro.scheduleSlotKey !== bSched.key);
       if (bro.toiletState || broWalk) { /* skip brother schedule while in toilet or walking routine */ }
       else if (canBroSolo) {
         if (!window.__lastBroSoloAt) window.__lastBroSoloAt = Date.now();
-        if (broStuckWalking || Date.now() - window.__lastBroSoloAt > 35000) {
+        if (Date.now() - window.__lastBroSoloAt > 35000) {
           window.__lastBroSoloAt = Date.now();
           const soloRooms = ['room_aniki', 'room_hinata', 'living', 'kitchen'].filter(r => r !== bro.currentRoom);
           const sr = soloRooms[Math.floor(Math.random() * soloRooms.length)] || 'living';
@@ -3261,7 +3189,7 @@ html, body {
             if (!animateTransition) { bro.px = bro.tx; bro.py = bro.ty; }
           }
         } else {
-          if (animateTransition && bro.currentRoom !== bSched.room && (HOME_TOILET_ROOMS.has(bro.currentRoom) || bro.currentRoom === 'bath' || OUTDOOR_STREET_ROOMS.has(bro.currentRoom) || bro.currentRoom === 'pharmacy') && (HOME_TOILET_ROOMS.has(bSched.room) || bSched.room === 'bath' || OUTDOOR_STREET_ROOMS.has(bSched.room))) {
+          if (animateTransition && bro.currentRoom !== bSched.room && (HOME_TOILET_ROOMS.has(bro.currentRoom) || OUTDOOR_STREET_ROOMS.has(bro.currentRoom) || bro.currentRoom === 'pharmacy') && (HOME_TOILET_ROOMS.has(bSched.room) || OUTDOOR_STREET_ROOMS.has(bSched.room))) {
             startSoloWalk('bro', bSched.room, bSched.act, null, () => { bro.tx = bSched.px; bro.ty = bSched.py; }, false);
           } else {
             bro.currentRoom = bSched.room; bro.currentActivity = bSched.act;
@@ -3274,16 +3202,24 @@ html, body {
           const fAct = (pet.currentActivity === 'street' && !OUTDOOR_STREET_ROOMS.has(pet.currentRoom)) ? 'idle' : pet.currentActivity;
           startSoloWalk('bro', pet.currentRoom, fAct, null, () => { bro.tx = Math.min(500, targetX + 75); bro.ty = targetY; }, false);
         }
-      } else if (bSched.homeRoam) {
-        if (pet.currentRoom !== 'room_hinata' && !transitionState && !pet.toiletState) {
-          startCharacterWalkTransition(pet, 'room_hinata', 'homework', 165, 430);
-        }
-        if (!state.broSoloMode) {
-          if (bro.currentRoom !== 'room_hinata') {
-            startSoloWalk('bro', 'room_hinata', 'tutoring', null, () => { bro.tx = 255; bro.ty = 430; }, false);
-          } else if (bro.currentActivity !== 'tutoring') {
-            bro.currentActivity = 'tutoring'; bro.tx = 255; bro.ty = 430;
-          }
+      } else if (bSched.homeRoam && Date.now() - lastBrotherRoamAt > 35000) {
+        // 20:15-21:00: Brother roams home, occasionally enters Hinata's room to tutor; Hinata occasionally asks homework
+        lastBrotherRoamAt = Date.now();
+        const r = Math.random();
+        if (r < 0.35) {
+          startSoloWalk('bro', 'room_hinata', 'tutoring', null, () => {
+            bro.tx = 255; bro.ty = 430;
+            if (viewRoomId === 'room_hinata') speakAndShow('「哥哥入房睇下我啲功課：呢條英文文法應該咁寫～📖✨」');
+          }, false);
+        } else if (r < 0.60 && !transitionState) {
+          const bRoom = BROTHER_HOME_ROAM[Math.floor(Math.random() * BROTHER_HOME_ROAM.length)];
+          startSoloWalk('bro', bRoom, 'idle', null, () => { bro.tx = 320; bro.ty = 435; }, false);
+          startCharacterWalkTransition(pet, bRoom, 'asking_hw', 225, 435);
+          if (viewRoomId === bRoom) speakAndShow('「哥哥！呢條數學題我唔識計呀，可唔可以教我？🙋‍♂️📝」');
+        } else {
+          const bRoom = BROTHER_HOME_ROAM[Math.floor(Math.random() * BROTHER_HOME_ROAM.length)];
+          startSoloWalk('bro', bRoom, 'idle', null, () => { bro.tx = 320; bro.ty = 435; }, false);
+          if (pet.currentRoom !== 'room_hinata') startCharacterWalkTransition(pet, 'room_hinata', 'homework', 165, 430);
         }
       }
 
@@ -3394,14 +3330,12 @@ html, body {
       if (!info.isWeekend && sched.isHomeSeq) {
         const nowHms = Date.now();
         const tdH = getTodayStr();
-        if (pet.homeSeqDate !== tdH || !pet.homeSeqStage || pet.homeSeqStage === 'hall5s') {
-          transitionState = null;
+        if (pet.homeSeqDate !== tdH || !pet.homeSeqStage) {
           pet.homeSeqDate = tdH;
           pet.homeSeqStage = 'hall15s';
           pet.homeSeqUntil = nowHms + 15000;
           pet.currentRoom = 'hallway'; pet.currentActivity = 'hallway'; targetX = 215; targetY = 440;
         } else if (pet.homeSeqStage === 'hall15s' && nowHms >= (pet.homeSeqUntil || 0)) {
-          transitionState = null;
           pet.homeSeqStage = 'room30s'; pet.homeSeqUntil = nowHms + 30000;
           pet.currentRoom = 'room_hinata'; pet.currentActivity = 'unpack_bag'; targetX = 200; targetY = 435;
           if (viewRoomId === 'hallway' || viewRoomId === 'room_hinata') { viewRoomId = 'room_hinata'; speakAndShow('「返入房放低書包同整理好裝備先～🎒」'); }
@@ -3479,42 +3413,28 @@ html, body {
         if (viewRoomId === 'living' || viewRoomId === 'kitchen') { viewRoomId = 'kitchen'; speakAndShow('「有啲肚餓…去雪櫃睇下有咩食先！（揀緊食物 30 秒）🧊」'); }
       }
 
-      // 6a-3. Street 17:00-17:30 walk home vending machine interaction (pause 15s to buy then resume walking)
-      if (pet.vendPauseUntil && Date.now() >= pet.vendPauseUntil) {
-        pet.vendPauseUntil = null;
-        if (pet.currentActivity === 'vend_drink') pet.currentActivity = 'street';
-        if (bro && bro.currentActivity === 'vend_drink') bro.currentActivity = 'street';
-        if (viewRoomId === pet.currentRoom) speakAndShow('「買完飲品啦，繼續同哥哥慢慢行返屋企！🚶‍♂️💛」');
-        updateHUD();
-      }
-      if (!info.isWeekend && (sched.key === 'wd_hw_cr' || sched.key === 'wd_hw_st') && (pet.currentRoom === 'street' || pet.currentRoom === 'street_cross') && pet.dailyStreetDrinkDate !== tdF && !pet.vendPauseUntil) {
-        if (!window.__lastVendRollAt || Date.now() - window.__lastVendRollAt > 20000) {
-          window.__lastVendRollAt = Date.now();
-          const vKeyH = pet.currentRoom === 'street_cross' ? 'cross_vend' : 'street_vend';
-          const vAvailH = (ensureShopMenus()[vKeyH] || []).filter(id => (pet.pocketMoney || 0) >= getSnackCfg(id).price);
-          if (vAvailH.length > 0 && Math.random() < 0.35) {
-            const vIdH = vAvailH[Math.floor(Math.random() * vAvailH.length)];
-            const vCfgH = getSnackCfg(vIdH);
-            pet.dailyStreetDrinkDate = tdF;
-            pet.pocketMoney -= vCfgH.price;
-            pet.vendPauseUntil = Date.now() + 15000;
-            pet.currentActivity = 'vend_drink';
-            if (bro && bro.currentRoom === pet.currentRoom) bro.currentActivity = 'vend_drink';
-            recordPurchaseLog(pet, (MAP_ROOMS[pet.currentRoom]?.name || '街道') + '販賣機', `${vCfgH.emoji} ${vCfgH.name}`, vCfgH.price, '翔陽零用錢');
-            targetX = pet.currentRoom === 'street_cross' ? 390 : 475; targetY = 445;
-            if (bro && bro.currentRoom === pet.currentRoom) { bro.tx = targetX - 65; bro.ty = 445; }
-            if (pet.hunger < 30 || pet.energy < 30) {
-              const vh0=pet.hunger, ve0=pet.energy, vm0=pet.mood;
-              pet.hunger = Math.min(100, pet.hunger + vCfgH.hunger); pet.energy = Math.min(100, pet.energy + vCfgH.energy); pet.mood = Math.min(100, pet.mood + vCfgH.mood);
-              recordStatLog(pet,'hunger',`${vCfgH.emoji} ${vCfgH.name}`,vh0,pet.hunger); recordStatLog(pet,'energy',`${vCfgH.emoji} ${vCfgH.name}`,ve0,pet.energy); recordStatLog(pet,'mood',`${vCfgH.emoji} ${vCfgH.name}`,vm0,pet.mood);
-              addBladderFromConsume(pet, !!vCfgH.isDrink);
-              if (viewRoomId === pet.currentRoom) speakAndShow(`「停低喺紅色販賣機買咗 ${vCfgH.emoji}${vCfgH.name} 即刻飲！（零用錢 -${vCfgH.price}）🥤✨」`);
-            } else {
-              pet.snacks[vIdH] = (pet.snacks[vIdH] || 0) + 1;
-              if (viewRoomId === pet.currentRoom) speakAndShow(`「停低喺紅色販賣機買咗 ${vCfgH.emoji}${vCfgH.name} 袋好！（零用錢 -${vCfgH.price}）🥤🎒」`);
-            }
-            updateHUD(); saveState();
+      // 6a-3. Street 17:00-17:30 walk home vending machine interaction
+      if (!info.isWeekend && (sched.key === 'wd_hw_cr' || sched.key === 'wd_hw_st') && (pet.currentRoom === 'street' || pet.currentRoom === 'street_cross') && pet.dailyStreetDrinkDate !== tdF) {
+        const vKeyH = pet.currentRoom === 'street_cross' ? 'cross_vend' : 'street_vend';
+        const vAvailH = (ensureShopMenus()[vKeyH] || []).filter(id => (pet.pocketMoney || 0) >= getSnackCfg(id).price);
+        if (vAvailH.length > 0 && Math.random() < 0.35) {
+          const vIdH = vAvailH[Math.floor(Math.random() * vAvailH.length)];
+          const vCfgH = getSnackCfg(vIdH);
+          pet.dailyStreetDrinkDate = tdF;
+          pet.pocketMoney -= vCfgH.price;
+          recordPurchaseLog(pet, (MAP_ROOMS[pet.currentRoom]?.name || '街道') + '販賣機', `${vCfgH.emoji} ${vCfgH.name}`, vCfgH.price, '翔陽零用錢');
+          targetX = pet.currentRoom === 'street_cross' ? 390 : 485; targetY = 445;
+          if (pet.hunger < 30 || pet.energy < 30) {
+            const vh0=pet.hunger, ve0=pet.energy, vm0=pet.mood;
+            pet.hunger = Math.min(100, pet.hunger + vCfgH.hunger); pet.energy = Math.min(100, pet.energy + vCfgH.energy); pet.mood = Math.min(100, pet.mood + vCfgH.mood);
+            recordStatLog(pet,'hunger',`${vCfgH.emoji} ${vCfgH.name}`,vh0,pet.hunger); recordStatLog(pet,'energy',`${vCfgH.emoji} ${vCfgH.name}`,ve0,pet.energy); recordStatLog(pet,'mood',`${vCfgH.emoji} ${vCfgH.name}`,vm0,pet.mood);
+            addBladderFromConsume(pet, !!vCfgH.isDrink);
+            if (viewRoomId === pet.currentRoom) speakAndShow(`「行去紅色販賣機買咗 ${vCfgH.emoji}${vCfgH.name} 即刻食！（零用錢 -${vCfgH.price}）🥤✨」`);
+          } else {
+            pet.snacks[vIdH] = (pet.snacks[vIdH] || 0) + 1;
+            if (viewRoomId === pet.currentRoom) speakAndShow(`「行去紅色販賣機買咗 ${vCfgH.emoji}${vCfgH.name} 袋好！（零用錢 -${vCfgH.price}）🥤🎒」`);
           }
+          updateHUD(); saveState();
         }
       }
 
@@ -3771,7 +3691,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v109'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v102'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3825,7 +3745,7 @@ html, body {
     }
 
     const MALL_AREA_SET = new Set(['mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3']);
-    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street_lane', 'street_cross', 'street_mid', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_water', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet', 'rest_toilet']);
+    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street_lane', 'street_cross', 'street_mid', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet', 'rest_toilet']);
     function drawAnimeRoomBackground(roomId, timeInfo) {
       const h = new Date().getHours();
       const isNight = (h >= 18 || h < 6);
@@ -4034,7 +3954,7 @@ html, body {
       { start: 870,  end: 890,  time: '14:30 - 14:50', roomName: '走廊 / 小食部',   label: '🔔 午堂小息（可買小食）' },
       { start: 890,  end: 945,  time: '14:50 - 15:45', roomName: '課室 / 醫院藥房', label: '📚 放學前最後一堂' },
       { start: 945,  end: 975,  time: '15:45 - 16:15', roomName: '室內排球場',      label: '🏐 放學社團練波（上半節）' },
-      { start: 975,  end: 990,  time: '16:15 - 16:30', roomName: '學校飲水處',      label: '💧 練波飲水休息（精力+30）' },
+      { start: 975,  end: 990,  time: '16:15 - 16:30', roomName: '室內排球場',      label: '💧 練波飲水休息（精力+30）' },
       { start: 990,  end: 1020, time: '16:30 - 17:00', roomName: '室內排球場',      label: '🏐 放學社團練波（下半節）' },
       { start: 1020, end: 1050, time: '17:00 - 17:30', roomName: '十字路→小巷→街道', label: '🏠 17:05 十字路口會合・17:30 到家' },
       { start: 1050, end: 1095, time: '17:30 - 18:15', roomName: '玄關→房→客廳→後院', label: '🎒 放書包・客廳休15分・後院練球' },
@@ -4062,8 +3982,8 @@ html, body {
       { start: 1380, end: 1440, time: '23:00 - 24:00', roomName: '客廳 / 廚房',     label: '🌙 自由活動・宵夜時段（00:00 睡）' }
     ];
 
-    const SCHOOL_LOCKED_ROOMS = new Set(['school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_infirmary', 'school_court', 'school_water', 'school_toilet']);
-    const LOCKED_ACTIVITY_ROOMS = new Set(['bath', 'street', 'street_cross', 'school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_infirmary', 'school_court', 'school_water', 'school_toilet']);
+    const SCHOOL_LOCKED_ROOMS = new Set(['school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_infirmary', 'school_court', 'school_toilet']);
+    const LOCKED_ACTIVITY_ROOMS = new Set(['bath', 'street', 'street_cross', 'school_gate', 'school_class', 'school_hall', 'school_tuckshop', 'school_infirmary', 'school_court', 'school_toilet']);
     const LOCKED_MEAL_ACTS = new Set(['breakfast', 'lunch', 'dinner']);
     function isRoomBusyLocked(pet) {
       if (pet.fainted || pet.recoverStage) return true;
@@ -4191,7 +4111,7 @@ html, body {
 
     const ACTIVITY_LABELS = {
       sleep: '😴 熟睡中', waking: '🥱 剛被叫醒', brush: '🪥 刷牙洗臉', breakfast: '🍚 食早餐中',
-      street: '🚶 行路中', walking: '🚶 移動中', school_class: '📚 上堂中', lunch: '🍱 食午餐中', dinner: '🍽️ 食晚餐中',
+      street: '🚶 行路中', walking: '🚶 移動中', brush: '🪥 刷牙中', school_class: '📚 上堂中', lunch: '🍱 食午餐中', dinner: '🍽️ 食晚餐中',
       school_court: '🏐 社團練波', backyard: '🏐 後院練波', bath: '🫧 浸熱水浴',
       gaming: '🎮 打機休息中', homework: '📖 溫書做功課', asking_hw: '🙋‍♂️ 問哥哥功課',
       tv: '📺 睇電視中', tea: '🍵 飲茶休息', fridge: '🧊 睇雪櫃', cook: '🍳 幫手煮飯', kitchen_tidy: '🧼 執拾廚房中',
@@ -4200,7 +4120,7 @@ html, body {
       park_jog: '🏃 公園慢跑', park_walk: '🚶 公園散步', park_breeze: '🌊 睇海風中', toilet_use: '🚽 如廁中', toilet_urinal: '🚻 小便中', toilet_wash: '🧼 洗手中', toilet_wait: '⏳ 等緊廁所', court_run: '🏃 跑步熱身中', stretch: '🧘‍♂️ 拉筋放鬆中',
       gear_prep: '🏐 整理裝備中', window_gaze: '🌤️ 望窗外發呆', read_manga: '📚 睇排球漫畫',
       mirror_prep: '🪞 整理儀容中', tidy_bag: '🔑 檢查隨身物', vend_drink: '🥤 買嘢飲中',
-      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理', supermarket: '🛒 行超市中', supermarket_checkout: '💳 自助收銀付款', supper_wait: '🍽️ 等哥哥整宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 揀緊雪糕口味', eating_ice_cream: '🍦 街邊食雪糕中', mall2: '🏬 行商場2樓中', clothing_store: '👕 睇衫中', toy_store: '🧸 睇玩具中', mall_promenade: '🌊 行海邊大道中', cafe_buy: '☕ 買咖啡布丁中', promenade_cafe: '🍮 歎布丁飲品中', kitchen_table: '🪑 餐桌休息中', squat: '🏋️ 深蹲特訓中', rest_drinkbar: '🥤 飲品吧斟嘢飲'
+      shop_snack: '🛍️ 行街買嘢一陣', class_break: '💬 小息傾計中', rest_menu: '📖 睇餐牌中', faint: '💫 X_X 倒地不起', sad_rest: '🤒 床上休養中', recess_walk: '🔔 小息遊走中', tuckshop_buy: '🥐 睇緊小食部', detention: '😳 罰企走廊中', konbini_mag: '📖 睇雜誌中', konbini_snack: '🍡 睇零食中', konbini_drink: '🥤 睇飲品中', water_break: '💧 飲水休息中', unpack_bag: '🎒 放書包整理', supermarket: '🛒 行超市中', supermarket_checkout: '💳 自助收銀付款', supper_wait: '🍽️ 等哥哥整宵夜', supper_eat: '🥟 一齊食宵夜', ice_cream: '🍦 揀緊雪糕口味', eating_ice_cream: '🍦 街邊食雪糕中', mall2: '🏬 行商場2樓中', clothing_store: '👕 睇衫中', toy_store: '🧸 睇玩具中', mall_promenade: '🌊 行海邊大道中', cafe_buy: '☕ 買咖啡布丁中', promenade_cafe: '🍮 歎布丁飲品中', kitchen_table: '🪑 餐桌休息中', squat: '🏋️ 深蹲特訓中', rest_drinkbar: '🥤 飲品吧斟嘢飲'
     };
     const BROTHER_ACTIVITY_LABELS = {
       sleep: '😴 哥哥熟睡中', brush: '🪥 哥哥刷牙中', cook_bfast: '🍳 煮緊早餐', prep_bfast: '🥞 準備早餐中',
@@ -4262,7 +4182,6 @@ html, body {
       school_class: ['💭 在想哥哥❤️', '💭 一陣食咩好😗', '💭 黑板寫滿筆記要專心抄低！', '💭 放學返屋企要話畀哥哥聽今日學咗咩！'],
       school_hall: ['💭 學校走廊好長好寬敞～', '💭 小息喺走廊行下伸展筋骨！', '💭 唔知哥哥而家喺藥房忙唔忙呢？'],
       school_tuckshop: ['💭 小食部今日有新鮮熱麵包賣！', '💭 睇下買咩小食好呢～', '💭 哥哥比我嘅零用錢夠買個菠蘿包！'],
-      school_water: ['💭 練波練到出晒汗，飲啖冰涼嘅水最舒服！💧', '💭 喺飲水處抖一陣回返氣，一陣再繼續扣殺！', '💭 飲完水記得唔好飲太急親～'],
       school_court: ['💭 排球場地板擦到發光！', '💭 烏野一定打入全國！！', '💭 返屋企要同哥哥對打練習接波！'],
       school_toilet: ['💭 趁小息快手去個洗手間先～', '💭 洗乾淨手準備返課室／球場！', '💭 哥哥成日提我唔好忍尿！'],
       school_infirmary: ['💭 醫療室好安靜，啲床單好整齊…', '💭 休息一下好快就會好返精神！', '💭 好想快啲見到哥哥接我返屋企…'],
@@ -4345,21 +4264,17 @@ html, body {
       }
 
       const bx = bro.px, by = bro.py;
-      const isCommuteB = (act === 'street' && !(pet.vendPauseUntil && Date.now() < pet.vendPauseUntil));
-      const isWalking = isCommuteB || Math.hypot(bro.tx - bro.px, bro.ty - bro.py) > 5;
+      const isWalking = Math.hypot(bro.tx - bro.px, bro.ty - bro.py) > 5;
       const isEating = ['canteen_lunch','breakfast','lunch','dinner','restaurant','supper_eat','eating_ice_cream','promenade_cafe','rest_drinkbar'].includes(act);
-      const bounce = isWalking ? -Math.abs(Math.sin(frame * 0.20 + 0.8)) * 9 : (act === 'park_jog' ? -Math.abs(Math.sin(frame * 0.2)) * 14 : (isEating ? Math.sin(frame * 0.16) * 2.5 : 0));
-      const broTilt = isWalking ? Math.sin(frame * 0.20 + 0.8) * 0.075 : 0;
-      const cScaleB = (isCommuteB && window.__commuteScale) ? window.__commuteScale : 1;
-      const breathSy = (1 + Math.sin(frame * 0.065 + 1) * 0.02) * cScaleB;
-      const breathSx = (1 - Math.sin(frame * 0.065 + 1) * 0.012) * cScaleB;
+      const bounce = isWalking ? -Math.abs(Math.sin(frame * 0.22)) * 8 : (act === 'park_jog' ? -Math.abs(Math.sin(frame * 0.2)) * 14 : (isEating ? Math.sin(frame * 0.16) * 2.5 : 0));
+      const breathSy = 1 + Math.sin(frame * 0.065 + 1) * 0.02;
+      const breathSx = 1 - Math.sin(frame * 0.065 + 1) * 0.012;
       const drawW = 162, drawH = 246;
 
       ctx.save();
       ctx.fillStyle = 'rgba(0,0,0,0.20)';
       ctx.beginPath(); ctx.ellipse(bx, by + 96, 50, 13, 0, 0, Math.PI * 2); ctx.fill();
       ctx.translate(bx, by + bounce);
-      ctx.rotate(broTilt);
       ctx.scale(breathSx, breathSy);
       ctx.drawImage(img, -drawW / 2, -drawH / 2 - 22, drawW, drawH);
       if (isEating && !isWalking) {
@@ -4421,20 +4336,18 @@ html, body {
       }
 
       const cx = petX, cy = petY;
-      const isCommuteW = (act === 'street' && !(pet.vendPauseUntil && Date.now() < pet.vendPauseUntil));
-      const isWalking = isCommuteW || transitionState !== null || (Math.hypot(targetX - petX, targetY - petY) > 5);
+      const isWalking = transitionState !== null || (Math.hypot(targetX - petX, targetY - petY) > 5);
       const isJumping = (act === 'school_court' || act === 'backyard' || act === 'jump') && !isWalking && !rally.active;
-      const jumpY = isJumping ? -Math.abs(Math.sin(frame * 0.16)) * 55 : (act === 'squat' && !isWalking ? (Math.floor(frame / 36) % 2 === 1 ? 10 : 0) : (act === 'happy' || isPetting ? -Math.abs(Math.sin(frame * 0.18)) * 16 : ((isWalking || act === 'park_jog' || act === 'court_run') ? -Math.abs(Math.sin(frame * 0.20)) * 9.5 : 0)));
-      const cScaleH = (isCommuteW && window.__commuteScale) ? window.__commuteScale : 1;
+      const jumpY = isJumping ? -Math.abs(Math.sin(frame * 0.16)) * 55 : (act === 'squat' && !isWalking ? (Math.floor(frame / 36) % 2 === 1 ? 10 : 0) : (act === 'happy' || isPetting ? -Math.abs(Math.sin(frame * 0.18)) * 16 : ((isWalking || act === 'park_jog' || act === 'court_run') ? -Math.abs(Math.sin(frame * 0.24)) * 11 : 0)));
       const breathSy = 1 + Math.sin(frame * 0.07) * 0.024;
       const breathSx = 1 - Math.sin(frame * 0.07) * 0.014;
-      const tilt = isWalking ? Math.sin(frame * 0.20) * 0.085 : (isPetting ? Math.sin(frame * 0.15) * 0.07 : Math.sin(frame * 0.04) * 0.02);
+      const tilt = isWalking ? Math.sin(frame * 0.24) * 0.08 : (isPetting ? Math.sin(frame * 0.15) * 0.07 : Math.sin(frame * 0.04) * 0.02);
 
       ctx.save();
       if (transitionState) ctx.globalAlpha = transitionState.alpha;
       ctx.fillStyle = 'rgba(0,0,0,0.22)';
-      ctx.beginPath(); ctx.ellipse(cx, cy + 96 * cScaleH, 52 * cScaleH, 13 * cScaleH, 0, 0, Math.PI * 2); ctx.fill();
-      drawFullChibiSprite(cx, cy - 14 * cScaleH + jumpY, tilt, act, outfit, frame, 1.55 * cScaleH, breathSx, breathSy);
+      ctx.beginPath(); ctx.ellipse(cx, cy + 96, 52, 13, 0, 0, Math.PI * 2); ctx.fill();
+      drawFullChibiSprite(cx, cy - 14 + jumpY, tilt, act, outfit, frame, 1.55, breathSx, breathSy);
       if (act === 'tea' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🍵', cx + 42, cy + 28); }
       if (act === 'water_break' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('💧', cx + 40, cy + 16); }
       if (act === 'brush' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🪥', cx + 38, cy + 10); }
@@ -4448,7 +4361,7 @@ html, body {
       }
       if (act === 'gaming' && !isWalking) { ctx.font = '24px sans-serif'; ctx.fillText('🎮', cx + 42, cy + 25); }
       ctx.restore();
-      drawOverheadBadge(cx, cy - 28 + jumpY, (isWalking && act !== 'street') ? 'idle' : act, frame);
+      drawOverheadBadge(cx, cy - 28 + jumpY, isWalking ? 'idle' : act, frame);
     }
 
     // 放大特寫：使用當前房間動畫背景＋去背立繪，摸摸時直接切換成開心笑面立繪（唔再疊假紅暈）！
@@ -4622,8 +4535,7 @@ html, body {
         }
       } else {
         if (petWalk && !pet.recoverStage) {
-          const pDur = (petWalk.idx === -1) ? (petWalk.stepMs || 2800) : 5000;
-          const pt = Math.max(0, Math.min(1, (Date.now() - petWalk.stepEnteredAt) / pDur));
+          const pt = Math.max(0, Math.min(1, (Date.now() - petWalk.stepEnteredAt) / 5000));
           petX = (petWalk.startX ?? petX) + (targetX - (petWalk.startX ?? petX)) * pt;
           petY = (petWalk.startY ?? petY) + (targetY - (petWalk.startY ?? petY)) * pt;
         } else if (!rally.active && !(pet.currentRoom === 'bath' && pet.currentActivity === 'bath') && pet.currentActivity !== 'sleep' && pet.currentActivity !== 'waking') {
@@ -4634,8 +4546,7 @@ html, body {
         if (state.brother) {
           const bro = state.brother;
           if (broWalk && !pet.recoverStage) {
-            const bDur = (broWalk.idx === -1) ? (broWalk.stepMs || 2800) : 5000;
-            const bt = Math.max(0, Math.min(1, (Date.now() - broWalk.stepEnteredAt) / bDur));
+            const bt = Math.max(0, Math.min(1, (Date.now() - broWalk.stepEnteredAt) / 5000));
             bro.px = (broWalk.startX ?? bro.px) + (bro.tx - (broWalk.startX ?? bro.px)) * bt;
             bro.py = (broWalk.startY ?? bro.py) + (bro.ty - (broWalk.startY ?? bro.py)) * bt;
           } else {
@@ -4643,18 +4554,6 @@ html, body {
             if (Math.hypot(bdx, bdy) > 3) { bro.px += bdx * 0.05; bro.py += bdy * 0.05; }
           }
         }
-      }
-      const _cSched = getScheduledState(getCurrentHourInfo());
-      const _cPose = (!pet.vendPauseUntil && !pet.toiletState && !transitionState && !duoWalk && pet.currentRoom === _cSched.room) ? getCommutePose(_cSched.key) : null;
-      if (_cPose) {
-        targetX = _cPose.x; targetY = _cPose.y;
-        window.__commuteScale = _cPose.scale;
-        if (state.brother && state.brother.currentRoom === pet.currentRoom) {
-          state.brother.tx = Math.min(535, _cPose.x + _cPose.broDx);
-          state.brother.ty = _cPose.y;
-        }
-      } else {
-        window.__commuteScale = 1;
       }
       if (frameCount % 240 === 0) dreamIdx++;
     }
@@ -6244,36 +6143,29 @@ html, body {
             </div>
           </div>`;
         }).join('');
-        const actGroups = [
-          { title: '📖 溫書', rows: [['飽食','actStudyHunger',-3],['精力','actStudyEnergy',-5],['心情','actStudyMood',5]] },
-          { title: '🧹 執屋', rows: [['飽食','actCleanHunger',-3],['精力','actCleanEnergy',-5],['心情','actCleanMood',6]] },
-          { title: '🍽️ 餐廳大餐', rows: [['飽食','actRestHunger',30],['心情','actRestMood',12]] },
-          { title: '🌳 公園活動', rows: [['心情','actParkMood',6]] },
-          { title: '🎮 打機休息', rows: [['心情','actGamingMood',12]] },
-          { title: '🛍️ 行商場', rows: [['心情','actMallMood',10]] }
+        const actItems = [
+          ['actStudyMood','📖 溫書心情',5],['actStudyEnergy','📖 溫書精力',-5],['actStudyHunger','📖 溫書飽食',-3],
+          ['actCleanMood','🧹 執屋心情',6],['actCleanEnergy','🧹 執屋精力',-5],['actCleanHunger','🧹 執屋飽食',-3],
+          ['actParkMood','🌳 公園心情',6],['actGamingMood','🎮 打機心情',12],['actMallMood','🛍️ 商場心情',10],
+          ['actRestHunger','🍽️ 餐廳飽食',30],['actRestMood','🍽️ 餐廳心情',12]
         ];
-        const actHtml = `<div class="bg-orange-50/90 border border-orange-300 rounded-xl p-1.5 space-y-1">
-          <div class="text-[11px] font-black text-[#2d1e12]">✨ 互動按鈕單次影響（%）</div>
-          ${actGroups.map(ag => `<div class="bg-white border border-orange-300 rounded-lg p-1.5 space-y-1">
-            <div class="text-[10px] font-black text-[#2d1e12]">${ag.title}</div>
-            <div class="grid grid-cols-3 gap-1 text-[10px] font-bold">
-              ${ag.rows.map(([slbl, ak, adef]) => {
-                const av = bal[ak] ?? adef;
-                return `<div class="flex items-center justify-between bg-orange-50/60 border border-orange-200 rounded px-1 py-0.5">
-                  <span>${slbl}</span>
-                  <div class="flex items-center gap-0.5 shrink-0">
-                    <button type="button" data-num-key="${ak}" data-num-delta="-1" data-num-min="-50" data-num-suf="%" data-num-sign="1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
-                    <span id="num-val-${ak}" class="min-w-[26px] text-center">${av > 0 ? '+'+av : av}%</span>
-                    <button type="button" data-num-key="${ak}" data-num-delta="1" data-num-min="-50" data-num-suf="%" data-num-sign="1" class="w-4 h-4 rounded bg-orange-300 font-black">+</button>
-                  </div>
-                </div>`;
-              }).join('')}
-            </div>
-          </div>`).join('')}
+        const actHtml = `<div class="bg-orange-50/90 border border-orange-300 rounded-xl p-1.5">
+          <div class="text-[11px] font-black text-[#2d1e12] mb-1">✨ 互動按鈕單次影響（%）</div>
+          <div class="grid grid-cols-2 gap-1 text-[10px] font-bold">
+            ${actItems.map(([ak, albl, adef]) => {
+              const av = bal[ak] ?? adef;
+              return `<div class="flex items-center justify-between bg-white border border-orange-300 rounded px-1.5 py-0.5">
+                <span class="truncate">${albl}</span>
+                <div class="flex items-center gap-0.5 shrink-0">
+                  <button type="button" data-num-key="${ak}" data-num-delta="-1" data-num-min="-50" data-num-suf="%" data-num-sign="1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="num-val-${ak}" class="min-w-[28px] text-center">${av > 0 ? '+'+av : av}%</span>
+                  <button type="button" data-num-key="${ak}" data-num-delta="1" data-num-min="-50" data-num-suf="%" data-num-sign="1" class="w-4 h-4 rounded bg-orange-300 font-black">+</button>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
         </div>`;
-        bodyHtml = catHtml + actHtml;
-      } else if (settingsTab === 'snacks') {
-        const icSetHtml = `<div class="bg-pink-50 border border-pink-300 rounded-xl p-1.5 mt-2">
+        const icSetHtml = `<div class="bg-pink-50 border border-pink-300 rounded-xl p-1.5 mt-1.5">
           <div class="text-[11px] font-black text-[#2d1e12] mb-1">🍦 雪糕店 4 種口味價錢與回復設定</div>
           <div class="space-y-1 text-[10px] font-bold">
             ${ICE_CREAM_FLAVORS.map(f => {
@@ -6290,31 +6182,8 @@ html, body {
             }).join('')}
           </div>
         </div>`;
-        const smSetHtml = `<div class="bg-amber-50 border border-amber-300 rounded-xl p-1.5 mt-2">
-          <div class="text-[11px] font-black text-[#2d1e12] mb-1">🛒 超市商品價錢與回復（預設 3元 / +3%）</div>
-          <div class="space-y-1 text-[10px] font-bold">
-            ${SUPERMARKET_ITEMS.map(it => {
-              const ic = getSmItemCfg(it.id);
-              return `<div class="flex flex-wrap items-center justify-between bg-white border border-amber-300 rounded px-1.5 py-0.5 gap-1">
-                <span>${it.emoji} ${it.name}</span>
-                <div class="flex items-center gap-1">
-                  <span>🪙</span>
-                  <button type="button" data-smi-id="${it.id}" data-smi-field="price" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
-                  <span id="smi-${it.id}-price">${ic.price}元</span>
-                  <button type="button" data-smi-id="${it.id}" data-smi-field="price" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
-                  ${!it.isSupply ? `<span>🍙</span>
-                  <button type="button" data-smi-id="${it.id}" data-smi-field="hunger" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
-                  <span id="smi-${it.id}-hunger">+${ic.hunger}%</span>
-                  <button type="button" data-smi-id="${it.id}" data-smi-field="hunger" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
-                  <span>⚡</span>
-                  <button type="button" data-smi-id="${it.id}" data-smi-field="energy" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
-                  <span id="smi-${it.id}-energy">+${ic.energy}%</span>
-                  <button type="button" data-smi-id="${it.id}" data-smi-field="energy" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>` : ''}
-                </div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>`;
+        bodyHtml = catHtml + actHtml + icSetHtml;
+      } else if (settingsTab === 'snacks') {
         bodyHtml = `<div class="bg-amber-50/90 border border-amber-300 rounded-xl p-2 space-y-1.5">
           <div class="text-[11px] font-black text-[#2d1e12]">🎒 全遊戲小食價錢與回復設定（包含撈麵、檸檬茶）</div>
           ${SNACK_CATALOG.map(s => {
@@ -6342,7 +6211,7 @@ html, body {
               </div>
             </div>`;
           }).join('')}
-        </div>` + icSetHtml + smSetHtml;
+        </div>`;
       } else if (settingsTab === 'probs') {
         const aeRows = [
           ['toilet','🚽 自行如廁',true,false],
@@ -6427,7 +6296,31 @@ html, body {
             </div>
           </div>
         </div>
-        `;
+        <div class="bg-amber-50 border border-amber-300 rounded-xl p-1.5 mt-1.5">
+          <div class="text-[11px] font-black text-[#2d1e12] mb-1">🛒 超市商品價錢與回復（預設 3元 / +3%）</div>
+          <div class="space-y-1 text-[10px] font-bold">
+            ${SUPERMARKET_ITEMS.map(it => {
+              const ic = getSmItemCfg(it.id);
+              return `<div class="flex flex-wrap items-center justify-between bg-white border border-amber-300 rounded px-1.5 py-0.5 gap-1">
+                <span>${it.emoji} ${it.name}</span>
+                <div class="flex items-center gap-1">
+                  <span>🪙</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="price" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="smi-${it.id}-price">${ic.price}元</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="price" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
+                  ${!it.isSupply ? `<span>🍙</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="hunger" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="smi-${it.id}-hunger">+${ic.hunger}%</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="hunger" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>
+                  <span>⚡</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="energy" data-smi-delta="-1" class="w-4 h-4 rounded bg-slate-200 font-black">-</button>
+                  <span id="smi-${it.id}-energy">+${ic.energy}%</span>
+                  <button type="button" data-smi-id="${it.id}" data-smi-field="energy" data-smi-delta="1" class="w-4 h-4 rounded bg-amber-300 font-black">+</button>` : ''}
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
         const _dummy = [
         ];
         const aeHtml = `<div class="bg-purple-50 border border-purple-300 rounded-xl p-1.5">
@@ -7252,12 +7145,10 @@ html, body {
         (() => {
           const petD = ensurePetState(state.activeCharId);
           const broD = state.brother || {};
-          const infD = getCurrentHourInfo();
-          const curSc = getScheduledState(infD);
-          const curBSc = getBrotherScheduledState(infD);
+          const curSc = getScheduledState(getCurrentHourInfo());
           const isMealL = ['breakfast', 'lunch', 'dinner', 'restaurant'].includes(petD.currentActivity) || (state.outing && state.outing.type === 'restaurant');
           const isOutL = Boolean((state.outing && state.outing.type) || OUTDOOR_STREET_ROOMS.has(petD.currentRoom));
-          const isFreeL = Boolean((curSc.freeRoam || curBSc.homeRoam || curBSc.broFree) && !isMealL && !isOutL);
+          const isFreeL = Boolean(curSc.freeRoam && !isMealL && !isOutL);
           if (isMealL || isOutL) return { id: 'toggle_bro_follow', emoji: '🫂', name: '陪同：陪伴中', sub: isMealL ? '一齊食飯鎖定中 🔒' : '外出約會鎖定中 🔒', highlight: true };
           if (isFreeL) return { id: 'toggle_bro_follow', emoji: state.broSoloMode ? '🚶' : '🫂', name: state.broSoloMode ? '陪同：自由中' : '陪同：陪伴中', sub: state.broSoloMode ? '自由時間・按此鎖定' : '自由時間・按此解鎖', highlight: !state.broSoloMode };
           return { id: 'toggle_bro_follow', emoji: '📅', name: '陪同：跟作息表', sub: broD.currentActivity === 'sleep' ? '哥哥瞓覺中' : (['pharmacy','canteen'].includes(broD.currentRoom) ? '哥哥返工中' : '自由時間先可切換'), highlight: false };
@@ -7409,9 +7300,7 @@ html, body {
           startDuoOuting('restaurant', 60, 'restaurant', '二人一齊去餐廳食飯（停留 1 小時）🍽️', '「同哥哥去家庭餐廳食大餐！好香呀～🍽️✨」');
           const rh0=pet.hunger, rm0=pet.mood; pet.hunger = Math.min(100, pet.hunger + ((state.balance && state.balance.actRestHunger) ?? 30)); pet.mood = Math.min(100, pet.mood + ((state.balance && state.balance.actRestMood) ?? 12)); recordStatLog(pet,'hunger','🍽️ 餐廳大餐',rh0,pet.hunger); recordStatLog(pet,'mood','🍽️ 餐廳大餐',rm0,pet.mood); grantCappedRewards(pet, 6, 4);
         } else if (id === 'toggle_bro_follow') {
-          const infT = getCurrentHourInfo();
-          const curScT = getScheduledState(infT);
-          const curBScT = getBrotherScheduledState(infT);
+          const curScT = getScheduledState(getCurrentHourInfo());
           const isMealT = ['breakfast', 'lunch', 'dinner', 'restaurant'].includes(pet.currentActivity) || (state.outing && state.outing.type === 'restaurant');
           const isOutT = Boolean((state.outing && state.outing.type) || OUTDOOR_STREET_ROOMS.has(pet.currentRoom));
           if (isMealT || isOutT) {
@@ -7419,23 +7308,19 @@ html, body {
             showToast('一齊食飯或外出期間「陪伴中」已鎖定，唔可以解鎖 🔒');
             return;
           }
-          if ((!curScT.freeRoam && !curBScT.homeRoam && !curBScT.broFree) || pet.fainted || pet.recoverStage) {
+          if (!curScT.freeRoam || pet.fainted || pet.recoverStage) {
             playSFX('miss');
             showToast('只有自由時間先可以解鎖／切換陪同狀態 📅');
             return;
           }
           state.broSoloMode = !state.broSoloMode;
           if (!state.broSoloMode) {
-            const fAct = (pet.currentActivity === 'street' && !OUTDOOR_STREET_ROOMS.has(pet.currentRoom)) ? 'idle' : pet.currentActivity;
-            if (bro.currentRoom !== pet.currentRoom) {
-              startSoloWalk('bro', pet.currentRoom, fAct, null, () => { bro.tx = Math.min(490, targetX + 95); bro.ty = targetY; }, false);
-            } else {
-              bro.currentActivity = fAct;
-              bro.tx = Math.min(490, targetX + 95); bro.ty = targetY;
-            }
+            bro.currentRoom = pet.currentRoom;
+            bro.currentActivity = (pet.currentActivity === 'street' ? 'idle' : pet.currentActivity);
+            bro.tx = Math.min(490, targetX + 95); bro.ty = targetY;
             playSFX('levelup');
             showToast('哥哥已鎖定返嚟陪住翔陽！🫂💛');
-            speakAndShow('「哥哥行返過嚟陪住我一齊啦！😊💛」');
+            speakAndShow('「哥哥返嚟陪住我一齊啦！😊💛」');
           } else {
             playSFX('pat');
             showToast('哥哥暫時喺屋企自由移動（再按鎖定陪翔陽）🚶');
@@ -7553,6 +7438,83 @@ html, body {
     });
 
     document.getElementById('dock-tray').addEventListener('pointerdown', (e) => {
+      const shopBtn = e.target.closest('[data-shop-id]');
+      if (shopBtn) {
+        if (Date.now() - lastShopBuyAt < 350) return;
+        lastShopBuyAt = Date.now();
+        const it = SHOP_ITEMS.find(x => x.id === shopBtn.dataset.shopId);
+        const pet = ensurePetState(state.activeCharId);
+        if (!it) return;
+        if (pet.coins < it.cost) { playSFX('miss'); showToast(`金幣唔夠 🪙${it.cost} 呀！`); return; }
+        pet.coins -= it.cost;
+        if (!state.fridge) state.fridge = {};
+        state.fridge[it.id] = (state.fridge[it.id] || 0) + 1;
+        playSFX('eat');
+        showToast(`買咗 ${it.emoji}${it.name} 放入雪櫃！（雪櫃現有 ${state.fridge[it.id]} 份）🧊`);
+        if (pet.fridgeWaitingEmpty) {
+          pet.fridgeWaitingEmpty = false;
+          pet.fridgeStage = 'choosing'; pet.fridgeUntil = Date.now() + 30000;
+          pet.currentRoom = 'kitchen'; pet.currentActivity = 'fridge'; targetX = 145; targetY = 440;
+          if (viewRoomId === 'living') viewRoomId = 'kitchen';
+          speakAndShow('「咦！哥哥放咗嘢食入雪櫃呀！！我即刻過嚟睇下食邊樣！🧊✨」');
+        }
+        renderDock(); updateHUD(); saveState();
+        return;
+      }
+      const actBtn = e.target.closest('[data-act-id]');
+      if (actBtn) {
+        const id = actBtn.dataset.actId, pet = ensurePetState(state.activeCharId);
+        lastInteractAt = Date.now();
+        if (id === 'play') { if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; } startVolleyballRally(); }
+        else if (id === 'jump') { if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; } if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; } startJumpTraining(); }
+        else if (id === 'stop_gaming') {
+          state.gamingReturnAt = null;
+          pet.scheduleSlotKey = null;
+          syncScheduleActivity(pet, true);
+          viewRoomId = pet.currentRoom;
+          playSFX('pat');
+          speakAndShow('「好！暫時唔打住，返去跟今日嘅行程先～👋」');
+          renderDock(); updateHUD(); saveState();
+        } else if (id === 'chat') { if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; } if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; } openInteractiveChat(); }
+        else if (id === 'furn') {
+          if (!isZoomed && pet.currentRoom !== viewRoomId) { viewRoomId = pet.currentRoom; updateHUD(); } // furn wakes sleep
+          const furns = ROOM_FURNITURE[pet.currentRoom] || [];
+          if (furns.length > 0) {
+            const f = furns[Math.floor(Math.random() * furns.length)];
+            targetX = f.px; targetY = f.py; pet.currentActivity = f.act;
+            playSFX('pat'); speakAndShow(f.line); updateHUD(); saveState();
+          }
+        } else if (id === 'gaming') {
+          if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
+          if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
+          state.gamingReturnAt = Date.now() + 15 * 60 * 1000;
+          pet.currentRoom = 'room_aniki'; viewRoomId = 'room_aniki';
+          petX = 190; petY = 435; targetX = 190; targetY = 435;
+          pet.currentActivity = 'gaming';
+          pet.mood = Math.min(100, pet.mood + ((state.balance && state.balance.actGamingMood) ?? 12)); grantCappedRewards(pet, 5, 3);
+          playSFX('levelup'); speakAndShow('「去哥哥房間電腦位打機 15 分鐘！之後會返去原本行程～🎮🔥」');
+          particles.push({ x: 190, y: 360, text: '🎮 15分鐘', color: '#8b5cf6', life: 36 });
+          renderDock(); updateHUD(); saveState();
+        } else if (id === 'study') {
+          if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
+          if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
+          const bSt = state.balance || {}; pet.mood = Math.min(100, pet.mood + (bSt.actStudyMood ?? 5)); pet.energy = Math.max(0, pet.energy + (bSt.actStudyEnergy ?? -5)); pet.hunger = Math.max(0, pet.hunger + (bSt.actStudyHunger ?? -3));
+          grantCappedRewards(pet, 6, 3);
+          playSFX('pat'); speakAndShow('「有哥哥教我溫書，今次測驗一定過關！📖✨」');
+          particles.push({ x: 300, y: 240, text: 'EXP+6 📖', color: '#3b82f6', life: 36 });
+          updateHUD(); saveState();
+        } else if (id === 'clean') {
+          if (pet.currentActivity === 'sleep') { showSleepLockedMsg(); return; }
+          if (isRoomBusyLocked(pet)) { showBusyLockedMsg(pet); return; }
+          const bCl = state.balance || {}; pet.mood = Math.min(100, pet.mood + (bCl.actCleanMood ?? 6)); pet.energy = Math.max(0, pet.energy + (bCl.actCleanEnergy ?? -5)); pet.hunger = Math.max(0, pet.hunger + (bCl.actCleanHunger ?? -3));
+          grantCappedRewards(pet, 4, 8);
+          playSFX('eat'); speakAndShow('「執乾淨間屋企好企理呀！仲搵到少少零用錢！🧹🪙」');
+          particles.push({ x: 300, y: 240, text: '🪙+8', color: '#f59e0b', life: 36 });
+          updateHUD(); saveState();
+        }
+        return;
+      }
+
       const pBtn = e.target.closest('[data-food-porridge]');
       if (pBtn) {
         const pet = ensurePetState(state.activeCharId);
@@ -7692,7 +7654,7 @@ html, body {
       const sbEl = document.getElementById('snack-bag-display');
       if (sbEl) {
         const sk = pet.snacks || {};
-        const tot = SNACK_CATALOG.reduce((sum, s) => sum + (sk[s.id] || 0), 0);
+        const tot = (sk.bread||0)+(sk.drink||0)+(sk.candy||0)+(sk.soda||0)+(sk.snack||0)+(sk.nikuman||0);
         sbEl.textContent = tot > 0 ? `🎒 小食 (${tot})` : '🎒 小食: 無';
       }
       const h = Math.round(pet.hunger), m = Math.round(pet.mood), en = Math.round(pet.energy);
@@ -8307,7 +8269,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v109';
+          if (el) el.textContent = '☁️ 雲端已同步 · v102';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8346,7 +8308,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v109';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v102';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
