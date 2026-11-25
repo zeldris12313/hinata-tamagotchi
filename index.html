@@ -81,7 +81,7 @@ html, body {
       <div class="grid grid-cols-2 gap-1 shrink-0">
         <button id="btn-sound" type="button" class="whitespace-nowrap px-2 py-0.5 rounded-full bg-white/90 hover:bg-white text-[#2d1e12] border-2 border-[#2d1e12] flex items-center justify-center text-[10px] font-bold shadow-sm transition">🔊</button>
         <button id="btn-settings" type="button" class="whitespace-nowrap px-2 py-0.5 rounded-full bg-white text-[#2d1e12] font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-amber-50 transition">⚙️ 數值</button>
-        <button id="btn-holiday" type="button" class="whitespace-nowrap px-2 py-0.5 rounded-full bg-white text-emerald-700 font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-emerald-50 transition">🏖️ 設明日假期</button>
+        <button id="btn-holiday" type="button" class="whitespace-nowrap px-2 py-0.5 rounded-full bg-white text-emerald-700 font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-emerald-50 transition">🗓️ 假期月曆</button>
         <button id="btn-schedule" type="button" class="whitespace-nowrap px-2 py-0.5 rounded-full bg-white text-orange-600 font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-orange-50 transition">📅 生活作息</button>
         <button id="btn-force-refresh" type="button" class="whitespace-nowrap px-2 py-0.5 rounded-full bg-amber-100 text-[#2d1e12] font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm hover:bg-amber-200 transition" title="儲存並強制載入最新版本">🔄 更新重整</button>
       </div>
@@ -254,7 +254,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v117</span>
+      <span id="save-status">💾 已自動儲存 · v118</span>
       
     </div>
 
@@ -1717,17 +1717,29 @@ html, body {
       pet.lastUpdated = nowEval;
     }
 
+    function getCustomHolidaysList() {
+      if (!Array.isArray(state.customHolidays)) state.customHolidays = [];
+      if (state.holidayDate && !state.customHolidays.includes(state.holidayDate)) {
+        state.customHolidays.push(state.holidayDate);
+      }
+      return state.customHolidays;
+    }
+    function isCustomHoliday(dateStr) {
+      return state.holidayDate === dateStr || (Array.isArray(state.customHolidays) && state.customHolidays.includes(dateStr));
+    }
     function getCurrentHourInfo(atMs = Date.now()) {
       const now = new Date(atMs);
       const day = now.getDay();
       const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-      const isHolidayOverride = (state.holidayDate === today);
-      const isWeekend = (day === 0 || day === 6) || isHolidayOverride;
+      const holsNow = (typeof getHKHolidaysForYear === 'function') ? getHKHolidaysForYear(now.getFullYear()) : {};
+      const publicHolName = holsNow[today] || '';
+      const isHolidayOverride = isCustomHoliday(today);
+      const isWeekend = (day === 0 || day === 6) || Boolean(publicHolName) || isHolidayOverride;
       const hour = now.getHours();
       const min = now.getMinutes();
       const totalMin = hour * 60 + min;
       const hh = String(hour).padStart(2, '0'), mm = String(min).padStart(2, '0');
-      const dayLabel = isHolidayOverride ? '二人假期' : (isWeekend ? '週末' : '平日');
+      const dayLabel = isHolidayOverride ? '自選假期' : (publicHolName || (isWeekend ? '週末' : '平日'));
 
       let period = 'day';
       if (hour >= 0 && hour < 6) period = 'night';
@@ -3390,7 +3402,8 @@ html, body {
       const broFixedChore = ['cook_bfast','prep_bfast','cook_lunch','cook_dinner','washing_dishes','breakfast','lunch','dinner','bath','brush','sleep','canteen_lunch','pharmacy_work','aniki_hall_tidy'].includes(bSched.act);
       const canBroSolo = isBroFreeTime && state.broSoloMode && !broFixedChore && !state.outing?.type && !['breakfast','lunch','dinner','bath','brush','sleep','waking','gaming'].includes(pet.currentActivity) && !['pharmacy','canteen','hospital','school_class','school_court'].includes(bro.currentRoom) && !['school_class','school_court'].includes(pet.currentRoom);
       const broStuckWalking = !broWalk && !duoWalk && !bro.toiletState && (bro.currentActivity === 'walking' || (bro.currentRoom === 'wash_hall' && bSched.room !== 'wash_hall') || (bro.currentRoom === 'toilet' && bSched.room !== 'toilet'));
-      const needSnapBroToSched = !canBroSolo && !bSched.followHinata && !(state.outing && state.outing.type) && !state.supperState && !state.gamingReturnAt && !state.supermarketTrip && ((bSched.act === 'sleep' && (bro.currentRoom !== bSched.room || bro.currentActivity !== 'sleep')) || bro.scheduleSlotKey !== bSched.key || broStuckWalking);
+      const broStrandedOutside = !broWalk && !duoWalk && !bro.toiletState && !(state.outing && state.outing.type) && !state.supermarketTrip && !state.supperState && !state.gamingReturnAt && !HOME_TOILET_ROOMS.has(bro.currentRoom) && bro.currentRoom !== 'bath' && bro.currentRoom !== bSched.room;
+      const needSnapBroToSched = !canBroSolo && !bSched.followHinata && !(state.outing && state.outing.type) && !state.supperState && !state.gamingReturnAt && !state.supermarketTrip && ((bSched.act === 'sleep' && (bro.currentRoom !== bSched.room || bro.currentActivity !== 'sleep')) || bro.scheduleSlotKey !== bSched.key || broStuckWalking || broStrandedOutside);
       if (bro.toiletState || broWalk) { /* skip brother schedule while in toilet or walking routine */ }
       else if (canBroSolo) {
         if (!window.__lastBroSoloAt) window.__lastBroSoloAt = Date.now();
@@ -3414,7 +3427,8 @@ html, body {
             if (!animateTransition) { bro.px = bro.tx; bro.py = bro.ty; }
           }
         } else {
-          if (animateTransition && bro.currentRoom !== bSched.room && (HOME_TOILET_ROOMS.has(bro.currentRoom) || bro.currentRoom === 'bath' || OUTDOOR_STREET_ROOMS.has(bro.currentRoom) || bro.currentRoom === 'pharmacy') && (HOME_TOILET_ROOMS.has(bSched.room) || bSched.room === 'bath' || OUTDOOR_STREET_ROOMS.has(bSched.room))) {
+          const BRO_RETURN_SHOPS = new Set(['konbini', 'supermarket', 'ice_cream', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'restaurant']);
+          if (animateTransition && bro.currentRoom !== bSched.room && (HOME_TOILET_ROOMS.has(bro.currentRoom) || bro.currentRoom === 'bath' || OUTDOOR_STREET_ROOMS.has(bro.currentRoom) || BRO_RETURN_SHOPS.has(bro.currentRoom) || bro.currentRoom === 'pharmacy') && (HOME_TOILET_ROOMS.has(bSched.room) || bSched.room === 'bath' || OUTDOOR_STREET_ROOMS.has(bSched.room))) {
             startSoloWalk('bro', bSched.room, bSched.act, null, () => { bro.tx = bSched.px; bro.ty = bSched.py; }, false);
           } else {
             bro.currentRoom = bSched.room; bro.currentActivity = bSched.act;
@@ -3437,6 +3451,14 @@ html, body {
           } else if (bro.currentActivity !== 'tutoring') {
             bro.currentActivity = 'tutoring'; bro.tx = 255; bro.ty = 430;
           }
+        }
+      } else if (bSched.broFree && !state.broSoloMode && !state.gamingReturnAt && !state.supperState && !state.supermarketTrip && !(state.outing && state.outing.type) && !transitionState && pet.currentRoom !== 'toilet' && !pet.toiletState && HOME_TOILET_ROOMS.has(pet.currentRoom) && bro.currentRoom !== pet.currentRoom) {
+        const fAct = (pet.currentActivity === 'street' && !OUTDOOR_STREET_ROOMS.has(pet.currentRoom)) ? 'idle' : pet.currentActivity;
+        if (animateTransition) {
+          startSoloWalk('bro', pet.currentRoom, fAct, null, () => { bro.tx = Math.min(500, targetX + 75); bro.ty = targetY; }, false);
+        } else {
+          bro.currentRoom = pet.currentRoom; bro.currentActivity = fAct;
+          bro.px = Math.min(500, targetX + 75); bro.py = targetY; bro.tx = bro.px; bro.ty = bro.py;
         }
       }
 
@@ -3933,7 +3955,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v117'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v118'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -6570,7 +6592,7 @@ html, body {
       const hols = getHKHolidaysForYear(y);
       if (day === 0 || day === 6) return { ok: true, tag: day === 6 ? '星期六' : '星期日', isRed: day === 0 };
       if (hols[dateStr]) return { ok: true, tag: hols[dateStr], isRed: true };
-      if (state.holidayDate === dateStr) return { ok: true, tag: '二人假期', isRed: true };
+      if (isCustomHoliday(dateStr)) return { ok: true, tag: '自選假期', isRed: true };
       return { ok: false, tag: '', isRed: false };
     }
 
@@ -7984,9 +8006,11 @@ html, body {
       document.getElementById('time-display').textContent = `🔒 ${timeInfo.label} (${sched.label})`;
       const hBtn = document.getElementById('btn-holiday');
       if (hBtn) {
-        const isTomHol = (state.holidayDate === getTomorrowStr());
-        hBtn.textContent = isTomHol ? '🏖️ 聽日已設假期 ✓' : '🏖️ 設明日假期';
-        hBtn.className = `whitespace-nowrap px-2 py-0.5 rounded-full font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm transition ${isTomHol ? 'bg-emerald-500 text-white' : 'bg-white text-emerald-700 hover:bg-emerald-50'}`;
+        const tdH = getTodayStr();
+        const customList = getCustomHolidaysList().filter(d => d >= tdH);
+        const isTodayCustom = isCustomHoliday(tdH);
+        hBtn.textContent = customList.length > 0 ? `🗓️ 假期月曆 (${customList.length})` : '🗓️ 假期月曆';
+        hBtn.className = `whitespace-nowrap px-2 py-0.5 rounded-full font-bold text-[10px] border-2 border-[#2d1e12] shadow-sm transition ${isTodayCustom ? 'bg-emerald-500 text-white' : (customList.length > 0 ? 'bg-emerald-100 text-emerald-900 hover:bg-emerald-200' : 'bg-white text-emerald-700 hover:bg-emerald-50')}`;
       }
       const shopMenuBtn = document.getElementById('btn-shop-menu');
       if (shopMenuBtn) {
@@ -8589,18 +8613,99 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       if (el) el.addEventListener('click', () => openStatLogModal(st));
     });
     document.getElementById('snack-bag-display').addEventListener('click', openSnackBagModal);
-    document.getElementById('btn-holiday').addEventListener('click', () => {
-      const tom = getTomorrowStr();
-      if (state.holidayDate === tom) {
-        state.holidayDate = null;
-        showToast('已取消明日二人假期預約');
-      } else {
-        state.holidayDate = tom;
-        playSFX('levelup');
-        showToast('已設定聽日為二人假期！聽日 10:00 起身一齊玩 🏖️');
-        speakAndShow('「哥哥設定咗聽日放假呀？！聽日可以同哥哥成日一齊玩啦！🏖️✨」');
+    let _holCalYear = new Date().getFullYear(), _holCalMonth = new Date().getMonth();
+    function openHolidayCalendarModal(yr = _holCalYear, mo = _holCalMonth) {
+      _holCalYear = yr; _holCalMonth = mo;
+      const box = document.getElementById('choice-overlay');
+      const tdStr = getTodayStr();
+      const firstDay = new Date(yr, mo, 1).getDay();
+      const daysInMonth = new Date(yr, mo + 1, 0).getDate();
+      const hols = getHKHolidaysForYear(yr);
+      const customSet = new Set(getCustomHolidaysList());
+      const wkHeaders = ['日','一','二','三','四','五','六'].map((w, i) => `<div class="text-center text-[10px] font-black ${i===0?'text-rose-600':(i===6?'text-sky-600':'text-slate-600')}">${w}</div>`).join('');
+      let cells = '';
+      for (let b = 0; b < firstDay; b++) cells += '<div></div>';
+      for (let d = 1; d <= daysInMonth; d++) {
+        const ds = `${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const dow = new Date(yr, mo, d).getDay();
+        const pubName = hols[ds] || '';
+        const isSun = (dow === 0), isSat = (dow === 6);
+        const isFixed = isSun || isSat || Boolean(pubName);
+        const isCust = customSet.has(ds);
+        const isToday = (ds === tdStr);
+        let cls = 'bg-white text-[#2d1e12] border-slate-300 hover:bg-emerald-50';
+        let sub = '';
+        if (pubName) { cls = 'bg-rose-100 text-rose-700 border-rose-400'; sub = pubName.slice(0, 3); }
+        else if (isSun) { cls = 'bg-rose-50 text-rose-600 border-rose-300'; sub = '紅日'; }
+        else if (isSat) { cls = 'bg-sky-50 text-sky-700 border-sky-300'; sub = '週六'; }
+        else if (isCust) { cls = 'bg-emerald-500 text-white border-emerald-700 shadow-sm'; sub = '自選假'; }
+        const ring = isToday ? 'ring-2 ring-orange-500' : '';
+        cells += `<button type="button" data-holcal-day="${ds}" data-holcal-fixed="${isFixed ? '1' : '0'}" class="rounded-lg border p-0.5 flex flex-col items-center justify-center min-h-[36px] ${cls} ${ring}">
+          <span class="text-[11px] font-black leading-none">${d}</span>
+          ${sub ? `<span class="text-[8px] font-bold leading-tight truncate max-w-full mt-0.5">${sub}</span>` : ''}
+        </button>`;
       }
-      updateHUD(); saveState();
+      const upcomingCustom = getCustomHolidaysList().filter(d => d >= tdStr).sort();
+      const chipsHtml = upcomingCustom.length
+        ? `<div class="w-full flex flex-wrap gap-1 pt-1 border-t border-amber-200">${upcomingCustom.map(d => `<button type="button" data-holcal-day="${d}" data-holcal-fixed="0" class="px-1.5 py-0.5 rounded-lg bg-emerald-100 border border-emerald-500 text-emerald-900 text-[9px] font-black">🏖️ ${d} ✕</button>`).join('')}</div>`
+        : `<div class="w-full text-center text-[10px] text-slate-500 pt-1 border-t border-amber-200">撳任何平日即可設為二人假期（紅日及公眾假期固定放假）</div>`;
+      box.innerHTML = `<div class="w-full space-y-2 p-1">
+        <div class="flex items-center justify-between gap-1">
+          <button type="button" data-holcal-nav="-1" class="px-2 py-1 rounded-lg bg-white border-2 border-[#2d1e12] text-[11px] font-black">◀ 上月</button>
+          <div class="text-xs font-black text-[#2d1e12]">🗓️ ${yr} 年 ${mo + 1} 月・假期月曆</div>
+          <button type="button" data-holcal-nav="1" class="px-2 py-1 rounded-lg bg-white border-2 border-[#2d1e12] text-[11px] font-black">下月 ▶</button>
+        </div>
+        <div class="grid grid-cols-7 gap-1">${wkHeaders}${cells}</div>
+        ${chipsHtml}
+        <div class="flex justify-center pt-1">
+          <button type="button" data-holcal-close="1" class="px-4 py-1 rounded-xl bg-orange-500 text-white border-2 border-[#2d1e12] text-xs font-black">完成關閉</button>
+        </div>
+      </div>`;
+      box.classList.remove('hidden');
+    }
+    document.getElementById('btn-holiday').addEventListener('click', () => {
+      const now = new Date();
+      openHolidayCalendarModal(now.getFullYear(), now.getMonth());
+    });
+    document.getElementById('choice-overlay').addEventListener('click', (e) => {
+      const navBtn = e.target.closest('[data-holcal-nav]');
+      if (navBtn) {
+        const dt = new Date(_holCalYear, _holCalMonth + Number(navBtn.dataset.holcalNav), 1);
+        openHolidayCalendarModal(dt.getFullYear(), dt.getMonth());
+        return;
+      }
+      const closeBtn = e.target.closest('[data-holcal-close]');
+      if (closeBtn) { document.getElementById('choice-overlay').classList.add('hidden'); return; }
+      const dayBtn = e.target.closest('[data-holcal-day]');
+      if (dayBtn) {
+        const ds = dayBtn.dataset.holcalDay;
+        if (dayBtn.dataset.holcalFixed === '1') {
+          playSFX('miss');
+          showToast('紅日／星期六日／公眾假期固定放假，唔洗改動 📅');
+          return;
+        }
+        const list = getCustomHolidaysList();
+        const idx = list.indexOf(ds);
+        if (idx >= 0) {
+          list.splice(idx, 1);
+          if (state.holidayDate === ds) state.holidayDate = null;
+          playSFX('pat');
+          showToast(`已取消 ${ds} 自選假期`);
+        } else {
+          list.push(ds);
+          list.sort();
+          playSFX('levelup');
+          showToast(`已將 ${ds} 設為二人假期！🏖️`);
+        }
+        if (ds === getTodayStr()) {
+          const pet = ensurePetState(state.activeCharId);
+          pet.scheduleSlotKey = null;
+          if (state.brother) state.brother.scheduleSlotKey = null;
+          syncScheduleActivity(pet, true);
+        }
+        updateHUD(); saveState();
+        openHolidayCalendarModal(_holCalYear, _holCalMonth);
+      }
     });
     document.getElementById('close-schedule').addEventListener('click', () => document.getElementById('schedule-modal').classList.add('hidden'));
     if (false) document.getElementById('btn-schedule').addEventListener('x', () => {
@@ -8776,7 +8881,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v117';
+          if (el) el.textContent = '☁️ 雲端已同步 · v118';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8815,7 +8920,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v117';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v118';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
