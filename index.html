@@ -165,7 +165,8 @@ html, body {
         <button id="btn-mall-gate-enter" type="button" data-door-room="mall" style="left:50%;top:56%;transform:translate(-50%,-50%)" class="hidden absolute px-3 py-1.5 rounded-xl bg-amber-100/95 hover:bg-amber-200 border-2 border-[#2d1e12] text-xs font-black shadow-md z-15">🛍️ 進入商場</button>
         <button id="btn-subway-ent-gate" type="button" data-door-room="subway_gate" style="left:50%;top:66%;transform:translate(-50%,-50%)" class="hidden absolute px-3 py-1.5 rounded-xl bg-sky-100/95 hover:bg-sky-200 border-2 border-[#2d1e12] text-xs font-black shadow-md z-15">🚇 進入下方閘口</button>
         <button id="btn-train-board" type="button" style="left:50%;top:56%;transform:translate(-50%,-50%)" class="hidden absolute px-3.5 py-2 rounded-xl bg-lime-200/95 hover:bg-lime-300 border-2 border-[#2d1e12] text-xs font-black shadow-lg z-15 animate-bounce">🚃 上車（往池袋駅）</button>
-        <button id="btn-train-alight" type="button" style="left:50%;top:80%;transform:translate(-50%,-50%)" class="hidden absolute px-3.5 py-2 rounded-xl bg-amber-100/95 hover:bg-amber-200 border-2 border-[#2d1e12] text-xs font-black shadow-lg z-15">🚪 落車：池袋駅月台</button>
+        <button id="btn-train-go-karumai" type="button" style="left:12px;bottom:12px" class="hidden absolute px-2.5 py-1.5 rounded-xl bg-amber-100/95 hover:bg-amber-200 border-2 border-[#2d1e12] text-[11px] font-black shadow-md z-15">🚉 輕米町駅</button>
+        <button id="btn-train-go-ikebukuro" type="button" style="right:12px;bottom:12px" class="hidden absolute px-2.5 py-1.5 rounded-xl bg-sky-100/95 hover:bg-sky-200 border-2 border-[#2d1e12] text-[11px] font-black shadow-md z-15">🏙️ 池袋駅</button>
         <button id="btn-ikebukuro-exit-gate" type="button" data-door-room="ikebukuro_gate" style="left:32%;top:62%;transform:translate(-50%,-50%)" class="hidden absolute px-3 py-1.5 rounded-xl bg-sky-100/95 hover:bg-sky-200 border-2 border-[#2d1e12] text-xs font-black shadow-md z-15">🎫 進入池袋閘口</button>
         <button id="btn-gate-class" type="button" style="left:50%;top:56%;transform:translate(-50%,-50%)" class="hidden absolute px-3 py-1.5 rounded-xl bg-amber-100/95 hover:bg-amber-200 border-2 border-[#2d1e12] text-xs font-black shadow-md z-15">🏫 進入學校</button>
         <button id="btn-hallway-living" type="button" style="left:36%;top:47%;transform:translate(-50%,-50%)" class="hidden absolute px-2 py-1 rounded-xl bg-amber-100/90 hover:bg-amber-200 border-2 border-[#2d1e12] text-[10px] font-black shadow-md z-15">🏠 客廳</button>
@@ -253,7 +254,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v115</span>
+      <span id="save-status">💾 已自動儲存 · v116</span>
       
     </div>
 
@@ -492,7 +493,7 @@ html, body {
       bg_subway_platform: "./assets/bg_subway_platform.jpg?v=112",
       bg_subway_platform_morning: "./assets/bg_subway_platform_morning.jpg?v=112",
       bg_subway_platform_night: "./assets/bg_subway_platform_night.jpg?v=112",
-      train_yamanote: "./assets/train_yamanote.png?v=112",
+      train_yamanote: "./assets/train_yamanote.png?v=116",
       bg_train_interior: "./assets/bg_train_interior.jpg?v=113",
       bg_train_interior_morning: "./assets/bg_train_interior_morning.jpg?v=113",
       bg_train_interior_night: "./assets/bg_train_interior_night.jpg?v=113",
@@ -3916,7 +3917,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v115'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v116'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -4905,16 +4906,17 @@ html, body {
       const destName = roomId === 'subway_platform' ? '池袋駅' : '輕米町駅';
       const spr = sprites.train_yamanote;
       if (spr && spr.complete && spr.naturalWidth > 0 && tc.phase !== 'waiting') {
-        // Position train wheels directly on the steel tracks (y ≈ 446), behind the yellow safety railings
-        const tw = 580, th = Math.round(tw * (spr.naturalHeight / spr.naturalWidth));
+        // Full 3-car train: fixed height th=254 so wheels sit strictly on steel tracks (y ≈ 450), seamless both ends!
+        const th = 254, tw = Math.round(th * (spr.naturalWidth / spr.naturalHeight));
         const ty = 196;
-        let tx = 10;
+        const stopX = Math.round((600 - tw) / 2);
+        let tx = stopX;
         if (tc.phase === 'arriving') {
           const easeOut = 1 - Math.pow(1 - tc.p, 3);
-          tx = -610 + (620 * easeOut);
+          tx = -tw - 20 + ((stopX + tw + 20) * easeOut);
         } else if (tc.phase === 'departing') {
           const easeIn = Math.pow(tc.p, 2.6);
-          tx = 10 + (630 * easeIn);
+          tx = stopX + ((620 - stopX) * easeIn);
         }
         const microV = (tc.phase === 'arriving' || tc.phase === 'departing') ? Math.sin(frameCount * 0.8) * 1.0 : 0;
         ctx.save();
@@ -4993,14 +4995,11 @@ html, body {
       ctx.restore();
       const petT = ensurePetState(state.activeCharId);
       const charRiding = (petT.currentRoom === 'train_interior' || (state.brother && state.brother.currentRoom === 'train_interior'));
-      const aBtn = document.getElementById('btn-train-alight');
-      if (aBtn) {
-        const showAlight = !isZoomed && (remRide <= 0 || !charRiding);
-        aBtn.classList.toggle('hidden', !showAlight);
-        if (showAlight) {
-          aBtn.textContent = remRide <= 0 ? `🚪 落車：${destName}月台 (${remStop}s)` : `🚪 提前落車（返${retName}）`;
-        }
-      }
+      const showCorner = !isZoomed && (remRide <= 0 || !charRiding);
+      const kBtn = document.getElementById('btn-train-go-karumai');
+      const iBtn = document.getElementById('btn-train-go-ikebukuro');
+      if (kBtn) { kBtn.classList.toggle('hidden', !showCorner); kBtn.textContent = '🚉 輕米町駅'; }
+      if (iBtn) { iBtn.classList.toggle('hidden', !showCorner); iBtn.textContent = '🏙️ 池袋駅'; }
     }
 
     function gameLoop() {
@@ -8010,8 +8009,20 @@ html, body {
       if (ikExitBtn) ikExitBtn.classList.toggle('hidden', viewRoomId !== 'ikebukuro_exit' || isZoomed);
       const tbBtn = document.getElementById('btn-train-board');
       if (tbBtn && viewRoomId !== 'subway_platform' && viewRoomId !== 'ikebukuro_platform') tbBtn.classList.add('hidden');
-      const taBtn = document.getElementById('btn-train-alight');
-      if (taBtn && viewRoomId !== 'train_interior') taBtn.classList.add('hidden');
+      const kBtnH = document.getElementById('btn-train-go-karumai');
+      const iBtnH = document.getElementById('btn-train-go-ikebukuro');
+      if (kBtnH) {
+        const showK = !isZoomed && (viewRoomId === 'ikebukuro_platform' || viewRoomId === 'train_interior');
+        kBtnH.classList.toggle('hidden', !showK);
+        if (viewRoomId === 'ikebukuro_platform') kBtnH.textContent = '🚉 往輕米町駅';
+        else if (viewRoomId === 'train_interior') kBtnH.textContent = '🚉 輕米町駅';
+      }
+      if (iBtnH) {
+        const showI = !isZoomed && (viewRoomId === 'subway_platform' || viewRoomId === 'train_interior');
+        iBtnH.classList.toggle('hidden', !showI);
+        if (viewRoomId === 'subway_platform') iBtnH.textContent = '🏙️ 往池袋駅';
+        else if (viewRoomId === 'train_interior') iBtnH.textContent = '🏙️ 池袋駅';
+      }
       const b2f1f = document.getElementById('btn-2f-to-1f');
       if (b2f1f) b2f1f.classList.toggle('hidden', viewRoomId !== 'hallway_2f' || isZoomed);
       const ms2Btns = document.getElementById('main-street2-btns');
@@ -8128,25 +8139,30 @@ html, body {
       showToast(dest === 'ikebukuro_platform' ? '上車成功！山手線前往【池袋駅】🚃' : '上車成功！山手線返回【輕米町駅】🚃');
       updateHUD();
     });
-    const _btnAlight = document.getElementById('btn-train-alight');
-    if (_btnAlight) _btnAlight.addEventListener('click', () => {
-      const r = window.__trainRide || { dest: 'ikebukuro_platform', arriveAt: 0 };
+    const _btnGoKarumai = document.getElementById('btn-train-go-karumai');
+    if (_btnGoKarumai) _btnGoKarumai.addEventListener('click', () => {
       const petT = ensurePetState(state.activeCharId);
       const charRiding = (petT.currentRoom === 'train_interior' || (state.brother && state.brother.currentRoom === 'train_interior'));
-      if (Date.now() < r.arriveAt) {
-        if (charRiding) { showToast('角色搭緊車，未到站唔可以提前落車呀！🚃'); return; }
-        const originRoom = (r.dest === 'ikebukuro_platform') ? 'subway_platform' : 'ikebukuro_platform';
-        viewRoomId = originRoom;
-        window.__trainRide = null;
-        playSFX('pat');
-        showToast(originRoom === 'subway_platform' ? '已提前落車返回【輕米町駅月台】！🚉' : '已提前落車返回【池袋駅月台】！🚉');
-        updateHUD();
-        return;
+      if (viewRoomId === 'train_interior' && charRiding && window.__trainRide && Date.now() < window.__trainRide.arriveAt) {
+        showToast('角色搭緊車，未到站唔可以提前落車呀！🚃'); return;
       }
-      viewRoomId = r.dest;
+      viewRoomId = 'subway_platform';
       window.__trainRide = null;
       playSFX('pat');
-      showToast(viewRoomId === 'ikebukuro_platform' ? '已到達【池袋駅月台】！🚉' : '已返回【輕米町駅月台】！🚉');
+      showToast('已到達【輕米町駅月台】！🚉');
+      updateHUD();
+    });
+    const _btnGoIkebukuro = document.getElementById('btn-train-go-ikebukuro');
+    if (_btnGoIkebukuro) _btnGoIkebukuro.addEventListener('click', () => {
+      const petT = ensurePetState(state.activeCharId);
+      const charRiding = (petT.currentRoom === 'train_interior' || (state.brother && state.brother.currentRoom === 'train_interior'));
+      if (viewRoomId === 'train_interior' && charRiding && window.__trainRide && Date.now() < window.__trainRide.arriveAt) {
+        showToast('角色搭緊車，未到站唔可以提前落車呀！🚃'); return;
+      }
+      viewRoomId = 'ikebukuro_platform';
+      window.__trainRide = null;
+      playSFX('pat');
+      showToast('已到達【池袋駅月台】！🏙️');
       updateHUD();
     });
     document.querySelectorAll('[data-door-room]').forEach(btn => {
@@ -8741,7 +8757,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v115';
+          if (el) el.textContent = '☁️ 雲端已同步 · v116';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8780,7 +8796,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v115';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v116';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
