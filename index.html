@@ -253,7 +253,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v113</span>
+      <span id="save-status">💾 已自動儲存 · v115</span>
       
     </div>
 
@@ -3004,7 +3004,7 @@ html, body {
       autoFinishStaleToilet(pet, true);
       autoFinishStaleToilet(bro, false);
       // On load / background resume (!animateTransition), sync Hinata's room to current schedule BEFORE checking toilet so school hours never trigger home toilet
-      if (!animateTransition && !pet.toiletState && !(state.outing && state.outing.type) && !pet.recoverStage && !pet.fainted && !sched.freeRoam && pet.currentRoom !== sched.room) {
+      if (!animateTransition && !pet.toiletState && !(state.outing && state.outing.type) && !pet.recoverStage && !pet.fainted && !sched.freeRoam && !sched.isHomeSeq && pet.currentRoom !== sched.room) {
         pet.scheduleSlotKey = sched.key; pet.currentRoom = sched.room; pet.currentActivity = sched.act;
         pet.outfitIdx = sched.outfit ?? pet.outfitIdx; petX = sched.px; petY = sched.py; targetX = sched.px; targetY = sched.py;
         if (followTarget === 'hinata') viewRoomId = sched.room;
@@ -3296,7 +3296,7 @@ html, body {
 
       // 4. Sync Hinata
       if (!transitionState && !petWalk && !duoWalk && !pet.toiletState && !pet.recoverStage && pet.currentActivity === 'walking') { pet.currentActivity = sched.act; }
-      if (pet.toiletState) { /* skip normal schedule while in toilet routine */ } else if (!animateTransition && !(state.outing && state.outing.type) && !pet.recoverStage && !pet.fainted && !sched.freeRoam && pet.currentRoom !== sched.room) {
+      if (pet.toiletState) { /* skip normal schedule while in toilet routine */ } else if (!animateTransition && !(state.outing && state.outing.type) && !pet.recoverStage && !pet.fainted && !sched.freeRoam && !sched.isHomeSeq && pet.currentRoom !== sched.room) {
         pet.scheduleSlotKey = sched.key; pet.currentRoom = sched.room; pet.currentActivity = sched.act;
         pet.outfitIdx = sched.outfit ?? pet.outfitIdx; petX = sched.px; petY = sched.py; targetX = sched.px; targetY = sched.py;
         if (followTarget === 'hinata') viewRoomId = sched.room;
@@ -3527,31 +3527,40 @@ html, body {
           if (bro.currentRoom === 'kitchen' && ['breakfast','lunch','dinner'].includes(bro.currentActivity)) { bro.tx = 505; bro.ty = 440; }
         }
       }
-      if (!info.isWeekend && sched.isHomeSeq) {
-        const nowHms = Date.now();
+      if (!info.isWeekend && sched.isHomeSeq && !pet.toiletState && !pet.recoverStage && !pet.fainted && !(state.outing && state.outing.type)) {
+        const nowD = new Date();
+        const secSince1730 = Math.max(0, (nowD.getHours() * 3600 + nowD.getMinutes() * 60 + nowD.getSeconds()) - (17 * 3600 + 30 * 60));
         const tdH = getTodayStr();
-        if (pet.homeSeqDate !== tdH || !pet.homeSeqStage || pet.homeSeqStage === 'hall5s') {
-          transitionState = null;
-          pet.homeSeqDate = tdH;
-          pet.homeSeqStage = 'hall15s';
-          pet.homeSeqUntil = nowHms + 15000;
-          pet.currentRoom = 'hallway'; pet.currentActivity = 'hallway'; targetX = 215; targetY = 440;
-        } else if (pet.homeSeqStage === 'hall15s' && nowHms >= (pet.homeSeqUntil || 0)) {
-          transitionState = null;
-          pet.homeSeqStage = 'room30s'; pet.homeSeqUntil = nowHms + 30000;
-          pet.currentRoom = 'room_hinata'; pet.currentActivity = 'unpack_bag'; targetX = 200; targetY = 435;
-          if (viewRoomId === 'hallway' || viewRoomId === 'room_hinata') { viewRoomId = 'room_hinata'; speakAndShow('「返入房放低書包同整理好裝備先～🎒」'); }
+        pet.homeSeqDate = tdH;
+        // Exact timeline: 0-15s hallway -> 15s-5m15s (315s) room_hinata -> 5m15s-20m15s (1215s) living -> 20m15s-45m backyard
+        let targetStage = 'hall15s', targetR = 'hallway', targetA = 'tidy_bag', txH = 215, tyH = 440, lineH = null, outH = 1;
+        if (secSince1730 < 15) {
+          targetStage = 'hall15s'; targetR = 'hallway'; targetA = 'tidy_bag'; txH = 215; tyH = 440; outH = 1;
+        } else if (secSince1730 < 315) {
+          targetStage = 'room5m'; targetR = 'room_hinata'; targetA = 'unpack_bag'; txH = 200; tyH = 435; outH = 1;
+          lineH = '「除完鞋返上房放低書包同整理裝備（5分鐘）～🎒」';
+        } else if (secSince1730 < 1215) {
+          targetStage = 'living15m'; targetR = 'living'; targetA = 'tea'; txH = 280; tyH = 440; outH = 1;
+          lineH = '「放好書包啦！落客廳飲杯茶休息 15 分鐘回氣先～🍵💛」';
+        } else {
+          targetStage = 'backyard'; targetR = 'backyard'; targetA = 'backyard'; txH = 315; tyH = 435; outH = 0;
+          lineH = '「休息夠 15 分鐘啦！換好隊服去後院練排球直至下一個行程！🏐🔥」';
+        }
+        const stageChanged = (pet.homeSeqStage !== targetStage);
+        pet.homeSeqStage = targetStage;
+        pet.outfitIdx = outH;
+        if (pet.currentRoom !== targetR && !transitionState) {
+          if (animateTransition && stageChanged) {
+            startCharacterWalkTransition(pet, targetR, targetA, txH, tyH, followTarget === 'hinata');
+            if (lineH && (viewRoomId === pet.currentRoom || viewRoomId === targetR)) speakAndShow(lineH);
+          } else {
+            pet.currentRoom = targetR; pet.currentActivity = targetA;
+            petX = txH; petY = tyH; targetX = txH; targetY = tyH;
+            if (followTarget === 'hinata') viewRoomId = targetR;
+          }
           updateHUD(); saveState();
-        } else if (pet.homeSeqStage === 'room30s' && nowHms >= (pet.homeSeqUntil || 0)) {
-          pet.homeSeqStage = 'living15m'; pet.homeSeqUntil = nowHms + 15 * 60 * 1000;
-          pet.currentRoom = 'living'; pet.currentActivity = 'tea'; targetX = 280; targetY = 440;
-          if (viewRoomId === 'room_hinata' || viewRoomId === 'living') { viewRoomId = 'living'; speakAndShow('「喺客廳飲杯茶休息 15 分鐘先再練球！慢慢回氣中～🍵💛」'); }
-          updateHUD(); saveState();
-        } else if (pet.homeSeqStage === 'living15m' && nowHms >= (pet.homeSeqUntil || 0)) {
-          pet.homeSeqStage = 'backyard'; pet.outfitIdx = 0;
-          pet.currentRoom = 'backyard'; pet.currentActivity = 'backyard'; targetX = 315; targetY = 435;
-          if (viewRoomId === 'living' || viewRoomId === 'backyard') { viewRoomId = 'backyard'; speakAndShow('「休息夠啦！換好隊服去後院練排球直至食晚飯！🏐🔥」'); }
-          updateHUD(); saveState();
+        } else if (pet.currentRoom === targetR && pet.currentActivity !== targetA && !pet.fridgeStage) {
+          pet.currentActivity = targetA; targetX = txH; targetY = tyH;
         }
       }
 
@@ -3907,7 +3916,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v113'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v115'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -3984,14 +3993,15 @@ html, body {
         }
         ctx.drawImage(bg, -3, -3, 606, 606);
         ctx.restore();
-        const hasDedicatedNight = (roomId === 'konbini' || NIGHT_BG_ROOMS.has(roomId)) && Boolean(sprites[bgKey]);
+        const isAlwaysLitIndoor = (roomId === 'subway_gate' || roomId === 'ikebukuro_gate');
+        const hasDedicatedNight = isAlwaysLitIndoor || ((roomId === 'konbini' || NIGHT_BG_ROOMS.has(roomId)) && Boolean(sprites[bgKey]));
         if (timeInfo.isLateNight && !hasDedicatedNight) {
           ctx.fillStyle = 'rgba(15, 23, 42, 0.38)';
           ctx.fillRect(0, 0, 600, 600);
         } else if (isNight && !hasDedicatedNight) {
           ctx.fillStyle = 'rgba(10, 18, 38, 0.42)';
           ctx.fillRect(0, 0, 600, 600);
-        } else if (timeInfo.period === 'dusk' && !isNight) {
+        } else if (timeInfo.period === 'dusk' && !isNight && !isAlwaysLitIndoor) {
           ctx.fillStyle = 'rgba(251, 146, 60, 0.14)';
           ctx.fillRect(0, 0, 600, 600);
         }
@@ -4173,7 +4183,7 @@ html, body {
       { start: 975,  end: 990,  time: '16:15 - 16:30', roomName: '學校飲水處',      label: '💧 練波飲水休息（精力+30）' },
       { start: 990,  end: 1020, time: '16:30 - 17:00', roomName: '室內排球場',      label: '🏐 放學社團練波（下半節）' },
       { start: 1020, end: 1050, time: '17:00 - 17:30', roomName: '十字路→小巷→街道', label: '🏠 17:05 十字路口會合・17:30 到家' },
-      { start: 1050, end: 1095, time: '17:30 - 18:15', roomName: '玄關→房→客廳→後院', label: '🎒 放書包・客廳休15分・後院練球' },
+      { start: 1050, end: 1095, time: '17:30 - 18:15', roomName: '玄關→房→客廳→後院', label: '🎒 除鞋15秒→房5分→客廳休15分→後院練球' },
       { start: 1095, end: 1125, time: '18:15 - 18:45', roomName: '1F 廚房',         label: '🍽️ 二人一齊食晚餐' },
       { start: 1125, end: 1160, time: '18:45 - 19:20', roomName: '1F 廁所浴室',     label: '🫧 二人一齊浸浴' },
       { start: 1160, end: 1215, time: '19:20 - 20:15', roomName: '2F 哥哥房間',     label: '🎮 與哥哥玩樂時間' },
@@ -4881,25 +4891,53 @@ html, body {
       if (t < 30) return { phase: 'departing', p: (t - 25) / 5, secLeft: 0 };
       return { phase: 'waiting', p: 0, secLeft: Math.ceil(intervalSec - t) };
     }
-    function drawPlatformTrainAndBoard(roomId) {
+    function getPlatformBgSpriteForTime(roomId, timeInfo) {
+      const h = new Date().getHours();
+      const isNight = (h >= 18 || h < 6);
+      const isMorning = (h >= 6 && h < 10);
+      let k = 'bg_' + roomId;
+      if (isNight && sprites[k + '_night']) k += '_night';
+      else if (isMorning && sprites[k + '_morning']) k += '_morning';
+      return sprites[k] || sprites['bg_' + roomId];
+    }
+    function drawPlatformTrainAndBoard(roomId, timeInfo) {
       const tc = getTrainCycleState();
       const destName = roomId === 'subway_platform' ? '池袋駅' : '輕米町駅';
       const spr = sprites.train_yamanote;
       if (spr && spr.complete && spr.naturalWidth > 0 && tc.phase !== 'waiting') {
-        const tw = 680, th = Math.round(tw * (spr.naturalHeight / spr.naturalWidth));
-        const ty = 228;
-        let tx = -35;
+        // Position train wheels directly on the steel tracks (y ≈ 446), behind the yellow safety railings
+        const tw = 580, th = Math.round(tw * (spr.naturalHeight / spr.naturalWidth));
+        const ty = 196;
+        let tx = 10;
         if (tc.phase === 'arriving') {
           const easeOut = 1 - Math.pow(1 - tc.p, 3);
-          tx = -700 + (665 * easeOut);
+          tx = -610 + (620 * easeOut);
         } else if (tc.phase === 'departing') {
           const easeIn = Math.pow(tc.p, 2.6);
-          tx = -35 + (685 * easeIn);
+          tx = 10 + (630 * easeIn);
         }
-        const microV = (tc.phase === 'arriving' || tc.phase === 'departing') ? Math.sin(frameCount * 0.8) * 1.1 : 0;
+        const microV = (tc.phase === 'arriving' || tc.phase === 'departing') ? Math.sin(frameCount * 0.8) * 1.0 : 0;
         ctx.save();
+        // Clip above the concrete platform floor edge (y = 454) so train stays strictly on the tracks
+        ctx.beginPath(); ctx.rect(0, 0, 600, 454); ctx.clip();
         ctx.drawImage(spr, tx, ty + microV, tw, th);
         ctx.restore();
+
+        // Re-draw foreground platform floor, side safety pillars, and 3 yellow horizontal safety bars ON TOP of the train
+        const bgSpr = getPlatformBgSpriteForTime(roomId, timeInfo || getCurrentHourInfo());
+        if (bgSpr && bgSpr.complete && bgSpr.naturalWidth > 0) {
+          const sx = bgSpr.naturalWidth / 600, sy = bgSpr.naturalHeight / 600;
+          const copySlice = (x, y, w, h) => ctx.drawImage(bgSpr, x * sx, y * sy, w * sx, h * sy, x, y, w, h);
+          // Concrete platform foreground (y >= 454)
+          copySlice(0, 454, 600, 146);
+          // Left & right white safety-gate pillar boxes
+          copySlice(0, 318, 82, 165);
+          copySlice(518, 318, 82, 165);
+          // 3 horizontal yellow railing bars (only hide bars while stopped? Keep bars visible cleanly in front!)
+          copySlice(78, 329, 444, 13);
+          copySlice(78, 370, 444, 13);
+          copySlice(78, 411, 444, 13);
+        }
       }
       ctx.save();
       const bx = 138, by = 14, bw = 324, bh = 36;
@@ -4925,25 +4963,43 @@ html, body {
       }
     }
     function drawTrainInteriorStatusBar() {
-      const r = window.__trainRide || { dest: 'ikebukuro_platform', arriveAt: Date.now() };
+      const nowMs = Date.now();
+      if (!window.__trainRide) window.__trainRide = { dest: 'ikebukuro_platform', arriveAt: nowMs + 15000, departAt: nowMs + 30000 };
+      const r = window.__trainRide;
+      if (!r.departAt) r.departAt = r.arriveAt + 15000;
+      // If player did not alight within 15s of arrival, close doors and return to origin station automatically!
+      if (nowMs >= r.departAt) {
+        r.dest = (r.dest === 'ikebukuro_platform') ? 'subway_platform' : 'ikebukuro_platform';
+        r.arriveAt = nowMs + 15000;
+        r.departAt = r.arriveAt + 15000;
+        const nextName = r.dest === 'ikebukuro_platform' ? '池袋駅' : '輕米町駅';
+        if (typeof showToast === 'function') showToast(`車門已關！未有落車，列車折返前往【${nextName}】🚃`);
+        if (typeof playSFX === 'function') playSFX('pat');
+      }
       const destName = r.dest === 'ikebukuro_platform' ? '池袋駅' : '輕米町駅';
-      const rem = Math.max(0, Math.ceil((r.arriveAt - Date.now()) / 1000));
+      const retName = r.dest === 'ikebukuro_platform' ? '輕米町駅' : '池袋駅';
+      const remRide = Math.max(0, Math.ceil((r.arriveAt - nowMs) / 1000));
+      const remStop = Math.max(0, Math.ceil((r.departAt - nowMs) / 1000));
       ctx.save();
-      const bx = 128, by = 14, bw = 344, bh = 36;
+      const bx = 112, by = 14, bw = 376, bh = 36;
       ctx.fillStyle = 'rgba(18, 24, 34, 0.88)';
-      ctx.strokeStyle = rem > 0 ? '#84cc16' : '#f59e0b';
+      ctx.strokeStyle = remRide > 0 ? '#84cc16' : '#f59e0b';
       ctx.lineWidth = 2.5;
       ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 10); ctx.fill(); ctx.stroke();
-      ctx.font = 'bold 14px sans-serif';
+      ctx.font = 'bold 13.5px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillStyle = rem > 0 ? '#bef264' : '#fde047';
-      ctx.fillText(rem > 0 ? `🚃 行駛中… 前往【${destName}】・約 ${rem} 秒後到站` : `🚉 已到達【${destName}】！請按下方按鈕落車`, 300, by + 23);
+      ctx.fillStyle = remRide > 0 ? '#bef264' : '#fde047';
+      ctx.fillText(remRide > 0 ? `🚃 行駛中… 前往【${destName}】・約 ${remRide} 秒後到站` : `🚉 已到達【${destName}】！${remStop} 秒後關門返【${retName}】`, 300, by + 23);
       ctx.restore();
+      const petT = ensurePetState(state.activeCharId);
+      const charRiding = (petT.currentRoom === 'train_interior' || (state.brother && state.brother.currentRoom === 'train_interior'));
       const aBtn = document.getElementById('btn-train-alight');
       if (aBtn) {
-        const showAlight = (rem <= 0 && !isZoomed);
+        const showAlight = !isZoomed && (remRide <= 0 || !charRiding);
         aBtn.classList.toggle('hidden', !showAlight);
-        if (showAlight) aBtn.textContent = `🚪 落車：${destName}月台`;
+        if (showAlight) {
+          aBtn.textContent = remRide <= 0 ? `🚪 落車：${destName}月台 (${remStop}s)` : `🚪 提前落車（返${retName}）`;
+        }
       }
     }
 
@@ -4972,7 +5028,7 @@ html, body {
         }
         drawAnimeRoomBackground(viewRoomId, timeInfo);
         if (viewRoomId === 'subway_platform' || viewRoomId === 'ikebukuro_platform') {
-          drawPlatformTrainAndBoard(viewRoomId);
+          drawPlatformTrainAndBoard(viewRoomId, timeInfo);
         }
         if (viewRoomId === 'train_interior') {
           drawTrainInteriorStatusBar();
@@ -8066,7 +8122,7 @@ html, body {
       const tc = getTrainCycleState();
       if (tc.phase !== 'stopped') { showToast('列車仲未停穩／已經開出啦！'); return; }
       const dest = (viewRoomId === 'subway_platform') ? 'ikebukuro_platform' : 'subway_platform';
-      window.__trainRide = { dest, arriveAt: Date.now() + 15000 };
+      window.__trainRide = { dest, arriveAt: Date.now() + 15000, departAt: Date.now() + 30000 };
       viewRoomId = 'train_interior';
       playSFX('levelup');
       showToast(dest === 'ikebukuro_platform' ? '上車成功！山手線前往【池袋駅】🚃' : '上車成功！山手線返回【輕米町駅】🚃');
@@ -8075,7 +8131,18 @@ html, body {
     const _btnAlight = document.getElementById('btn-train-alight');
     if (_btnAlight) _btnAlight.addEventListener('click', () => {
       const r = window.__trainRide || { dest: 'ikebukuro_platform', arriveAt: 0 };
-      if (Date.now() < r.arriveAt) { showToast('列車仲行駛緊，未到站呀！'); return; }
+      const petT = ensurePetState(state.activeCharId);
+      const charRiding = (petT.currentRoom === 'train_interior' || (state.brother && state.brother.currentRoom === 'train_interior'));
+      if (Date.now() < r.arriveAt) {
+        if (charRiding) { showToast('角色搭緊車，未到站唔可以提前落車呀！🚃'); return; }
+        const originRoom = (r.dest === 'ikebukuro_platform') ? 'subway_platform' : 'ikebukuro_platform';
+        viewRoomId = originRoom;
+        window.__trainRide = null;
+        playSFX('pat');
+        showToast(originRoom === 'subway_platform' ? '已提前落車返回【輕米町駅月台】！🚉' : '已提前落車返回【池袋駅月台】！🚉');
+        updateHUD();
+        return;
+      }
       viewRoomId = r.dest;
       window.__trainRide = null;
       playSFX('pat');
@@ -8674,7 +8741,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v113';
+          if (el) el.textContent = '☁️ 雲端已同步 · v115';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8713,7 +8780,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v113';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v115';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
