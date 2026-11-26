@@ -100,9 +100,10 @@ async function main() {
     pet.dailyAutoCounts = { date: hk.todayStr, toilet: 0, konbiniAsk: 0, parkAsk: 0, backyardAsk: 0, schoolMail: 0, snackBuy: 0 };
   }
   const smCnt = pet.dailyAutoCounts.schoolMail || 0;
+  const forceTest = (process.env.FORCE_TEST === 'true');
   const inSchoolHours = !isWeekend && hk.totalMin >= 530 && hk.totalMin < 1020;
-  if (inSchoolHours && aeSm.prob > 0 && aeSm.maxPerDay > 0 && smCnt < aeSm.maxPerDay && (hk.nowMs - (pet.lastSchoolMailAt || 0) >= 30 * 60 * 1000)) {
-    if (Math.random() < (aeSm.prob / 100)) {
+  if (forceTest || (inSchoolHours && aeSm.prob > 0 && aeSm.maxPerDay > 0 && smCnt < aeSm.maxPerDay && (hk.nowMs - (pet.lastSchoolMailAt || 0) >= 30 * 60 * 1000))) {
+    if (forceTest || Math.random() < (aeSm.prob / 100)) {
       const txt = SCHOOL_LETTERS[Math.floor(Math.random() * SCHOOL_LETTERS.length)];
       pet.lastSchoolMailAt = hk.nowMs;
       pet.dailyAutoCounts.schoolMail = smCnt + 1;
