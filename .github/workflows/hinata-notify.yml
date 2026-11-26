@@ -18,8 +18,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Install web-push
+        run: npm install --no-save web-push
       - name: Run Hinata Push Check
         env:
+          VAPID_PUBLIC_KEY: 'BIhtiC0UKFDconvLKHdne1Tv_xG3BGe_YKfkc5kET7zgBRZyyey62ZuQfGufGnmO8sVJwhwthcqv5BZbxQqoaDI'
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
           BARK_URL: ${{ secrets.BARK_URL }}
           FORCE_TEST: ${{ github.event.inputs.force_test }}
         run: node scripts/hinata_push_bot.mjs
