@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
+    inputs:
+      force_test:
+        description: '強制測試：無視時段即刻由雲端發一條翔陽訊息並寫入信箱'
+        type: boolean
+        default: false
 
 jobs:
   notify:
@@ -16,4 +21,5 @@ jobs:
       - name: Run Hinata Push Check
         env:
           BARK_URL: ${{ secrets.BARK_URL }}
+          FORCE_TEST: ${{ github.event.inputs.force_test }}
         run: node scripts/hinata_push_bot.mjs
