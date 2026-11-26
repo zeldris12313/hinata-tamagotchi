@@ -254,7 +254,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v119</span>
+      <span id="save-status">💾 已自動儲存 · v120</span>
       
     </div>
 
@@ -3955,7 +3955,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v119'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v120'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -6765,7 +6765,16 @@ html, body {
           ['cleanReward','🧹 客廳執屋獎勵機率',false,false]
         ];
         const smSupHtml = `<div class="bg-emerald-50 border border-emerald-300 rounded-xl p-1.5 mt-1.5">
-          <div class="text-[11px] font-black text-[#2d1e12] mb-1">🛒 超市陪同、宵夜機率與日用品消耗（整除鎖定）</div>
+          <div class="bg-sky-50/95 border border-sky-300 rounded-xl p-2 space-y-1.5 mt-2">
+          <div class="text-[11px] font-black text-[#2d1e12]">🔔 iPhone 真實手機鎖屏通知（Bark App）</div>
+          <div class="text-[10px] text-slate-600">貼入 Bark 專屬推播連結，翔陽在校傳訊息或飽食/精力/心情偏低時會帶小翔陽頭像彈通知去你 iPhone！</div>
+          <div class="flex gap-1 items-center">
+            <input id="inp-bark-url" type="url" value="${(state.barkUrl || '').replace(/"/g, '&quot;')}" placeholder="https://api.day.app/你嘅Key/" class="flex-1 px-2 py-1 rounded-lg border border-sky-400 bg-white text-[10px] font-bold text-[#2d1e12]" />
+            <button type="button" data-bark-action="save" class="px-2 py-1 rounded-lg bg-sky-500 text-white border border-[#2d1e12] text-[10px] font-black shrink-0">💾 儲存</button>
+            <button type="button" data-bark-action="test" class="px-2 py-1 rounded-lg bg-amber-400 text-[#2d1e12] border border-[#2d1e12] text-[10px] font-black shrink-0">📲 測試</button>
+          </div>
+        </div>
+        <div class="text-[11px] font-black text-[#2d1e12] mb-1">🛒 超市陪同、宵夜機率與日用品消耗（整除鎖定）</div>
           <div class="grid grid-cols-2 gap-1 text-[10px] font-bold">
             <div class="flex items-center justify-between bg-white border border-emerald-300 rounded px-1.5 py-0.5">
               <span>🛒 翔陽陪同去超市</span>
@@ -7230,11 +7239,42 @@ html, body {
       else badge.classList.add('hidden');
     }
     let smsDrawerOpen = false;
+    function sendBarkPush(title, body, iconFile = 'chibiSchool.png') {
+      const base = (state.barkUrl || '').trim().replace(/\/+$/, '');
+      if (!base) return;
+      const gameUrl = 'https://zeldris12313.github.io/hinata-tamagotchi/';
+      const iconUrl = `${gameUrl}assets/${iconFile}`;
+      const u = `${base}/${encodeURIComponent(title)}/${encodeURIComponent(body)}?icon=${encodeURIComponent(iconUrl)}&url=${encodeURIComponent(gameUrl)}&group=Hinata`;
+      try { fetch(u, { mode: 'no-cors' }).catch(() => {}); } catch (_) {}
+    }
+    function checkLowStatBarkAlerts(pet) {
+      if (!state.barkUrl || !pet || pet.currentActivity === 'sleep') return;
+      const nowA = Date.now();
+      const hr = new Date().getHours();
+      if (hr < 8) return;
+      if (!pet.lastLowAlertAt) pet.lastLowAlertAt = { hunger: 0, energy: 0, mood: 0 };
+      const COOL = 2 * 3600 * 1000;
+      if ((pet.hunger ?? 100) <= 25 && nowA - (pet.lastLowAlertAt.hunger || 0) >= COOL) {
+        pet.lastLowAlertAt.hunger = nowA;
+        sendBarkPush('日向翔陽好肚餓 🍙', `「哥哥…我個肚仔好餓呀（飽食 ${Math.round(pet.hunger)}%），快啲返嚟餵我食嘢啦！😢」`, 'chibiSchoolCry.png');
+      }
+      if ((pet.energy ?? 100) <= 25 && nowA - (pet.lastLowAlertAt.energy || 0) >= COOL) {
+        pet.lastLowAlertAt.energy = nowA;
+        sendBarkPush('日向翔陽好攰呀 ⚡', `「哥哥…我冇晒電好眼瞓呀（精力 ${Math.round(pet.energy)}%），過嚟睇下我啦…😴」`, 'chibiSchoolCry.png');
+      }
+      if ((pet.mood ?? 100) <= 30 && nowA - (pet.lastLowAlertAt.mood || 0) >= COOL) {
+        pet.lastLowAlertAt.mood = nowA;
+        sendBarkPush('日向翔陽唔開心 😢', `「哥哥…我心情有啲低落（心情 ${Math.round(pet.mood)}%），可唔可以摸下我頭陪下我？💛」`, 'chibiSchoolCry.png');
+      }
+    }
     function pushSmsMessage(msg) {
       if (!state.mailbox) state.mailbox = { items: [], lastMailDate: null, lastInviteDate: null, recentLetterIdxs: [] };
       if (!Array.isArray(state.mailbox.items)) state.mailbox.items = [];
       state.mailbox.items.push(msg);
       if (state.mailbox.items.length > 20) state.mailbox.items = state.mailbox.items.slice(-20);
+      if (msg && msg.sender === 'hinata' && msg.text) {
+        sendBarkPush('日向翔陽傳咗訊息畀你 🏐', msg.text, 'chibiSchool.png');
+      }
       updateMailboxBadge();
       saveState();
     }
@@ -8296,6 +8336,23 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       openShopMenuModal(skey);
     });
     document.getElementById('settings-modal-body').addEventListener('click', (e) => {
+      const barkBtn = e.target.closest('[data-bark-action]');
+      if (barkBtn) {
+        const inp = document.getElementById('inp-bark-url');
+        const val = (inp ? inp.value : '').trim();
+        state.barkUrl = val;
+        saveState();
+        if (barkBtn.dataset.barkAction === 'test') {
+          if (!val) { playSFX('miss'); showToast('請先貼入 Bark 推播連結！'); return; }
+          sendBarkPush('日向翔陽 🏐（測試通知）', '「哥哥！我成功連到你部 iPhone 啦！以後有訊息同肚餓都會通知你！💛」', 'chibiSchool.png');
+          playSFX('levelup');
+          showToast('已發送測試通知到你部 iPhone！📲');
+        } else {
+          playSFX('pat');
+          showToast(val ? '已儲存 Bark 通知連結並同步雲端 🔔' : '已清除 Bark 通知連結');
+        }
+        return;
+      }
       const snkBtn = e.target.closest('[data-snk-id]');
       if (snkBtn) {
         const sid = snkBtn.dataset.snkId, sf = snkBtn.dataset.snkField, sd = Number(snkBtn.dataset.snkDelta);
@@ -8810,6 +8867,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
         if (typeof syncScheduleActivity === 'function') syncScheduleActivity(pet, false);
         if (typeof renderDock === 'function') renderDock();
       }
+      if (typeof checkLowStatBarkAlerts === 'function') checkLowStatBarkAlerts(pet);
       updateHUD(); saveState();
       const co = document.getElementById('choice-overlay');
       if (co && !co.classList.contains('hidden') && window.__openStatLogStat && co.innerHTML.includes('最近 10 次變化紀錄')) {
@@ -8885,7 +8943,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v119';
+          if (el) el.textContent = '☁️ 雲端已同步 · v120';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8924,7 +8982,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v119';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v120';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
