@@ -255,7 +255,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v121</span>
+      <span id="save-status">💾 已自動儲存 · v123</span>
       
     </div>
 
@@ -505,6 +505,30 @@ html, body {
       bg_ikebukuro_exit: "./assets/bg_ikebukuro_exit.jpg?v=112",
       bg_ikebukuro_exit_morning: "./assets/bg_ikebukuro_exit_morning.jpg?v=112",
       bg_ikebukuro_exit_night: "./assets/bg_ikebukuro_exit_night.jpg?v=112",
+      bg_ikebukuro_animate_ext: "./assets/bg_ikebukuro_animate_ext.jpg?v=123",
+      bg_ikebukuro_animate_ext_morning: "./assets/bg_ikebukuro_animate_ext_morning.jpg?v=123",
+      bg_ikebukuro_animate_ext_night: "./assets/bg_ikebukuro_animate_ext_night.jpg?v=123",
+      bg_ikebukuro_animate_manga: "./assets/bg_ikebukuro_animate_manga.jpg?v=123",
+      bg_ikebukuro_animate_manga_morning: "./assets/bg_ikebukuro_animate_manga_morning.jpg?v=123",
+      bg_ikebukuro_animate_manga_night: "./assets/bg_ikebukuro_animate_manga_night.jpg?v=123",
+      bg_ikebukuro_animate_goods: "./assets/bg_ikebukuro_animate_goods.jpg?v=123",
+      bg_ikebukuro_sunshine_ext: "./assets/bg_ikebukuro_sunshine_ext.jpg?v=123",
+      bg_ikebukuro_sunshine_ext_morning: "./assets/bg_ikebukuro_sunshine_ext_morning.jpg?v=123",
+      bg_ikebukuro_sunshine_ext_night: "./assets/bg_ikebukuro_sunshine_ext_night.jpg?v=123",
+      bg_ikebukuro_sunshine_in: "./assets/bg_ikebukuro_sunshine_in.jpg?v=123",
+      bg_ikebukuro_sunshine_in_morning: "./assets/bg_ikebukuro_sunshine_in_morning.jpg?v=123",
+      bg_ikebukuro_sunshine_in_night: "./assets/bg_ikebukuro_sunshine_in_night.jpg?v=123",
+      bg_ikebukuro_pokemon: "./assets/bg_ikebukuro_pokemon.jpg?v=123",
+      bg_ikebukuro_hotel_ext: "./assets/bg_ikebukuro_hotel_ext.jpg?v=123",
+      bg_ikebukuro_hotel_ext_morning: "./assets/bg_ikebukuro_hotel_ext_morning.jpg?v=123",
+      bg_ikebukuro_hotel_ext_night: "./assets/bg_ikebukuro_hotel_ext_night.jpg?v=123",
+      bg_ikebukuro_hotel_lobby: "./assets/bg_ikebukuro_hotel_lobby.jpg?v=123",
+      bg_ikebukuro_hotel_lobby_morning: "./assets/bg_ikebukuro_hotel_lobby_morning.jpg?v=123",
+      bg_ikebukuro_hotel_lobby_night: "./assets/bg_ikebukuro_hotel_lobby_night.jpg?v=123",
+      bg_ikebukuro_hotel_lift: "./assets/bg_ikebukuro_hotel_lift.jpg?v=123",
+      bg_ikebukuro_hotel_room: "./assets/bg_ikebukuro_hotel_room.jpg?v=123",
+      bg_ikebukuro_hotel_room_morning: "./assets/bg_ikebukuro_hotel_room_morning.jpg?v=123",
+      bg_ikebukuro_hotel_room_night: "./assets/bg_ikebukuro_hotel_room_night.jpg?v=123",
       bg_supermarket: "./assets/bg_supermarket.jpg?v=69",
       bg_supermarket_morning: "./assets/bg_supermarket_morning.jpg?v=69",
       bg_supermarket_night: "./assets/bg_supermarket_night.jpg?v=69",
@@ -685,7 +709,17 @@ html, body {
       train_interior:     { id: 'train_interior',     name: '山手線列車車廂',   short: '列車車廂', icon: '🚃', gx: 2.5, gy: -0.5, up: null, down: null, left: null, right: null, doors: ['subway_platform', 'ikebukuro_platform'] },
       ikebukuro_platform: { id: 'ikebukuro_platform', name: '池袋駅（候車處）', short: '池袋月台', icon: '🚉', gx: 2.5, gy: -1,   up: null, down: 'ikebukuro_gate', left: null, right: null, doors: ['train_interior'] },
       ikebukuro_gate:     { id: 'ikebukuro_gate',     name: '池袋駅（閘口）',   short: '池袋閘口', icon: '🎫', gx: 2.5, gy: -1.5, up: 'ikebukuro_platform', down: 'ikebukuro_exit', left: null, right: null },
-      ikebukuro_exit:     { id: 'ikebukuro_exit',     name: '池袋駅 東口',      short: '池袋東口', icon: '🏙️', gx: 2.5, gy: -2,   up: 'ikebukuro_gate', down: null, left: null, right: null, doors: ['ikebukuro_gate'] },
+      ikebukuro_exit:          { id: 'ikebukuro_exit',          name: '池袋駅 東口',        short: '池袋東口',   icon: '🏙️', gx: 2.5, gy: -2,   up: 'ikebukuro_gate', down: null, left: 'ikebukuro_hotel_ext', right: 'ikebukuro_animate_ext', doors: ['ikebukuro_gate'] },
+      ikebukuro_animate_ext:   { id: 'ikebukuro_animate_ext',   name: '池袋 animate（正門）', short: 'animate',   icon: '🛍️', gx: 3.5, gy: -2,   up: 'ikebukuro_animate_manga', down: null, left: 'ikebukuro_exit', right: 'ikebukuro_sunshine_ext' },
+      ikebukuro_animate_manga: { id: 'ikebukuro_animate_manga', name: 'animate 漫畫書層',   short: '漫畫書層',   icon: '📚', gx: 3.5, gy: -2.5, up: 'ikebukuro_animate_goods', down: 'ikebukuro_animate_ext', left: null, right: null },
+      ikebukuro_animate_goods: { id: 'ikebukuro_animate_goods', name: 'animate 動漫周邊層', short: '動漫周邊層', icon: '🎁', gx: 3.5, gy: -3,   up: null, down: 'ikebukuro_animate_manga', left: null, right: null },
+      ikebukuro_sunshine_ext:  { id: 'ikebukuro_sunshine_ext',  name: 'Sunshine City（正門）', short: 'Sunshine', icon: '☀️', gx: 4.5, gy: -2,   up: 'ikebukuro_sunshine_in', down: null, left: 'ikebukuro_animate_ext', right: null },
+      ikebukuro_sunshine_in:   { id: 'ikebukuro_sunshine_in',   name: 'Sunshine City 內部', short: '商場內部',   icon: '🏬', gx: 4.5, gy: -2.5, up: 'ikebukuro_sunshine_ext', down: 'ikebukuro_pokemon', left: null, right: null },
+      ikebukuro_pokemon:       { id: 'ikebukuro_pokemon',       name: 'Pokémon Center',     short: '寶可夢中心', icon: '🔴', gx: 4.5, gy: -3,   up: 'ikebukuro_sunshine_in', down: null, left: null, right: null },
+      ikebukuro_hotel_ext:     { id: 'ikebukuro_hotel_ext',     name: '池袋 APA 酒店',      short: 'APA酒店',    icon: '🏨', gx: 1.5, gy: -2,   up: 'ikebukuro_hotel_lobby', down: null, left: null, right: 'ikebukuro_exit' },
+      ikebukuro_hotel_lobby:   { id: 'ikebukuro_hotel_lobby',   name: 'APA 酒店大堂',       short: '酒店大堂',   icon: '🛎️', gx: 1.5, gy: -2.5, up: null, down: 'ikebukuro_hotel_ext', left: null, right: 'ikebukuro_hotel_lift' },
+      ikebukuro_hotel_lift:    { id: 'ikebukuro_hotel_lift',    name: '酒店電梯大堂',       short: '等Lift',     icon: '🛗', gx: 2.0, gy: -2.5, up: 'ikebukuro_hotel_room', down: null, left: 'ikebukuro_hotel_lobby', right: null },
+      ikebukuro_hotel_room:    { id: 'ikebukuro_hotel_room',    name: '10F 和室酒店房',     short: '10F和室',    icon: '🛏️', gx: 2.0, gy: -3,   up: null, down: 'ikebukuro_hotel_lift', left: null, right: null },
       street_lane:  { id: 'street_lane',  name: '街道小巷',        short: '小巷',     icon: '🛣️', gx: 2.5, gy: 2, up: 'street', down: null, left: null, right: 'street_cross' },
       street_cross: { id: 'street_cross', name: '十字路口',        short: '十字路',   icon: '🚦', gx: 3, gy: 2,  up: 'main_street', down: 'school_gate', left: 'street_lane', right: 'street_mid' },
       street_mid:   { id: 'street_mid',   name: '室外街道中段',    short: '街道中段', icon: '🛣️', gx: 3.5, gy: 2, up: null, down: null, left: 'street_cross', right: 'street2' },
@@ -788,8 +822,46 @@ html, body {
         { px: 300, py: 470, act: 'idle', line: '「出咗池袋駅閘口，行出去就係池袋東口啦！🎫」' }
       ],
       ikebukuro_exit: [
-        { px: 280, py: 475, act: 'street', line: '「哇！呢度就係東京池袋駅東口！！好大好氣派呀！🏙️✨」' },
-        { px: 375, py: 475, act: 'window_gaze', line: '「呢度之後會有好多好玩嘅地方可以行街呢！」' }
+        { px: 280, py: 475, act: 'street', line: '「哇！呢度就係東京池袋駅東口！！右邊係 animate 同 Sunshine City，左邊係酒店！🏙️✨」' },
+        { px: 375, py: 475, act: 'window_gaze', line: '「同哥哥一齊喺池袋行街真係好開心！」' }
+      ],
+      ikebukuro_animate_ext: [
+        { id: 'anim_banner', label: '排球少年巨型橫額', hx: 340, hy: 205, hr: 95, px: 310, py: 475, act: 'window_gaze', line: '「哇！！正門上面掛住超大張排球少年橫額呀！！好型！！🏐🔥」' },
+        { id: 'anim_gacha', label: '門外扭蛋機', hx: 175, hy: 425, hr: 85, px: 220, py: 475, act: 'idle', line: '「門口整齊排滿晒扭蛋機，不如入去 animate 逛下先啦！✨」' }
+      ],
+      ikebukuro_animate_manga: [
+        { id: 'anim_manga_shelf', label: '漫畫書架', hx: 265, hy: 350, hr: 100, px: 270, py: 470, act: 'idle', line: '「成層都係最新漫畫單行本，仲有特設專區呀！📚✨」' },
+        { id: 'anim_manga_checkout', label: '漫畫層自助收銀機', hx: 525, hy: 380, hr: 90, px: 450, py: 475, act: 'tidy_bag', line: '「嘟一聲用自助收銀機自己畀錢買漫畫，好方便又快手！🧾💳」' }
+      ],
+      ikebukuro_animate_goods: [
+        { id: 'anim_goods_rack', label: '動漫周邊專櫃', hx: 300, hy: 345, hr: 100, px: 290, py: 475, act: 'idle', line: '「哇！有排球公仔、立牌同徽章！！每樣都好想收藏呀！🎁🏐」' },
+        { id: 'anim_goods_checkout', label: '周邊層自助收銀機', hx: 525, hy: 385, hr: 90, px: 445, py: 475, act: 'tidy_bag', line: '「拎齊戰利品去自助收銀機掃條碼結帳！滿滿一袋好滿足！🛍️💳」' }
+      ],
+      ikebukuro_sunshine_ext: [
+        { id: 'sunshine_plaza', label: 'Sunshine City 廣場', hx: 280, hy: 445, hr: 95, px: 280, py: 475, act: 'street', line: '「綠色藤蔓拱門配 Sunshine City 招牌好靚呀！入去商場行下啦！☀️🌿」' }
+      ],
+      ikebukuro_sunshine_in: [
+        { id: 'sunshine_bench', label: '商場休憩長椅', hx: 225, hy: 430, hr: 90, px: 250, py: 475, act: 'idle', line: '「Sunshine City 入面好闊落好舒服，向下行仲有 Pokémon Center 呀！🏬✨」' },
+        { id: 'sunshine_stroll', label: '商場大堂散步', hx: 380, hy: 440, hr: 90, px: 370, py: 475, act: 'walking', line: '「左右兩邊都係特色 Café 同小店，好有東京逛街氣氛！」' }
+      ],
+      ikebukuro_pokemon: [
+        { id: 'poke_charizard', label: '超級噴火龍打卡牆', hx: 300, hy: 330, hr: 105, px: 300, py: 475, act: 'window_gaze', line: '「哇！！好型嘅超級噴火龍燈箱！！快啲喺精靈球拱門下影張相！🔴🔥」' },
+        { id: 'poke_shop', label: '寶可夢周邊區', hx: 500, hy: 365, hr: 85, px: 430, py: 475, act: 'idle', line: '「入面有好多可愛寶可夢毛公仔同卡牌呀！⚡✨」' }
+      ],
+      ikebukuro_hotel_ext: [
+        { id: 'hotel_portico', label: 'APA 酒店正門', hx: 300, hy: 430, hr: 95, px: 300, py: 475, act: 'street', line: '「橙黑色嘅 APA 酒店就喺池袋站隔離，行返嚟好近好方便！🏨✨」' }
+      ],
+      ikebukuro_hotel_lobby: [
+        { id: 'hotel_front', label: '酒店前台 Check-in', hx: 120, hy: 365, hr: 95, px: 210, py: 475, act: 'tidy_bag', line: '「拎咗 10 樓和室房門卡啦！行去右邊電梯大堂等 Lift 上房～🔑🛎️」' },
+        { id: 'hotel_lounge', label: '大堂梳化區', hx: 350, hy: 355, hr: 90, px: 355, py: 475, act: 'idle', line: '「酒店大堂黑金色設計好有型，雲石地板仲反晒光！」' }
+      ],
+      ikebukuro_hotel_lift: [
+        { id: 'hotel_lift_btn', label: '按電梯上 10F 和室', hx: 330, hy: 345, hr: 95, px: 300, py: 475, act: 'idle', line: '「叮咚！電梯到啦～撳 10 樓上去我哋間和室酒店房！🛗✨」' }
+      ],
+      ikebukuro_hotel_room: [
+        { id: 'hotel_futon', label: '和室榻榻米被鋪', hx: 355, hy: 410, hr: 95, px: 310, py: 470, act: 'idle', line: '「兩張軟綿綿嘅白色被鋪擺喺榻榻米上面，今晚同哥哥瞓喺度好舒服呀！🛏️💤」' },
+        { id: 'hotel_tea', label: '和室矮木茶几', hx: 470, hy: 465, hr: 85, px: 410, py: 480, act: 'idle', line: '「坐喺木茶几飲杯熱綠茶食點心，好似去咗溫泉旅行咁寫意！🍵🍡」' },
+        { id: 'hotel_window', label: '10F 東京高空窗景', hx: 395, hy: 270, hr: 95, px: 260, py: 470, act: 'window_gaze', line: '「由 10 樓望出去成個池袋東京天際線一覽無遺呀！🌆✨」' }
       ],
       street_lane: [
         { id: 'walk_lane', label: '小巷漫步', hx: 300, hy: 430, hr: 95, px: 300, py: 445, act: 'street', line: '「沿住木屋小巷行過去十字路口，陣陣微風好舒服！🚶‍♂️✨」' }
@@ -1193,7 +1265,7 @@ html, body {
       return p;
     }
 
-    function recordStatLog(pet, stat, label, fromVal, toVal, isGradual = false) {
+    function recordStatLog(pet, stat, label, fromVal, toVal, isGradual = false, atMs = null) {
       if (!pet) return;
       if (!isGradual && pet.gradualAcc && pet.gradualAcc.start && typeof pet.gradualAcc.start[stat] === 'number') {
         pet.gradualAcc.start[stat] += (toVal - fromVal);
@@ -1203,7 +1275,7 @@ html, body {
       if (diff === 0) return;
       if (!pet.statLogs) pet.statLogs = { hunger: [], mood: [], energy: [], bladder: [] };
       if (!Array.isArray(pet.statLogs[stat])) pet.statLogs[stat] = [];
-      const now = new Date();
+      const now = atMs ? new Date(atMs) : new Date();
       const tm = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
       pet.statLogs[stat].unshift({ time: tm, label, delta: diff > 0 ? `+${diff}%` : `${diff}%`, from: f, to: t });
       if (pet.statLogs[stat].length > 10) pet.statLogs[stat].length = 10;
@@ -1500,7 +1572,7 @@ html, body {
               const useSh = (state.supplyCfg && state.supplyCfg.tpUseSheets) || 3;
               state.supplies.tpSheets = Math.max(0, (state.supplies.tpSheets ?? 180) - useSh);
             }
-            recordStatLog(pet, 'bladder', isAtHomeOff ? '🚽 去完廁所' : '🚻 去公廁／校廁', pet.bladder || 0, 0);
+            recordStatLog(pet, 'bladder', isAtHomeOff ? '🚽 去完廁所' : '🚻 去公廁／校廁', pet.bladder || 0, 0, false, nowEval);
             pet.bladder = 0; pet.lastToiletAt = nowEval;
           }
           if (schedMealChk && schedMealChk.act === 'bath' && pet.lastBathDeductKey !== (evalToday + '_' + schedMealChk.key)) {
@@ -1705,13 +1777,13 @@ html, body {
             const g = pet.gradualAcc;
             const mDone = Math.max(1, Math.round((g.startedAt ? (nowEval - g.startedAt) : g.accMs) / 60000));
             if (mDone >= 1) {
-              ['hunger','mood','energy','bladder'].forEach(st => recordStatLog(pet, st, `${g.label}（${mDone}分）`, g.start[st], pet[st], true));
+              ['hunger','mood','energy','bladder'].forEach(st => recordStatLog(pet, st, `${g.label}（${mDone}分）`, g.start[st], pet[st], true, nowEval));
             }
           }
           pet.gradualAcc = { slotKey, label: slotLabel, startedAt: nowEval - Math.min(elapsedMs, 60000), start: { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 } };
         } else if (!(slotKey === 'wd_sleep' || slotKey === 'we_sleep' || pet.currentActivity === 'sleep') && nowEval - pet.gradualAcc.startedAt >= 60 * 60 * 1000) {
           const g = pet.gradualAcc;
-          ['hunger','mood','energy','bladder'].forEach(st => recordStatLog(pet, st, `${g.label}（滿1小時）`, g.start[st], pet[st], true));
+          ['hunger','mood','energy','bladder'].forEach(st => recordStatLog(pet, st, `${g.label}（滿1小時）`, g.start[st], pet[st], true, nowEval));
           pet.gradualAcc = { slotKey, label: slotLabel, startedAt: nowEval, start: { hunger: pet.hunger, mood: pet.mood, energy: pet.energy, bladder: pet.bladder || 0 } };
         }
       }
@@ -1920,7 +1992,7 @@ html, body {
       return { ex: 540, ey: 440, ix: 60, iy: 440 };
     }
     let followTarget = null;
-    const OUTDOOR_STREET_ROOMS = new Set(['street', 'street_lane', 'subway_entrance', 'ikebukuro_exit', 'street_cross', 'street_mid', 'street2', 'street3', 'main_street', 'main_street2', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall_park1', 'mall_park2', 'mall_park3', 'school_gate', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4']);
+    const OUTDOOR_STREET_ROOMS = new Set(['street', 'street_lane', 'subway_entrance', 'ikebukuro_exit', 'ikebukuro_animate_ext', 'ikebukuro_sunshine_ext', 'ikebukuro_hotel_ext', 'street_cross', 'street_mid', 'street2', 'street3', 'main_street', 'main_street2', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall_park1', 'mall_park2', 'mall_park3', 'school_gate', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4']);
     function getWalkActForRoom(rm) { return OUTDOOR_STREET_ROOMS.has(rm) ? 'street' : 'walking'; }
     function startCharacterWalkTransition(pet, destRoom, destAct, px, py, followView = false) {
       if (pet.currentRoom === destRoom) { pet.currentActivity = destAct; targetX = px; targetY = py; saveState(); return; }
@@ -3428,7 +3500,7 @@ html, body {
             if (!animateTransition) { bro.px = bro.tx; bro.py = bro.ty; }
           }
         } else {
-          const BRO_RETURN_SHOPS = new Set(['konbini', 'supermarket', 'ice_cream', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'restaurant']);
+          const BRO_RETURN_SHOPS = new Set(['konbini', 'supermarket', 'ice_cream', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'restaurant', 'ikebukuro_animate_ext', 'ikebukuro_animate_manga', 'ikebukuro_animate_goods', 'ikebukuro_sunshine_ext', 'ikebukuro_sunshine_in', 'ikebukuro_pokemon', 'ikebukuro_hotel_ext', 'ikebukuro_hotel_lobby', 'ikebukuro_hotel_lift', 'ikebukuro_hotel_room']);
           if (animateTransition && bro.currentRoom !== bSched.room && (HOME_TOILET_ROOMS.has(bro.currentRoom) || bro.currentRoom === 'bath' || OUTDOOR_STREET_ROOMS.has(bro.currentRoom) || BRO_RETURN_SHOPS.has(bro.currentRoom) || bro.currentRoom === 'pharmacy') && (HOME_TOILET_ROOMS.has(bSched.room) || bSched.room === 'bath' || OUTDOOR_STREET_ROOMS.has(bSched.room))) {
             startSoloWalk('bro', bSched.room, bSched.act, null, () => { bro.tx = bSched.px; bro.ty = bSched.py; }, false);
           } else {
@@ -3956,7 +4028,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v121'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v123'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -4010,7 +4082,7 @@ html, body {
     }
 
     const MALL_AREA_SET = new Set(['mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3']);
-    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street_lane', 'subway_entrance', 'subway_platform', 'train_interior', 'ikebukuro_platform', 'ikebukuro_exit', 'street_cross', 'street_mid', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_water', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet', 'rest_toilet']);
+    const NIGHT_BG_ROOMS = new Set(['room_hinata', 'room_aniki', 'living', 'kitchen', 'hallway', 'hallway_2f', 'wash_hall', 'bath', 'toilet', 'backyard', 'street', 'street_lane', 'subway_entrance', 'subway_platform', 'train_interior', 'ikebukuro_platform', 'ikebukuro_exit', 'ikebukuro_animate_ext', 'ikebukuro_animate_manga', 'ikebukuro_sunshine_ext', 'ikebukuro_sunshine_in', 'ikebukuro_hotel_ext', 'ikebukuro_hotel_lobby', 'ikebukuro_hotel_room', 'street_cross', 'street_mid', 'street2', 'street3', 'ice_cream', 'supermarket', 'main_street', 'main_street2', 'bus_interior', 'theme_park_gate', 'theme_park1', 'theme_park2', 'theme_park3', 'theme_park4', 'park_entrance', 'park', 'park2', 'park3', 'park4', 'mall_gate', 'mall', 'mall2', 'clothing_store', 'toy_store', 'mall_promenade', 'mall_cafe', 'mall_park1', 'mall_park2', 'mall_park3', 'restaurant', 'school_gate', 'school_class', 'school_court', 'school_water', 'school_hall', 'school_tuckshop', 'school_toilet', 'school_infirmary', 'pharmacy', 'hospital', 'canteen', 'park_toilet', 'mall_toilet', 'rest_toilet']);
     function drawAnimeRoomBackground(roomId, timeInfo) {
       const h = new Date().getHours();
       const isNight = (h >= 18 || h < 6);
@@ -4035,7 +4107,8 @@ html, body {
         }
         ctx.drawImage(drawBg, -3, -3, 606, 606);
         ctx.restore();
-        const isAlwaysLitIndoor = (roomId === 'subway_gate' || roomId === 'ikebukuro_gate');
+        const NO_FILTER_ROOMS = new Set(['subway_gate', 'ikebukuro_gate', 'ikebukuro_animate_ext', 'ikebukuro_animate_manga', 'ikebukuro_animate_goods', 'ikebukuro_sunshine_ext', 'ikebukuro_sunshine_in', 'ikebukuro_pokemon', 'ikebukuro_hotel_ext', 'ikebukuro_hotel_lobby', 'ikebukuro_hotel_lift', 'ikebukuro_hotel_room']);
+        const isAlwaysLitIndoor = NO_FILTER_ROOMS.has(roomId);
         const hasDedicatedNight = isAlwaysLitIndoor || ((roomId === 'konbini' || NIGHT_BG_ROOMS.has(roomId)) && Boolean(sprites[bgKey]));
         if (timeInfo.isLateNight && !hasDedicatedNight) {
           ctx.fillStyle = 'rgba(15, 23, 42, 0.38)';
@@ -4492,7 +4565,17 @@ html, body {
       train_interior: ['💭 火車哐噹哐噹咁震動好有旅行感覺！', '💭 綠色座椅好舒服呀～', '💭 好期待落車睇下池袋駅！'],
       ikebukuro_platform: ['💭 池袋駅好大好熱鬧呀！', '💭 喺呢度等車可以搭返輕米町駅～', '💭 睇下班次牌幾時有車先！'],
       ikebukuro_gate: ['💭 拍卡出閘就到池袋駅東口！', '💭 記住入閘返月台搭車返屋企～'],
-      ikebukuro_exit: ['💭 終於嚟到池袋駅東口啦！🏙️', '💭 好似去咗東京大冒險咁興奮！', '💭 遲啲仲可以去行周邊商店街～'],
+      ikebukuro_exit: ['💭 終於嚟到池袋駅東口啦！🏙️', '💭 右邊係 animate 同 Sunshine City，左邊係酒店！', '💭 同哥哥喺東京行街好似大冒險咁興奮！'],
+      ikebukuro_animate_ext: ['💭 正門幅排球少年大橫額超有氣勢！！🏐', '💭 門口咁多部扭蛋機好想扭返個～', '💭 快啲入去 animate 睇漫畫同周邊啦！'],
+      ikebukuro_animate_manga: ['💭 漫畫書層多到睇唔晒呀！📚', '💭 右邊有自助收銀機，買完書嘟一聲就畀到錢！', '💭 再行上一層就係動漫周邊層啦～'],
+      ikebukuro_animate_goods: ['💭 動漫周邊層有超多排球公仔同徽章！！🎁', '💭 呢層都有自助收銀機，唔使排長龍好方便！', '💭 唔知哥哥會唔會買個鎖匙扣畀我呢～'],
+      ikebukuro_sunshine_ext: ['💭 Sunshine City 嘅綠色藤蔓拱門好靚呀！☀️', '💭 入去吹下冷氣行下商場啦～'],
+      ikebukuro_sunshine_in: ['💭 Sunshine City 入面好光猛好闊落！🏬', '💭 向下行就係 Pokémon Center，快啲去睇下！'],
+      ikebukuro_pokemon: ['💭 Pokémon Center 個大精靈球拱門好搶眼呀！🔴', '💭 超級噴火龍燈箱超型！！好想影相打卡！'],
+      ikebukuro_hotel_ext: ['💭 APA 酒店橙黑色外觀好易認，就喺池袋站隔離！🏨', '💭 行完街返酒店休息超方便～'],
+      ikebukuro_hotel_lobby: ['💭 酒店大堂好靚好高級呀！🛎️', '💭 拎完房卡行去右邊就可以等 Lift 上 10 樓！'],
+      ikebukuro_hotel_lift: ['💭 等緊 Lift 上 10 樓和室房～🛗', '💭 唔知 10 樓望出去嘅東京風景靚唔靚呢？'],
+      ikebukuro_hotel_room: ['💭 10 樓和室房有陣陣榻榻米清香好治癒！🛏️', '💭 兩張軟綿綿嘅被鋪可以同哥哥一齊瞓～', '💭 喺高樓層望住東京街景飲茶真係最幸福！'],
       street_lane: ['💭 呢條木屋小巷連接住屋企門口同十字路口！', '💭 單車同盆栽擺得好整齊好有生活感～', '💭 行多幾步就到十字路口過馬路返學！'],
       street_cross: ['💭 十字路口有斑馬線同紅白販賣機，返學放學必經之地！', '💭 過馬路記住左右望清楚先好行！', '💭 同哥哥喺十字路口飲返罐冰凍汽水最爽！'],
       street_mid: ['💭 木屋小巷同電線桿影落嚟好有夏日感覺～', '💭 再行前少少就到街角小店同街道2啦！', '💭 同哥哥一齊行呢條靜靜地嘅小巷好寫意！'],
@@ -4724,11 +4807,22 @@ html, body {
       const act = tempOverrideMode || pet.currentActivity;
       const isSleepingMode = (act === 'sleep' || act === 'waking' || (pet.toiletState && pet.toiletState.fromSleep));
       const isBathingMode = (pet.currentRoom === 'bath' && act === 'bath');
+      let wantKey = outfit.portraitKey || 'portraitJersey';
+      if (isSleepingMode) {
+        wantKey = 'portraitSleepy';
+      } else if (isBathingMode) {
+        wantKey = (isPetting || act === 'happy') ? 'portraitBathHappy' : 'portraitBath';
+      } else if (isPetting || act === 'happy') {
+        wantKey = outfit.happyKey || outfit.portraitKey || 'portraitJerseyHappy';
+      }
+      if (wantKey && ASSET_URLS[wantKey] && !sprites[wantKey]) ensureAsset(wantKey);
+      if (outfit.portraitKey && !sprites[outfit.portraitKey]) ensureAsset(outfit.portraitKey);
+      if (outfit.happyKey && !sprites[outfit.happyKey]) ensureAsset(outfit.happyKey);
       let img;
       if (isSleepingMode) {
         img = sprites.portraitSleepy;
       } else if (isBathingMode) {
-        img = (isPetting || act === 'happy') ? sprites.portraitBathHappy : sprites.portraitBath;
+        img = (isPetting || act === 'happy') ? (sprites.portraitBathHappy || sprites[outfit.happyKey]) : (sprites.portraitBath || sprites[outfit.portraitKey]);
       } else if (isPetting || act === 'happy') {
         img = sprites[outfit.happyKey] || sprites[outfit.portraitKey];
       } else {
@@ -8326,7 +8420,15 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       }
       renderDock(); playSFX('pat'); updateHUD();
     });
-    document.getElementById('btn-zoom').addEventListener('click', () => { isZoomed = !isZoomed; playSFX('pat'); updateHUD(); });
+    document.getElementById('btn-zoom').addEventListener('click', () => {
+      isZoomed = !isZoomed;
+      if (isZoomed) {
+        const pZ = ensurePetState(state.activeCharId);
+        const oZ = OUTFITS[pZ.outfitIdx || 0] || OUTFITS[0];
+        ensureAsset(oZ.portraitKey); ensureAsset(oZ.happyKey); ensureAsset('portraitSleepy');
+      }
+      playSFX('pat'); updateHUD();
+    });
     document.getElementById('btn-outfit').addEventListener('click', () => {
       const pet = ensurePetState(state.activeCharId);
       pet.outfitIdx = ((pet.outfitIdx || 0) + 1) % OUTFITS.length;
@@ -8990,7 +9092,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v121';
+          if (el) el.textContent = '☁️ 雲端已同步 · v123';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -9029,7 +9131,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v121';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v123';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
