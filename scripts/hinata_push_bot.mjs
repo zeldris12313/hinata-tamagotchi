@@ -41,7 +41,7 @@ async function sendNotification(state, title, body, iconUrl, tag = 'hinata-msg')
   // 1. Primary: Native iOS PWA Web Push (tapping notification opens Home Screen App directly!)
   if (state.webPushSub && VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
     try {
-      webpush.setVapidDetails('mailto:hinata@tamagotchi.local', VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+      webpush.setVapidDetails('https://zeldris12313.github.io/hinata-tamagotchi/', VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
       await webpush.sendNotification(
         state.webPushSub,
         JSON.stringify({ title, body, icon: iconUrl, url: './', tag })
