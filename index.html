@@ -9,6 +9,7 @@
   <link rel="icon" type="image/png" href="./icon.png?v=69">
   <link rel="apple-touch-icon" href="./icon.png?v=69">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="./manifest.json?v=121">
   <title>Q版動漫電子雞｜日向翔陽生活養成記</title>
   <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
@@ -254,7 +255,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v120</span>
+      <span id="save-status">💾 已自動儲存 · v121</span>
       
     </div>
 
@@ -594,7 +595,7 @@ html, body {
     }
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=117').catch(() => {});
+        navigator.serviceWorker.register('./sw.js?v=121').catch(() => {});
       });
     }
     let _lastPreloadedRoom = null;
@@ -3955,7 +3956,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v120'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v121'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -6766,12 +6767,14 @@ html, body {
         ];
         const smSupHtml = `<div class="bg-emerald-50 border border-emerald-300 rounded-xl p-1.5 mt-1.5">
           <div class="bg-sky-50/95 border border-sky-300 rounded-xl p-2 space-y-1.5 mt-2">
-          <div class="text-[11px] font-black text-[#2d1e12]">🔔 iPhone 真實手機鎖屏通知（Bark App）</div>
-          <div class="text-[10px] text-slate-600">貼入 Bark 專屬推播連結，翔陽在校傳訊息或飽食/精力/心情偏低時會帶小翔陽頭像彈通知去你 iPhone！</div>
-          <div class="flex gap-1 items-center">
-            <input id="inp-bark-url" type="url" value="${(state.barkUrl || '').replace(/"/g, '&quot;')}" placeholder="https://api.day.app/你嘅Key/" class="flex-1 px-2 py-1 rounded-lg border border-sky-400 bg-white text-[10px] font-bold text-[#2d1e12]" />
-            <button type="button" data-bark-action="save" class="px-2 py-1 rounded-lg bg-sky-500 text-white border border-[#2d1e12] text-[10px] font-black shrink-0">💾 儲存</button>
-            <button type="button" data-bark-action="test" class="px-2 py-1 rounded-lg bg-amber-400 text-[#2d1e12] border border-[#2d1e12] text-[10px] font-black shrink-0">📲 測試</button>
+          <div class="text-[11px] font-black text-[#2d1e12]">🔔 iPhone 桌面 App 原生通知（撳通知直入桌面版）</div>
+          <div class="text-[10px] text-slate-600">由桌面 App 打開並撳下面按鈕啟用，翔陽傳訊息或低數值會直接彈原生通知，撳落去直接開桌面 App（唔會跳 Safari）！</div>
+          <div class="flex gap-1.5 items-center">
+            <button type="button" data-webpush-action="enable" class="flex-1 py-1.5 px-2 rounded-lg ${state.webPushSub ? 'bg-emerald-500 text-white' : 'bg-sky-500 text-white'} border-2 border-[#2d1e12] text-[11px] font-black">${state.webPushSub ? '✅ 已啟用桌面 App 通知（再撳重連）' : '🔔 開啟桌面 App 原生通知'}</button>
+          </div>
+          <div class="pt-1 border-t border-sky-200/80 flex gap-1 items-center">
+            <input id="inp-bark-url" type="url" value="${(state.barkUrl || '').replace(/"/g, '&quot;')}" placeholder="（後備）Bark 連結 https://api.day.app/Key/" class="flex-1 px-2 py-1 rounded-lg border border-sky-300 bg-white text-[10px] font-bold text-[#2d1e12]" />
+            <button type="button" data-bark-action="save" class="px-2 py-1 rounded-lg bg-slate-200 text-[#2d1e12] border border-[#2d1e12] text-[10px] font-black shrink-0">💾 存</button>
           </div>
         </div>
         <div class="text-[11px] font-black text-[#2d1e12] mb-1">🛒 超市陪同、宵夜機率與日用品消耗（整除鎖定）</div>
@@ -7239,12 +7242,54 @@ html, body {
       else badge.classList.add('hidden');
     }
     let smsDrawerOpen = false;
+    const VAPID_PUBLIC_KEY = 'BIhtiC0UKFDconvLKHdne1Tv_xG3BGe_YKfkc5kET7zgBRZyyey62ZuQfGufGnmO8sVJwhwthcqv5BZbxQqoaDI';
+    function _urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+      const rawData = atob(base64);
+      const out = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) out[i] = rawData.charCodeAt(i);
+      return out;
+    }
+    async function enableNativeWebPush() {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        showToast('請先由 Safari「加入主畫面」並由桌面 App 打開先可開啟原生通知 📱');
+        return;
+      }
+      try {
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') { showToast('未允許通知權限，請到 iPhone 設定開啟通知'); return; }
+        const reg = await navigator.serviceWorker.ready;
+        let sub = await reg.pushManager.getSubscription();
+        if (!sub) {
+          sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: _urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+          });
+        }
+        state.webPushSub = sub.toJSON();
+        saveState();
+        playSFX('levelup');
+        showToast('已開啟桌面 App 原生通知並同步雲端！🔔✨');
+        if (reg.showNotification) {
+          reg.showNotification('日向翔陽 🏐（桌面 App 通知已啟用）', {
+            body: '「哥哥！以後有訊息撳通知會直接入桌面版 App 啦！💛」',
+            icon: './assets/chibiSchool.png',
+            badge: './icon.png',
+            data: { url: './' }
+          });
+        }
+        openSettingsModal(true);
+      } catch (err) {
+        showToast('開啟失敗：' + (err.message || err));
+      }
+    }
     function sendBarkPush(title, body, iconFile = 'chibiSchool.png') {
       const base = (state.barkUrl || '').trim().replace(/\/+$/, '');
       if (!base) return;
       const gameUrl = 'https://zeldris12313.github.io/hinata-tamagotchi/';
       const iconUrl = `${gameUrl}assets/${iconFile}`;
-      const u = `${base}/${encodeURIComponent(title)}/${encodeURIComponent(body)}?icon=${encodeURIComponent(iconUrl)}&url=${encodeURIComponent(gameUrl)}&group=Hinata`;
+      const u = `${base}/${encodeURIComponent(title)}/${encodeURIComponent(body)}?icon=${encodeURIComponent(iconUrl)}&group=Hinata`;
       try { fetch(u, { mode: 'no-cors' }).catch(() => {}); } catch (_) {}
     }
     function checkLowStatBarkAlerts(pet) {
@@ -8336,6 +8381,8 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
       openShopMenuModal(skey);
     });
     document.getElementById('settings-modal-body').addEventListener('click', (e) => {
+      const wpBtn = e.target.closest('[data-webpush-action]');
+      if (wpBtn) { enableNativeWebPush(); return; }
       const barkBtn = e.target.closest('[data-bark-action]');
       if (barkBtn) {
         const inp = document.getElementById('inp-bark-url');
@@ -8943,7 +8990,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v120';
+          if (el) el.textContent = '☁️ 雲端已同步 · v121';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -8982,7 +9029,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v120';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v121';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();

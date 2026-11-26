@@ -17,14 +17,51 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+self.addEventListener('push', (event) => {
+  let data = { title: '日向翔陽 🏐', body: '哥哥，我有新訊息畀你！', icon: './assets/chibiSchool.png', url: './' };
+  try {
+    if (event.data) {
+      const parsed = event.data.json();
+      data = { ...data, ...parsed };
+    }
+  } catch (_) {
+    try { data.body = event.data.text(); } catch (__) {}
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: data.icon || './assets/chibiSchool.png',
+      badge: './icon.png',
+      tag: data.tag || 'hinata-msg',
+      renotify: true,
+      data: { url: data.url || './' }
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) || './';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const client of list) {
+        if ('focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
+
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
-  // 1. Assets (images): Permanent Cache-First by exact URL (incl. ?v=).
-  //    Unchanged images NEVER reload; bumped ?v= fetches fresh & cleans old version of same file.
   if (url.pathname.includes('/assets/') || /\.(png|jpg|jpeg|webp|gif)$/i.test(url.pathname)) {
     event.respondWith(
       caches.open(ASSET_CACHE).then(async (cache) => {
@@ -32,7 +69,6 @@ self.addEventListener('fetch', (event) => {
         if (cached) return cached;
         const fresh = await fetch(req);
         if (fresh && fresh.ok) {
-          // Remove any older ?v= version of the same image pathname to keep storage tidy
           const keys = await cache.keys();
           for (const k of keys) {
             try {
@@ -50,7 +86,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. HTML / navigation: Network-First so index.html updates apply immediately
   if (req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('.html')) {
     event.respondWith(
       fetch(req, { cache: 'no-store' })
