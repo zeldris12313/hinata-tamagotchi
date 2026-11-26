@@ -1,5 +1,6 @@
 // Hinata Tamagotchi Cloud Push Bot (Native iOS PWA Web Push + optional Bark fallback + Firestore Mailbox Sync)
-import webpush from 'web-push';
+import { createRequire } from 'module';
+const webpush = createRequire(import.meta.url)('web-push');
 
 const FIREBASE_PROJECT = 'hinata-tamagotchi';
 const FIREBASE_API_KEY = 'AIzaSyCqASayonPmiJSoku8s0oTrS12hv-0_P10';
