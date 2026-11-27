@@ -255,7 +255,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v125</span>
+      <span id="save-status">💾 已自動儲存 · v126</span>
       
     </div>
 
@@ -2518,31 +2518,55 @@ html, body {
       if (handleRecoveryTick(pet)) { duoWalk = null; return; }
       // General solo walk stepping for Brother & Hinata (non-recovery)
       if (broWalk && !pet.recoverStage) {
-        const bStepDur = (broWalk.idx === -1) ? (broWalk.stepMs || 2800) : 5000;
+        const bStepDur = broWalk.phase === 'arrive' ? (broWalk.arriveMs || 1500) : ((broWalk.idx === -1) ? (broWalk.stepMs || 2200) : (broWalk.curStepMs || 3800));
         if (Date.now() - broWalk.stepEnteredAt >= bStepDur) {
-          broWalk.idx++;
-          const bw = broWalk;
-          if (bw.idx >= bw.steps.length - 1) {
+          if (broWalk.phase === 'arrive') {
+            const bwDone = broWalk;
             broWalk = null;
-            const dEdge = getDirEdgeCoords(getRoomMoveDir(bro.currentRoom, bw.destRoom));
-            bro.currentRoom = bw.destRoom; bro.currentActivity = bw.finalAct;
-            bro.px = dEdge.ix; bro.py = dEdge.iy;
-            const f0 = (ROOM_FURNITURE[bw.destRoom] && ROOM_FURNITURE[bw.destRoom][0]) || { px: 320, py: 440 };
-            bro.tx = bw.tx || f0.px; bro.ty = bw.ty || f0.py;
-            if (bw.followView) viewRoomId = bw.destRoom;
-            if (bw.finalSpeech) speakAndShow(bw.finalSpeech);
-            if (bw.onArrive) bw.onArrive();
+            bro.px = bro.tx; bro.py = bro.ty;
+            bro.currentActivity = bwDone.finalAct;
+            if (bwDone.finalSpeech) speakAndShow(bwDone.finalSpeech);
             renderDock(); updateHUD(); saveState();
           } else {
-            const nr = bw.steps[bw.idx];
-            const nextNr = bw.steps[bw.idx + 1] || bw.destRoom;
-            const dEdge = getDirEdgeCoords(getRoomMoveDir(bro.currentRoom, nr));
-            const dOut = getDirEdgeCoords(getRoomMoveDir(nr, nextNr));
-            bw.stepEnteredAt = Date.now(); bw.startX = dEdge.ix; bw.startY = dEdge.iy;
-            bro.currentRoom = nr; bro.currentActivity = getWalkActForRoom(nr);
-            bro.px = dEdge.ix; bro.py = dEdge.iy; bro.tx = dOut.ex; bro.ty = dOut.ey;
-            if (bw.followView) viewRoomId = nr;
-            updateHUD();
+            broWalk.idx++;
+            const bw = broWalk;
+            if (bw.idx >= bw.steps.length - 1) {
+              const dEdge = getDirEdgeCoords(getRoomMoveDir(bro.currentRoom, bw.destRoom));
+              bro.currentRoom = bw.destRoom;
+              bro.currentActivity = getWalkActForRoom(bw.destRoom);
+              bro.px = dEdge.ix; bro.py = dEdge.iy;
+              const f0 = (ROOM_FURNITURE[bw.destRoom] && ROOM_FURNITURE[bw.destRoom][0]) || { px: 320, py: 440 };
+              bro.tx = bw.tx || f0.px; bro.ty = bw.ty || f0.py;
+              if (bw.onArrive) {
+                bw.onArrive();
+                bw.onArrive = null;
+              }
+              bw.phase = 'arrive';
+              bw.startX = bro.px; bw.startY = bro.py;
+              bw.stepEnteredAt = Date.now();
+              const distIn = Math.hypot(bro.tx - bro.px, bro.ty - bro.py);
+              bw.arriveMs = Math.max(700, Math.min(2000, Math.round(distIn * 6)));
+              if (bw.followView) viewRoomId = bw.destRoom;
+              updateHUD();
+            } else {
+              const nr = bw.steps[bw.idx];
+              const nextNr = bw.steps[bw.idx + 1] || bw.destRoom;
+              const dEdge = getDirEdgeCoords(getRoomMoveDir(bro.currentRoom, nr));
+              const dOut = getDirEdgeCoords(getRoomMoveDir(nr, nextNr));
+              let sx = dEdge.ix, sy = dEdge.iy, ex = dOut.ex, ey = dOut.ey;
+              // Prevent freezing on the exact same edge when entry & exit share one side (e.g. living -> hallway -> hallway_2f)
+              if (Math.hypot(ex - sx, ey - sy) < 40) {
+                sx = (sx < 300) ? 240 : 360;
+                bw.curStepMs = 1600;
+              } else {
+                bw.curStepMs = 3600;
+              }
+              bw.stepEnteredAt = Date.now(); bw.startX = sx; bw.startY = sy;
+              bro.currentRoom = nr; bro.currentActivity = getWalkActForRoom(nr);
+              bro.px = sx; bro.py = sy; bro.tx = ex; bro.ty = ey;
+              if (bw.followView) viewRoomId = nr;
+              updateHUD();
+            }
           }
         }
       }
@@ -4030,7 +4054,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v125'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v126'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -4896,7 +4920,21 @@ html, body {
         viewRoomId = state.brother.currentRoom; updateHUD();
       }
 
+      const updateBrotherWalkPos = () => {
+        if (!state.brother || (duoWalk && !pet.toiletState)) return;
+        const bro = state.brother;
+        if (broWalk && !pet.recoverStage) {
+          const bDur = broWalk.phase === 'arrive' ? (broWalk.arriveMs || 1500) : ((broWalk.idx === -1) ? (broWalk.stepMs || 2200) : (broWalk.curStepMs || 3800));
+          const bt = Math.max(0, Math.min(1, (Date.now() - broWalk.stepEnteredAt) / bDur));
+          bro.px = (broWalk.startX ?? bro.px) + (bro.tx - (broWalk.startX ?? bro.px)) * bt;
+          bro.py = (broWalk.startY ?? bro.py) + (bro.ty - (broWalk.startY ?? bro.py)) * bt;
+        } else {
+          const bdx = bro.tx - bro.px, bdy = bro.ty - bro.py;
+          if (Math.hypot(bdx, bdy) > 3) { bro.px += bdx * 0.08; bro.py += bdy * 0.08; }
+        }
+      };
       if (transitionState) {
+        updateBrotherWalkPos();
         if (transitionState.phase === 'out') {
           const ex = transitionState.ex ?? 540, ey = transitionState.ey ?? 440;
           petX += (ex - petX) * 0.09; petY += (ey - petY) * 0.09;
@@ -4991,18 +5029,7 @@ html, body {
           const _spd = (state.outing && state.outing.type === 'mall' && !state.mallCafeUntil) ? 0.015 : 0.045;
           if (Math.hypot(dx, dy) > 3) { petX += dx * _spd; petY += dy * _spd; }
         }
-        if (state.brother) {
-          const bro = state.brother;
-          if (broWalk && !pet.recoverStage) {
-            const bDur = (broWalk.idx === -1) ? (broWalk.stepMs || 2800) : 5000;
-            const bt = Math.max(0, Math.min(1, (Date.now() - broWalk.stepEnteredAt) / bDur));
-            bro.px = (broWalk.startX ?? bro.px) + (bro.tx - (broWalk.startX ?? bro.px)) * bt;
-            bro.py = (broWalk.startY ?? bro.py) + (bro.ty - (broWalk.startY ?? bro.py)) * bt;
-          } else {
-            const bdx = bro.tx - bro.px, bdy = bro.ty - bro.py;
-            if (Math.hypot(bdx, bdy) > 3) { bro.px += bdx * 0.05; bro.py += bdy * 0.05; }
-          }
-        }
+        updateBrotherWalkPos();
       }
       const _cSched = getScheduledState(getCurrentHourInfo());
       const _cPose = (!pet.vendPauseUntil && !pet.toiletState && !transitionState && !duoWalk && pet.currentRoom === _cSched.room) ? getCommutePose(_cSched.key) : null;
@@ -9096,7 +9123,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v125';
+          if (el) el.textContent = '☁️ 雲端已同步 · v126';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -9136,7 +9163,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v125';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v126';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else {
           // Always preserve any new cloud-bot mailbox messages even when local state is newer
