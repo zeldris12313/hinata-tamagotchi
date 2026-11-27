@@ -255,7 +255,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v123</span>
+      <span id="save-status">💾 已自動儲存 · v124</span>
       
     </div>
 
@@ -1091,6 +1091,7 @@ html, body {
     };
 
     const STORAGE_KEY = 'chibi_tama_nohara_v6';
+    const APP_BOOT_AT = Date.now();
     let state = {
       activeCharId: 'hinata', soundEnabled: true, dockTab: 'food', actPage: 0, customCharacters: {}, pets: {},
       holidayDate: null, skipDinnerDate: null, msgLog: { date: null, asked: {}, promises: {} },
@@ -2226,7 +2227,7 @@ html, body {
       }
       const aeSm = (state.autoEvents && state.autoEvents.schoolMail) || { prob: 5, maxPerDay: 1 };
       const smCnt = (pet.dailyAutoCounts && pet.dailyAutoCounts.schoolMail) || 0;
-      if (!info.isWeekend && info.totalMin >= 530 && info.totalMin < 1020 && aeSm.prob > 0 && aeSm.maxPerDay > 0 && smCnt < aeSm.maxPerDay && (!pet.lastSchoolMailAt || Date.now() - pet.lastSchoolMailAt > 1800000) && Math.random() < (aeSm.prob / 100)) {
+      if (Date.now() - APP_BOOT_AT >= 120000 && !info.isWeekend && info.totalMin >= 530 && info.totalMin < 1020 && aeSm.prob > 0 && aeSm.maxPerDay > 0 && smCnt < aeSm.maxPerDay && (!pet.lastSchoolMailAt || Date.now() - pet.lastSchoolMailAt > 1800000) && Math.random() < (aeSm.prob / 100)) {
         pet.lastSchoolMailAt = Date.now();
         if (!pet.dailyAutoCounts) pet.dailyAutoCounts = { date: today, toilet: 0, konbiniAsk: 0, parkAsk: 0, schoolMail: 0 };
         pet.dailyAutoCounts.schoolMail = smCnt + 1;
@@ -2627,7 +2628,7 @@ html, body {
       }
       const aeSm = (state.autoEvents && state.autoEvents.schoolMail) || { prob: 5, maxPerDay: 1 };
       const smCnt = (pet.dailyAutoCounts && pet.dailyAutoCounts.schoolMail) || 0;
-      if (!info.isWeekend && info.totalMin >= 530 && info.totalMin < 1020 && aeSm.prob > 0 && aeSm.maxPerDay > 0 && smCnt < aeSm.maxPerDay && (!pet.lastSchoolMailAt || Date.now() - pet.lastSchoolMailAt > 1800000) && Math.random() < (aeSm.prob / 100)) {
+      if (animateTransition && Date.now() - APP_BOOT_AT >= 120000 && !info.isWeekend && info.totalMin >= 530 && info.totalMin < 1020 && aeSm.prob > 0 && aeSm.maxPerDay > 0 && smCnt < aeSm.maxPerDay && (!pet.lastSchoolMailAt || Date.now() - pet.lastSchoolMailAt > 1800000) && Math.random() < (aeSm.prob / 100)) {
         pet.lastSchoolMailAt = Date.now();
         if (!pet.dailyAutoCounts) pet.dailyAutoCounts = { date: today, toilet: 0, konbiniAsk: 0, parkAsk: 0, schoolMail: 0 };
         pet.dailyAutoCounts.schoolMail = smCnt + 1;
@@ -4028,7 +4029,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v123'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v124'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -7379,6 +7380,8 @@ html, body {
       }
     }
     function sendBarkPush(title, body, iconFile = 'chibiSchool.png') {
+      if (state.webPushSub) return; // Native iOS PWA Web Push (cloud bot) handles background alerts
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') return; // Already looking at the open app
       const base = (state.barkUrl || '').trim().replace(/\/+$/, '');
       if (!base) return;
       const gameUrl = 'https://zeldris12313.github.io/hinata-tamagotchi/';
@@ -9092,7 +9095,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v123';
+          if (el) el.textContent = '☁️ 雲端已同步 · v124';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -9131,7 +9134,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v123';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v124';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else if (localTs > remoteTs) {
           flushCloudSave();
