@@ -255,7 +255,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v124</span>
+      <span id="save-status">💾 已自動儲存 · v125</span>
       
     </div>
 
@@ -1092,6 +1092,7 @@ html, body {
 
     const STORAGE_KEY = 'chibi_tama_nohara_v6';
     const APP_BOOT_AT = Date.now();
+    window.__BOOT_LOCAL_SAVED_AT = (() => { try { const r = localStorage.getItem(STORAGE_KEY); return r ? (JSON.parse(r).savedAt || 0) : 0; } catch(_) { return 0; } })();
     let state = {
       activeCharId: 'hinata', soundEnabled: true, dockTab: 'food', actPage: 0, customCharacters: {}, pets: {},
       holidayDate: null, skipDinnerDate: null, msgLog: { date: null, asked: {}, promises: {} },
@@ -2227,7 +2228,7 @@ html, body {
       }
       const aeSm = (state.autoEvents && state.autoEvents.schoolMail) || { prob: 5, maxPerDay: 1 };
       const smCnt = (pet.dailyAutoCounts && pet.dailyAutoCounts.schoolMail) || 0;
-      if (Date.now() - APP_BOOT_AT >= 120000 && !info.isWeekend && info.totalMin >= 530 && info.totalMin < 1020 && aeSm.prob > 0 && aeSm.maxPerDay > 0 && smCnt < aeSm.maxPerDay && (!pet.lastSchoolMailAt || Date.now() - pet.lastSchoolMailAt > 1800000) && Math.random() < (aeSm.prob / 100)) {
+      if (Date.now() - APP_BOOT_AT >= 120000 && !info.isWeekend && info.totalMin >= 530 && info.totalMin < 1020 && aeSm.prob > 0 && aeSm.maxPerDay > 0 && smCnt < aeSm.maxPerDay && (!pet.lastSchoolMailAt || Date.now() - pet.lastSchoolMailAt >= (aeSm.maxPerDay >= 10 ? 600000 : (aeSm.maxPerDay >= 5 ? 1080000 : 1680000))) && Math.random() < (aeSm.prob / 100)) {
         pet.lastSchoolMailAt = Date.now();
         if (!pet.dailyAutoCounts) pet.dailyAutoCounts = { date: today, toilet: 0, konbiniAsk: 0, parkAsk: 0, schoolMail: 0 };
         pet.dailyAutoCounts.schoolMail = smCnt + 1;
@@ -2628,7 +2629,7 @@ html, body {
       }
       const aeSm = (state.autoEvents && state.autoEvents.schoolMail) || { prob: 5, maxPerDay: 1 };
       const smCnt = (pet.dailyAutoCounts && pet.dailyAutoCounts.schoolMail) || 0;
-      if (animateTransition && Date.now() - APP_BOOT_AT >= 120000 && !info.isWeekend && info.totalMin >= 530 && info.totalMin < 1020 && aeSm.prob > 0 && aeSm.maxPerDay > 0 && smCnt < aeSm.maxPerDay && (!pet.lastSchoolMailAt || Date.now() - pet.lastSchoolMailAt > 1800000) && Math.random() < (aeSm.prob / 100)) {
+      if (animateTransition && Date.now() - APP_BOOT_AT >= 120000 && !info.isWeekend && info.totalMin >= 530 && info.totalMin < 1020 && aeSm.prob > 0 && aeSm.maxPerDay > 0 && smCnt < aeSm.maxPerDay && (!pet.lastSchoolMailAt || Date.now() - pet.lastSchoolMailAt >= (aeSm.maxPerDay >= 10 ? 600000 : (aeSm.maxPerDay >= 5 ? 1080000 : 1680000))) && Math.random() < (aeSm.prob / 100)) {
         pet.lastSchoolMailAt = Date.now();
         if (!pet.dailyAutoCounts) pet.dailyAutoCounts = { date: today, toilet: 0, konbiniAsk: 0, parkAsk: 0, schoolMail: 0 };
         pet.dailyAutoCounts.schoolMail = smCnt + 1;
@@ -4029,7 +4030,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v124'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v125'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -9095,7 +9096,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v124';
+          if (el) el.textContent = '☁️ 雲端已同步 · v125';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -9125,8 +9126,9 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (rh) remoteLv = rh.bondLevel || 1;
         } catch (e) {}
         const remoteTs = data.updatedAt || 0;
+        const cmpLocalTs = firstSync ? (window.__BOOT_LOCAL_SAVED_AT || 0) : localTs;
         const isFreshDefaultBoot = !hadLocalOnBoot && localLv === 1 && localExp <= 15 && localCoins === 50;
-        const shouldApplyRemote = (firstSync && isFreshDefaultBoot) || (remoteTs > localTs && remoteLv >= localLv && cur !== data.payload) || (remoteLv > localLv);
+        const shouldApplyRemote = (firstSync && isFreshDefaultBoot) || (remoteTs > cmpLocalTs && remoteLv >= localLv && cur !== data.payload) || (remoteLv > localLv);
         if (shouldApplyRemote) {
           applyingRemote = true;
           localStorage.setItem('chibi_tama_nohara_v6', data.payload);
@@ -9134,10 +9136,48 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v124';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v125';
           setTimeout(() => { applyingRemote = false; }, 350);
-        } else if (localTs > remoteTs) {
-          flushCloudSave();
+        } else {
+          // Always preserve any new cloud-bot mailbox messages even when local state is newer
+          let mergedCloudMail = false;
+          try {
+            const lp = cur ? JSON.parse(cur) : null;
+            const rp = JSON.parse(data.payload);
+            const rItems = rp?.mailbox?.items;
+            if (lp && Array.isArray(rItems) && rItems.length) {
+              if (!lp.mailbox) lp.mailbox = { items: [], lastMailDate: null, lastInviteDate: null, recentLetterIdxs: [] };
+              if (!Array.isArray(lp.mailbox.items)) lp.mailbox.items = [];
+              const existingKeys = new Set(lp.mailbox.items.map(it => `${it.sender}|${it.timeStr}|${it.text}`));
+              for (const it of rItems) {
+                const k = `${it.sender}|${it.timeStr}|${it.text}`;
+                if (!existingKeys.has(k)) {
+                  lp.mailbox.items.push(it);
+                  existingKeys.add(k);
+                  mergedCloudMail = true;
+                }
+              }
+              if (mergedCloudMail) {
+                if (lp.mailbox.items.length > 20) lp.mailbox.items = lp.mailbox.items.slice(-20);
+                const rPet = rp.pets && rp.pets.hinata;
+                const lPet = lp.pets && lp.pets.hinata;
+                if (rPet && lPet) {
+                  if ((rPet.lastSchoolMailAt || 0) > (lPet.lastSchoolMailAt || 0)) lPet.lastSchoolMailAt = rPet.lastSchoolMailAt;
+                  if (rPet.dailyAutoCounts && lPet.dailyAutoCounts && rPet.dailyAutoCounts.date === lPet.dailyAutoCounts.date) {
+                    lPet.dailyAutoCounts.schoolMail = Math.max(lPet.dailyAutoCounts.schoolMail || 0, rPet.dailyAutoCounts.schoolMail || 0);
+                  }
+                }
+                applyingRemote = true;
+                localStorage.setItem('chibi_tama_nohara_v6', JSON.stringify(lp));
+                if (typeof loadState === 'function') loadState();
+                if (typeof updateMailboxBadge === 'function') updateMailboxBadge();
+                setTimeout(() => { applyingRemote = false; flushCloudSave(); }, 350);
+              }
+            }
+          } catch (_) {}
+          if (!mergedCloudMail && localTs > remoteTs) {
+            flushCloudSave();
+          }
         }
       });
     } catch (e) {}
