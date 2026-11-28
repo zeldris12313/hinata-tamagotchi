@@ -255,7 +255,7 @@ html, body {
 
     <!-- Footer -->
     <div class="mt-2.5 flex items-center justify-between text-[11px] text-orange-100 px-2">
-      <span id="save-status">💾 已自動儲存 · v127</span>
+      <span id="save-status">💾 已自動儲存 · v128</span>
       
     </div>
 
@@ -2531,7 +2531,7 @@ html, body {
       if (handleRecoveryTick(pet)) { duoWalk = null; return; }
       // General solo walk stepping for Brother & Hinata (non-recovery)
       if (broWalk && !pet.recoverStage) {
-        const bStepDur = broWalk.phase === 'arrive' ? (broWalk.arriveMs || 1500) : ((broWalk.idx === -1) ? (broWalk.stepMs || 2200) : (broWalk.curStepMs || 3800));
+        const bStepDur = broWalk.phase === 'arrive' ? (broWalk.arriveMs || 1500) : ((broWalk.idx === -1) ? (broWalk.stepMs || 2600) : (broWalk.curStepMs || 5000));
         if (Date.now() - broWalk.stepEnteredAt >= bStepDur) {
           if (broWalk.phase === 'arrive') {
             const bwDone = broWalk;
@@ -2572,7 +2572,7 @@ html, body {
                 sx = (sx < 300) ? 240 : 360;
                 bw.curStepMs = 1600;
               } else {
-                bw.curStepMs = 3600;
+                bw.curStepMs = 5000;
               }
               bw.stepEnteredAt = Date.now(); bw.startX = sx; bw.startY = sy;
               bro.currentRoom = nr; bro.currentActivity = getWalkActForRoom(nr);
@@ -3461,19 +3461,27 @@ html, body {
           const furns = ROOM_FURNITURE[nextRoom] || [];
           const pick = furns.length ? furns[Math.floor(Math.random() * furns.length)] : { px: 280, py: 435, act: 'idle' };
           const nextAct = pick.act === 'sleep' ? 'idle' : pick.act;
-          if (animateTransition) {
-            startCharacterWalkTransition(pet, nextRoom, nextAct, pick.px - 35, pick.py);
-          } else {
-            pet.currentRoom = nextRoom; pet.currentActivity = nextAct;
-            petX = pick.px - 35; petY = pick.py; targetX = petX; targetY = petY;
-          }
-          if (bSched.followHinata && !state.broSoloMode && !bro.toiletState && nextRoom !== 'toilet') {
-            if (animateTransition && bro.currentRoom !== nextRoom) {
-              startSoloWalk('bro', nextRoom, nextAct, null, () => { bro.tx = Math.min(500, pick.px + 55); bro.ty = pick.py; }, false);
-            } else {
-              bro.currentRoom = nextRoom; bro.currentActivity = nextAct;
+          const accompanyTogether = (animateTransition && bSched.followHinata && !state.broSoloMode && !bro.toiletState && nextRoom !== 'toilet' && bro.currentRoom === pet.currentRoom);
+          if (accompanyTogether) {
+            startDuoJourney(nextRoom, nextAct, null, null, () => {
+              targetX = Math.max(110, pick.px - 40); targetY = pick.py;
               bro.tx = Math.min(500, pick.px + 55); bro.ty = pick.py;
-              if (!animateTransition) { bro.px = bro.tx; bro.py = bro.ty; }
+            });
+          } else {
+            if (animateTransition) {
+              startCharacterWalkTransition(pet, nextRoom, nextAct, pick.px - 35, pick.py);
+            } else {
+              pet.currentRoom = nextRoom; pet.currentActivity = nextAct;
+              petX = pick.px - 35; petY = pick.py; targetX = petX; targetY = petY;
+            }
+            if (bSched.followHinata && !state.broSoloMode && !bro.toiletState && nextRoom !== 'toilet') {
+              if (animateTransition && bro.currentRoom !== nextRoom) {
+                startSoloWalk('bro', nextRoom, nextAct, null, () => { bro.tx = Math.min(500, pick.px + 55); bro.ty = pick.py; }, false);
+              } else {
+                bro.currentRoom = nextRoom; bro.currentActivity = nextAct;
+                bro.tx = Math.min(500, pick.px + 55); bro.ty = pick.py;
+                if (!animateTransition) { bro.px = bro.tx; bro.py = bro.ty; }
+              }
             }
           }
           updateHUD(); saveState();
@@ -4067,7 +4075,7 @@ html, body {
     }
     function saveState() {
       state.savedAt = Date.now();
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v127'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); document.getElementById('save-status').textContent = '💾 已自動儲存 · v128'; if (window.__cloudSave) window.__cloudSave(); } catch (e) {}
     }
 
     // =========================================================================
@@ -4937,13 +4945,13 @@ html, body {
         if (!state.brother || (duoWalk && !pet.toiletState)) return;
         const bro = state.brother;
         if (broWalk && !pet.recoverStage) {
-          const bDur = broWalk.phase === 'arrive' ? (broWalk.arriveMs || 1500) : ((broWalk.idx === -1) ? (broWalk.stepMs || 2200) : (broWalk.curStepMs || 3800));
+          const bDur = broWalk.phase === 'arrive' ? (broWalk.arriveMs || 1500) : ((broWalk.idx === -1) ? (broWalk.stepMs || 2600) : (broWalk.curStepMs || 5000));
           const bt = Math.max(0, Math.min(1, (Date.now() - broWalk.stepEnteredAt) / bDur));
           bro.px = (broWalk.startX ?? bro.px) + (bro.tx - (broWalk.startX ?? bro.px)) * bt;
           bro.py = (broWalk.startY ?? bro.py) + (bro.ty - (broWalk.startY ?? bro.py)) * bt;
         } else {
           const bdx = bro.tx - bro.px, bdy = bro.ty - bro.py;
-          if (Math.hypot(bdx, bdy) > 3) { bro.px += bdx * 0.08; bro.py += bdy * 0.08; }
+          if (Math.hypot(bdx, bdy) > 3) { bro.px += bdx * 0.065; bro.py += bdy * 0.065; }
         }
       };
       if (transitionState) {
@@ -5039,7 +5047,7 @@ html, body {
           petY = (petWalk.startY ?? petY) + (targetY - (petWalk.startY ?? petY)) * pt;
         } else if (!rally.active && !(pet.currentRoom === 'bath' && pet.currentActivity === 'bath') && pet.currentActivity !== 'sleep' && pet.currentActivity !== 'waking') {
           const dx = targetX - petX, dy = targetY - petY;
-          const _spd = (state.outing && state.outing.type === 'mall' && !state.mallCafeUntil) ? 0.015 : 0.045;
+          const _spd = (state.outing && state.outing.type === 'mall' && !state.mallCafeUntil) ? 0.015 : 0.065;
           if (Math.hypot(dx, dy) > 3) { petX += dx * _spd; petY += dy * _spd; }
         }
         updateBrotherWalkPos();
@@ -9138,7 +9146,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           const parsed = JSON.parse(raw);
           await setDoc(saveRef, { payload: raw, updatedAt: parsed.savedAt || Date.now() }, { merge: true });
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 雲端已同步 · v127';
+          if (el) el.textContent = '☁️ 雲端已同步 · v128';
         } catch (e) {}
       };
       window.__cloudSave = () => {
@@ -9178,7 +9186,7 @@ document.getElementById('btn-find-pet').addEventListener('click', () => {
           if (typeof renderDock === 'function') renderDock();
           if (typeof updateHUD === 'function') updateHUD();
           const el = document.getElementById('save-status');
-          if (el) el.textContent = '☁️ 已載入雲端進度 · v127';
+          if (el) el.textContent = '☁️ 已載入雲端進度 · v128';
           setTimeout(() => { applyingRemote = false; }, 350);
         } else {
           // Always preserve any new cloud-bot mailbox messages even when local state is newer
